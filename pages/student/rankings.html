@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EduQuest — Tabla de Clasificación</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=Sora:wght@700;800&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../../assets/css/global/reset.css">
+  <link rel="stylesheet" href="../../assets/css/global/variables.css">
+  <link rel="stylesheet" href="../../assets/css/pages/student-dashboard.css">
+  <link rel="stylesheet" href="../../assets/css/pages/rankings.css">
+</head>
+<body>
+
+  <div id="app-preloader">
+    <div class="spinner"></div>
+    <p>Sincronizando los puntajes de la liga académica...</p>
+  </div>
+
+  <div id="topbar-container" data-path="../../components/topbar-students.html"></div>
+
+  <div class="app-shell" id="student-shell">
+    <div id="sidebar-container" data-path="../../components/sidebar.html"></div>
+
+    <main class="dashboard-content">
+      
+      <div class="ranking-main-column">
+        
+        <div id="ranking-profile-summary" class="student-summary-banner">
+          </div>
+
+        <div class="view-header">
+          <h2>🏆 Tabla de Clasificación Semanal</h2>
+          <p>Mídete con los alumnos de tu aula virtual. Los 3 primeros puestos de la semana obtendrán multiplicadores de XP asistidos por IA.</p>
+        </div>
+
+        <div class="leaderboard-card-wrapper">
+          <div class="table-responsive">
+            <table class="leaderboard-table">
+              <thead>
+                <tr>
+                  <th style="width: 80px; text-align: center;">Puesto</th>
+                  <th>Estudiante</th>
+                  <th>Meta / Carrera</th>
+                  <th style="text-align: center;">Racha</th>
+                  <th style="text-align: right; padding-right: 24px;">Puntaje Total</th>
+                </tr>
+              </thead>
+              <tbody id="leaderboard-tbody">
+                </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+      <aside class="ranking-sidebar-column">
+        
+        <div class="ranking-sidebar-card league-status-card">
+          <div class="league-badge-zone">
+            <span class="league-emoji">💎</span>
+            <div>
+              <h3>Liga de Élite UNI</h3>
+              <span>Faltan 2 días para el cierre</span>
+            </div>
+          </div>
+          <div class="league-progress-info">
+            <p>Te encuentras en la zona de **Ascenso Pro**. Mantén tu ritmo de simulacros para no descender.</p>
+          </div>
+        </div>
+
+        <div class="ranking-sidebar-card advice-card">
+          <h3>💡 ¿Cómo subir rápido?</h3>
+          <p class="advice-text">"Resolver simulacros completos a nivel UNI en la sección 'Mock Exams' sin usar calculadora te otorga un **bono de +150 XP** directo."</p>
+          <span class="advice-author">— Tutor IA EduQuest</span>
+        </div>
+
+      </aside>
+
+    </main>
+  </div>
+
+  <script src="../../assets/js/utils/component-loader.js"></script>
+  <script src="../../assets/js/student/rankings.js"></script>
+
+</body>
+</html>

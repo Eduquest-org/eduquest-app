@@ -1,0 +1,186 @@
+/* =======================================================
+   1. ARQUITECTURA DE GRID INTERNA DE RANKINGS
+   ======================================================= */
+.dashboard-content {
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 40px;
+  padding: 40px;
+  max-width: 1250px;
+  margin: 0 auto;
+  align-items: start;
+}
+
+.ranking-main-column {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.ranking-sidebar-column {
+  position: sticky;
+  top: 115px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* =======================================================
+   2. BANNER DE PERFIL EXPRESS COMPARTIDO
+   ======================================================= */
+.student-summary-banner {
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 20px 28px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.01);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+}
+.profile-express-left { display: flex; align-items: center; gap: 16px; }
+.profile-express-avatar { width: 50px; height: 50px; border-radius: 50%; background: rgba(127, 119, 221, 0.1); color: var(--indigo); display: flex; align-items: center; justify-content: center; font-size: 22px; }
+.profile-express-welcome h3 { font-family: 'Sora', sans-serif; font-size: 16px; font-weight: 700; color: var(--dark); margin-bottom: 2px; }
+.profile-express-welcome p { font-size: 13px; color: var(--sub); }
+.profile-express-stats { display: flex; align-items: center; gap: 32px; }
+.express-stat-item { text-align: right; }
+.express-stat-val { font-family: 'Sora', sans-serif; font-size: 16px; font-weight: 800; color: var(--dark); display: block; }
+.express-stat-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); }
+
+/* =======================================================
+   3. TABLA DE CLASIFICACIÓN (LEADERBOARD)
+   ======================================================= */
+.leaderboard-card-wrapper {
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.015);
+  overflow: hidden;
+}
+
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.leaderboard-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.leaderboard-table th {
+  background: #f8fafc;
+  padding: 16px 20px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--sub);
+  border-bottom: 1px solid var(--border);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.leaderboard-table td {
+  padding: 18px 20px;
+  font-size: 14px;
+  color: #334155;
+  border-bottom: 1px solid #f1f5f9;
+  vertical-align: middle;
+}
+
+/* Filas alternadas para descansos visuales */
+.leaderboard-table tr:nth-child(even) td {
+  background: #fdfdfd;
+}
+
+/* Resaltado del Podio (Top 3) */
+.rank-badge-cell {
+  font-family: 'Sora', sans-serif;
+  font-weight: 800;
+  font-size: 16px;
+  text-align: center;
+}
+.rank-1 { color: #eab308; } /* Oro */
+.rank-2 { color: #94a3b8; } /* Plata */
+.rank-3 { color: #b45309; } /* Bronce */
+
+/* Alineado del estudiante */
+.student-row-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 500;
+}
+.student-avatar-mini {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--fill);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+}
+
+.sub-meta-text {
+  font-size: 12px;
+  color: var(--sub);
+}
+
+.xp-points-cell {
+  font-family: 'Sora', sans-serif;
+  font-weight: 800;
+  color: var(--green);
+  text-align: right;
+  padding-right: 24px !important;
+}
+
+/* 🔥 ENFOQUE PRINCIPAL: Resaltado de la fila del alumno actual ("Tú") */
+.leaderboard-table tr.current-user-highlight td {
+  background: rgba(29, 158, 117, 0.07) !important;
+  border-top: 1px solid rgba(29, 158, 117, 0.2);
+  border-bottom: 1px solid rgba(29, 158, 117, 0.2);
+}
+.leaderboard-table tr.current-user-highlight strong {
+  color: var(--green);
+}
+
+/* =======================================================
+   4. SIDEBAR WIDGETS
+   ======================================================= */
+.ranking-sidebar-card {
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.01);
+}
+
+.league-status-card {
+  border-left: 5px solid var(--indigo);
+}
+
+.league-badge-zone {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+.league-emoji {
+  font-size: 32px;
+}
+.league-badge-zone h3 { font-family: 'Sora', sans-serif; font-size: 16px; font-weight: 700; color: var(--dark); }
+.league-badge-zone span { font-size: 12px; color: var(--sub); font-weight: 500; }
+
+.league-progress-info p {
+  font-size: 13px;
+  color: #475569;
+  line-height: 1.5;
+}
+
+.advice-card { background: linear-gradient(135deg, rgba(29, 158, 117, 0.03), rgba(29, 158, 117, 0.01)); border-color: rgba(29, 158, 117, 0.2); }
+.advice-card h3 { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+.advice-text { font-style: italic; color: #4b5563; font-size: 13px; line-height: 1.5; margin-bottom: 10px; }
+.advice-author { font-size: 11px; font-weight: 700; color: var(--green); }

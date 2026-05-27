@@ -1,0 +1,26 @@
+{
+  "users": [
+    {
+      "id": "U_CHRIS",
+      "name": "Chris Carrasco",
+      "email": "chris@eduquest.pe",
+      "password": "123",
+      "role": "student",
+      "target": "Meta: UNI",
+      "career": "Ingeniería de Sistemas",
+      "totalXp": 1150,
+      "streakDays": 3,
+      "rankingPos": "#3 en Aula",
+      "avatar": "🚀"
+    },
+    {
+      "id": "U_HENRY",
+      "name": "Henry Mendoza",
+      "email": "mendoza@eduquest.pe",
+      "password": "UNI",
+      "role": "teacher",
+      "classrooms": ["Aula 3246 - UNI", "Aula 3247 - San Marcos"],
+      "avatar": "👨‍🏫"
+    }
+  ]
+}

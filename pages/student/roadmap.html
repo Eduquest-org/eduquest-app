@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EduQuest — Mis Rutas IA</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=Sora:wght@700;800&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../../assets/css/global/reset.css">
+  <link rel="stylesheet" href="../../assets/css/global/variables.css">
+  <link rel="stylesheet" href="../../assets/css/pages/student-dashboard.css">
+  <link rel="stylesheet" href="../../assets/css/pages/roadmap.css">
+</head>
+<body>
+
+  <div id="app-preloader">
+    <div class="spinner"></div>
+    <p>Tu Tutor IA está organizando tus mundos académicos...</p>
+  </div>
+
+  <div id="topbar-container" data-path="../../components/topbar-students.html"></div>
+
+  <div class="app-shell" id="student-shell">
+    <div id="sidebar-container" data-path="../../components/sidebar.html"></div>
+
+    <main class="dashboard-content">
+      
+      <section id="course-selection-view" class="view-section active">
+        
+        <div id="student-profile-summary" class="student-summary-banner">
+          </div>
+
+        <div class="view-header">
+          <h2>🗺️ Mis Rutas de Aprendizaje</h2>
+          <p>Selecciona una isla académica mapeada por IA para continuar tu camino al examen de admisión.</p>
+        </div>
+        
+        <div id="courses-grid" class="courses-grid"></div>
+      </section>
+
+      <section id="course-map-view" class="view-section">
+        <div class="back-btn-container">
+          <a class="back-link" onclick="switchBackToSelection()">← Volver a mis rutas</a>
+        </div>
+        
+        <div class="view-header">
+          <h2 id="current-map-title">Mundo: Cargando...</h2>
+          <p>Revienta las burbujas completando los retos para avanzar en el mapa.</p>
+        </div>
+
+        <div class="map-card-wrapper">
+          <div id="dynamic-map-container" class="path-loop-container"></div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <script src="../../assets/js/utils/component-loader.js"></script>
+  <script src="../../assets/js/student/roadmap.js"></script>
+
+</body>
+</html>

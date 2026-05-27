@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EduQuest — Comunidad</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=Sora:wght@700;800&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../../assets/css/global/reset.css">
+  <link rel="stylesheet" href="../../assets/css/global/variables.css">
+  <link rel="stylesheet" href="../../assets/css/pages/student-dashboard.css">
+  <link rel="stylesheet" href="../../assets/css/pages/community-circles.css">
+</head>
+<body>
+
+  <div id="app-preloader">
+    <div class="spinner"></div>
+    <p>Conectando con las salas de estudio de tu aula...</p>
+  </div>
+
+  <div id="topbar-container" data-path="../../components/topbar-students.html"></div>
+
+  <div class="app-shell" id="student-shell">
+    <div id="sidebar-container" data-path="../../components/sidebar.html"></div>
+
+    <main class="dashboard-content">
+      
+      <div class="community-main-column">
+        
+
+
+        <div class="view-header">
+          <h2>👥 Círculos de Estudio Colectivo</h2>
+          <p>Únete a salas interactivas creadas por alumnos con tus mismas metas y refuercen temas clave compartiendo apuntes o resolviendo dudas.</p>
+        </div>
+
+        <div class="filter-tabs-bar">
+          <button class="tab-btn active" onclick="filterCirclesByCourse('ALL')">Todos los círculos</button>
+          <button class="tab-btn" onclick="filterCirclesByCourse('ALGEBRA')">📐 Álgebra</button>
+          <button class="tab-btn" onclick="filterCirclesByCourse('FISICA')">⚡ Física</button>
+          <button class="tab-btn" onclick="filterCirclesByCourse('GEOMETRIA')">🔮 Geometría</button>
+          <button class="tab-btn" onclick="filterCirclesByCourse('LECTORA')">📚 Lectura</button>
+        </div>
+
+        <div class="create-circle-card">
+          <div class="create-circle-trigger">
+            <span class="user-avatar-placeholder">🎓</span>
+            <input type="text" id="new-circle-input" placeholder="¿Quieres armar un nuevo grupo de repaso rápido? Ponle un nombre aquí...">
+            <button class="tab-btn" onclick="triggerCreateCircleMock()">Crear Círculo</button>
+          </div>
+        </div>
+
+        <div id="active-circles-container" class="circles-stream-grid">
+          </div>
+
+      </div>
+
+      <aside class="community-sidebar-column">
+        
+        <div class="community-sidebar-card">
+          <h3>🔥 Tendencia en tu Aula</h3>
+          <p>Los grupos con más debate en las últimas horas.</p>
+          <ul class="trending-circles-list">
+            <li>
+              <div class="trending-info">
+                <strong>⚡ Repaso Fiel: Vectores UNI</strong>
+                <span>42 mensajes nuevos hoy</span>
+              </div>
+              <span class="trending-badge">TOP 1</span>
+            </li>
+            <li>
+              <div class="trending-info">
+                <strong>📐 Productos Notables Inc.</strong>
+                <span>19 alumnos activos ahora</span>
+              </div>
+              <span class="trending-badge">TOP 2</span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="community-sidebar-card advice-card">
+          <h3>🧠 Recordatorio de Enfoque</h3>
+          <p class="advice-text">"El aprendizaje en grupo acelera tu retención hasta un 60%, pero cuida los distractores. ¡A por esa meta preuniversitaria!"</p>
+          <span class="advice-author">— Tutor Inteligente EduQuest</span>
+        </div>
+
+      </aside>
+
+    </main>
+  </div>
+
+  <script src="../../assets/js/utils/component-loader.js"></script>
+  <script src="../../assets/js/student/community-circles.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,112 @@
+[
+  {
+    "id": 1,
+    "author": "Chris Carrasco",
+    "avatar": "🎓",
+    "target": "Meta: UNI",
+    "tag": "Física",
+    "content": "Alguien me ayuda con este problema de Vectores en 3D? No me sale el producto vectorial para hallar el ángulo de inclinación... ¡Auxilio!",
+    "upvotes": 24,
+    "comments": 5,
+    "time": "Hace 10 min"
+  },
+  {
+    "id": 2,
+    "author": "Vivianne Rios",
+    "avatar": "🧠",
+    "target": "Meta: San Marcos",
+    "tag": "Comprensión Lectora",
+    "content": "¡Logré resolver el simulacro de hoy sin cometer errores en textos continuos filosóficos! Les recomiendo mucho repasar las inferencias mixtas, fijas que vienen en el bloque de Letras.",
+    "upvotes": 42,
+    "comments": 12,
+    "time": "Hace 2 horas"
+  },
+  {
+    "id": 3,
+    "author": "Matias Del Castillo",
+    "avatar": "⚡",
+    "target": "Meta: UNI",
+    "tag": "Álgebra",
+    "content": "El bot de IA me acaba de armar un cuestionario personalizado de Matrices y Determinantes porque vio que fallé en mi última práctica. Está rotísimo, pasé de volar en el tema a entender las propiedades de la transpuesta en 15 minutos.",
+    "upvotes": 56,
+    "comments": 8,
+    "time": "Hace 3 horas"
+  },
+  {
+    "id": 4,
+    "author": "Vanessa Barrientos",
+    "avatar": "✨",
+    "target": "Meta: PUCP",
+    "tag": "Motivación",
+    "content": "Gente, a veces da ganas de tirar la toalla por la presión del examen de admisión, pero recuerden que la constancia le gana al talento. Hoy completé mi reto diario de 400 XP y mantengo mi racha. ¡Sí se puede!",
+    "upvotes": 89,
+    "comments": 21,
+    "time": "Hace 5 horas"
+  },
+  {
+    "id": 5,
+    "author": "Mateo Del Carpio",
+    "avatar": "👨‍💻",
+    "target": "Meta: UNI",
+    "tag": "Geometría",
+    "content": "¿Alguien tiene las fijas o algún truco para teoremas de semejanza de triángulos? Siento que en los problemas de la Cepre-UNI los gráficos vienen recontra cruzados y me mareo buscando los ángulos.",
+    "upvotes": 15,
+    "comments": 9,
+    "time": "Hace 6 horas"
+  },
+  {
+    "id": 6,
+    "author": "Daniel Alva",
+    "avatar": "🦖",
+    "target": "Meta: San Marcos",
+    "tag": "Historia",
+    "content": "Ayer me quedé dormido y no cumplí mi meta diaria de repasar el Tahuantinsuyo. Menos mal que el algoritmo de EduQuest no me penalizó feo, sino que me reajustó el repaso de cívica para hoy en la noche. ¡Menos estrés!",
+    "upvotes": 31,
+    "comments": 4,
+    "time": "Hace 1 día"
+  },
+  {
+    "id": 7,
+    "author": "Luciana Mendoza",
+    "avatar": "🦉",
+    "target": "Meta: Cayetano",
+    "tag": "Biología",
+    "content": "Pregunta seria: ¿Es necesario memorizarse todo el ciclo de Krebs o con saber cuántos ATP genera es suficiente para el examen? Siento que estoy perdiendo valioso tiempo memorizando cada enzima.",
+    "upvotes": 18,
+    "comments": 14,
+    "time": "Hace 1 día"
+  },
+  {
+    "id": 8,
+    "author": "Kevin Quispe",
+    "avatar": "🚀",
+    "target": "Meta: Callao",
+    "tag": "Aritmética",
+    "content": "¡Oficialmente subí a la Liga de Oro en el ranking de la app! Estuvo peleado con un pata que se resolvió 5 simulacros de Razonamiento Matemático seguidos en la madrugada. Mañana sigo asegurando el puesto.",
+    "upvotes": 63,
+    "comments": 7,
+    "time": "Hace 2 días"
+  },
+  {
+    "id": 9,
+    "author": "Andrea Flores",
+    "avatar": "🎨",
+    "target": "Meta: PUCP",
+    "tag": "Redacción",
+    "content": "Para los que postulan a la Católica: el taller interactivo de ortografía y puntuación que está en la sección de recursos ocultos ayuda un montón para la parte de Redacción de la prueba. Revisen las reglas de tildación diacrítica.",
+    "upvotes": 47,
+    "comments": 3,
+    "time": "Hace 2 días"
+  },
+  {
+    "id": 10,
+    "author": "Renzo Tarazona",
+    "avatar": "🔥",
+    "target": "Meta: San Marcos",
+    "tag": "Química",
+    "content": "No entiendo nada de Enlace Químico (Hibridación sp, sp2, sp3). ¿Alguien se apunta para armar un círculo de estudio público hoy a las 6:00 PM aquí en la plataforma y lo resolvemos con el tutor de IA?",
+    "upvotes": 38,
+    "comments": 19,
+    "time": "Hace 3 días"
+  }
+]

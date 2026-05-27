@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EduQuest — Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Inter:wght@400;500;600;700;900&family=Sora:wght@700;800&display=swap" rel="stylesheet">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Sora:wght@700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="../../assets/css/global/reset.css">
+  <link rel="stylesheet" href="../../assets/css/global/variables.css">
+  <link rel="stylesheet" href="../../assets/css/pages/student-dashboard.css">
+  <link rel="stylesheet" href="../../assets/css/components/feed-card.css">
+  <link rel="stylesheet" href="../../assets/css/components/loader.css">
+</head>
+<body>
+
+  <div id="topbar-container" data-path="../../components/topbar-students.html"></div>
+  <div class="app-shell" id="student-shell">
+    
+    <div id="sidebar-container" data-path="../../components/sidebar.html"></div>
+
+    <main class="dashboard-content">
+      
+      <div class="feed-column">
+        
+        <div class="create-post-card">
+          <div class="create-post-header">
+            <div class="user-avatar-mini">U</div>
+            <input type="text" id="post-input" placeholder="¿Qué duda académica tienes hoy? (Ej: Geometría UNI...)">
+          </div>
+          <div class="create-post-actions">
+            <span class="post-tag-selector"><i class="icon">🏷️</i> Agregar Curso</span>
+            <button class="btn green btn-publish" onclick="addNewPost()">Publicar Duda</button>
+          </div>
+        </div>
+
+        <div id="feed-container"></div>
+      </div>
+
+      <aside class="widgets-column">
+
+        <div class="widget-card summary-card">
+          <h3>📊 Tu Resumen de Hoy</h3>
+          <p>Gana 850 XP más para subir de liga.</p>
+          
+          <div class="xp-stats">
+            <span class="xp-current">1,150 XP</span>
+            <span class="xp-goal">/ 2,000 XP</span>
+          </div>
+          
+          <div class="progress-bar-container">
+            <div class="progress-bar" style="width: 65%;"></div>
+          </div>
+          <span class="widget-meta">🔥 Racha de 3 días consecutivos</span>
+        </div>
+
+
+
+        <div class="widget-card challenge-card">
+          <h3>🎯 Misión Diaria</h3>
+          <p>Completa un simulacro de Álgebra Nivel UNI sin usar la calculadora.</p>
+          <button class="btn outline sm full" onclick="window.location.href='quizzes.html'" style="margin-top: 12px; width: 100%;">Ir al Simulacro</button>
+        </div>
+
+        <div class="widget-card ranking-card">
+          <h3>🏆 Top 3 de tu Aula</h3>
+          <ul class="mini-ranking-list">
+            <li>
+              <div class="rank-user">
+                <span class="rank-num">1</span> 
+                <span class="user-avatar-mini" style="width: 28px; height: 28px; font-size: 14px;">🎓</span>
+                Matias J.
+              </div>
+              <span class="rank-pts">1,420 XP</span>
+            </li>
+            <li>
+              <div class="rank-user">
+                <span class="rank-num">2</span> 
+                <span class="user-avatar-mini" style="width: 28px; height: 28px; font-size: 14px;">🧠</span>
+                Vanessa B.
+              </div>
+              <span class="rank-pts">1,280 XP</span>
+            </li>
+            <li style="background: rgba(29, 158, 117, 0.1); border-radius: 8px; padding: 6px 8px;">
+              <div class="rank-user">
+                <span class="rank-num" style="color: var(--green);">3</span> 
+                <span class="user-avatar-mini" style="width: 28px; height: 28px; font-size: 14px;">✨</span>
+                <strong>Tú</strong>
+              </div>
+              <span class="rank-pts">1,150 XP</span>
+            </li>
+          </ul>
+          <a href="rankings.html" class="widget-link" style="display: block; text-align: center; margin-top: 8px;">Ver tabla completa →</a>
+        </div>
+
+      </aside>
+
+    </main>
+
+  </div>
+  <script src="../../assets/js/components/global-loader.js"></script>
+  <script src="../../assets/js/utils/component-loader.js"></script>
+  <script src="../../assets/js/student/dashboard.js"></script>
+  <script src="../../assets/js/student/feed.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EduQuest — Crear Cuenta</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=Sora:wght@700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --green: #1D9E75; --border: #e5e7eb; --fill: #f8fafc;
+      --text: #111827; --sub: #6b7280; --dark: #111;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background-color: var(--fill); color: var(--text); display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+    
+    .register-container { background: #ffffff; border: 1px solid var(--border); border-radius: 24px; padding: 40px; max-width: 480px; width: 100%; box-shadow: 0 10px 30px rgba(0,0,0,0.02); }
+    .register-header { text-align: center; margin-bottom: 32px; }
+    .register-header h1 { font-family: 'Sora', sans-serif; font-size: 24px; font-weight: 800; color: var(--dark); margin-bottom: 6px; }
+    .register-header p { font-size: 14px; color: var(--sub); }
+
+    /* Selector de Roles */
+    .role-selector-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+    .role-card { border: 2px solid var(--border); border-radius: 14px; padding: 16px; text-align: center; cursor: pointer; transition: 0.2s ease; }
+    .role-card:hover { border-color: #cbd5e1; background: var(--fill); }
+    .role-card.active { border-color: var(--green); background: rgba(29, 158, 117, 0.04); }
+    .role-icon { font-size: 24px; margin-bottom: 4px; display: block; }
+    .role-card strong { font-size: 14px; color: var(--dark); display: block; }
+    .role-card span { font-size: 11px; color: var(--sub); }
+
+    /* Campos del Formulario */
+    .form-group { margin-bottom: 20px; display: flex; flex-direction: column; gap: 6px; }
+    .form-group label { font-size: 13px; font-weight: 600; color: var(--dark); }
+    .form-group input, .form-group select { width: 100%; padding: 12px 16px; border: 1px solid var(--border); border-radius: 10px; font-size: 14px; outline: none; transition: 0.2s; background: var(--fill); }
+    .form-group input:focus, .form-group select:focus { background: #ffffff; border-color: var(--green); box-shadow: 0 0 0 3px rgba(29, 158, 117, 0.08); }
+    
+    .student-fields { display: block; }
+    .btn-register { width: 100%; padding: 14px; border: none; background: var(--dark); color: white; font-weight: 700; font-size: 14px; border-radius: 10px; cursor: pointer; transition: 0.2s; margin-top: 10px; }
+    .btn-register:hover { background: #000; }
+    .login-link { text-align: center; margin-top: 24px; font-size: 13px; color: var(--sub); }
+    .login-link a { color: var(--green); font-weight: 600; text-decoration: none; }
+  </style>
+</head>
+<body>
+
+  <div class="register-container">
+    <div class="register-header">
+      <h1>Únete a EduQuest</h1>
+      <p>Potencia tu preparación preuniversitaria con IA</p>
+    </div>
+
+    <div class="role-selector-grid">
+      <div id="card-student" class="role-card active" onclick="selectRole('student')">
+        <span class="role-icon">🚀</span>
+        <strong>Estudiante</strong>
+        <span>Postulante / Alumno</span>
+      </div>
+      <div id="card-teacher" class="role-card" onclick="selectRole('teacher')">
+        <span class="role-icon">👨‍🏫</span>
+        <strong>Docente</strong>
+        <span>Profesor / Tutor</span>
+      </div>
+    </div>
+
+    <form id="register-form" onsubmit="event.preventDefault(); register();">
+      <div class="form-group">
+        <label for="reg-name">Nombre Completo</label>
+        <input type="text" id="reg-name" placeholder="Ej: Chris Carrasco" required>
+      </div>
+
+      <div class="form-group">
+        <label for="reg-email">Correo Electrónico</label>
+        <input type="email" id="reg-email" placeholder="nombre@correo.com" required>
+      </div>
+
+      <div class="form-group">
+        <label for="reg-password">Contraseña</label>
+        <input type="password" id="reg-password" placeholder="Mínimo 6 caracteres" required>
+      </div>
+
+      <div id="student-conditional-fields" class="student-fields">
+        <div class="form-group">
+          <label for="reg-target">Universidad Objetivo</label>
+          <select id="reg-target">
+            <option value="Meta: UNI">Meta: UNI (Ingeniería)</option>
+            <option value="Meta: San Marcos">Meta: San Marcos (UNMSM)</option>
+            <option value="Meta: PUCP">Meta: Católica (PUCP)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="reg-career">Carrera Profesional</label>
+          <input type="text" id="reg-career" placeholder="Ej: Ingeniería de Sistemas">
+        </div>
+      </div>
+
+      <button type="submit" class="btn-register">Crear mi Cuenta</button>
+    </form>
+
+    <div class="login-link">
+      ¿Ya tienes una cuenta? <a href="./login.html">Inicia sesión aquí</a>
+    </div>
+  </div>
+
+  <script src="../../core/auth.js"></script>
+  <script>
+    // Pequeño script visual auxiliar para ocultar campos si elige profesor
+    const originalSelectRole = selectRole;
+    selectRole = function(role) {
+        originalSelectRole(role);
+        const extraFields = document.getElementById("student-conditional-fields");
+        if(extraFields) {
+            extraFields.style.display = (role === 'student') ? 'block' : 'none';
+        }
+    }
+  </script>
+</body>
+</html>

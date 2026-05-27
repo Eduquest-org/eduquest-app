@@ -1,0 +1,143 @@
+:root {
+  --green: #1D9E75; --amber: #EF9F27; --indigo: #7F77DD; --red: #E24B4A;
+  --border: #e5e7eb; --fill: #f8fafc; --muted: #9ca3af;
+  --text: #111827; --sub: #6b7280; --dark: #111;
+}
+
+body {
+  margin: 0; padding: 0;
+  background-color: var(--fill);
+  font-family: 'Inter', sans-serif;
+  overflow-x: hidden;
+}
+
+/* =========================================================
+   1. EL SIDEBAR (EL JEFE DEL LAYOUT)
+   ========================================================= */
+#sidebar-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 260px;
+  height: 100vh; /* Desde el techo hasta el piso */
+  background: #ffffff;
+  border-right: 1px solid var(--border);
+  z-index: 1000; /* Superpuesto a todo */
+}
+
+/* Estilos rescatados de tu menú original */
+#sidebar-container .sidebar { width: 100%; height: 100%; display: flex; flex-direction: column; }
+.sb-logo { font-family:'Sora',sans-serif; font-size:20px; font-weight:800; padding:24px; display:flex; align-items:center; gap:12px; color:var(--dark); cursor:pointer;}
+.sb-icon { width:32px; height:32px; border-radius:8px; display:flex; align-items:center; justify-content:center; color:#fff; font-size:14px; font-weight:bold; background:var(--green); }
+.sb-nav { padding:0 16px; display:flex; flex-direction:column; gap:8px; flex:1; margin-top: 10px;}
+.sb-sec { font-size:11px; text-transform:uppercase; color:var(--muted); font-weight:700; margin:16px 0 6px 12px; letter-spacing:0.5px; }
+.sb-item { display:flex; align-items:center; gap:12px; padding:12px 14px; border-radius:10px; color:var(--sub); font-size:14px; font-weight:600; cursor:pointer; transition:all 0.2s; text-decoration: none; }
+.sb-item:hover { background:var(--fill); color:var(--text); }
+.sb-item.on { background:rgba(29,158,117,0.1); color:var(--green); }
+.sb-dot { width:6px; height:6px; border-radius:50%; background:var(--border); transition:0.2s; }
+.sb-item:hover .sb-dot { background:var(--sub); }
+.sb-item.on .sb-dot { background:var(--green); box-shadow:0 0 6px var(--green); }
+.sb-bottom { padding:24px; border-top:1px solid var(--border); }
+
+/* =========================================================
+   2. EL TOPBAR (SE ACOMODA A LA DERECHA)
+   ========================================================= */
+#topbar-container {
+  position: fixed;
+  top: 0;
+  left: 260px; /* Empieza exactamente donde termina el sidebar */
+  width: calc(100% - 260px); /* Resta el tamaño del sidebar */
+  height: 75px;
+  background: #ffffff;
+  border-bottom: 1px solid var(--border);
+  z-index: 900;
+  display: flex;
+  align-items: center;
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between; /* Buscador izq, Perfil der */
+  align-items: center;
+  width: 100%;
+  padding: 0 40px;
+}
+
+/* Buscador y Perfil */
+.search-wrapper { position: relative; width: 400px; }
+.search-wrapper input { width: 100%; padding: 12px 16px 12px 40px; border: 1px solid var(--border); border-radius: 30px; background: var(--fill); outline: none; font-size: 13px; transition: 0.2s; }
+.search-wrapper input:focus { background: #fff; border-color: var(--green); box-shadow: 0 0 0 3px rgba(29, 158, 117, 0.1); }
+.search-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-size: 14px; opacity: 0.5; }
+.topbar-right { display: flex; align-items: center; gap: 20px; }
+.nav-icon-btn { background: none; border: none; font-size: 20px; cursor: pointer; position: relative; padding: 8px; border-radius: 50%; transition: 0.2s; }
+.nav-icon-btn:hover { background: var(--fill); }
+.notification-badge { position: absolute; top: 6px; right: 6px; width: 8px; height: 8px; background-color: var(--red); border-radius: 50%; }
+.user-profile-btn { display: flex; align-items: center; gap: 12px; background: none; border: none; cursor: pointer; padding: 6px 12px; border-radius: 30px; transition: 0.2s; }
+.user-profile-btn:hover { background: var(--fill); }
+.user-avatar-top { width: 36px; height: 36px; border-radius: 50%; background: var(--indigo); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; }
+.user-name-top { font-size: 14px; font-weight: 600; color: var(--text); }
+
+/* =========================================================
+   3. EL CONTENIDO PRINCIPAL (MURO + WIDGETS)
+   ========================================================= */
+.app-shell {
+  margin-left: 260px; /* Offset vital: Todo el contenido empieza después del sidebar */
+  padding-top: 75px; /* Offset vital: Todo empieza debajo del Topbar */
+  min-height: 100vh;
+}
+
+.dashboard-content {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px; /* Feed expansivo + Widgets fijos */
+  gap: 40px;
+  padding: 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+  align-items: start;
+}
+
+.upgrade-box { 
+  background: linear-gradient(135deg, #111, #333); 
+  border-radius: 12px; 
+  padding: 16px; 
+  color: #fff; 
+  margin-bottom: 16px; 
+}
+.upgrade-title { 
+  font-size: 14px; 
+  font-weight: 700; 
+  margin-bottom: 4px; 
+}
+.upgrade-sub { 
+  font-size: 12px; 
+  color: #aaa; 
+  margin-bottom: 12px; 
+  line-height: 1.4; 
+}
+
+/* Botones genéricos de la parte inferior */
+.sb-bottom .btn { 
+  display: block; 
+  text-align: center; 
+  cursor: pointer; 
+  transition: 0.2s; 
+  border: none; 
+  font-family: 'Inter', sans-serif; 
+  font-weight: 600;
+}
+.sb-bottom .btn.dark { 
+  background: #111; 
+  color: #fff; 
+}
+.sb-bottom .btn.dark:hover { 
+  background: #000; 
+}
+.sb-bottom .btn.outline.sm { 
+  padding: 10px; 
+  border-radius: 8px; 
+  font-size: 13px; 
+  background: transparent; 
+}
+.sb-bottom .btn.outline.sm:hover { 
+  background: #fff5f5; /* Un hover rojito sutil para el de cerrar sesión */
+}

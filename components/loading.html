@@ -1,0 +1,148 @@
+<div id="loading-overlay" class="loading-overlay">
+  <div class="loading-box">
+
+    <div class="loading-spinner">
+      <span></span>
+    </div>
+
+    <h2>Cargando dashboard</h2>
+
+    <p>
+      Preparando tus quizzes, progreso y recursos...
+    </p>
+
+    <div class="loading-progress">
+      <div class="loading-progress-bar"></div>
+    </div>
+
+  </div>
+</div>
+
+<style>
+:root {
+  --green:   #1D9E75;
+  --amber:   #EF9F27;
+  --indigo:  #7F77DD;
+  --red-err: #E24B4A;
+  --border:  #d0d0d0;
+  --fill:    #f0f0f0;
+  --stripe-a:#eaeaea;
+  --stripe-b:#d8d8d8;
+  --muted:   #888;
+  --dark:    #111;
+  --navy:    #092C4C;
+}
+
+/* Overlay */
+.loading-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background: rgba(255,255,255,.88);
+  backdrop-filter: blur(4px);
+}
+
+/* Card */
+.loading-box {
+  width: 340px;
+  padding: 36px;
+
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 24px;
+
+  text-align: center;
+
+  box-shadow:
+    0 10px 30px rgba(9,44,76,.08);
+}
+
+/* Spinner */
+.loading-spinner {
+  position: relative;
+  width: 70px;
+  height: 70px;
+  margin: 0 auto 24px;
+}
+
+.loading-spinner span {
+  position: absolute;
+  inset: 0;
+
+  border-radius: 50%;
+  border: 6px solid #e8e8e8;
+
+  border-top-color: var(--green);
+  border-right-color: var(--indigo);
+
+  animation: spin .9s linear infinite;
+}
+
+/* Title */
+.loading-box h2 {
+  margin: 0 0 10px;
+
+  color: var(--navy);
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+/* Text */
+.loading-box p {
+  margin: 0 0 24px;
+
+  color: var(--muted);
+  font-size: .95rem;
+  line-height: 1.5;
+}
+
+/* Progress */
+.loading-progress {
+  width: 100%;
+  height: 10px;
+
+  background: var(--fill);
+  border-radius: 999px;
+
+  overflow: hidden;
+}
+
+.loading-progress-bar {
+  width: 40%;
+  height: 100%;
+
+  border-radius: inherit;
+
+  background:
+    linear-gradient(
+      90deg,
+      var(--green),
+      var(--amber),
+      var(--indigo)
+    );
+
+  animation: progressMove 1.4s ease infinite;
+}
+
+/* Animations */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes progressMove {
+  0% {
+    transform: translateX(-130%);
+  }
+
+  100% {
+    transform: translateX(280%);
+  }
+}
+</style>
