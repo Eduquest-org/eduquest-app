@@ -15,3 +15,11 @@ const SessionManager = {
 document.addEventListener('DOMContentLoaded', () => {
     SessionManager.init();
 });
+
+document.addEventListener('click', () => {
+    const session = Storage.getSession();
+    if (session) {
+        session.expiresAt = Date.now() + (60 * 60 * 1000);
+        Storage.saveSession(session);
+    }
+});
