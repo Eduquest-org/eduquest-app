@@ -102,17 +102,9 @@
     </div>
   </div>
 
-  <script src="../../core/auth.js"></script>
-  <script>
-    // Pequeño script visual auxiliar para ocultar campos si elige profesor
-    const originalSelectRole = selectRole;
-    selectRole = function(role) {
-        originalSelectRole(role);
-        const extraFields = document.getElementById("student-conditional-fields");
-        if(extraFields) {
-            extraFields.style.display = (role === 'student') ? 'block' : 'none';
-        }
-    }
-  </script>
+  <script src="../../assets/js/core/storage.js"></script>
+  <script src="../../assets/js/core/auth.js"></script>
+  <script src="../../assets/js/core/router.js"></script>
+  <script src="../../assets/js/core/app.js"></script>
 </body>
 </html>
