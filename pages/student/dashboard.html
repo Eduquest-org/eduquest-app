@@ -29,7 +29,7 @@
         
         <div class="create-post-card">
           <div class="create-post-header">
-            <div class="user-avatar-mini">U</div>
+            <div class="user-avatar-mini" data-user-avatar>U</div>
             <input type="text" id="post-input" placeholder="¿Qué duda académica tienes hoy? (Ej: Geometría UNI...)">
           </div>
           <div class="create-post-actions">
@@ -48,14 +48,14 @@
           <p>Gana 850 XP más para subir de liga.</p>
           
           <div class="xp-stats">
-            <span class="xp-current">1,150 XP</span>
+            <span class="xp-current" data-user-xp>Cargando...</span>
             <span class="xp-goal">/ 2,000 XP</span>
           </div>
           
           <div class="progress-bar-container">
             <div class="progress-bar" style="width: 65%;"></div>
           </div>
-          <span class="widget-meta">🔥 Racha de 3 días consecutivos</span>
+          <span class="widget-meta">🔥 Racha de <span data-user-streak></span> consecutivos</span>
         </div>
 
         <div class="widget-card challenge-card">
@@ -86,10 +86,10 @@
             <li style="background: rgba(29, 158, 117, 0.1); border-radius: 8px; padding: 6px 8px;">
               <div class="rank-user">
                 <span class="rank-num" style="color: var(--green);">3</span> 
-                <span class="user-avatar-mini" style="width: 28px; height: 28px; font-size: 14px;">✨</span>
-                <strong>Tú</strong>
+                <span class="user-avatar-mini" style="width: 28px; height: 28px; font-size: 14px;" data-user-avatar>✨</span>
+                <strong>Tú (<span data-user-firstname></span>)</strong>
               </div>
-              <span class="rank-pts">1,150 XP</span>
+              <span class="rank-pts" data-user-xp></span>
             </li>
           </ul>
           <a href="rankings.html" class="widget-link" style="display: block; text-align: center; margin-top: 8px;">Ver tabla completa →</a>
@@ -108,6 +108,7 @@
   <script src="../../assets/js/core/storage.js"></script>
   <script src="../../assets/js/core/auth.js"></script>
   <script src="../../assets/js/core/router.js"></script>
+  <script src="../../assets/js/core/current-user.js"></script>
   <script src="../../assets/js/core/app.js"></script>
 </body>
 </html>

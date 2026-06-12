@@ -1,15 +1,5 @@
-// Datos Generales del Estudiante (Gamificación Básica para evitar carga cognitiva)
-const studentStats = {
-    name: "Chris Carrasco",
-    avatar: "🚀",
-    target: "Meta: UNI",
-    career: "Ingeniería de Sistemas",
-    totalXp: "1,150 XP",
-    streakDays: "3 Días",
-    rankingPos: "#3 en Aula"
-};
+// assets/js/student/roadmap.js
 
-// Banco de datos local de Cursos con Trazabilidad al temario de Admisión
 const globalRutasData = [
     {
         id: "ALGEBRA",
@@ -80,50 +70,46 @@ const globalRutasData = [
 ];
 
 document.addEventListener("DOMContentLoaded", () => {
-    // 1. Renderizar el Banner del Perfil Express
     buildStudentProfileBanner();
-
-    // 2. Renderizar la cuadrícula de Cursos (Hub Principal)
     buildCourseSelectionGrid();
 
-    // 3. Control nuclear del preloader
     setTimeout(() => {
         const preloader = document.getElementById("app-preloader");
         if (preloader) preloader.classList.add("fade-out-loader");
     }, 350);
 });
 
-// NUEVO: Generar dinámicamente el perfil del alumno en la parte superior
 function buildStudentProfileBanner() {
     const bannerContainer = document.getElementById("student-profile-summary");
     if (!bannerContainer) return;
 
     bannerContainer.innerHTML = `
         <div class="profile-express-left">
-            <div class="profile-express-avatar">${studentStats.avatar}</div>
+            <div class="profile-express-avatar" data-user-avatar></div>
             <div class="profile-express-welcome">
-                <h3>¡Hola, ${studentStats.name}!</h3>
-                <p>${studentStats.target} • ${studentStats.career}</p>
+                <h3>¡Hola, <span data-user-firstname></span>!</h3>
+                <p><span data-user-target></span> • <span data-user-career></span></p>
             </div>
         </div>
         <div class="profile-express-stats">
             <div class="express-stat-item">
-                <span class="express-stat-val" style="color: var(--green);">${studentStats.totalXp}</span>
+                <span class="express-stat-val" style="color: var(--green);" data-user-xp></span>
                 <span class="express-stat-label">Progreso Total</span>
             </div>
             <div class="express-stat-item">
-                <span class="express-stat-val" style="color: var(--amber);">🔥 ${studentStats.streakDays}</span>
+                <span class="express-stat-val" style="color: var(--amber);">🔥 <span data-user-streak></span></span>
                 <span class="express-stat-label">Racha Activa</span>
             </div>
             <div class="express-stat-item">
-                <span class="express-stat-val" style="color: var(--indigo);">${studentStats.rankingPos}</span>
+                <span class="express-stat-val" style="color: var(--indigo);" data-user-ranking></span>
                 <span class="express-stat-label">Competencia</span>
             </div>
         </div>
     `;
+
+    if (window.UserBindingManager) UserBindingManager.bindAll();
 }
 
-// Renderizar dinámicamente las tarjetas de Cursos
 function buildCourseSelectionGrid() {
     const grid = document.getElementById("courses-grid");
     if (!grid) return;
@@ -160,7 +146,6 @@ function buildCourseSelectionGrid() {
     });
 }
 
-// Función SPA para abrir el mapa Candy Crush de un curso específico
 function openSpecificCourseMap(courseId) {
     const cursoSeleccionado = globalRutasData.find(c => c.id === courseId);
     if (!cursoSeleccionado) return;
