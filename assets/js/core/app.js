@@ -3,6 +3,10 @@ const SessionManager = {
         await Auth.initDB();
         Router.init();
         
+        if (window.UserBindingManager) {
+            UserBindingManager.bindAll();
+        }
+
         setInterval(() => {
             const path = window.location.pathname;
             if (!path.includes('/auth/') && !path.includes('/public/') && path !== '/' && !path.endsWith('index.html')) {
