@@ -1,0 +1,272 @@
+[
+  {
+    "id": "prob_alg_001",
+    "topicId": "topic_leyes_exp",
+    "difficulty": "basic",
+    "statement": "Reducir la expresión: (x^2 * x^3)^4",
+    "options": ["x^10", "x^20", "x^24", "x^18"],
+    "correctOption": 1,
+    "explanation": "x^2 * x^3 = x^5, luego (x^5)^4 = x^20"
+  },
+  {
+    "id": "prob_alg_002",
+    "topicId": "topic_leyes_exp",
+    "difficulty": "basic",
+    "statement": "Simplificar: a^3 * a^5",
+    "options": ["a^15", "a^8", "a^3", "a^2"],
+    "correctOption": 1,
+    "explanation": "Se suman exponentes: 3 + 5 = 8"
+  },
+
+  {
+    "id": "prob_alg_003",
+    "topicId": "topic_polinomios",
+    "difficulty": "basic",
+    "statement": "Suma: (2x + 3) + (x + 5)",
+    "options": ["3x + 8", "2x + 8", "3x + 5", "x + 8"],
+    "correctOption": 0,
+    "explanation": "Se suman términos semejantes: 2x + x = 3x y 3 + 5 = 8"
+  },
+
+  {
+    "id": "prob_alg_004",
+    "topicId": "topic_polinomios",
+    "difficulty": "basic",
+    "statement": "Grado del polinomio: 5x^3 + 2x^2 + 7",
+    "options": ["1", "2", "3", "5"],
+    "correctOption": 2,
+    "explanation": "El mayor exponente es 3"
+  },
+
+  {
+    "id": "prob_alg_005",
+    "topicId": "topic_prod_notables",
+    "difficulty": "medium",
+    "statement": "(x + 2)^2 es igual a:",
+    "options": ["x^2 + 4", "x^2 + 4x + 4", "x^2 + 2x + 4", "x^2 + 2"],
+    "correctOption": 1,
+    "explanation": "(a+b)^2 = a^2 + 2ab + b^2"
+  },
+
+  {
+    "id": "prob_alg_006",
+    "topicId": "topic_prod_notables",
+    "difficulty": "medium",
+    "statement": "(x + 3)(x - 3) es:",
+    "options": ["x^2 + 9", "x^2 - 9", "x^2 + 6x - 9", "x^2 - 6x + 9"],
+    "correctOption": 1,
+    "explanation": "Diferencia de cuadrados: a^2 - b^2"
+  },
+
+  {
+    "id": "prob_alg_007",
+    "topicId": "topic_div_polinomial",
+    "difficulty": "medium",
+    "statement": "Dividir: (x^2 - 9) / (x - 3)",
+    "options": ["x - 3", "x + 3", "x^2 + 3", "x - 9"],
+    "correctOption": 1,
+    "explanation": "Factorizando: (x-3)(x+3)/(x-3) = x+3"
+  },
+
+  {
+    "id": "prob_alg_008",
+    "topicId": "topic_div_polinomial",
+    "difficulty": "medium",
+    "statement": "Ruffini: (x^2 + 5x + 6) / (x + 2)",
+    "options": ["x + 3", "x + 2", "x + 4", "x + 1"],
+    "correctOption": 0,
+    "explanation": "x^2 + 5x + 6 = (x+2)(x+3)"
+  },
+
+  {
+    "id": "prob_alg_009",
+    "topicId": "topic_sistemas_ecuaciones",
+    "difficulty": "medium",
+    "statement": "x + y = 10, x - y = 2. Hallar x",
+    "options": ["4", "5", "6", "7"],
+    "correctOption": 2,
+    "explanation": "Sumando: 2x = 12 → x = 6"
+  },
+
+  {
+    "id": "prob_alg_010",
+    "topicId": "topic_inecuaciones",
+    "difficulty": "medium",
+    "statement": "Resuelve: 3x + 2 < 11",
+    "options": ["x < 2", "x < 3", "x < 4", "x < 5"],
+    "correctOption": 2,
+    "explanation": "3x < 9 → x < 3"
+  },
+
+  {
+    "id": "prob_geo_001",
+    "topicId": "topic_geometria_plana",
+    "difficulty": "basic",
+    "statement": "Área de un triángulo con base 8 y altura 5",
+    "options": ["20", "30", "40", "10"],
+    "correctOption": 0,
+    "explanation": "(8*5)/2 = 20"
+  },
+
+  {
+    "id": "prob_geo_002",
+    "topicId": "topic_geometria_espacial",
+    "difficulty": "medium",
+    "statement": "Volumen de un cubo de lado 3",
+    "options": ["9", "18", "27", "12"],
+    "correctOption": 2,
+    "explanation": "V = a^3 = 27"
+  },
+
+  {
+    "id": "prob_geo_003",
+    "topicId": "topic_trigonometria_basica",
+    "difficulty": "basic",
+    "statement": "cos(60°) es:",
+    "options": ["1/2", "√3/2", "0", "1"],
+    "correctOption": 0,
+    "explanation": "Valor trigonométrico básico"
+  },
+
+  {
+    "id": "prob_geo_004",
+    "topicId": "topic_trigonometria_avanzada",
+    "difficulty": "medium",
+    "statement": "sen^2(x) + cos^2(x) es igual a:",
+    "options": ["0", "1", "2", "sen(x)"],
+    "correctOption": 1,
+    "explanation": "Identidad pitagórica"
+  },
+
+  {
+    "id": "prob_fis_001",
+    "topicId": "topic_mru",
+    "difficulty": "basic",
+    "statement": "Un móvil recorre 120 m en 6 s. Velocidad:",
+    "options": ["10", "15", "20", "25"],
+    "correctOption": 2,
+    "explanation": "v = 120/6 = 20 m/s"
+  },
+
+  {
+    "id": "prob_fis_002",
+    "topicId": "topic_mruv",
+    "difficulty": "medium",
+    "statement": "v = 0, a = 3 m/s², t = 4 s. Velocidad final:",
+    "options": ["10", "12", "14", "16"],
+    "correctOption": 1,
+    "explanation": "v = at = 12 m/s"
+  },
+
+  {
+    "id": "prob_fis_003",
+    "topicId": "topic_caida_libre",
+    "difficulty": "medium",
+    "statement": "Caída libre en 2 s (g=10). Velocidad:",
+    "options": ["10", "15", "20", "25"],
+    "correctOption": 2,
+    "explanation": "v = 20 m/s"
+  },
+
+  {
+    "id": "prob_lect_001",
+    "topicId": "topic_idea_principal",
+    "difficulty": "basic",
+    "statement": "La idea principal de un texto informativo es:",
+    "options": [
+      "Un detalle secundario",
+      "El tema central",
+      "Una opinión",
+      "Un ejemplo"
+    ],
+    "correctOption": 1,
+    "explanation": "Resume el contenido del texto"
+  },
+
+  {
+    "id": "prob_lect_002",
+    "topicId": "topic_comprension_inferencial",
+    "difficulty": "medium",
+    "statement": "Si alguien dice 'no estudió y desaprobó', se infiere que:",
+    "options": [
+      "Aprobó",
+      "El estudio influye en el resultado",
+      "No hay relación",
+      "Fue suerte"
+    ],
+    "correctOption": 1,
+    "explanation": "Relación causal lógica"
+  },
+  {
+    "id": "prob_rm_001",
+    "topicId": "topic_rm_sucesiones",
+    "difficulty": "basic",
+    "statement": "¿Qué número sigue en la serie: 2, 6, 12, 20, 30...?",
+    "options": ["40", "42", "38", "44"],
+    "correctOption": 1,
+    "explanation": "La diferencia aumenta: +4, +6, +8, +10. Luego +12. 30+12 = 42."
+  },
+  {
+    "id": "prob_rm_002",
+    "topicId": "topic_rm_operadores",
+    "difficulty": "medium",
+    "statement": "Si a * b = a^2 - b, calcula 4 * 5.",
+    "options": ["9", "11", "21", "16"],
+    "correctOption": 1,
+    "explanation": "4^2 - 5 = 16 - 5 = 11."
+  },
+  {
+    "id": "prob_rm_003",
+    "topicId": "topic_rm_edades",
+    "difficulty": "medium",
+    "statement": "Hace 5 años tenía la mitad de la edad que tendré dentro de 5 años. ¿Qué edad tengo?",
+    "options": ["10", "15", "20", "25"],
+    "correctOption": 1,
+    "explanation": "x - 5 = (x + 5) / 2 => 2x - 10 = x + 5 => x = 15."
+  },
+  {
+    "id": "prob_rm_004",
+    "topicId": "topic_rm_fracciones",
+    "difficulty": "basic",
+    "statement": "¿Cuánto le falta a 2/5 para ser igual a 1?",
+    "options": ["1/5", "2/5", "3/5", "4/5"],
+    "correctOption": 2,
+    "explanation": "1 - 2/5 = 3/5."
+  },
+  {
+    "id": "prob_rv_001",
+    "topicId": "topic_rv_sinonimos",
+    "difficulty": "basic",
+    "statement": "Sinónimo de EFÍMERO:",
+    "options": ["Eterno", "Pasajero", "Real", "Falso"],
+    "correctOption": 1,
+    "explanation": "Efímero significa que dura poco tiempo."
+  },
+  {
+    "id": "prob_rv_002",
+    "topicId": "topic_rv_analogias",
+    "difficulty": "medium",
+    "statement": "HOJA es a ÁRBOL como:",
+    "options": ["Pétalo a Flor", "Raíz a Tallo", "Agua a Río", "Nube a Cielo"],
+    "correctOption": 0,
+    "explanation": "Relación parte-todo."
+  },
+  {
+    "id": "prob_rv_003",
+    "topicId": "topic_rv_oraciones",
+    "difficulty": "medium",
+    "statement": "El río estaba tan _____ que se podía ver el fondo.",
+    "options": ["profundo", "turbio", "cristalino", "caudaloso"],
+    "correctOption": 2,
+    "explanation": "Cristalino permite ver a través de él."
+  },
+  {
+    "id": "prob_rv_004",
+    "topicId": "topic_rv_eliminadas",
+    "difficulty": "medium",
+    "statement": "(I) El sol es una estrella. (II) Nos proporciona luz y calor. (III) La luna es un satélite. (IV) Sin el sol, no habría vida. ¿Qué oración se elimina por impertinencia?",
+    "options": ["I", "II", "III", "IV"],
+    "correctOption": 2,
+    "explanation": "La III habla de la luna, rompiendo el tema del sol."
+  }
+]
