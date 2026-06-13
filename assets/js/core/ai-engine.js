@@ -11,7 +11,6 @@
  */
 
 // ─── Configuración del Backend ──────────────────────────────────────
-// Cambia esta URL cuando despliegues el backend en Render u otro servicio.
 const BACKEND_URL = 'https://eduquest-backend-q4ql.onrender.com';
 
 const AIEngine = {
@@ -61,7 +60,7 @@ const AIEngine = {
     // ─── Punto de entrada ───────────────────────────────────────────
     async generatePersonalizedRoadmap(diagnosticResults) {
         try {
-            // 1. Cargar catálogo completo + pesos
+            // Cargar catálogo completo + pesos
             const [coursesRes, topicsRes, weightsRes] = await Promise.all([
                 fetch('../../mock/courses.json'),
                 fetch('../../mock/topics.json'),
@@ -71,32 +70,32 @@ const AIEngine = {
             const allTopics = await topicsRes.json();
             const allWeights = await weightsRes.json();
 
-            // 2. Obtener perfil del usuario
+            // Obtener perfil del usuario
             const session = Storage.getSession();
             const users = JSON.parse(localStorage.getItem('eduquest_db_users')) || [];
             const user = users.find(u => u.id === session.userId) || {};
             const targetUniv = user.target || 'UNI';
             const career = user.career || 'Ingeniería';
 
-            // 3. Obtener pesos para la universidad objetivo
+            // Obtener pesos para la universidad objetivo
             const univWeights = allWeights[targetUniv] || allWeights['UNI'] || {};
 
-            // 4. SELECCIÓN DETERMINÍSTICA: todos los cursos con peso > 0
+            // SELECCIÓN DETERMINÍSTICA: todos los cursos con peso > 0
             const relevantCourses = allCourses.filter(c => {
                 const weight = univWeights[c.id];
                 return weight !== undefined && weight > 0;
             });
 
-            // 5. Analizar diagnóstico
+            // Analizar diagnóstico
             const { strengths, weaknesses } = this._analyzeDiagnostic(
                 diagnosticResults, allTopics, allCourses
             );
 
-            // 6. Expandir debilidades con prerequisitos (Graph Traversal)
+            // Expandir debilidades con prerequisitos 
             const weakTopicIds = weaknesses.map(w => w.topicId);
             const requiredTopicIds = this._buildSubGraph(weakTopicIds, allTopics);
 
-            // 7. Construir el catálogo de cursos relevantes para el prompt
+            // Construir el catálogo de cursos relevantes para el prompt
             const courseCatalogText = relevantCourses.map(c => {
                 const weight = univWeights[c.id] || 0;
                 const cTopics = allTopics.filter(t => t.courseId === c.id);
