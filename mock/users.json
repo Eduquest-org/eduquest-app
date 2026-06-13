@@ -1,1 +1,50 @@
-{}
+{
+  "users": [
+    {
+      "id": "U_CHRIS",
+      "name": "Chris Carrasco",
+      "email": "chris@eduquest.pe",
+      "password": "123",
+      "role": "student",
+      "target": "UNI",
+      "career": "Ingeniería de Sistemas",
+      "totalXp": 1150,
+      "streakDays": 3,
+      "rankingPos": "#3 en Aula",
+      "avatar": "🚀"
+    },
+    {
+      "id": "U_HENRY",
+      "name": "Henry Mendoza",
+      "email": "mendoza@eduquest.pe",
+      "password": "UNI",
+      "role": "teacher",
+      "classrooms": ["C_01"],
+      "avatar": "👨‍🏫"
+    },
+    {
+      "id": "U_01",
+      "name": "Matias Del Castillo",
+      "role": "student",
+      "target": "UNI",
+      "career": "Ing. de Sistemas",
+      "avatar": "🎓"
+    },
+    {
+      "id": "U_02",
+      "name": "Vanessa Barrientos",
+      "role": "student",
+      "target": "UNI",
+      "career": "Ing. Industrial",
+      "avatar": "🧠"
+    },
+    {
+      "id": "U_03",
+      "name": "Vivianne Rios",
+      "role": "student",
+      "target": "UNI",
+      "career": "Ing. Mecatronica",
+      "avatar": "O"
+    }
+  ]
+}

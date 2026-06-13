@@ -1,1 +1,156 @@
-{}
+[
+  {
+    "id": "course_rv",
+    "name": "Razonamiento Verbal",
+    "icon": "🗣️",
+    "color": "#F39C12",
+    "category": "Habilidades"
+  },
+  {
+    "id": "course_lectora",
+    "name": "Comprensión de Lectura",
+    "icon": "📚",
+    "color": "#E24B4A",
+    "category": "Habilidades"
+  },
+  {
+    "id": "course_rm",
+    "name": "Razonamiento Matemático",
+    "icon": "🧠",
+    "color": "#4A90E2",
+    "category": "Habilidades"
+  },
+  {
+    "id": "course_aritmetica",
+    "name": "Aritmética",
+    "icon": "➗",
+    "color": "#3498DB",
+    "category": "Matemáticas"
+  },
+  {
+    "id": "course_algebra",
+    "name": "Álgebra",
+    "icon": "📐",
+    "color": "#1D9E75",
+    "category": "Matemáticas"
+  },
+  {
+    "id": "course_geometria",
+    "name": "Geometría",
+    "icon": "📏",
+    "color": "#7F77DD",
+    "category": "Matemáticas"
+  },
+  {
+    "id": "course_trigonometria",
+    "name": "Trigonometría",
+    "icon": "📊",
+    "color": "#8E44AD",
+    "category": "Matemáticas"
+  },
+  {
+    "id": "course_probabilidad",
+    "name": "Probabilidad",
+    "icon": "🎲",
+    "color": "#2980B9",
+    "category": "Matemáticas"
+  },
+  {
+    "id": "course_lenguaje",
+    "name": "Lenguaje",
+    "icon": "✍️",
+    "color": "#E74C3C",
+    "category": "Letras"
+  },
+  {
+    "id": "course_literatura",
+    "name": "Literatura",
+    "icon": "📖",
+    "color": "#C0392B",
+    "category": "Letras"
+  },
+  {
+    "id": "course_psicologia",
+    "name": "Psicología",
+    "icon": "🧩",
+    "color": "#9B59B6",
+    "category": "Letras"
+  },
+  {
+    "id": "course_civica",
+    "name": "Educación Cívica",
+    "icon": "⚖️",
+    "color": "#34495E",
+    "category": "Letras"
+  },
+  {
+    "id": "course_historia_peru",
+    "name": "Historia del Perú",
+    "icon": "🏛️",
+    "color": "#D35400",
+    "category": "Letras"
+  },
+  {
+    "id": "course_historia_universal",
+    "name": "Historia Universal",
+    "icon": "🌍",
+    "color": "#E67E22",
+    "category": "Letras"
+  },
+  {
+    "id": "course_geografia",
+    "name": "Geografía",
+    "icon": "🗺️",
+    "color": "#27AE60",
+    "category": "Letras"
+  },
+  {
+    "id": "course_economia",
+    "name": "Economía",
+    "icon": "💰",
+    "color": "#F1C40F",
+    "category": "Letras"
+  },
+  {
+    "id": "course_filosofia",
+    "name": "Filosofía",
+    "icon": "🤔",
+    "color": "#8E44AD",
+    "category": "Letras"
+  },
+  {
+    "id": "course_logica",
+    "name": "Lógica",
+    "icon": "♟️",
+    "color": "#2C3E50",
+    "category": "Letras"
+  },
+  {
+    "id": "course_ingles",
+    "name": "Inglés",
+    "icon": "🇬🇧",
+    "color": "#16A085",
+    "category": "Idiomas"
+  },
+  {
+    "id": "course_fisica",
+    "name": "Física",
+    "icon": "⚡",
+    "color": "#EF9F27",
+    "category": "Ciencias"
+  },
+  {
+    "id": "course_quimica",
+    "name": "Química",
+    "icon": "🧪",
+    "color": "#16A085",
+    "category": "Ciencias"
+  },
+  {
+    "id": "course_biologia",
+    "name": "Biología",
+    "icon": "🧬",
+    "color": "#27AE60",
+    "category": "Ciencias"
+  }
+]

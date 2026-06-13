@@ -4,13 +4,13 @@ const Auth = {
     async initDB() {
         if (!localStorage.getItem("eduquest_db_users")) {
             try {
-                const response = await fetch("../../mock/seed_data.json");
+                const response = await fetch("../../mock/users.json");
                 if (response.ok) {
                     const data = await response.json();
                     localStorage.setItem("eduquest_db_users", JSON.stringify(data.users));
                 }
             } catch (error) {
-                console.error("Error loading seed_data.json:", error);
+                console.error("Error loading users.json:", error);
             }
         }
     },
@@ -133,7 +133,7 @@ const Auth = {
         };
 
         if (currentRole === 'student') {
-            newUser.target = targetInput?.value || "Meta: UNI";
+            newUser.target = targetInput?.value || "UNI";
             newUser.career = careerInput?.value || "Ingeniería de Sistemas";
             newUser.totalXp = 0;
             newUser.streakDays = 1;
@@ -145,10 +145,29 @@ const Auth = {
         users.push(newUser);
         localStorage.setItem("eduquest_db_users", JSON.stringify(users));
 
+        // Auto login after registration
+        const issuedAt = Date.now();
+        const expiresAt = issuedAt + (60 * 60 * 1000); 
+
+        const session = {
+            accessToken: this.generateMockToken(),
+            userId: newUser.id,
+            role: newUser.role,
+            issuedAt: issuedAt,
+            expiresAt: expiresAt
+        };
+
+        Storage.saveSession(session);
+
         nameInput.value = ""; emailInput.value = ""; passInput.value = "";
         if (careerInput) careerInput.value = "";
 
-        navigateTo('s-login');
+        // Redirect to diagnostic exam (onboarding) if student, else to teacher dashboard
+        if (newUser.role === 'student') {
+            window.location.href = '../auth/onboarding.html';
+        } else {
+            window.location.href = '../teacher/dashboard.html';
+        }
     },
 
     selectRole(role) {

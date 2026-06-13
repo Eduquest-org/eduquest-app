@@ -1,0 +1,66 @@
+[
+  {
+    "id": "post_01",
+    "authorId": "U_CHRIS",
+    "tag": "Física",
+    "content": "Alguien me ayuda con este problema de vectores en 3D? No entiendo cómo aplicar el producto vectorial para hallar el ángulo entre dos direcciones. Me estoy perdiendo con el determinante.",
+    "upvotes": 24,
+    "createdAt": "2026-06-11T10:00:00Z"
+  },
+  {
+    "id": "post_02",
+    "authorId": "U_02",
+    "tag": "Comprensión Lectora",
+    "content": "Logré resolver el simulacro de hoy sin errores en las preguntas de inferencia. Me costaron los textos filosóficos, pero mejoré bastante en idea principal.",
+    "upvotes": 42,
+    "createdAt": "2026-06-11T08:00:00Z"
+  },
+  {
+    "id": "post_03",
+    "authorId": "U_07",
+    "tag": "Álgebra",
+    "content": "¿Alguien tiene un método rápido para factorizar trinomios cuando el coeficiente principal no es 1? Me toma mucho tiempo en examen.",
+    "upvotes": 18,
+    "createdAt": "2026-06-10T19:30:00Z"
+  },
+  {
+    "id": "post_04",
+    "authorId": "U_11",
+    "tag": "Física",
+    "content": "En MRUV siempre me confundo con cuándo usar Vf = Vi + at o las ecuaciones sin tiempo. ¿Algún truco para identificar rápido el tipo de problema?",
+    "upvotes": 31,
+    "createdAt": "2026-06-10T18:20:00Z"
+  },
+  {
+    "id": "post_05",
+    "authorId": "U_03",
+    "tag": "Geometría",
+    "content": "Estoy teniendo problemas con sólidos de revolución. No logro visualizar bien el volumen cuando rotan figuras alrededor del eje.",
+    "upvotes": 27,
+    "createdAt": "2026-06-10T16:45:00Z"
+  },
+  {
+    "id": "post_06",
+    "authorId": "U_09",
+    "tag": "Comprensión Lectora",
+    "content": "Hoy me fue bien en el simulacro, pero fallé en las preguntas de conectores lógicos. Siento que confundo contraste con causa.",
+    "upvotes": 35,
+    "createdAt": "2026-06-10T15:10:00Z"
+  },
+  {
+    "id": "post_07",
+    "authorId": "U_05",
+    "tag": "Álgebra",
+    "content": "¿Cómo resuelven sistemas 3x3 rápido en examen? El método de sustitución me demora demasiado.",
+    "upvotes": 22,
+    "createdAt": "2026-06-10T14:00:00Z"
+  },
+  {
+    "id": "post_08",
+    "authorId": "U_12",
+    "tag": "Física",
+    "content": "Caída libre siempre me confunde cuando el objeto no parte del reposo. ¿Cómo sé qué ecuación usar sin perder tiempo?",
+    "upvotes": 29,
+    "createdAt": "2026-06-10T12:30:00Z"
+  }
+]

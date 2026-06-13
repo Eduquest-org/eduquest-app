@@ -1,0 +1,62 @@
+[
+  {
+    "id": "chunk_001",
+    "topicId": "topic_rm_sucesiones",
+    "content": "Sucesiones y Series en RM: Identificar patrones numéricos y alfabéticos. Regla de formación aritmética y geométrica.",
+    "keywords": ["sucesiones", "series", "patrón", "razonamiento matemático"]
+  },
+  {
+    "id": "chunk_002",
+    "topicId": "topic_rm_operadores",
+    "content": "Operadores Matemáticos: Definición de nuevas reglas de operación utilizando símbolos arbitrarios. Reemplazo de variables.",
+    "keywords": ["operadores", "matemática", "reglas", "razonamiento matemático"]
+  },
+  {
+    "id": "chunk_003",
+    "topicId": "topic_rm_edades",
+    "content": "Problemas sobre Edades: Relación de tiempos (pasado, presente, futuro) entre sujetos. Uso de cuadros de doble entrada.",
+    "keywords": ["edades", "tiempo", "razonamiento matemático", "ecuaciones"]
+  },
+  {
+    "id": "chunk_004",
+    "topicId": "topic_rm_fracciones",
+    "content": "Planteo de Fracciones: Interpretación de partes de un todo. Relación parte-todo y problemas de reducción a la unidad.",
+    "keywords": ["fracciones", "parte", "todo", "razonamiento matemático"]
+  },
+  {
+    "id": "chunk_005",
+    "topicId": "topic_rv_sinonimos",
+    "content": "Sinónimos y Antónimos: Palabras con significado semejante u opuesto. Importancia de la categoría gramatical.",
+    "keywords": ["sinónimos", "antónimos", "vocabulario", "razonamiento verbal"]
+  },
+  {
+    "id": "chunk_006",
+    "topicId": "topic_rv_analogias",
+    "content": "Analogías Verbales: Relación de semejanza entre pares de palabras. Tipos: parte-todo, causa-efecto, sinonimia.",
+    "keywords": ["analogías", "relación", "semejanza", "razonamiento verbal"]
+  },
+  {
+    "id": "chunk_007",
+    "topicId": "topic_rv_oraciones",
+    "content": "Oraciones Incompletas: Completar el sentido lógico y gramatical de una oración. Criterios de coherencia y sintaxis.",
+    "keywords": ["oraciones", "incompletas", "coherencia", "razonamiento verbal"]
+  },
+  {
+    "id": "chunk_008",
+    "topicId": "topic_rv_eliminadas",
+    "content": "Oraciones Eliminadas: Identificar la oración redundante o impertinente en un párrafo. Criterios de exclusión.",
+    "keywords": ["oraciones", "eliminadas", "redundancia", "impertinencia", "razonamiento verbal"]
+  },
+  {
+    "id": "chunk_009",
+    "topicId": "topic_leyes_exp",
+    "content": "Leyes de Exponentes y Radicación: Propiedades de la potenciación. Producto de bases iguales, exponente negativo y fraccionario.",
+    "keywords": ["exponentes", "radicación", "potencia", "álgebra"]
+  },
+  {
+    "id": "chunk_010",
+    "topicId": "topic_geometria_plana",
+    "content": "Geometría Plana: Propiedades de triángulos, cuadriláteros y circunferencia. Teoremas fundamentales y cálculo de áreas.",
+    "keywords": ["geometría", "plana", "triángulos", "circunferencia"]
+  }
+]

@@ -3,16 +3,155 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EduQuest — Onboarding</title>
+    <title>EduQuest — Diagnóstico Inicial</title>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Inter:wght@400;500;600;700;900&family=Sora:wght@700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../../assets/css/global/reset.css">
     <link rel="stylesheet" href="../../assets/css/global/variables.css">
+    <style>
+        body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .diagnostic-card { background: #0b1911; border: 1px solid #1f3d28; border-radius: 16px; padding: 40px; width: 100%; max-width: 600px; box-shadow: 0 12px 40px rgba(0,0,0,0.5); }
+        h1 { font-family: 'Sora', sans-serif; font-size: 24px; margin-bottom: 12px; color: #fff; }
+        p { color: #a0b5aa; font-size: 15px; margin-bottom: 24px; line-height: 1.6; }
+        .btn { background: var(--green); color: #fff; border: none; padding: 14px 24px; border-radius: 8px; font-weight: 600; cursor: pointer; width: 100%; font-size: 16px; transition: background 0.2s; }
+        .btn:hover { background: #178a66; }
+        .btn:disabled { background: #1f3d28; color: #6b7f74; cursor: not-allowed; }
+        .api-key-input { width: 100%; padding: 12px 16px; border-radius: 8px; border: 1px solid #1f3d28; background: #060e0a; color: #fff; font-size: 14px; margin-bottom: 24px; outline: none; box-sizing: border-box; }
+        .api-key-input:focus { border-color: var(--green); }
+        
+        .quiz-container { display: none; }
+        .question-meta { display: flex; justify-content: space-between; font-size: 13px; color: var(--green); font-weight: 600; margin-bottom: 16px; }
+        .question-text { font-size: 18px; color: #fff; margin-bottom: 24px; font-weight: 500; }
+        .options-grid { display: grid; gap: 12px; margin-bottom: 32px; }
+        .option-btn { background: #0f2217; border: 1px solid #1f3d28; padding: 16px; border-radius: 8px; color: #c8d8cc; text-align: left; cursor: pointer; transition: all 0.2s; font-size: 15px; }
+        .option-btn:hover { background: #1a3624; border-color: var(--green); }
+        .option-btn.selected { background: rgba(29,158,117,0.15); border-color: var(--green); color: #fff; }
+
+        .loading-container { display: none; text-align: center; }
+        .spinner { border: 4px solid rgba(255,255,255,0.1); border-left-color: var(--green); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 24px auto; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
 </head>
 <body>
-    <h1>Onboarding Setup</h1>
-    
+    <div class="diagnostic-card" id="step-intro">
+        <h1>Examen Diagnóstico (RM y RV)</h1>
+        <p>Para generar tu ruta de aprendizaje personalizada mediante IA, necesitamos evaluar tu nivel base. Resolverás 8 preguntas rápidas de Razonamiento Matemático y Razonamiento Verbal.</p>
+        <button class="btn" id="btn-start" onclick="startDiagnostic()">Comenzar Diagnóstico</button>
+    </div>
+
+    <div class="diagnostic-card quiz-container" id="step-quiz">
+        <div class="question-meta">
+            <span id="q-category">Razonamiento Matemático</span>
+            <span id="q-progress">Pregunta 1 de 8</span>
+        </div>
+        <div class="question-text" id="q-text">Cargando pregunta...</div>
+        <div class="options-grid" id="q-options"></div>
+        <button class="btn" id="btn-next" onclick="nextQuestion()" disabled>Siguiente</button>
+    </div>
+
+    <div class="diagnostic-card loading-container" id="step-loading">
+        <div class="spinner"></div>
+        <h1>Analizando tus resultados</h1>
+        <p>El Tutor IA está procesando tus respuestas y generando una ruta de estudio personalizada con la técnica RAG...</p>
+    </div>
+
     <script src="../../assets/js/core/storage.js"></script>
     <script src="../../assets/js/core/auth.js"></script>
-    <script src="../../assets/js/core/router.js"></script>
-    <script src="../../assets/js/core/app.js"></script>
+    <script src="../../assets/js/core/ai-engine.js"></script>
+    <script>
+        Auth.requireAuth(); // Ensure only logged-in users are here
+
+        let problems = [];
+        let currentQuestionIndex = 0;
+        let selectedOptionIndex = null;
+        let diagnosticResults = []; // stores { topicId, isCorrect }
+
+        async function startDiagnostic() {
+            document.getElementById('step-intro').style.display = 'none';
+            document.getElementById('step-quiz').style.display = 'block';
+
+            try {
+                const res = await fetch('../../mock/problems.json');
+                const allProblems = await res.json();
+                
+                const rmProblems = allProblems.filter(p => p.id.startsWith('prob_rm_')).slice(0, 4);
+                const rvProblems = allProblems.filter(p => p.id.startsWith('prob_rv_')).slice(0, 4);
+                
+                problems = [...rmProblems, ...rvProblems];
+                renderQuestion();
+            } catch (err) {
+                console.error(err);
+                alert("Error cargando el banco de preguntas.");
+            }
+        }
+
+        function renderQuestion() {
+            if (currentQuestionIndex >= problems.length) {
+                finishDiagnostic();
+                return;
+            }
+
+            const p = problems[currentQuestionIndex];
+            selectedOptionIndex = null;
+            document.getElementById('btn-next').disabled = true;
+
+            document.getElementById('q-category').innerText = p.id.includes('_rm_') ? 'Razonamiento Matemático' : 'Razonamiento Verbal';
+            document.getElementById('q-progress').innerText = `Pregunta ${currentQuestionIndex + 1} de ${problems.length}`;
+            document.getElementById('q-text').innerText = p.statement;
+
+            const optsContainer = document.getElementById('q-options');
+            optsContainer.innerHTML = '';
+
+            p.options.forEach((opt, idx) => {
+                const btn = document.createElement('div');
+                btn.className = 'option-btn';
+                btn.innerText = opt;
+                btn.onclick = () => selectOption(btn, idx);
+                optsContainer.appendChild(btn);
+            });
+        }
+
+        function selectOption(element, idx) {
+            document.querySelectorAll('.option-btn').forEach(btn => btn.classList.remove('selected'));
+            element.classList.add('selected');
+            selectedOptionIndex = idx;
+            document.getElementById('btn-next').disabled = false;
+        }
+
+        function nextQuestion() {
+            const p = problems[currentQuestionIndex];
+            const isCorrect = (selectedOptionIndex === p.correctOption);
+            
+            diagnosticResults.push({
+                topicId: p.topicId,
+                isCorrect: isCorrect
+            });
+
+            currentQuestionIndex++;
+            renderQuestion();
+        }
+
+        async function finishDiagnostic() {
+            document.getElementById('step-quiz').style.display = 'none';
+            document.getElementById('step-loading').style.display = 'block';
+
+            // Guardar resultados en el localStorage del usuario
+            const session = Storage.getSession();
+            const users = JSON.parse(localStorage.getItem('eduquest_db_users')) || [];
+            const userIndex = users.findIndex(u => u.id === session.userId);
+            
+            if (userIndex !== -1) {
+                users[userIndex].diagnosticResults = diagnosticResults;
+                localStorage.setItem('eduquest_db_users', JSON.stringify(users));
+            }
+
+            // Llamar al AI Engine
+            if (window.AIEngine) {
+                await AIEngine.generatePersonalizedRoadmap(diagnosticResults);
+                window.location.href = '../student/roadmap.html';
+            } else {
+                console.error("AI Engine no está cargado.");
+            }
+        }
+    </script>
 </body>
 </html>
