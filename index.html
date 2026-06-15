@@ -25,22 +25,10 @@
     <div id="wf-page">
 
       <!-- ── NAV ── -->
-      <nav class="wf-nav wf-section">
-        <div class="nav-logo" onclick="window.scrollTo({top:0, behavior:'smooth'})">
-          <div class="nav-logo-icon">EQ</div>
-          <span>EduQuest</span>
-        </div>
-        <div class="nav-links">
-          <span class="nav-link" data-target=".hiw-sec">Metodología</span>
-          <span class="nav-link" data-target=".comm-sec">Comunidad</span>
-          <span class="nav-link" data-target=".pricing-sec">Planes</span>
-          <span class="nav-link" data-target=".teacher-sec">Docentes</span>
-        </div>
-        <div class="nav-actions">
-          <a href="../pages/auth/login.html" class="nav-link">Iniciar sesión</a>
-          <div class="nav-cta">Acceso Alumnos</div>
-        </div>
-      </nav>
+      <div
+        id="navbar-container"
+        data-path="./components/navbar.html">
+      </div>
 
       <!-- ── HERO A: Centrado ── -->
       <section id="hero-a" class="hero-a wf-section reveal">
@@ -48,7 +36,7 @@
         <h1 class="h1 mt12" style="max-width:840px;">Ingresa a la universidad<br>con una ruta diseñada<br><em>solo para ti</em></h1>
         <p class="body mt24" style="max-width:580px;">Olvídate de estudiar sin dirección. EduQuest crea tu camino personalizado, desde el diagnóstico inicial hasta el día del examen.</p>
         <div style="margin-top:40px;display:flex;flex-direction:column;align-items:center;gap:12px;">
-          <div class="btn btn-primary">Iniciar Diagnóstico Gratis</div>
+          <a href="./pages/auth/register.html" class="btn btn-primary">Iniciar Diagnóstico Gratis</a>
           <span class="small" style="letter-spacing:1px;text-transform:uppercase;">Sin tarjeta de crédito · Diagnóstico en 5 minutos</span>
         </div>
       </section>
@@ -60,7 +48,7 @@
           <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f7/Uni-logo_transparente_granate.png/960px-Uni-logo_transparente_granate.png" alt="UNI" class="trust-logo">
           <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/UNMSM_coatofarms_seal.svg/250px-UNMSM_coatofarms_seal.svg.png" alt="San Marcos" class="trust-logo">
           <img src="https://cide.pucp.edu.pe/wp-content/uploads/2021/07/cropped-favicon-512px.png" alt="PUCP" class="trust-logo">
-          <img src="https://vri.unsa.edu.pe/ogcv/wp-content/themes/observatorio/img/unsa-logo.png" alt="UNSA" class="trust-logo">
+          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQtZnLvUmFrrcqPCvIpNQ2cR-aPDvxP-TjYwipD4u6nCg&s=10" alt="UNSA" class="trust-logo">
           <img src="https://images.seeklogo.com/logo-png/31/1/universidad-nacional-federico-villareal-logo-png_seeklogo-316890.png" alt="Villarreal" class="trust-logo">
         </div>
       </div>
@@ -68,20 +56,31 @@
       <!-- ── PAIN POINTS ── -->
       <section class="pain-sec wf-section">
         <div class="pain-grid">
-          <div class="pain-card reveal" style="transition-delay: 0ms;">
-            <div class="pain-icon"></div>
+          <div class="pain-card reveal pain-material" style="transition-delay: 0ms;">
+            <div class="pain-icon-real">📚</div>
             <div class="h3 mt8">¿Perdido en el material?</div>
-            <p class="body mt12" style="font-size:15px;">Deja de perder tiempo en contenido que no te sirve. EduQuest filtra exactamente lo que necesitas dominar.</p>
+            <p class="body mt12" style="font-size:15px;">
+              EduQuest organiza tus temas por prioridad y te muestra qué estudiar primero según tu meta universitaria.
+            </p>
+            <span class="pain-tag">Ruta clara</span>
           </div>
-          <div class="pain-card reveal" style="transition-delay: 150ms;">
-            <div class="pain-icon"></div>
+
+          <div class="pain-card reveal pain-route" style="transition-delay: 150ms;">
+            <div class="pain-icon-real">🧭</div>
             <div class="h3 mt8">¿Sin una ruta clara?</div>
-            <p class="body mt12" style="font-size:15px;">Cada estudiante es diferente. Obtén un plan dinámico que se adapta a tus fortalezas y corrige tus debilidades.</p>
+            <p class="body mt12" style="font-size:15px;">
+              Recibe un plan dinámico que se adapta a tus fortalezas, errores frecuentes y ritmo de avance semanal.
+            </p>
+            <span class="pain-tag">Plan personalizado</span>
           </div>
-          <div class="pain-card reveal" style="transition-delay: 300ms;">
-            <div class="pain-icon"></div>
+
+          <div class="pain-card reveal pain-progress" style="transition-delay: 300ms;">
+            <div class="pain-icon-real">📊</div>
             <div class="h3 mt8">¿Difícil hacer seguimiento?</div>
-            <p class="body mt12" style="font-size:15px;">Analytics de aciertos y errores te dan una visión clara de tu avance y cuándo estarás listo para el gran día.</p>
+            <p class="body mt12" style="font-size:15px;">
+              Visualiza tus aciertos, errores, racha y XP para saber exactamente cuándo estás listo para el examen.
+            </p>
+            <span class="pain-tag">Progreso medible</span>
           </div>
         </div>
       </section>
@@ -96,58 +95,114 @@
         <div class="feats-grid">
 
           <!-- Feature 1 -->
-          <div class="feat-card reveal" style="border-color:var(--amber); transition-delay: 100ms;">
+          <div class="feat-card reveal feat-gamified" style="transition-delay: 100ms;">
             <div class="feat-top">
-              <div class="feat-icon"></div>
+              <div class="feat-icon-real">🎮</div>
+              <span class="feat-badge">Gamificación</span>
             </div>
+
             <div class="h3">Aprendizaje Gamificado</div>
-            <p class="body" style="font-size:15px;">Retos, mini juegos y actividades interactivas para reforzar conocimientos jugando. Puntos, medallas y rankings diarios para mantenerte motivado.</p>
-            <div style="display:flex;flex-direction:column;gap:8px;">
-              <div class="ph-box" style="height:48px;font-size:13px;justify-content:flex-start;padding:0 14px;">🎮 mini-juego activo: "Ruleta de preguntas"</div>
-              <div style="display:flex;gap:8px;">
-                <div class="ph-box" style="flex:1;height:40px;font-size:12px;">🏅 x2 racha</div>
-                <div class="ph-box" style="flex:1;height:40px;font-size:12px;">⚡ 340 pts hoy</div>
+            <p class="body" style="font-size:15px;">
+              Retos, mini juegos y actividades interactivas para reforzar conocimientos jugando.
+            </p>
+
+            <div class="feature-preview-box">
+              <div class="mission-preview-row">
+                <span>⚡ Misión diaria</span>
+                <strong>+120 XP</strong>
+              </div>
+
+              <div class="mini-progress">
+                <div class="mini-progress-fill" style="width: 75%;"></div>
+              </div>
+
+              <div class="feature-tags">
+                <span>🔥 7 días</span>
+                <span>🏆 Top 10</span>
               </div>
             </div>
           </div>
 
           <!-- Feature 2 -->
-          <div class="feat-card reveal" style="border-color:var(--green); transition-delay: 200ms;">
+          <div class="feat-card reveal feat-route" style="transition-delay: 200ms;">
             <div class="feat-top">
-              <div class="feat-icon"></div>
+              <div class="feat-icon-real">🗺️</div>
+              <span class="feat-badge green">Ruta IA</span>
             </div>
+
             <div class="h3">Ruta Personalizada</div>
-            <p class="body" style="font-size:15px;">Evaluación inicial del estado del estudiante para crear la ruta adecuada a su ritmo y meta universitaria. Se adapta semana a semana.</p>
-            <div style="background:#f0fdf8;border:2px solid #a8dfc8;border-radius:10px;padding:16px;">
-              <div class="ph-line full"></div>
-              <div class="ph-line med mt8"></div>
-              <div style="height:8px;background:#ddd;border-radius:4px;margin-top:14px;">
-                <div style="height:8px;background:var(--green);border-radius:4px;width:68%; transition: width 1.5s ease-in-out;"></div>
+            <p class="body" style="font-size:15px;">
+              EduQuest adapta tu ruta semana a semana según tus errores, avance y universidad objetivo.
+            </p>
+
+            <div class="feature-preview-box">
+              <div class="route-preview-header">
+                <span>Álgebra UNI</span>
+                <strong>68%</strong>
               </div>
-              <div style="font-family:'Caveat',cursive;font-size:13px;color:#888;margin-top:5px;">Avance de ruta: 68% — 3 sem. restantes</div>
+
+              <div class="mini-progress">
+                <div class="mini-progress-fill green" style="width: 68%;"></div>
+              </div>
+
+              <div class="route-steps-preview">
+                <span class="step-done">✓ Exponentes</span>
+                <span class="step-active">● Productos notables</span>
+                <span class="step-locked">🔒 Ruffini</span>
+              </div>
             </div>
           </div>
 
           <!-- Feature 3 -->
-          <div class="feat-card reveal" style="border-color:var(--indigo); transition-delay: 100ms;">
+          <div class="feat-card reveal feat-teacher" style="transition-delay: 100ms;">
             <div class="feat-top">
-              <div class="feat-icon"></div>
+              <div class="feat-icon-real">👩‍🏫</div>
+              <span class="feat-badge indigo">Docentes</span>
             </div>
+
             <div class="h3">Panel del Docente</div>
-            <p class="body" style="font-size:15px;">Los docentes visualizan el desempeño de sus alumnos en tiempo real para intervenir oportunamente con reportes y alertas automáticas.</p>
-            <div class="ph-img" style="height:110px;font-size:14px;">tabla alumnos + alertas de bajo rendimiento</div>
+            <p class="body" style="font-size:15px;">
+              Los docentes visualizan el desempeño de sus alumnos y reciben alertas de bajo rendimiento.
+            </p>
+
+            <div class="feature-preview-box">
+              <div class="mini-teacher-row">
+                <span>Chris C.</span>
+                <strong class="ok">84%</strong>
+              </div>
+              <div class="mini-teacher-row">
+                <span>Vivianne R.</span>
+                <strong class="warn">Reforzar</strong>
+              </div>
+              <div class="mini-teacher-row">
+                <span>Matias D.</span>
+                <strong class="ok">Estable</strong>
+              </div>
+            </div>
           </div>
 
           <!-- Feature 4 -->
-          <div class="feat-card reveal" style="transition-delay: 200ms;">
+          <div class="feat-card reveal feat-community" style="transition-delay: 200ms;">
             <div class="feat-top">
-              <div class="feat-icon"></div>
+              <div class="feat-icon-real">👥</div>
+              <span class="feat-badge amber">Comunidad</span>
             </div>
+
             <div class="h3">Comunidad de Aprendizaje</div>
-            <p class="body" style="font-size:15px;">Foro abierto para compartir dudas académicas, material de estudio y recibir retroalimentación entre compañeros de admisión.</p>
-            <div style="display:flex;flex-direction:column;gap:8px;">
-              <div class="ph-box" style="height:38px;font-size:13px;justify-content:flex-start;padding:0 12px;">💬 ¿Cómo resolver vectores en UNI?  · 12 respuestas</div>
-              <div class="ph-box" style="height:38px;font-size:13px;justify-content:flex-start;padding:0 12px;">📎 Resumen de preuniversitario San Marcos 2025</div>
+            <p class="body" style="font-size:15px;">
+              Comparte dudas, material y logros con otros postulantes que avanzan hacia metas similares.
+            </p>
+
+            <div class="feature-preview-box">
+              <div class="mini-community-post">
+                <strong>Física</strong>
+                <span>¿Alguien me ayuda con vectores 3D?</span>
+              </div>
+
+              <div class="mini-community-post">
+                <strong>Álgebra</strong>
+                <span>Tip rápido para matrices y determinantes.</span>
+              </div>
             </div>
           </div>
 
@@ -195,19 +250,50 @@
                 <span style="margin-left:auto;font-family:'Caveat',cursive;font-size:13px;color:#444;font-weight:400;">actualiza en tiempo real</span>
               </div>
               <div class="rank-rows">
-                <div class="rank-row"><span class="rank-n g">1</span><div class="rank-av"></div><span class="rank-nm">@maria_s</span><span class="rank-pts">2,840 pts</span></div>
-                <div class="rank-row"><span class="rank-n s">2</span><div class="rank-av"></div><span class="rank-nm">@carlos_r</span><span class="rank-pts">2,610 pts</span></div>
-                <div class="rank-row"><span class="rank-n b">3</span><div class="rank-av"></div><span class="rank-nm">@jose_m</span><span class="rank-pts">2,440 pts</span></div>
-                <div class="rank-row"><span class="rank-n">4</span><div class="rank-av"></div><span class="rank-nm">@ana_l</span><span class="rank-pts">2,300 pts</span></div>
-                <div class="rank-row"><span class="rank-n">5</span><div class="rank-av"></div><span class="rank-nm">@diego_p</span><span class="rank-pts">2,190 pts</span></div>
-                <div class="rank-dots">· · ·</div>
-                <div class="rank-row me" id="rank-me-row" style="transition: opacity 0.3s;">
-                  <span class="rank-n" style="color:var(--green);">7</span>
-                  <div class="rank-av" style="background:var(--green);"></div>
-                  <span class="rank-nm me">@tú</span>
-                  <span class="me-pill">tú</span>
-                  <span class="rank-pts">1,840 pts</span>
-                </div>
+                <div class="rank-row top-1">
+                <span class="rank-n g">1</span>
+                <div class="rank-av">🎓</div>
+                <span class="rank-nm">Matias D.</span>
+                <span class="rank-pts">2,840 XP</span>
+              </div>
+
+              <div class="rank-row top-2">
+                <span class="rank-n s">2</span>
+                <div class="rank-av">🧠</div>
+                <span class="rank-nm">Vanessa B.</span>
+                <span class="rank-pts">2,610 XP</span>
+              </div>
+
+              <div class="rank-row top-3">
+                <span class="rank-n b">3</span>
+                <div class="rank-av">⚡</div>
+                <span class="rank-nm">Chris C.</span>
+                <span class="rank-pts">2,440 XP</span>
+              </div>
+
+              <div class="rank-row">
+                <span class="rank-n">4</span>
+                <div class="rank-av">🎨</div>
+                <span class="rank-nm">Vivianne R.</span>
+                <span class="rank-pts">2,300 XP</span>
+              </div>
+
+              <div class="rank-row">
+                <span class="rank-n">5</span>
+                <div class="rank-av">🤖</div>
+                <span class="rank-nm">Alexander K.</span>
+                <span class="rank-pts">2,190 XP</span>
+              </div>
+
+              <div class="rank-dots">· · ·</div>
+
+              <div class="rank-row me" id="rank-me-row" style="transition: opacity 0.3s;">
+                <span class="rank-n" style="color:var(--green);">7</span>
+                <div class="rank-av">🚀</div>
+                <span class="rank-nm me">Tú</span>
+                <span class="me-pill">tú</span>
+                <span class="rank-pts">1,840 XP</span>
+              </div>
               </div>
             </div>
           </div>
@@ -252,9 +338,60 @@
               <div class="teacher-item"><div class="teacher-dot"></div>Reportes semanales descargables</div>
               <div class="teacher-item"><div class="teacher-dot"></div>Gráficas de errores por tema</div>
             </div>
-            <div class="btn btn-primary mt32" style="display:inline-block;background:var(--indigo);">Acceso para Docentes</div>
+            <a href="./pages/auth/register.html" class="btn btn-primary mt32" style="display:inline-block;background:var(--indigo);">Acceso para Docentes</a>
           </div>
-          <div class="ph-img reveal" style="height:380px; transition-delay: 200ms;">dashboard docente — tabla de alumnos + gráfica de avance por materia</div>
+          <div class="teacher-preview-card reveal" style="transition-delay: 200ms;">
+            <div class="teacher-preview-header">
+              <div>
+                <span class="teacher-preview-label">Panel docente</span>
+                <h3>Aula 3246 - UNI</h3>
+              </div>
+              <span class="teacher-status-badge">En vivo</span>
+            </div>
+
+            <div class="teacher-stats-grid">
+              <div class="teacher-stat-box">
+                <span class="teacher-stat-value">84%</span>
+                <span class="teacher-stat-label">Aciertos hoy</span>
+              </div>
+
+              <div class="teacher-stat-box">
+                <span class="teacher-stat-value">12</span>
+                <span class="teacher-stat-label">Simulacros</span>
+              </div>
+
+              <div class="teacher-stat-box">
+                <span class="teacher-stat-value">#3</span>
+                <span class="teacher-stat-label">Ranking aula</span>
+              </div>
+            </div>
+
+            <div class="teacher-table-preview">
+              <div class="teacher-table-row teacher-table-head">
+                <span>Alumno</span>
+                <span>Curso crítico</span>
+                <span>Estado</span>
+              </div>
+
+              <div class="teacher-table-row">
+                <span>Chris Carrasco</span>
+                <span>Álgebra</span>
+                <span class="status-good">Avanzando</span>
+              </div>
+
+              <div class="teacher-table-row">
+                <span>Vivianne Ríos</span>
+                <span>Comprensión</span>
+                <span class="status-warning">Reforzar</span>
+              </div>
+
+              <div class="teacher-table-row">
+                <span>Matias Del Castillo</span>
+                <span>Física</span>
+                <span class="status-good">Estable</span>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -263,39 +400,13 @@
         <div class="tc reveal">
           <span class="eyebrow">Comunidad</span>
           <div class="h2 mt8">Aprende en comunidad</div>
-          <p class="body mt16" style="max-width:520px;margin-left:auto;margin-right:auto;">Foro abierto para compartir dudas, material de estudio y recibir retroalimentación entre estudiantes que apuntan a las mismas universidades.</p>
+          <p class="body mt16" style="max-width:520px;margin-left:auto;margin-right:auto;">
+            Comparte dudas, logros y materiales con otros postulantes que tienen metas parecidas a la tuya.
+          </p>
         </div>
-        <div class="comm-grid">
-          <div class="thread-card reveal" style="transition-delay: 100ms;">
-            <div class="thread-user">
-              <div class="thread-av"></div>
-              <div><div class="thread-name">@pedro_v</div><div class="thread-time">hace 15 min · 8 respuestas</div></div>
-            </div>
-            <div class="ph-line full"></div><div class="ph-line med mt8"></div>
-            <div style="display:flex;gap:8px;margin-top:12px;">
-              <span class="thread-tag">Álgebra</span><span class="thread-tag">UNI</span>
-            </div>
-          </div>
-          <div class="thread-card reveal" style="transition-delay: 200ms;">
-            <div class="thread-user">
-              <div class="thread-av"></div>
-              <div><div class="thread-name">@lucia_m</div><div class="thread-time">hace 1h · 5 respuestas</div></div>
-            </div>
-            <div class="ph-line full"></div><div class="ph-line short mt8"></div>
-            <div style="display:flex;gap:8px;margin-top:12px;">
-              <span class="thread-tag">Química</span><span class="thread-tag">San Marcos</span>
-            </div>
-          </div>
-          <div class="thread-card reveal" style="transition-delay: 300ms;">
-            <div class="thread-user">
-              <div class="thread-av"></div>
-              <div><div class="thread-name">@ana_torres</div><div class="thread-time">hace 3h · 21 respuestas</div></div>
-            </div>
-            <div class="ph-line full"></div><div class="ph-line med mt8"></div>
-            <div style="display:flex;gap:8px;margin-top:12px;">
-              <span class="thread-tag">Física</span><span class="thread-tag">PUCP</span>
-            </div>
-          </div>
+
+        <div class="comm-grid" id="landing-community-posts">
+          <!-- Posts reales desde forum-posts.json -->
         </div>
       </section>
 
@@ -319,7 +430,7 @@
               <div class="price-feat" style="color:#bbb;">✗ Rankings competitivos</div>
               <div class="price-feat" style="color:#bbb;">✗ Tutor virtual 1:1</div>
             </div>
-            <div class="btn btn-outline" style="display:block;text-align:center;">Seleccionar gratis</div>
+            <a href="./pages/auth/register.html" class="btn btn-outline" style="display:block;text-align:center;">Seleccionar gratis</a>
           </div>
           <div class="price-card featured reveal" style="transition-delay: 200ms;">
             <div style="display:flex;justify-content:space-between;align-items:flex-start;">
@@ -338,7 +449,7 @@
               <div class="price-feat feat-light">✓ Rankings competitivos</div>
               <div class="price-feat feat-light">✓ Círculos de estudio</div>
             </div>
-            <div class="btn btn-green" style="display:block;text-align:center;">Iniciar 7 días gratis</div>
+            <a href="./pages/auth/register.html" class="btn btn-green" style="display:block;text-align:center;">Iniciar 7 días gratis</a>
           </div>
         </div>
       </section>
@@ -347,7 +458,7 @@
       <section class="cta-banner wf-section reveal">
         <div class="h2" style="color:#fff;">¿Listo para ingresar a tu<br>universidad ideal?</div>
         <p style="color:rgba(255,255,255,0.8);font-size:18px;margin-top:16px;">Empieza hoy con tu diagnóstico gratuito. Sin tarjeta, sin compromisos.</p>
-        <div class="btn btn-white mt32" style="display:inline-block;">Iniciar Diagnóstico Gratis</div>
+        <a href="./pages/auth/register.html" class="btn btn-white mt32" style="display:inline-block;">Iniciar Diagnóstico Gratis</a>
       </section>
 
       <!-- ── FOOTER ── -->
@@ -367,11 +478,11 @@
         </div>
         <div>
           <div class="foot-col-h">Plataforma</div>
-          <div class="foot-link">Ruta de aprendizaje</div>
-          <div class="foot-link">Mock Exams</div>
-          <div class="foot-link">Analytics</div>
-          <div class="foot-link">Comunidad</div>
-          <div class="foot-link">Rankings</div>
+          <div class="foot-link" data-target=".feats-sec">Ruta de aprendizaje</div>
+          <div class="foot-link" data-target="#comp-sec">Mock Exams</div>
+          <div class="foot-link" data-target=".feats-sec">Analytics</div>
+          <div class="foot-link" data-target=".comm-sec">Comunidad</div>
+          <div class="foot-link" data-target="#comp-sec">Rankings</div>
         </div>
         <div>
           <div class="foot-col-h">Instituciones</div>
@@ -392,76 +503,8 @@
     </div><!-- /wf-page -->
   </div><!-- /wf-wrap -->
 
-
-  <script>
-    // 2. Navegación fluida (Smooth Scroll)
-    document.querySelectorAll('.nav-link[data-target]').forEach(link => {
-      link.addEventListener('click', (e) => {
-        const targetClass = e.target.getAttribute('data-target');
-        const targetSection = document.querySelector(targetClass);
-        if(targetSection) {
-          const topPosition = targetSection.offsetTop;
-          window.scrollTo({ top: topPosition - 70, behavior: 'smooth' });
-        }
-      });
-    });
-
-    // 3. Interacciones: "Cómo Funciona"
-    const steps = document.querySelectorAll('.hiw-step');
-    steps.forEach((step) => {
-      step.addEventListener('click', () => {
-        document.querySelectorAll('.step-circle').forEach(c => c.classList.remove('active'));
-        step.querySelector('.step-circle').classList.add('active');
-      });
-    });
-
-    // 4. Interacciones: Toggle de "Modo Competitivo"
-    const toggleRow = document.getElementById('comp-toggle');
-    const togglePill = document.getElementById('comp-pill');
-    const statusText = document.getElementById('comp-status');
-    const meRow = document.getElementById('rank-me-row');
-    const liveDot = document.getElementById('live-dot-indicator');
-    let compActive = true;
-
-    toggleRow.addEventListener('click', () => {
-      compActive = !compActive;
-      if(compActive) {
-        togglePill.classList.remove('inactive');
-        statusText.textContent = 'Activo — registrando actividad de hoy';
-        meRow.style.opacity = '1';
-        liveDot.style.animation = 'blink 1.8s ease-in-out infinite';
-      } else {
-        togglePill.classList.add('inactive');
-        statusText.textContent = 'Inactivo — modo fantasma activado';
-        meRow.style.opacity = '0.3';
-        liveDot.style.animation = 'none';
-        liveDot.style.opacity = '0.2';
-      }
-    });
-
-    // 5. Animación de revelado al hacer scroll (Intersection Observer)
-    document.addEventListener("DOMContentLoaded", function() {
-      const observerOptions = {
-        root: null,
-        rootMargin: '0px',
-        threshold: 0.15
-      };
-
-      const observer = new IntersectionObserver((entries, observer) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('visible');
-            observer.unobserve(entry.target); // Solo animar una vez
-          }
-        });
-      }, observerOptions);
-
-      document.querySelectorAll('.reveal').forEach(el => {
-        observer.observe(el);
-      });
-    });
-  </script>
   <script src="./assets/js/utils/component-loader.js"></script>
+  <script src="./assets/js/pages/landing.js"></script>
   
 </body>
 </html>
