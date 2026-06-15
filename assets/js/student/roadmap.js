@@ -123,8 +123,97 @@ function buildStudentProfileBanner() {
     `;
 }
 
-// Renderizar dinámicamente las tarjetas de Cursos
-function buildCourseSelectionGrid() {
+async function fetchDynamicRoadmap() {
+    const session = Storage.getSession();
+
+    // Obtener temas completados del usuario para calcular progreso
+    let completedTopics = [];
+    if (session && window.UserManager) {
+        const user = UserManager.getUserById(session.userId);
+        if (user && user.learningProgress) {
+            completedTopics = user.learningProgress.completedTopics || [];
+        }
+    }
+
+    // Si existe una ruta IA personalizada, mostrar SOLO esa ruta
+    if (session && window.UserManager) {
+        const aiRoutes = UserManager.getCustomRoadmap(session.userId);
+        if (aiRoutes.length > 0) {
+            // Recalcular progreso basado en completedTopics
+            return aiRoutes.map(route => {
+                const completedLevels = route.levels.filter(lvl => completedTopics.includes(lvl.id)).length;
+                const totalLevels = route.levels.length;
+                const progressPct = totalLevels > 0 ? Math.round((completedLevels / totalLevels) * 100) : 0;
+
+                return {
+                    ...route,
+                    completedLevels,
+                    progressPct,
+                    xpEarned: completedLevels * 50,
+                    levels: route.levels.map((lvl, idx) => {
+                        if (completedTopics.includes(lvl.id)) {
+                            return { ...lvl, status: 'completed' };
+                        }
+                        // El primer nivel no-completado se desbloquea
+                        const allPreviousCompleted = route.levels.slice(0, idx).every(
+                            prev => completedTopics.includes(prev.id)
+                        );
+                        if (idx === 0 || allPreviousCompleted) {
+                            return { ...lvl, status: 'unlocked' };
+                        }
+                        return { ...lvl, status: 'locked' };
+                    })
+                };
+            });
+        }
+    }
+
+    // Fallback: si no hay ruta IA (usuario sin diagnóstico), mostrar catálogo genérico
+    const [coursesRes, topicsRes] = await Promise.all([
+        fetch("../../mock/courses.json"),
+        fetch("../../mock/topics.json")
+    ]);
+    const courses = await coursesRes.json();
+    const topics = await topicsRes.json();
+
+    let userTarget = "UNI";
+    if (window.CurrentUserService) {
+        userTarget = CurrentUserService.getStat('target') || "UNI";
+    }
+
+    return courses.map(course => {
+        const courseTopics = topics.filter(t => t.courseId === course.id);
+        const completedLevels = courseTopics.filter(t => completedTopics.includes(t.id)).length;
+        const total = courseTopics.length;
+        const progressPct = total > 0 ? Math.round((completedLevels / total) * 100) : 0;
+
+        return {
+            id: course.id,
+            name: course.name,
+            icon: course.icon,
+            color: course.color,
+            meta: `Meta: ${userTarget}`,
+            progressPct: progressPct,
+            completedLevels: completedLevels,
+            totalLevels: total,
+            xpEarned: completedLevels * 50,
+            levels: courseTopics.map((t, idx) => {
+                if (completedTopics.includes(t.id)) {
+                    return { id: t.id, title: t.name, status: 'completed' };
+                }
+                const allPreviousCompleted = courseTopics.slice(0, idx).every(
+                    prev => completedTopics.includes(prev.id)
+                );
+                if (idx === 0 || allPreviousCompleted) {
+                    return { id: t.id, title: t.name, status: 'unlocked' };
+                }
+                return { id: t.id, title: t.name, status: 'locked' };
+            })
+        };
+    });
+}
+
+async function buildCourseSelectionGrid() {
     const grid = document.getElementById("courses-grid");
     if (!grid) return;
     grid.innerHTML = "";

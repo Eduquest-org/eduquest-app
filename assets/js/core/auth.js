@@ -1,214 +1,293 @@
-// 🔥 SEMILLERO AUTOMÁTICO: Colócalo en la línea 1 de tu auth.js
-(async function initDatabaseFromJSON() {
+let currentRole = "student";
+
+const Auth = {
+  async initDB() {
     if (!localStorage.getItem("eduquest_db_users")) {
-        try {
-            // Como login.html está en /pages/auth/, sube dos niveles para buscar la raíz
-            const response = await fetch("../../mock/seed_data.json");
-            if (!response.ok) throw new Error();
-            const data = await response.json();
-            localStorage.setItem("eduquest_db_users", JSON.stringify(data.users));
-            console.log("🌱 Base de datos local sembrada con éxito desde el JSON.");
-        } catch (error) {
-            console.error("Error cargando seed_data.json en LocalStorage:", error);
+      try {
+        const response = await fetch("../../mock/users.json");
+
+        if (response.ok) {
+          const data = await response.json();
+          localStorage.setItem(
+            "eduquest_db_users",
+            JSON.stringify(data.users)
+          );
         }
+      } catch (error) {
+        console.error("Error loading users.json:", error);
+      }
     }
-})();
 
-
-// ==========================================================================
-// core/auth.js
-// MOTOR DE AUTENTICACIÓN SAAS Y CONTROLADOR SPA (EDUQUEST)
-// ==========================================================================
-
-let currentRole = 'student'; // Rol por defecto en el registro
-
-// 🔥 SEMILLERO AUTOMÁTICO DESDE TU ARCHIVO JSON (API Rest Simulada)
-(async function initDatabaseFromJSON() {
-    if (!localStorage.getItem("eduquest_db_users")) {
-        try {
-            // Al estar en pages/auth/login.html, subimos dos niveles para leer la raíz
-            const response = await fetch("../../mock/seed_data.json");
-            if (!response.ok) throw new Error("No se pudo leer el archivo de semillas JSON.");
-            
-            const data = await response.json();
-            localStorage.setItem("eduquest_db_users", JSON.stringify(data.users));
-            console.log("🌱 Base de datos de EduQuest inicializada con éxito desde JSON.");
-        } catch (error) {
-            console.error("Error cargando el semillero JSON:", error);
-        }
+    if (window.UserManager) {
+      UserManager.migrateUsersToNewSchema();
     }
-})();
+  },
 
-/**
- * 🔥 FUNCIÓN CRÍTICA RESTAURADA: Intercambia las vistas de la SPA sin recargar
- */
-function navigateTo(screenId) {
-    // 1. Ocultar todas las pantallas quitando la clase activa
-    document.querySelectorAll('.screen').forEach(s => {
-        s.classList.remove('active');
-    });
-    
-    // 2. Encender la pantalla que el usuario solicitó
-    const targetScreen = document.getElementById(screenId);
-    if (targetScreen) {
-        targetScreen.classList.add('active');
-    } else {
-        console.error(`La pantalla con ID "${screenId}" no existe en tu login.html`);
-    }
-    
-    // Scroll suave hacia arriba para mejorar el IHC (Experiencia de Usuario)
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-}
+  generateMockToken() {
+    return (
+      "eq_tok_" +
+      Math.random().toString(36).substr(2, 9) +
+      Date.now().toString(36)
+    );
+  },
 
-/**
- * Selecciona el rol en la pantalla de Registro (Estudiante / Docente)
- */
-function selectRole(role) {
-    currentRole = role; //
-    document.getElementById('card-student')?.classList.remove('active'); //
-    document.getElementById('card-teacher')?.classList.remove('active'); //
-    
-    if (role === 'student') {
-        document.getElementById('card-student')?.classList.add('active'); //
-        // Mostrar campos condicionales de alumno si los tienes maquetados
-        const extraFields = document.getElementById("student-conditional-fields");
-        if (extraFields) extraFields.style.display = 'block';
-    } else {
-        document.getElementById('card-teacher')?.classList.add('active'); //
-        // Ocultar campos condicionales si es profesor
-        const extraFields = document.getElementById("student-conditional-fields");
-        if (extraFields) extraFields.style.display = 'none';
-    }
-}
+  login() {
+    const user = document
+      .getElementById("login-user")
+      .value.trim()
+      .toLowerCase();
 
-/**
- * LÓGICA DE INICIO DE SESIÓN COMPATIBLE CON TUS INPUTS
- */
-// Lógica de Login modificada para buscar en la base de datos local
-function login() {
-  const user = document.getElementById('login-user').value.trim().toLowerCase(); // Conserva tu ID original
-  const pass = document.getElementById('login-pass').value.trim(); // Conserva tu ID original
-  const errDiv = document.getElementById('login-error'); // Conserva tu ID original
+    const pass = document
+      .getElementById("login-pass")
+      .value.trim();
 
-  // Traer los usuarios guardados
-  const users = JSON.parse(localStorage.getItem("eduquest_db_users")) || [];
-  
-  // Buscar coincidencia exacta por correo electrónico
-  const matchedUser = users.find(u => u.email === user && u.password === pass);
+    const errDiv = document.getElementById("login-error");
 
-  if (matchedUser) {
-    if (errDiv) errDiv.style.display = 'none'; //
-    
-    // GUARDAR SESIÓN: Recordamos de forma global quién acaba de entrar
-    localStorage.setItem("eduquest_current_session", JSON.stringify(matchedUser));
+    const users = UserManager.getAllUsers();
 
-    // Redirección física inteligente por roles para separar los entornos
-    if (matchedUser.role === 'student') {
-        window.location.href = '../student/dashboard.html'; //
-    } else if (matchedUser.role === 'teacher') {
-        window.location.href = '../teacher/dashboard.html';
-    }
-  } else {
-    // Si falla, activamos tu banner de error original
-    if (errDiv) {
-        errDiv.style.display = 'block'; //
+    const matchedUser = users.find(
+      u => u.email === user && u.password === pass
+    );
+
+    if (!matchedUser) {
+      if (errDiv) {
+        errDiv.style.display = "block";
         errDiv.innerText = "❌ Correo o contraseña incorrectos.";
+      }
+
+      return;
     }
-  }
-}
 
+    if (errDiv) errDiv.style.display = "none";
 
+    const issuedAt = Date.now();
+    const expiresAt = issuedAt + 60 * 60 * 1000;
 
-/**
- * LÓGICA DE REGISTRO SPA CON PERSISTENCIA REAL
- */
-// Lógica de Registro con persistencia en LocalStorage
-function register() {
-  // Capturar los campos interactivos de tu formulario
-  const nameInput = document.getElementById('reg-name');
-  const emailInput = document.getElementById('reg-email');
-  const passInput = document.getElementById('reg-password');
-  const targetInput = document.getElementById('reg-target'); // Selector opcional
-  const careerInput = document.getElementById('reg-career'); // Entrada opcional
+    const session = {
+      accessToken: this.generateMockToken(),
+      userId: matchedUser.id,
+      role: matchedUser.role,
+      issuedAt,
+      expiresAt
+    };
 
-  if (!nameInput || !emailInput || !passInput) {
-    alert("Error de maquetación: Asegúrate de ponerle los ids 'reg-name', 'reg-email' y 'reg-password' a tus inputs de registro.");
-    return;
-  }
+    Storage.saveSession(session);
 
-  const name = nameInput.value.trim();
-  const email = emailInput.value.trim().toLowerCase();
-  const pass = passInput.value.trim();
+    window.location.href =
+      matchedUser.role === "student"
+        ? "../student/dashboard.html"
+        : "../teacher/dashboard.html";
+  },
 
-  if (!name || !email || !pass) {
-    alert("⚠️ Por favor completa los campos obligatorios.");
-    return;
-  }
+  register() {
+    const nameInput = document.getElementById("reg-name");
+    const lastNameInput = document.getElementById("reg-lastname");
+    const emailInput = document.getElementById("reg-email");
+    const passInput = document.getElementById("reg-password");
+    const confirmPassInput = document.getElementById("reg-confirm-password");
+    const birthdateInput = document.getElementById("reg-birthdate");
+    const gradYearInput = document.getElementById("reg-grad-year");
 
-  const users = JSON.parse(localStorage.getItem("eduquest_db_users")) || [];
+    if (!nameInput || !emailInput || !passInput) {
+      alert("Error: faltan campos obligatorios en el formulario.");
+      return;
+    }
 
-  // Evitar duplicar cuentas con el mismo correo
-  if (users.some(u => u.email === email)) {
-    alert("⚠️ Este correo electrónico ya está registrado.");
-    return;
-  }
+    const name = nameInput.value.trim();
+    const lastname = lastNameInput?.value.trim() || "";
+    const fullName = `${name} ${lastname}`.trim();
 
-  // Estructurar el nuevo perfil respetando la variable 'currentRole' de tu código
-  const newUser = {
-    id: "U_" + Math.random().toString(36).substr(2, 9).toUpperCase(),
-    name: name,
-    email: email,
-    password: pass,
-    role: currentRole, // Usa tu variable nativa de selección
-    avatar: currentRole === 'student' ? "🚀" : "👨‍🏫"
-  };
+    const email = emailInput.value.trim().toLowerCase();
+    const pass = passInput.value.trim();
+    const confirmPass = confirmPassInput?.value.trim() || "";
 
-  // Cargar estadísticas iniciales si es un alumno
-  if (currentRole === 'student') {
-    newUser.target = targetInput?.value || "Meta: UNI";
-    newUser.career = careerInput?.value || "Ingeniería de Sistemas";
-    newUser.totalXp = 0;
-    newUser.streakDays = 1;
-    newUser.rankingPos = "Nuevo Alumno";
-  } else {
-    newUser.classrooms = ["Aula Pro - Sin Asignar"];
-  }
+    const birthdate = birthdateInput?.value || "";
+    const gradYear = gradYearInput?.value || "";
 
-  // Guardar en la colección local
-  users.push(newUser);
-  localStorage.setItem("eduquest_db_users", JSON.stringify(users));
+    if (!name || !email || !pass) {
+      alert("⚠️ Por favor completa nombre, correo y contraseña.");
+      return;
+    }
 
-  alert("🎉 ¡Cuenta creada con éxito!");
-  
-  // Limpiar inputs
-  nameInput.value = ""; emailInput.value = ""; passInput.value = "";
-  if (careerInput) careerInput.value = "";
+    if (confirmPassInput && pass !== confirmPass) {
+      alert("⚠️ Las contraseñas no coinciden.");
+      return;
+    }
 
-  // Volver al login usando tu propia función nativa de SPA
-  navigateTo('s-login'); //
-}
+    const users = UserManager.getAllUsers();
 
+    if (users.some(u => u.email === email)) {
+      alert("⚠️ Este correo electrónico ya está registrado.");
+      return;
+    }
 
-/**
- * CIERRE DE SESIÓN GLOBAL
- */
-function logout() {
-    localStorage.removeItem("eduquest_current_session");
-    window.location.href = '../auth/login.html';
-}
+    const newUser = {
+      id:
+        "U_" +
+        Math.random()
+          .toString(36)
+          .substr(2, 9)
+          .toUpperCase(),
 
-/**
- * Función visual para seleccionar opciones (Heredada y mejorada de tu diseño)
- */
-function selectOption(element) { //
-    if (!element) return;
-    const parent = element.parentElement;
-    parent.querySelectorAll('.option-btn, .quiz-option, .qopt').forEach(opt => opt.classList.remove('selected', 'sel')); //
-    
-    // Soporta tanto tus clases .sel de los simulacros como las tradicionales .selected
-    if (element.classList.contains('qopt')) {
-        element.classList.add('sel'); //
+      name: fullName,
+      email,
+      password: pass,
+      role: currentRole,
+
+      profile: {
+        avatar: currentRole === "student" ? "🚀" : "👨‍🏫"
+      }
+    };
+
+    if (currentRole === "student") {
+      newUser.profile.birthdate = birthdate || null;
+      newUser.profile.gradYear = gradYear || null;
+      newUser.profile.target = null;
+      newUser.profile.career = null;
+
+      newUser.stats = {
+        totalXp: 0,
+        streakDays: 1,
+        rankingPos: "Nuevo Alumno"
+      };
+
+      newUser.learningProgress = {
+        lastAccessedCourse: null,
+        lastAccessedTopic: null,
+        completedTopics: [],
+        diagnosticResults: [],
+        hardestCourse: null,
+        customRoadmap: []
+      };
     } else {
-        element.classList.add('selected');
+      newUser.classrooms = ["Aula Pro - Sin Asignar"];
     }
+
+    users.push(newUser);
+    UserManager.saveAllUsers(users);
+
+    const issuedAt = Date.now();
+    const expiresAt = issuedAt + 60 * 60 * 1000;
+
+    const session = {
+      accessToken: this.generateMockToken(),
+      userId: newUser.id,
+      role: newUser.role,
+      issuedAt,
+      expiresAt
+    };
+
+    Storage.saveSession(session);
+
+    alert("🎉 ¡Cuenta creada con éxito!");
+
+    window.location.href =
+      newUser.role === "student"
+        ? "../student/dashboard.html"
+        : "../teacher/dashboard.html";
+  },
+
+  logout() {
+    Storage.removeSession();
+    window.location.href = "../auth/login.html";
+  },
+
+  checkSession(redirectOnFail = true) {
+    const session = Storage.getSession();
+
+    if (!session) {
+      if (redirectOnFail) this.logout();
+      return false;
+    }
+
+    if (Date.now() > session.expiresAt) {
+      if (redirectOnFail) this.logout();
+      return false;
+    }
+
+    return true;
+  },
+
+  getCurrentUser() {
+    return Storage.getSession();
+  },
+
+  hasRole(role) {
+    const session = this.getCurrentUser();
+    return session && session.role === role;
+  },
+
+  requireAuth() {
+    if (!this.checkSession(false)) {
+      this.logout();
+    }
+  },
+
+  requireRole(role) {
+    if (!this.hasRole(role)) {
+      const session = this.getCurrentUser();
+
+      if (session) {
+        window.location.href =
+          session.role === "student"
+            ? "../student/dashboard.html"
+            : "../teacher/dashboard.html";
+      } else {
+        this.logout();
+      }
+    }
+  },
+
+  selectRole(role) {
+    currentRole = role;
+
+    document.getElementById("card-student")?.classList.remove("active");
+    document.getElementById("card-teacher")?.classList.remove("active");
+
+    const extraFields = document.getElementById("student-conditional-fields");
+
+    if (role === "student") {
+      document.getElementById("card-student")?.classList.add("active");
+      if (extraFields) extraFields.style.display = "block";
+    } else {
+      document.getElementById("card-teacher")?.classList.add("active");
+      if (extraFields) extraFields.style.display = "none";
+    }
+  }
+};
+
+function login() {
+  Auth.login();
 }
+
+function register() {
+  Auth.register();
+}
+
+function logout() {
+  Auth.logout();
+}
+
+function selectRole(role) {
+  Auth.selectRole(role);
+}
+
+function selectOption(element) {
+  if (!element) return;
+
+  const parent = element.parentElement;
+
+  parent
+    .querySelectorAll(".option-btn, .quiz-option, .qopt")
+    .forEach(opt => opt.classList.remove("selected", "sel"));
+
+  if (element.classList.contains("qopt")) {
+    element.classList.add("sel");
+  } else {
+    element.classList.add("selected");
+  }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  Auth.initDB();
+});
