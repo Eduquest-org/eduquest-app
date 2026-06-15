@@ -44,18 +44,45 @@ function buildStudentProfileBanner() {
 async function fetchDynamicRoadmap() {
     const session = Storage.getSession();
 
+    // Obtener temas completados del usuario para calcular progreso
+    let completedTopics = [];
+    if (session && window.UserManager) {
+        const user = UserManager.getUserById(session.userId);
+        if (user && user.learningProgress) {
+            completedTopics = user.learningProgress.completedTopics || [];
+        }
+    }
+
     // Si existe una ruta IA personalizada, mostrar SOLO esa ruta
-    if (session) {
-        const aiRoadmapJson = localStorage.getItem(`eduquest_roadmap_${session.userId}`);
-        if (aiRoadmapJson) {
-            try {
-                const aiRoutes = JSON.parse(aiRoadmapJson);
-                if (aiRoutes.length > 0) {
-                    return aiRoutes;
-                }
-            } catch(e) {
-                console.error("Error parsing AI roadmap", e);
-            }
+    if (session && window.UserManager) {
+        const aiRoutes = UserManager.getCustomRoadmap(session.userId);
+        if (aiRoutes.length > 0) {
+            // Recalcular progreso basado en completedTopics
+            return aiRoutes.map(route => {
+                const completedLevels = route.levels.filter(lvl => completedTopics.includes(lvl.id)).length;
+                const totalLevels = route.levels.length;
+                const progressPct = totalLevels > 0 ? Math.round((completedLevels / totalLevels) * 100) : 0;
+
+                return {
+                    ...route,
+                    completedLevels,
+                    progressPct,
+                    xpEarned: completedLevels * 50,
+                    levels: route.levels.map((lvl, idx) => {
+                        if (completedTopics.includes(lvl.id)) {
+                            return { ...lvl, status: 'completed' };
+                        }
+                        // El primer nivel no-completado se desbloquea
+                        const allPreviousCompleted = route.levels.slice(0, idx).every(
+                            prev => completedTopics.includes(prev.id)
+                        );
+                        if (idx === 0 || allPreviousCompleted) {
+                            return { ...lvl, status: 'unlocked' };
+                        }
+                        return { ...lvl, status: 'locked' };
+                    })
+                };
+            });
         }
     }
 
@@ -74,8 +101,9 @@ async function fetchDynamicRoadmap() {
 
     return courses.map(course => {
         const courseTopics = topics.filter(t => t.courseId === course.id);
-        const completed = 0;
+        const completedLevels = courseTopics.filter(t => completedTopics.includes(t.id)).length;
         const total = courseTopics.length;
+        const progressPct = total > 0 ? Math.round((completedLevels / total) * 100) : 0;
 
         return {
             id: course.id,
@@ -83,15 +111,22 @@ async function fetchDynamicRoadmap() {
             icon: course.icon,
             color: course.color,
             meta: `Meta: ${userTarget}`,
-            progressPct: 0,
-            completedLevels: completed,
+            progressPct: progressPct,
+            completedLevels: completedLevels,
             totalLevels: total,
-            xpEarned: 0,
-            levels: courseTopics.map((t, idx) => ({
-                id: t.id,
-                title: t.name,
-                status: idx === 0 ? 'unlocked' : 'locked'
-            }))
+            xpEarned: completedLevels * 50,
+            levels: courseTopics.map((t, idx) => {
+                if (completedTopics.includes(t.id)) {
+                    return { id: t.id, title: t.name, status: 'completed' };
+                }
+                const allPreviousCompleted = courseTopics.slice(0, idx).every(
+                    prev => completedTopics.includes(prev.id)
+                );
+                if (idx === 0 || allPreviousCompleted) {
+                    return { id: t.id, title: t.name, status: 'unlocked' };
+                }
+                return { id: t.id, title: t.name, status: 'locked' };
+            })
         };
     });
 }

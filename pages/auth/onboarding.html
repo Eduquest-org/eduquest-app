@@ -1,157 +1,967 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EduQuest — Diagnóstico Inicial</title>
-    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Inter:wght@400;500;600;700;900&family=Sora:wght@700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../../assets/css/global/reset.css">
-    <link rel="stylesheet" href="../../assets/css/global/variables.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
     <style>
-        body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
-        .diagnostic-card { background: #0b1911; border: 1px solid #1f3d28; border-radius: 16px; padding: 40px; width: 100%; max-width: 600px; box-shadow: 0 12px 40px rgba(0,0,0,0.5); }
-        h1 { font-family: 'Sora', sans-serif; font-size: 24px; margin-bottom: 12px; color: #fff; }
-        p { color: #a0b5aa; font-size: 15px; margin-bottom: 24px; line-height: 1.6; }
-        .btn { background: var(--green); color: #fff; border: none; padding: 14px 24px; border-radius: 8px; font-weight: 600; cursor: pointer; width: 100%; font-size: 16px; transition: background 0.2s; }
-        .btn:hover { background: #178a66; }
-        .btn:disabled { background: #1f3d28; color: #6b7f74; cursor: not-allowed; }
-        .api-key-input { width: 100%; padding: 12px 16px; border-radius: 8px; border: 1px solid #1f3d28; background: #060e0a; color: #fff; font-size: 14px; margin-bottom: 24px; outline: none; box-sizing: border-box; }
-        .api-key-input:focus { border-color: var(--green); }
-        
-        .quiz-container { display: none; }
-        .question-meta { display: flex; justify-content: space-between; font-size: 13px; color: var(--green); font-weight: 600; margin-bottom: 16px; }
-        .question-text { font-size: 18px; color: #fff; margin-bottom: 24px; font-weight: 500; }
-        .options-grid { display: grid; gap: 12px; margin-bottom: 32px; }
-        .option-btn { background: #0f2217; border: 1px solid #1f3d28; padding: 16px; border-radius: 8px; color: #c8d8cc; text-align: left; cursor: pointer; transition: all 0.2s; font-size: 15px; }
-        .option-btn:hover { background: #1a3624; border-color: var(--green); }
-        .option-btn.selected { background: rgba(29,158,117,0.15); border-color: var(--green); color: #fff; }
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-        .loading-container { display: none; text-align: center; }
-        .spinner { border: 4px solid rgba(255,255,255,0.1); border-left-color: var(--green); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 24px auto; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        :root {
+            --g: #1D9E75;
+            --gd: #0F6E56;
+            --gl: rgba(29, 158, 117, 0.08);
+            --gl2: rgba(29, 158, 117, 0.15);
+            --bg: #f4f7f5;
+            --bg2: #ffffff;
+            --bg3: #f9fbf9;
+            --bg4: #f0f4f2;
+            --br: #e2e8e4;
+            --br2: #c5d4cd;
+            --tx: #111827;
+            --tx2: #4b5563;
+            --tx3: #6b7280;
+        }
+
+        html,
+        body {
+            min-height: 100vh;
+            margin: 0;
+            background: var(--bg2);
+            font-family: 'Inter', system-ui, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* ── Shell ── */
+        .shell {
+            background: var(--bg2);
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* ── Top progress bar ── */
+        .prog-bar-top {
+            height: 3px;
+            background: var(--br);
+            flex-shrink: 0;
+        }
+
+        .prog-bar-top-fill {
+            height: 100%;
+            background: var(--g);
+            transition: width 0.5s cubic-bezier(.4, 0, .2, 1);
+            width: 0%;
+        }
+
+        /* ── Top bar ── */
+        .top-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 32px 40px 0;
+            flex-shrink: 0;
+            max-width: 900px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+        }
+
+        .logo-mark {
+            width: 32px;
+            height: 32px;
+            background: var(--g);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 800;
+            color: #fff;
+            letter-spacing: -0.5px;
+        }
+
+        .logo-name {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--tx);
+            letter-spacing: -0.3px;
+        }
+
+        .step-pills {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .sp {
+            height: 5px;
+            border-radius: 3px;
+            background: var(--br);
+            transition: background 0.3s, width 0.3s;
+            width: 28px;
+        }
+
+        .sp.done {
+            background: var(--g);
+        }
+
+        .sp.active {
+            background: var(--g);
+            width: 42px;
+        }
+
+        /* ── Screens ── */
+        .screen {
+            display: none;
+            flex: 1;
+            flex-direction: column;
+            padding: 40px 40px 40px;
+            animation: fadeUp 0.3s ease;
+            max-width: 900px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .screen.on {
+            display: flex;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ── Typography ── */
+        .step-label {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--g);
+            margin-bottom: 10px;
+        }
+
+        .q-title {
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--tx);
+            letter-spacing: -0.5px;
+            margin-bottom: 10px;
+            line-height: 1.25;
+        }
+
+        .q-sub {
+            font-size: 15px;
+            color: var(--tx2);
+            line-height: 1.65;
+            margin-bottom: 32px;
+        }
+
+        /* ── University tiles ── */
+        .uni-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .uni-tile {
+            background: var(--bg3);
+            border: 2px solid var(--br);
+            border-radius: 14px;
+            padding: 22px 14px 18px;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.15s, background 0.15s, transform 0.1s;
+            user-select: none;
+        }
+
+        .uni-tile:hover {
+            border-color: var(--br2);
+            background: var(--bg4);
+        }
+
+        .uni-tile.sel {
+            border-color: var(--g);
+            background: var(--gl);
+        }
+
+        .uni-tile:active {
+            transform: scale(0.97);
+        }
+
+        .uni-ico {
+            font-size: 34px;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .uni-code {
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--tx);
+            display: block;
+            margin-bottom: 3px;
+        }
+
+        .uni-full {
+            font-size: 11px;
+            color: var(--tx3);
+            display: block;
+        }
+
+        .uni-check {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 1.5px solid var(--br2);
+            margin: 12px auto 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            color: transparent;
+            transition: background 0.15s, border-color 0.15s, color 0.15s;
+        }
+
+        .uni-tile.sel .uni-check {
+            background: var(--g);
+            border-color: var(--g);
+            color: #fff;
+        }
+
+        /* ── Chips ── */
+        .chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 9px;
+            margin-bottom: 24px;
+        }
+
+        .chip {
+            padding: 9px 17px;
+            background: var(--bg3);
+            border: 1.5px solid var(--br);
+            border-radius: 30px;
+            font-size: 14px;
+            color: var(--tx2);
+            font-weight: 500;
+            cursor: pointer;
+            transition: border-color 0.15s, background 0.15s, color 0.15s, transform 0.1s;
+            user-select: none;
+        }
+
+        .chip:hover {
+            border-color: var(--br2);
+            color: var(--tx);
+        }
+
+        .chip.sel {
+            border-color: var(--g);
+            background: var(--gl);
+            color: var(--tx);
+            font-weight: 600;
+        }
+
+        .chip:active {
+            transform: scale(0.96);
+        }
+
+        /* ── Intro cards ── */
+        .intro-cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 26px;
+        }
+
+        .icard {
+            background: var(--bg3);
+            border: 1px solid var(--br);
+            border-radius: 12px;
+            padding: 18px 14px;
+            text-align: center;
+        }
+
+        .icard-val {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--g);
+            margin-bottom: 4px;
+        }
+
+        .icard-lab {
+            font-size: 12px;
+            color: var(--tx3);
+            font-weight: 500;
+        }
+
+        /* ── Nav row ── */
+        .nav-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: auto;
+            padding-top: 32px;
+        }
+
+        .arrow-group {
+            display: flex;
+            gap: 8px;
+        }
+
+        .arr {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 1.5px solid var(--br);
+            background: var(--bg3);
+            color: var(--tx2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 17px;
+            user-select: none;
+            transition: border-color 0.15s, color 0.15s, background 0.15s;
+        }
+
+        .arr:hover:not([disabled]) {
+            border-color: var(--g);
+            color: var(--g);
+            background: var(--gl);
+        }
+
+        .arr[disabled] {
+            opacity: 0.28;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .btn-main {
+            background: var(--g);
+            color: #fff;
+            border: none;
+            padding: 12px 26px;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 700;
+            font-family: 'Inter', system-ui, sans-serif;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            transition: background 0.15s, transform 0.1s;
+        }
+
+        .btn-main:hover {
+            background: var(--gd);
+        }
+
+        .btn-main:active {
+            transform: scale(0.97);
+        }
+
+        .btn-main:disabled {
+            background: #e5e7eb;
+            color: #9ca3af;
+            cursor: not-allowed;
+        }
+
+        /* ── Quiz ── */
+        .quiz-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .quiz-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            background: var(--gl2);
+            border: 1px solid rgba(29, 158, 117, 0.3);
+            border-radius: 20px;
+            padding: 5px 13px;
+            font-size: 12px;
+            font-weight: 700;
+            color: #4ecb9e;
+            letter-spacing: 0.02em;
+        }
+
+        .quiz-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--g);
+            flex-shrink: 0;
+        }
+
+        .quiz-prog {
+            font-size: 13px;
+            color: var(--tx3);
+            font-weight: 600;
+        }
+
+        .quiz-q {
+            font-size: 18px;
+            color: var(--tx);
+            font-weight: 700;
+            line-height: 1.55;
+            margin-bottom: 22px;
+            letter-spacing: -0.2px;
+        }
+
+        .opts {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 4px;
+        }
+
+        .opt {
+            background: var(--bg3);
+            border: 1.5px solid var(--br);
+            border-radius: 11px;
+            padding: 14px 18px;
+            color: var(--tx2);
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            user-select: none;
+            transition: border-color 0.15s, background 0.15s, color 0.15s, transform 0.1s;
+        }
+
+        .opt:hover {
+            border-color: var(--br2);
+            color: var(--tx);
+            background: var(--bg4);
+        }
+
+        .opt.sel {
+            border-color: var(--g);
+            background: var(--gl);
+            color: var(--tx);
+        }
+
+        .opt:active {
+            transform: scale(0.99);
+        }
+
+        .opt-letter {
+            min-width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: 1.5px solid var(--br2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 800;
+            color: var(--tx3);
+            flex-shrink: 0;
+            transition: background 0.15s, border-color 0.15s, color 0.15s;
+        }
+
+        .opt.sel .opt-letter {
+            background: var(--g);
+            border-color: var(--g);
+            color: #fff;
+        }
+
+        .quiz-progbar {
+            height: 3px;
+            background: var(--br);
+            border-radius: 2px;
+            margin: 18px 0 0;
+        }
+
+        .quiz-progbar-fill {
+            height: 100%;
+            background: var(--g);
+            border-radius: 2px;
+            transition: width 0.4s cubic-bezier(.4, 0, .2, 1);
+        }
+
+        /* ── Loading ── */
+        .load-wrap {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .spinner {
+            width: 46px;
+            height: 46px;
+            border: 3px solid var(--br);
+            border-top-color: var(--g);
+            border-radius: 50%;
+            animation: spin 0.85s linear infinite;
+            margin-bottom: 24px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .load-title {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--tx);
+            margin-bottom: 8px;
+        }
+
+        .load-sub {
+            font-size: 14px;
+            color: var(--tx2);
+            line-height: 1.65;
+            max-width: 320px;
+        }
     </style>
 </head>
+
 <body>
-    <div class="diagnostic-card" id="step-intro">
-        <h1>Examen Diagnóstico (RM y RV)</h1>
-        <p>Para generar tu ruta de aprendizaje personalizada mediante IA, necesitamos evaluar tu nivel base. Resolverás 8 preguntas rápidas de Razonamiento Matemático y Razonamiento Verbal.</p>
-        <button class="btn" id="btn-start" onclick="startDiagnostic()">Comenzar Diagnóstico</button>
-    </div>
 
-    <div class="diagnostic-card quiz-container" id="step-quiz">
-        <div class="question-meta">
-            <span id="q-category">Razonamiento Matemático</span>
-            <span id="q-progress">Pregunta 1 de 8</span>
+    <div class="shell">
+        <div class="prog-bar-top">
+            <div class="prog-bar-top-fill" id="topbar"></div>
         </div>
-        <div class="question-text" id="q-text">Cargando pregunta...</div>
-        <div class="options-grid" id="q-options"></div>
-        <button class="btn" id="btn-next" onclick="nextQuestion()" disabled>Siguiente</button>
-    </div>
 
-    <div class="diagnostic-card loading-container" id="step-loading">
-        <div class="spinner"></div>
-        <h1>Analizando tus resultados</h1>
-        <p>El Tutor IA está procesando tus respuestas y generando una ruta de estudio personalizada con la técnica RAG...</p>
-    </div>
+        <div class="top-bar">
+            <div class="logo">
+                <div class="logo-mark">EQ</div>
+                <span class="logo-name">EduQuest</span>
+            </div>
+            <div class="step-pills">
+                <div class="sp active" id="pill0"></div>
+                <div class="sp" id="pill1"></div>
+                <div class="sp" id="pill2"></div>
+                <div class="sp" id="pill3"></div>
+                <div class="sp" id="pill4"></div>
+            </div>
+        </div>
 
+        <!-- ── Paso 1: Universidad ── -->
+        <div class="screen on" id="s0">
+            <div class="step-label">Paso 1 de 5</div>
+            <div class="q-title">¿A qué universidad postulas?</div>
+            <div class="q-sub">Tu ruta se adaptará al temario y pesos exactos de tu examen de admisión.</div>
+            <div class="uni-row">
+                <div class="uni-tile" id="u-UNI" onclick="pickUni('UNI', this)">
+                    <span class="uni-ico">🏛️</span>
+                    <span class="uni-code">UNI</span>
+                    <span class="uni-full">Nac. de Ingeniería</span>
+                    <div class="uni-check"><i class="ti ti-check" style="font-size:11px"></i></div>
+                </div>
+                <div class="uni-tile" id="u-UNMSM" onclick="pickUni('UNMSM', this)">
+                    <span class="uni-ico">🦁</span>
+                    <span class="uni-code">UNMSM</span>
+                    <span class="uni-full">San Marcos</span>
+                    <div class="uni-check"><i class="ti ti-check" style="font-size:11px"></i></div>
+                </div>
+                <div class="uni-tile" id="u-PUCP" onclick="pickUni('PUCP', this)">
+                    <span class="uni-ico">🦌</span>
+                    <span class="uni-code">PUCP</span>
+                    <span class="uni-full">Pontificia Católica</span>
+                    <div class="uni-check"><i class="ti ti-check" style="font-size:11px"></i></div>
+                </div>
+            </div>
+            <div class="nav-row">
+                <div class="arrow-group">
+                    <div class="arr" disabled title="No hay paso anterior">↑</div>
+                    <div class="arr" id="s0-dn" disabled onclick="if(D.uni) go(1)" title="Siguiente paso">↓</div>
+                </div>
+                <button class="btn-main" id="s0-btn" disabled onclick="go(1)">
+                    Siguiente <i class="ti ti-arrow-right" style="font-size:15px"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- ── Paso 2: Carrera ── -->
+        <div class="screen" id="s1">
+            <div class="step-label">Paso 2 de 5</div>
+            <div class="q-title">¿Qué carrera te interesa?</div>
+            <div class="q-sub">Nos ayuda a calibrar la competitividad y enfocar bien tu ruta.</div>
+            <div class="chips" id="career-chips"></div>
+            <div class="nav-row">
+                <div class="arrow-group">
+                    <div class="arr" onclick="go(0)" title="Volver">↑</div>
+                    <div class="arr" id="s1-dn" disabled onclick="if(D.career) go(2)" title="Siguiente paso">↓</div>
+                </div>
+                <button class="btn-main" id="s1-btn" disabled onclick="go(2)">
+                    Siguiente <i class="ti ti-arrow-right" style="font-size:15px"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- ── Paso 3: Curso difícil ── -->
+        <div class="screen" id="s2">
+            <div class="step-label">Paso 3 de 5</div>
+            <div class="q-title">¿Qué curso te cuesta más?</div>
+            <div class="q-sub">Lo priorizaremos en tu ruta de estudio desde el primer día.</div>
+            <div class="chips" id="hard-chips"></div>
+            <div class="nav-row">
+                <div class="arrow-group">
+                    <div class="arr" onclick="go(1)" title="Volver">↑</div>
+                    <div class="arr" id="s2-dn" disabled onclick="if(D.hard) go(3)" title="Siguiente paso">↓</div>
+                </div>
+                <button class="btn-main" id="s2-btn" disabled onclick="go(3)">
+                    Siguiente <i class="ti ti-arrow-right" style="font-size:15px"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- ── Paso 4: Curso fácil ── -->
+        <div class="screen" id="s3">
+            <div class="step-label">Paso 4 de 5</div>
+            <div class="q-title">¿Y el que se te hace más fácil?</div>
+            <div class="q-sub">Lo usamos como punto de partida para construir confianza desde el comienzo.</div>
+            <div class="chips" id="easy-chips"></div>
+            <div class="nav-row">
+                <div class="arrow-group">
+                    <div class="arr" onclick="go(2)" title="Volver">↑</div>
+                    <div class="arr" id="s3-dn" disabled onclick="if(D.easy) go(4)" title="Siguiente paso">↓</div>
+                </div>
+                <button class="btn-main" id="s3-btn" disabled onclick="go(4)">
+                    Ver diagnóstico <i class="ti ti-arrow-right" style="font-size:15px"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- ── Paso 5: Intro diagnóstico ── -->
+        <div class="screen" id="s4">
+            <div class="step-label">Paso 5 de 5 · Examen</div>
+            <div class="q-title">Tu diagnóstico inicial</div>
+            <div class="q-sub">8 preguntas de Razonamiento Matemático y Verbal que van subiendo de nivel. La IA
+                calibrará tu ruta personalizada con estos resultados.</div>
+            <div class="intro-cards">
+                <div class="icard">
+                    <div class="icard-val">4</div>
+                    <div class="icard-lab">Preguntas RM</div>
+                </div>
+                <div class="icard">
+                    <div class="icard-val">4</div>
+                    <div class="icard-lab">Preguntas RV</div>
+                </div>
+                <div class="icard">
+                    <div class="icard-val">~5'</div>
+                    <div class="icard-lab">Duración aprox.</div>
+                </div>
+            </div>
+            <div class="nav-row">
+                <div class="arrow-group">
+                    <div class="arr" onclick="go(3)" title="Volver">↑</div>
+                    <div class="arr" disabled>↓</div>
+                </div>
+                <button class="btn-main" onclick="startQuiz()">
+                    Comenzar <i class="ti ti-player-play" style="font-size:15px"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- ── Quiz ── -->
+        <div class="screen" id="sq">
+            <div class="quiz-meta">
+                <span class="quiz-tag">
+                    <span class="quiz-dot"></span>
+                    <span id="q-cat">Razonamiento Matemático</span>
+                </span>
+                <span class="quiz-prog" id="q-num">1 / 8</span>
+            </div>
+            <div class="quiz-q" id="q-text">Cargando pregunta...</div>
+            <div class="opts" id="q-opts"></div>
+            <div class="quiz-progbar">
+                <div class="quiz-progbar-fill" id="q-pbar" style="width:0%"></div>
+            </div>
+            <div class="nav-row">
+                <div class="arrow-group">
+                    <div class="arr" id="q-up" disabled onclick="qNav(-1)" title="Pregunta anterior">↑</div>
+                    <div class="arr" id="q-dn" disabled onclick="qNav(1)" title="Siguiente pregunta">↓</div>
+                </div>
+                <button class="btn-main" id="q-btn" disabled onclick="qNav(1)">
+                    Siguiente <i class="ti ti-arrow-right" style="font-size:15px" id="q-btn-ico"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- ── Loading ── -->
+        <div class="screen" id="sl">
+            <div class="load-wrap" style="max-width: 900px; width: 100%; margin: 0 auto;">
+                <div class="spinner"></div>
+                <div class="load-title">Analizando tus resultados...</div>
+                <div class="load-sub">Tu tutor IA está generando una ruta de estudio completamente personalizada para
+                    ti.</div>
+            </div>
+        </div>
+    </div>
+    <!-- Script Imports -->
     <script src="../../assets/js/core/storage.js"></script>
+    <script src="../../assets/js/core/user-manager.js"></script>
     <script src="../../assets/js/core/auth.js"></script>
     <script src="../../assets/js/core/ai-engine.js"></script>
+
     <script>
-        Auth.requireAuth(); // Ensure only logged-in users are here
+        /* ── Data & State ── */
+        let CAREERS = {};
+        let COURSES = [];
+        let QS = [];
 
-        let problems = [];
-        let currentQuestionIndex = 0;
-        let selectedOptionIndex = null;
-        let diagnosticResults = []; // stores { topicId, isCorrect }
+        const D = { uni: null, career: null, hard: null, easy: null };
+        let qIdx = 0;
+        let ans = [];
+        const diagnosticResults = [];
 
-        async function startDiagnostic() {
-            document.getElementById('step-intro').style.display = 'none';
-            document.getElementById('step-quiz').style.display = 'block';
-
+        async function loadMockData() {
             try {
-                const res = await fetch('../../mock/problems.json');
-                const allProblems = await res.json();
+                const [uniRes, coursesRes, problemsRes] = await Promise.all([
+                    fetch('../../mock/universities.json'),
+                    fetch('../../mock/courses.json'),
+                    fetch('../../mock/problems.json')
+                ]);
+
+                const universities = await uniRes.json();
+                const allCourses = await coursesRes.json();
+                const allProblems = await problemsRes.json();
+
+                // 1. Careers
+                universities.forEach(u => {
+                    let uCareers = [];
+                    if (u.admissionAreas) {
+                        u.admissionAreas.forEach(area => {
+                            if (area.careers) {
+                                uCareers = uCareers.concat(area.careers);
+                            }
+                        });
+                    }
+                    CAREERS[u.id] = uCareers;
+                });
+
+                // 2. Courses
+                COURSES = allCourses.map(c => c.name);
+
+                // 3. Random Problems (4 RM, 4 RV)
+                const rmProblems = allProblems.filter(p => p.id && p.id.includes('prob_rm_'));
+                const rvProblems = allProblems.filter(p => p.id && (p.id.includes('prob_rv_') || p.id.includes('prob_lect_')));
                 
-                const rmProblems = allProblems.filter(p => p.id.startsWith('prob_rm_')).slice(0, 4);
-                const rvProblems = allProblems.filter(p => p.id.startsWith('prob_rv_')).slice(0, 4);
+                const shuffle = array => array.sort(() => 0.5 - Math.random());
+                const selectedRM = shuffle([...rmProblems]).slice(0, 4);
+                const selectedRV = shuffle([...rvProblems]).slice(0, 4);
                 
-                problems = [...rmProblems, ...rvProblems];
-                renderQuestion();
+                QS = [...selectedRM, ...selectedRV].map(p => {
+                    const isRM = p.id.includes('prob_rm_');
+                    return {
+                        cat: isRM ? 'RM' : 'RV',
+                        topicId: p.topicId,
+                        q: p.statement,
+                        o: p.options,
+                        a: p.correctOption
+                    };
+                });
+                
+                ans = new Array(QS.length).fill(null);
             } catch (err) {
-                console.error(err);
-                alert("Error cargando el banco de preguntas.");
+                console.error("Error al cargar mock data:", err);
             }
         }
 
-        function renderQuestion() {
-            if (currentQuestionIndex >= problems.length) {
-                finishDiagnostic();
-                return;
+        // Cargar datos al iniciar
+        loadMockData();
+
+        /* ── Progress helpers ── */
+        function setPills(n) {
+            for (let i = 0; i < 5; i++) {
+                const p = document.getElementById('pill' + i);
+                p.className = 'sp' + (i < n ? ' done' : i === n ? ' active' : '');
             }
+            document.getElementById('topbar').style.width = ((n / 5) * 100) + '%';
+        }
 
-            const p = problems[currentQuestionIndex];
-            selectedOptionIndex = null;
-            document.getElementById('btn-next').disabled = true;
+        /* ── Step navigation ── */
+        function go(n) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('on'));
+            document.getElementById('s' + n).classList.add('on');
+            setPills(n);
+            if (n === 1) buildChips('career-chips', CAREERS[D.uni] || [], 'career', 's1-btn', 's1-dn', 2);
+            if (n === 2) buildChips('hard-chips', COURSES, 'hard', 's2-btn', 's2-dn', 3);
+            if (n === 3) {
+                const ez = COURSES.filter(c => c !== D.hard);
+                buildChips('easy-chips', ez, 'easy', 's3-btn', 's3-dn', 4);
+            }
+        }
 
-            document.getElementById('q-category').innerText = p.id.includes('_rm_') ? 'Razonamiento Matemático' : 'Razonamiento Verbal';
-            document.getElementById('q-progress').innerText = `Pregunta ${currentQuestionIndex + 1} de ${problems.length}`;
-            document.getElementById('q-text').innerText = p.statement;
+        /* ── University pick ── */
+        function pickUni(id, el) {
+            document.querySelectorAll('.uni-tile').forEach(t => t.classList.remove('sel'));
+            el.classList.add('sel');
+            D.uni = id;
+            document.getElementById('s0-btn').disabled = false;
+            document.getElementById('s0-dn').removeAttribute('disabled');
+            setTimeout(() => go(1), 220);
+        }
 
-            const optsContainer = document.getElementById('q-options');
-            optsContainer.innerHTML = '';
-
-            p.options.forEach((opt, idx) => {
-                const btn = document.createElement('div');
-                btn.className = 'option-btn';
-                btn.innerText = opt;
-                btn.onclick = () => selectOption(btn, idx);
-                optsContainer.appendChild(btn);
+        /* ── Chip builder ── */
+        function buildChips(cid, items, key, btnId, dnId, nextStep) {
+            const w = document.getElementById(cid);
+            w.innerHTML = '';
+            items.forEach(item => {
+                const el = document.createElement('div');
+                el.className = 'chip' + (D[key] === item ? ' sel' : '');
+                el.textContent = item;
+                el.onclick = () => {
+                    w.querySelectorAll('.chip').forEach(c => c.classList.remove('sel'));
+                    el.classList.add('sel');
+                    D[key] = item;
+                    document.getElementById(btnId).disabled = false;
+                    const dn = document.getElementById(dnId);
+                    if (dn) dn.removeAttribute('disabled');
+                    if (nextStep !== undefined) setTimeout(() => go(nextStep), 200);
+                };
+                w.appendChild(el);
             });
         }
 
-        function selectOption(element, idx) {
-            document.querySelectorAll('.option-btn').forEach(btn => btn.classList.remove('selected'));
-            element.classList.add('selected');
-            selectedOptionIndex = idx;
-            document.getElementById('btn-next').disabled = false;
+        /* ── Start quiz ── */
+        function startQuiz() {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('on'));
+            document.getElementById('sq').classList.add('on');
+            setPills(5);
+            qIdx = 0;
+            renderQ();
         }
 
-        function nextQuestion() {
-            const p = problems[currentQuestionIndex];
-            const isCorrect = (selectedOptionIndex === p.correctOption);
-            
-            diagnosticResults.push({
-                topicId: p.topicId,
-                isCorrect: isCorrect
+        /* ── Render question ── */
+        function renderQ() {
+            const q = QS[qIdx];
+            document.getElementById('q-cat').textContent = q.cat === 'RM' ? 'Razonamiento Matemático' : 'Razonamiento Verbal';
+            document.getElementById('q-num').textContent = (qIdx + 1) + ' / ' + QS.length;
+            document.getElementById('q-text').textContent = q.q;
+            document.getElementById('q-pbar').style.width = ((qIdx / QS.length) * 100) + '%';
+
+            const hasAns = ans[qIdx] !== null;
+            const isLast = qIdx === QS.length - 1;
+
+            const btn = document.getElementById('q-btn');
+            btn.disabled = !hasAns;
+            btn.innerHTML = (isLast ? 'Finalizar' : 'Siguiente') + ' <i class="ti ti-arrow-right" style="font-size:15px"></i>';
+
+            document.getElementById('q-dn').disabled = !hasAns || isLast;
+            document.getElementById('q-up').disabled = qIdx === 0;
+
+            const opts = document.getElementById('q-opts');
+            opts.innerHTML = '';
+            const letters = ['A', 'B', 'C', 'D'];
+            q.o.forEach((opt, i) => {
+                const el = document.createElement('div');
+                el.className = 'opt' + (ans[qIdx] === i ? ' sel' : '');
+                el.innerHTML = `<span class="opt-letter">${letters[i]}</span><span>${opt}</span>`;
+                el.onclick = () => {
+                    opts.querySelectorAll('.opt').forEach(o => o.classList.remove('sel'));
+                    el.classList.add('sel');
+                    ans[qIdx] = i;
+                    document.getElementById('q-btn').disabled = false;
+                    if (!isLast) document.getElementById('q-dn').removeAttribute('disabled');
+                    if (qIdx < QS.length - 1) setTimeout(() => qNav(1), 280);
+                    else {
+                        document.getElementById('q-btn').innerHTML = 'Finalizar <i class="ti ti-arrow-right" style="font-size:15px"></i>';
+                        document.getElementById('q-btn').disabled = false;
+                    }
+                };
+                opts.appendChild(el);
             });
-
-            currentQuestionIndex++;
-            renderQuestion();
         }
 
-        async function finishDiagnostic() {
-            document.getElementById('step-quiz').style.display = 'none';
-            document.getElementById('step-loading').style.display = 'block';
-
-            // Guardar resultados en el localStorage del usuario
-            const session = Storage.getSession();
-            const users = JSON.parse(localStorage.getItem('eduquest_db_users')) || [];
-            const userIndex = users.findIndex(u => u.id === session.userId);
-            
-            if (userIndex !== -1) {
-                users[userIndex].diagnosticResults = diagnosticResults;
-                localStorage.setItem('eduquest_db_users', JSON.stringify(users));
-            }
-
-            // Llamar al AI Engine
-            if (window.AIEngine) {
-                await AIEngine.generatePersonalizedRoadmap(diagnosticResults);
-                window.location.href = '../student/roadmap.html';
+        /* ── Quiz navigation ── */
+        function qNav(dir) {
+            if (dir === 1) {
+                if (ans[qIdx] === null) return;
+                if (qIdx === QS.length - 1) { finish(); return; }
+                qIdx++;
             } else {
-                console.error("AI Engine no está cargado.");
+                if (qIdx === 0) return;
+                qIdx--;
             }
+            renderQ();
+        }
+
+        /* ── Finish ── */
+        function finish() {
+            QS.forEach((q, i) => {
+                diagnosticResults.push({ topicId: q.topicId, isCorrect: ans[i] === q.a });
+            });
+
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('on'));
+            document.getElementById('sl').classList.add('on');
+            document.getElementById('topbar').style.width = '100%';
+
+            const session = Storage.getSession();
+            if (session && window.UserManager) {
+                UserManager.updateProfile(session.userId, { target: D.uni, career: D.career });
+                
+                const users = UserManager.getAllUsers();
+                const userIdx = users.findIndex(u => u.id === session.userId);
+                if (userIdx !== -1) {
+                    if (!users[userIdx].learningProgress) {
+                        users[userIdx].learningProgress = {
+                            lastAccessedCourse: null,
+                            lastAccessedTopic: null,
+                            completedTopics: [],
+                            diagnosticResults: [],
+                            hardestCourse: null,
+                            customRoadmap: []
+                        };
+                    }
+                    users[userIdx].learningProgress.hardestCourse = D.hard;
+                    UserManager.saveAllUsers(users);
+                }
+
+                UserManager.saveDiagnosticResults(session.userId, diagnosticResults);
+            }
+            if (window.AIEngine) {
+                AIEngine.generatePersonalizedRoadmap(diagnosticResults)
+                  .then(() => setTimeout(() => { window.location.href = '../student/roadmap.html'; }, 1200));
+            } else {
+                setTimeout(() => { window.location.href = '../student/roadmap.html'; }, 1500);
+            }
+
+            console.log('Diagnóstico completado:', { perfil: D, resultados: diagnosticResults });
         }
     </script>
 </body>
+
 </html>

@@ -13,6 +13,11 @@ const Auth = {
                 console.error("Error loading users.json:", error);
             }
         }
+
+        // Migrar usuarios con estructura plana (v1) al nuevo esquema (v2)
+        if (window.UserManager) {
+            UserManager.migrateUsersToNewSchema();
+        }
     },
 
     generateMockToken() {
@@ -24,7 +29,7 @@ const Auth = {
         const pass = document.getElementById('login-pass').value.trim();
         const errDiv = document.getElementById('login-error');
 
-        const users = JSON.parse(localStorage.getItem("eduquest_db_users")) || [];
+        const users = UserManager.getAllUsers();
         const matchedUser = users.find(u => u.email === user && u.password === pass);
 
         if (matchedUser) {
@@ -102,8 +107,8 @@ const Auth = {
         const nameInput = document.getElementById('reg-name');
         const emailInput = document.getElementById('reg-email');
         const passInput = document.getElementById('reg-password');
-        const targetInput = document.getElementById('reg-target');
-        const careerInput = document.getElementById('reg-career');
+        const birthdateInput = document.getElementById('reg-birthdate');
+        const gradYearInput = document.getElementById('reg-grad-year');
 
         if (!nameInput || !emailInput || !passInput) return;
 
@@ -116,7 +121,7 @@ const Auth = {
             return;
         }
 
-        const users = JSON.parse(localStorage.getItem("eduquest_db_users")) || [];
+        const users = UserManager.getAllUsers();
 
         if (users.some(u => u.email === email)) {
             alert("⚠️ Este correo electrónico ya está registrado.");
@@ -129,21 +134,35 @@ const Auth = {
             email: email,
             password: pass,
             role: currentRole,
-            avatar: currentRole === 'student' ? "🚀" : "👨‍🏫"
+            profile: {
+                avatar: currentRole === 'student' ? "🚀" : "👨‍🏫"
+            }
         };
 
         if (currentRole === 'student') {
-            newUser.target = targetInput?.value || "UNI";
-            newUser.career = careerInput?.value || "Ingeniería de Sistemas";
-            newUser.totalXp = 0;
-            newUser.streakDays = 1;
-            newUser.rankingPos = "Nuevo Alumno";
+            newUser.profile.birthdate = birthdateInput?.value || null;
+            newUser.profile.gradYear = gradYearInput?.value || null;
+            newUser.profile.target = null; // To be set during onboarding
+            newUser.profile.career = null; // To be set during onboarding
+            newUser.stats = {
+                totalXp: 0,
+                streakDays: 1,
+                rankingPos: "Nuevo Alumno"
+            };
+            newUser.learningProgress = {
+                lastAccessedCourse: null,
+                lastAccessedTopic: null,
+                completedTopics: [],
+                diagnosticResults: [],
+                hardestCourse: null,
+                customRoadmap: []
+            };
         } else {
             newUser.classrooms = ["Aula Pro - Sin Asignar"];
         }
 
         users.push(newUser);
-        localStorage.setItem("eduquest_db_users", JSON.stringify(users));
+        UserManager.saveAllUsers(users);
 
         // Auto login after registration
         const issuedAt = Date.now();
@@ -160,7 +179,8 @@ const Auth = {
         Storage.saveSession(session);
 
         nameInput.value = ""; emailInput.value = ""; passInput.value = "";
-        if (careerInput) careerInput.value = "";
+        if (birthdateInput) birthdateInput.value = "";
+        if (gradYearInput) gradYearInput.value = "";
 
         // Redirect to diagnostic exam (onboarding) if student, else to teacher dashboard
         if (newUser.role === 'student') {

@@ -11,9 +11,41 @@
  */
 
 // ─── Configuración del Backend ──────────────────────────────────────
-const BACKEND_URL = 'https://eduquest-backend-q4ql.onrender.com';
+const BACKEND_URL = 'https://backend-eta-ten-99.vercel.app';
 
 const AIEngine = {
+
+    // ─── Topological Sort ───────────────────────────────────────────
+    _topologicalSort(topics) {
+        const sorted = [];
+        const visited = new Set();
+        const temp = new Set();
+
+        const visit = (topicId) => {
+            if (temp.has(topicId)) return; // Ciclo detectado o ya en procesamiento
+            if (visited.has(topicId)) return;
+
+            temp.add(topicId);
+
+            const topic = topics.find(t => t.id === topicId);
+            if (topic) {
+                if (topic.prerequisites && topic.prerequisites.length > 0) {
+                    topic.prerequisites.forEach(reqId => {
+                        if (topics.some(t => t.id === reqId)) {
+                            visit(reqId);
+                        }
+                    });
+                }
+                sorted.push(topic);
+            }
+
+            temp.delete(topicId);
+            visited.add(topicId);
+        };
+
+        topics.forEach(t => visit(t.id));
+        return sorted;
+    },
 
     // ─── Graph Traversal ────────────────────────────────────────────
     _buildSubGraph(topicIds, allTopics) {
@@ -72,10 +104,9 @@ const AIEngine = {
 
             // Obtener perfil del usuario
             const session = Storage.getSession();
-            const users = JSON.parse(localStorage.getItem('eduquest_db_users')) || [];
-            const user = users.find(u => u.id === session.userId) || {};
-            const targetUniv = user.target || 'UNI';
-            const career = user.career || 'Ingeniería';
+            const user = UserManager.getCurrentUserDoc() || {};
+            const targetUniv = (user.profile && user.profile.target) || 'UNI';
+            const career = (user.profile && user.profile.career) || 'Ingeniería';
 
             // Obtener pesos para la universidad objetivo
             const univWeights = allWeights[targetUniv] || allWeights['UNI'] || {};
@@ -95,20 +126,11 @@ const AIEngine = {
             const weakTopicIds = weaknesses.map(w => w.topicId);
             const requiredTopicIds = this._buildSubGraph(weakTopicIds, allTopics);
 
-            // Construir el catálogo de cursos relevantes para el prompt
+            // Construir el catálogo de cursos y sus pesos para el prompt (simplificado, sin tópicos)
             const courseCatalogText = relevantCourses.map(c => {
                 const weight = univWeights[c.id] || 0;
-                const cTopics = allTopics.filter(t => t.courseId === c.id);
-                const topicLines = cTopics.length > 0
-                    ? cTopics.map(t => {
-                        const reqs = t.prerequisites && t.prerequisites.length > 0
-                            ? t.prerequisites.join(', ')
-                            : 'ninguno';
-                        return `    - ${t.id}: "${t.name}" (dificultad: ${t.difficulty}, prerequisitos: [${reqs}])`;
-                    }).join('\n')
-                    : '    (Sin tópicos registrados)';
-                return `Curso: ${c.id} ("${c.name}") — Peso admisión ${targetUniv}: ${weight}/100\n${topicLines}`;
-            }).join('\n\n');
+                return `- ${c.id}: "${c.name}" (Peso de admisión: ${weight}/100)`;
+            }).join('\n');
 
             const strengthsText = strengths.length > 0
                 ? strengths.map(s => `  ✓ ${s.topicName} (${s.courseName})`).join('\n')
@@ -118,71 +140,38 @@ const AIEngine = {
                 ? weaknesses.map(w => `  ✗ ${w.topicName} (${w.courseName})`).join('\n')
                 : '  Ninguna detectada en este diagnóstico.';
 
-            const graphText = requiredTopicIds.length > 0
-                ? requiredTopicIds.map(tId => {
-                    const t = allTopics.find(x => x.id === tId);
-                    if (!t) return '';
-                    const reqs = t.prerequisites && t.prerequisites.length > 0
-                        ? t.prerequisites.map(r => allTopics.find(x => x.id === r)?.name || r).join(', ')
-                        : 'Tema Raíz';
-                    return `  - ${t.name} [${t.id}] → requiere: ${reqs}`;
-                }).filter(Boolean).join('\n')
-                : '  No se detectaron prerequisitos adicionales.';
-
-            // Lista explícita de courseIds que DEBEN aparecer
-            const mandatoryCourseIds = relevantCourses.map(c => c.id);
-
-            // 8. Prompt del Planificador Pedagógico
-            const prompt = `Eres un planificador académico experto de una academia preuniversitaria peruana.
-
-═══════════════════════════════════════════════════
+            // 8. Prompt del Planificador Pedagógico Simplificado
+            const prompt = `Eres un planificador académico experto para exámenes de admisión en Perú.
+            
 PERFIL DEL ESTUDIANTE:
 - Nombre: ${user.name || 'Alumno'}
 - Universidad objetivo: ${targetUniv}
-- Carrera objetivo: ${career}
+- Carrera: ${career}
 
-═══════════════════════════════════════════════════
-DIAGNÓSTICO:
-
-Fortalezas:
+RESULTADOS DEL DIAGNÓSTICO:
+Fortalezas (temas superados):
 ${strengthsText}
 
-Debilidades:
+Debilidades (temas con fallas):
 ${weaknessesText}
 
-═══════════════════════════════════════════════════
-SUB-GRAFO DE DEPENDENCIAS:
-${graphText}
-
-═══════════════════════════════════════════════════
-CURSOS CON PESO > 0 PARA ${targetUniv}:
-
+CURSOS DISPONIBLES Y SU PESO PARA ${targetUniv}:
 ${courseCatalogText}
 
-═══════════════════════════════════════════════════
 INSTRUCCIONES ESTRICTAS:
-
-1. DEBES incluir TODOS estos cursos en tu respuesta (son obligatorios para ${targetUniv}):
-   ${JSON.stringify(mandatoryCourseIds)}
-
-2. Asigna una prioridad numérica a cada curso (1 = más urgente).
-   Fórmula: los cursos donde el alumno tiene debilidades Y peso alto → prioridad más alta.
-   Los cursos donde el alumno es fuerte → prioridad más baja (pero SIGUEN apareciendo).
-
-3. Para cada curso, lista TODOS sus tópicos en orden de estudio.
-   - Respeta prerequisitos: un tema NUNCA va antes que sus dependencias.
-   - Si un curso no tiene tópicos registrados, devuelve un array vacío de topicIds.
-   - Usa EXCLUSIVAMENTE los topic IDs del catálogo. NO inventes IDs.
-
-4. Devuelve EXCLUSIVAMENTE un JSON válido, sin bloques markdown.
+1. Asigna un nivel de prioridad (entero de 1 a 10, donde 1 es la prioridad más alta y urgente) a cada curso.
+2. Consideración clave:
+   - Prioridad 1 a 3 (Alta): Cursos con alto peso de admisión en los que el alumno tiene debilidades.
+   - Prioridad 4 a 7 (Media): Cursos con peso medio o en los que no se han detectado debilidades fuertes.
+   - Prioridad 8 a 10 (Baja): Cursos con bajo peso o en los que el alumno demostró fortalezas claras.
+3. Devuelve EXCLUSIVAMENTE un JSON válido que contenga la prioridad de cada curso. No incluyas explicaciones ni bloques de código Markdown (\`\`\`json).
 
 FORMATO DE RESPUESTA EXACTO:
 {
-  "routes": [
+  "coursePriorities": [
     {
       "courseId": "course_xxx",
-      "priority": 1,
-      "topicIds": ["topic_aaa", "topic_bbb"]
+      "priority": 1
     }
   ]
 }
@@ -205,31 +194,36 @@ FORMATO DE RESPUESTA EXACTO:
             }
 
             const aiPlan = JSON.parse(jsonString);
+            const coursePriorities = aiPlan.coursePriorities || [];
+            const returnedPriorities = new Map(coursePriorities.map(p => [p.courseId, p.priority]));
 
-            // 11. Validar que TODOS los cursos obligatorios están presentes
-            const returnedIds = new Set(aiPlan.routes.map(r => r.courseId));
-            mandatoryCourseIds.forEach(cId => {
-                if (!returnedIds.has(cId)) {
-                    // La IA olvidó un curso → lo añadimos con prioridad baja
-                    const cTopics = allTopics.filter(t => t.courseId === cId);
-                    aiPlan.routes.push({
-                        courseId: cId,
-                        priority: 999,
-                        topicIds: cTopics.map(t => t.id)
-                    });
+            // 11. Reconstruir routes cruzando las prioridades de la IA y los temas ordenados localmente
+            const routes = [];
+            relevantCourses.forEach(c => {
+                let priority = returnedPriorities.get(c.id);
+                if (priority === undefined) {
+                    priority = 99; // Fallback para cursos no devueltos por la IA
                 }
+
+                // Filtrar tópicos del curso y ordenarlos usando el ordenamiento topológico local
+                const cTopics = allTopics.filter(t => t.courseId === c.id);
+                const sortedTopics = this._topologicalSort(cTopics);
+                const topicIds = sortedTopics.map(t => t.id);
+
+                routes.push({
+                    courseId: c.id,
+                    priority: priority,
+                    topicIds: topicIds
+                });
             });
 
             // 12. Transformar al formato del frontend
             const roadmapCards = this._transformToFrontendFormat(
-                aiPlan.routes, allCourses, allTopics, targetUniv
+                routes, allCourses, allTopics, targetUniv
             );
 
-            // 13. Guardar en localStorage
-            localStorage.setItem(
-                `eduquest_roadmap_${session.userId}`,
-                JSON.stringify(roadmapCards)
-            );
+            // 13. Guardar en el documento del usuario
+            UserManager.saveCustomRoadmap(session.userId, roadmapCards);
 
             console.log('[AIEngine] Rutas generadas:', roadmapCards.length, 'cursos');
             return roadmapCards;
@@ -293,7 +287,7 @@ FORMATO DE RESPUESTA EXACTO:
         }];
         const session = Storage.getSession();
         if (session) {
-            localStorage.setItem(`eduquest_roadmap_${session.userId}`, JSON.stringify(fallbackMap));
+            UserManager.saveCustomRoadmap(session.userId, fallbackMap);
         }
         return fallbackMap;
     }

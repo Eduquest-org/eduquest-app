@@ -1,0 +1,115 @@
+[
+  {
+    "id": "UNI",
+    "name": "Universidad Nacional de Ingeniería",
+    "shortName": "UNI",
+    "type": "Pública",
+    "location": "Lima, Perú",
+    "foundationYear": 1876,
+    "description": "Universidad líder en ciencia, ingeniería, tecnología e innovación en el Perú. Famosa por tener uno de los exámenes de admisión más rigurosos de Latinoamérica.",
+    "examFormat": {
+      "days": 3,
+      "totalQuestions": 180,
+      "subjects": ["Matemática", "Aptitud Académica", "Humanidades", "Física", "Química"]
+    },
+    "admissionAreas": [
+      {
+        "name": "Facultad de Arquitectura, Urbanismo y Artes",
+        "careers": ["Arquitectura"]
+      },
+      {
+        "name": "Facultad de Ingeniería Civil",
+        "careers": ["Ingeniería Civil"]
+      },
+      {
+        "name": "Facultad de Ingeniería Industrial y de Sistemas",
+        "careers": ["Ingeniería Industrial", "Ingeniería de Sistemas"]
+      },
+      {
+        "name": "Facultad de Ingeniería Mecánica",
+        "careers": ["Ingeniería Mecánica", "Ingeniería Mecánica-Eléctrica", "Ingeniería Mecatrónica", "Ingeniería Naval"]
+      },
+      {
+        "name": "Facultad de Ingeniería Eléctrica y Electrónica",
+        "careers": ["Ingeniería Eléctrica", "Ingeniería Electrónica", "Ingeniería de Telecomunicaciones"]
+      },
+      {
+        "name": "Facultad de Ciencias",
+        "careers": ["Física", "Química", "Matemática", "Ingeniería Física", "Ciencia de la Computación"]
+      }
+    ]
+  },
+  {
+    "id": "UNMSM",
+    "name": "Universidad Nacional Mayor de San Marcos",
+    "shortName": "UNMSM",
+    "type": "Pública",
+    "location": "Lima, Perú",
+    "foundationYear": 1551,
+    "description": "Conocida como la Decana de América, es la universidad más antigua y representativa del país, líder en investigación y formación integral.",
+    "examFormat": {
+      "days": 1,
+      "totalQuestions": 100,
+      "subjects": ["Habilidades (DECO)", "Conocimientos (Matemática, Ciencias, Letras)"]
+    },
+    "admissionAreas": [
+      {
+        "id": "A",
+        "name": "Ciencias de la Salud",
+        "careers": ["Medicina Humana", "Odontología", "Farmacia y Bioquímica", "Psicología", "Enfermería", "Medicina Veterinaria"]
+      },
+      {
+        "id": "B",
+        "name": "Ciencias Básicas",
+        "careers": ["Ciencias Biológicas", "Genética y Biotecnología", "Microbiología", "Física", "Matemática", "Estadística"]
+      },
+      {
+        "id": "C",
+        "name": "Ingenierías",
+        "careers": ["Ingeniería de Sistemas", "Ingeniería de Software", "Ingeniería Industrial", "Ingeniería Civil", "Ingeniería Química", "Ingeniería Electrónica"]
+      },
+      {
+        "id": "D",
+        "name": "Ciencias Económicas y de la Gestión",
+        "careers": ["Administración", "Contabilidad", "Economía", "Administración de Turismo"]
+      },
+      {
+        "id": "E",
+        "name": "Humanidades y Ciencias Jurídicas y Sociales",
+        "careers": ["Derecho", "Ciencia Política", "Literatura", "Comunicación Social", "Historia", "Educación"]
+      }
+    ]
+  },
+  {
+    "id": "PUCP",
+    "name": "Pontificia Universidad Católica del Perú",
+    "shortName": "PUCP",
+    "type": "Privada",
+    "location": "Lima, Perú",
+    "foundationYear": 1917,
+    "description": "Universidad privada líder en el ranking nacional, reconocida por su formación humanista, plural y excelencia académica.",
+    "examFormat": {
+      "days": 1,
+      "totalQuestions": 120,
+      "subjects": ["Lectura", "Redacción", "Matemática"]
+    },
+    "admissionAreas": [
+      {
+        "name": "Letras y Ciencias Humanas",
+        "careers": ["Derecho", "Comunicación Audiovisual", "Periodismo", "Psicología", "Arte y Diseño Gráfico", "Economía", "Antropología"]
+      },
+      {
+        "name": "Ciencias e Ingeniería",
+        "careers": ["Ingeniería Informática", "Ingeniería Civil", "Ingeniería Industrial", "Ingeniería Mecatrónica", "Ingeniería Biomédica", "Física"]
+      },
+      {
+        "name": "Gestión y Alta Dirección",
+        "careers": ["Gestión", "Contabilidad"]
+      },
+      {
+        "name": "Arquitectura y Urbanismo",
+        "careers": ["Arquitectura"]
+      }
+    ]
+  }
+]
