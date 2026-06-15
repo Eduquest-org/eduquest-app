@@ -117,24 +117,14 @@
                 </div>
 
                 <div id="student-conditional-fields" style="display: block;">
-                <div class="fg">
-                  <div class="flabel">Institución objetivo</div>
-
-                  <select id="reg-target" class="finput row between cursor-pointer">
-                      <option value="Selecciona tu institución">Selecciona tu institución</option>
-                      <option value="Meta: UNI">UNI</option>
-                      <option value="Meta: San Marcos">San Marcos</option>
-                      <option value="Meta: PUCP">Católica</option>
-                  </select>
-                </div>
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
                   <div class="fg">
-                    <div class="flabel">Año</div>
-                    <input type="text" class="finput row between cursor-pointer" value="2025">
+                    <div class="flabel">Fecha de nacimiento</div>
+                    <input type="date" id="reg-birthdate" class="finput cursor-pointer">
                   </div>
                   <div class="fg">
-                    <div class="flabel">Especialidad</div>
-                    <input type="text" id="reg-career" class="finput row between cursor-pointer" value="Ingeniería">
+                    <div class="flabel">Año de egreso</div>
+                    <input type="number" id="reg-grad-year" class="finput" placeholder="Ej: 2024" min="1990" max="2030">
                   </div>
                 </div>
                 </div>

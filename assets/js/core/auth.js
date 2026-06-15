@@ -107,8 +107,8 @@ const Auth = {
         const nameInput = document.getElementById('reg-name');
         const emailInput = document.getElementById('reg-email');
         const passInput = document.getElementById('reg-password');
-        const targetInput = document.getElementById('reg-target');
-        const careerInput = document.getElementById('reg-career');
+        const birthdateInput = document.getElementById('reg-birthdate');
+        const gradYearInput = document.getElementById('reg-grad-year');
 
         if (!nameInput || !emailInput || !passInput) return;
 
@@ -140,8 +140,10 @@ const Auth = {
         };
 
         if (currentRole === 'student') {
-            newUser.profile.target = targetInput?.value || "UNI";
-            newUser.profile.career = careerInput?.value || "Ingeniería de Sistemas";
+            newUser.profile.birthdate = birthdateInput?.value || null;
+            newUser.profile.gradYear = gradYearInput?.value || null;
+            newUser.profile.target = null; // To be set during onboarding
+            newUser.profile.career = null; // To be set during onboarding
             newUser.stats = {
                 totalXp: 0,
                 streakDays: 1,
@@ -177,7 +179,8 @@ const Auth = {
         Storage.saveSession(session);
 
         nameInput.value = ""; emailInput.value = ""; passInput.value = "";
-        if (careerInput) careerInput.value = "";
+        if (birthdateInput) birthdateInput.value = "";
+        if (gradYearInput) gradYearInput.value = "";
 
         // Redirect to diagnostic exam (onboarding) if student, else to teacher dashboard
         if (newUser.role === 'student') {
