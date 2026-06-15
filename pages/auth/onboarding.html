@@ -9,16 +9,31 @@
     <link rel="stylesheet" href="../../assets/css/global/variables.css">
     <style>
         body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
-        .diagnostic-card { background: #0b1911; border: 1px solid #1f3d28; border-radius: 16px; padding: 40px; width: 100%; max-width: 600px; box-shadow: 0 12px 40px rgba(0,0,0,0.5); }
+        .diagnostic-card { background: #0b1911; border: 1px solid #1f3d28; border-radius: 16px; padding: 40px; width: 100%; max-width: 600px; box-shadow: 0 12px 40px rgba(0,0,0,0.5); display: none; }
+        .diagnostic-card.active { display: block; }
+        
         h1 { font-family: 'Sora', sans-serif; font-size: 24px; margin-bottom: 12px; color: #fff; }
         p { color: #a0b5aa; font-size: 15px; margin-bottom: 24px; line-height: 1.6; }
+        
         .btn { background: var(--green); color: #fff; border: none; padding: 14px 24px; border-radius: 8px; font-weight: 600; cursor: pointer; width: 100%; font-size: 16px; transition: background 0.2s; }
         .btn:hover { background: #178a66; }
         .btn:disabled { background: #1f3d28; color: #6b7f74; cursor: not-allowed; }
-        .api-key-input { width: 100%; padding: 12px 16px; border-radius: 8px; border: 1px solid #1f3d28; background: #060e0a; color: #fff; font-size: 14px; margin-bottom: 24px; outline: none; box-sizing: border-box; }
-        .api-key-input:focus { border-color: var(--green); }
         
-        .quiz-container { display: none; }
+        .step-indicator { font-size: 13px; color: var(--green); font-weight: 600; margin-bottom: 16px; display: block; }
+        
+        /* University Selection */
+        .uni-grid { display: grid; gap: 16px; margin-bottom: 32px; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+        .uni-card { background: #0f2217; border: 2px solid #1f3d28; padding: 24px 16px; border-radius: 12px; text-align: center; cursor: pointer; transition: all 0.2s; }
+        .uni-card:hover { border-color: var(--green); background: #132a1d; }
+        .uni-card.selected { border-color: var(--green); background: rgba(29,158,117,0.15); }
+        .uni-card .uni-logo { font-size: 32px; margin-bottom: 12px; }
+        .uni-card .uni-name { font-weight: 600; color: #fff; font-size: 16px; }
+        
+        /* Select Inputs */
+        .select-input { width: 100%; padding: 14px 16px; border-radius: 8px; border: 1px solid #1f3d28; background: #060e0a; color: #fff; font-size: 15px; margin-bottom: 32px; outline: none; appearance: none; cursor: pointer; }
+        .select-input:focus { border-color: var(--green); }
+        
+        /* Quiz */
         .question-meta { display: flex; justify-content: space-between; font-size: 13px; color: var(--green); font-weight: 600; margin-bottom: 16px; }
         .question-text { font-size: 18px; color: #fff; margin-bottom: 24px; font-weight: 500; }
         .options-grid { display: grid; gap: 12px; margin-bottom: 32px; }
@@ -26,19 +41,74 @@
         .option-btn:hover { background: #1a3624; border-color: var(--green); }
         .option-btn.selected { background: rgba(29,158,117,0.15); border-color: var(--green); color: #fff; }
 
-        .loading-container { display: none; text-align: center; }
+        .loading-container { text-align: center; }
         .spinner { border: 4px solid rgba(255,255,255,0.1); border-left-color: var(--green); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 24px auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
+
+    <!-- Step 1: University -->
+    <div class="diagnostic-card active" id="step-university">
+        <span class="step-indicator">Paso 1 de 4</span>
+        <h1>¿A qué universidad postulas?</h1>
+        <p>Tu ruta de aprendizaje se adaptará a los pesos y temarios específicos de tu universidad objetivo.</p>
+        
+        <div class="uni-grid">
+            <div class="uni-card" onclick="selectUniversity('UNI', this)">
+                <div class="uni-logo">🏛️</div>
+                <div class="uni-name">UNI</div>
+            </div>
+            <div class="uni-card" onclick="selectUniversity('SAN_MARCOS', this)">
+                <div class="uni-logo">🦁</div>
+                <div class="uni-name">UNMSM</div>
+            </div>
+            <div class="uni-card" onclick="selectUniversity('PUCP', this)">
+                <div class="uni-logo">🦌</div>
+                <div class="uni-name">PUCP</div>
+            </div>
+        </div>
+        
+        <button class="btn" id="btn-uni-next" onclick="nextStep('step-career')" disabled>Siguiente</button>
+    </div>
+
+    <!-- Step 2: Career -->
+    <div class="diagnostic-card" id="step-career">
+        <span class="step-indicator">Paso 2 de 4</span>
+        <h1>¿Qué carrera te interesa?</h1>
+        <p>Nos ayudará a entender tus objetivos y la competencia para ingresar.</p>
+        
+        <select class="select-input" id="career-select" onchange="checkCareerSelection()">
+            <option value="" disabled selected>Selecciona tu carrera</option>
+            <!-- Injected dynamically -->
+        </select>
+        
+        <button class="btn" id="btn-career-next" onclick="nextStep('step-course')" disabled>Siguiente</button>
+    </div>
+
+    <!-- Step 3: Hardest Course -->
+    <div class="diagnostic-card" id="step-course">
+        <span class="step-indicator">Paso 3 de 4</span>
+        <h1>¿Qué curso te cuesta más?</h1>
+        <p>Priorizaremos estos temas en tu ruta para asegurar que refuerces tus debilidades desde el primer día.</p>
+        
+        <select class="select-input" id="course-select" onchange="checkCourseSelection()">
+            <option value="" disabled selected>Cargando cursos...</option>
+        </select>
+        
+        <button class="btn" id="btn-course-next" onclick="nextStep('step-intro')" disabled>Siguiente</button>
+    </div>
+
+    <!-- Step 4: Intro Diagnostic -->
     <div class="diagnostic-card" id="step-intro">
+        <span class="step-indicator">Paso 4 de 4</span>
         <h1>Examen Diagnóstico (RM y RV)</h1>
-        <p>Para generar tu ruta de aprendizaje personalizada mediante IA, necesitamos evaluar tu nivel base. Resolverás 8 preguntas rápidas de Razonamiento Matemático y Razonamiento Verbal.</p>
+        <p>Para generar tu ruta inicial, necesitas resolver 8 preguntas rápidas de Razonamiento Matemático y Verbal que irán subiendo de nivel. Esto calibrará tu IA.</p>
         <button class="btn" id="btn-start" onclick="startDiagnostic()">Comenzar Diagnóstico</button>
     </div>
 
-    <div class="diagnostic-card quiz-container" id="step-quiz">
+    <!-- Quiz Container -->
+    <div class="diagnostic-card" id="step-quiz">
         <div class="question-meta">
             <span id="q-category">Razonamiento Matemático</span>
             <span id="q-progress">Pregunta 1 de 8</span>
@@ -48,6 +118,7 @@
         <button class="btn" id="btn-next" onclick="nextQuestion()" disabled>Siguiente</button>
     </div>
 
+    <!-- Loading -->
     <div class="diagnostic-card loading-container" id="step-loading">
         <div class="spinner"></div>
         <h1>Analizando tus resultados</h1>
@@ -58,23 +129,123 @@
     <script src="../../assets/js/core/auth.js"></script>
     <script src="../../assets/js/core/ai-engine.js"></script>
     <script>
-        Auth.requireAuth(); // Ensure only logged-in users are here
+        Auth.requireAuth();
 
+        // State
+        const state = {
+            university: null,
+            career: null,
+            hardestCourse: null
+        };
+
+        // Mock Careers per University
+        const mockCareers = {
+            'UNI': ['Ingeniería de Sistemas', 'Ingeniería Civil', 'Arquitectura', 'Ingeniería Industrial', 'Ingeniería Mecatrónica'],
+            'SAN_MARCOS': ['Medicina Humana', 'Derecho', 'Psicología', 'Ingeniería de Software', 'Contabilidad'],
+            'PUCP': ['Ingeniería Informática', 'Derecho', 'Diseño Gráfico', 'Comunicaciones', 'Economía']
+        };
+
+        // --- Step logic ---
+        function nextStep(stepId) {
+            document.querySelectorAll('.diagnostic-card').forEach(c => c.classList.remove('active'));
+            document.getElementById(stepId).classList.add('active');
+
+            if (stepId === 'step-career') {
+                populateCareers();
+            } else if (stepId === 'step-course') {
+                populateCourses();
+            }
+        }
+
+        function selectUniversity(uniId, cardEl) {
+            document.querySelectorAll('.uni-card').forEach(c => c.classList.remove('selected'));
+            cardEl.classList.add('selected');
+            state.university = uniId;
+            document.getElementById('btn-uni-next').disabled = false;
+        }
+
+        function populateCareers() {
+            const select = document.getElementById('career-select');
+            select.innerHTML = '<option value="" disabled selected>Selecciona tu carrera</option>';
+            
+            const careers = mockCareers[state.university] || [];
+            careers.forEach(c => {
+                const opt = document.createElement('option');
+                opt.value = c;
+                opt.innerText = c;
+                select.appendChild(opt);
+            });
+            document.getElementById('btn-career-next').disabled = true;
+        }
+
+        function checkCareerSelection() {
+            state.career = document.getElementById('career-select').value;
+            document.getElementById('btn-career-next').disabled = !state.career;
+        }
+
+        async function populateCourses() {
+            const select = document.getElementById('course-select');
+            
+            // Only load once
+            if (select.options.length > 1 && select.options[0].text !== 'Cargando cursos...') return;
+
+            try {
+                const res = await fetch('../../mock/courses.json');
+                const courses = await res.json();
+                
+                select.innerHTML = '<option value="" disabled selected>Selecciona un curso</option>';
+                courses.forEach(c => {
+                    const opt = document.createElement('option');
+                    opt.value = c.id;
+                    opt.innerText = c.name;
+                    select.appendChild(opt);
+                });
+            } catch (err) {
+                console.error(err);
+                select.innerHTML = '<option value="" disabled selected>Error cargando cursos</option>';
+            }
+        }
+
+        function checkCourseSelection() {
+            state.hardestCourse = document.getElementById('course-select').value;
+            document.getElementById('btn-course-next').disabled = !state.hardestCourse;
+        }
+
+        // --- Diagnostic Logic ---
         let problems = [];
         let currentQuestionIndex = 0;
         let selectedOptionIndex = null;
-        let diagnosticResults = []; // stores { topicId, isCorrect }
+        let diagnosticResults = []; // { topicId, isCorrect }
 
         async function startDiagnostic() {
-            document.getElementById('step-intro').style.display = 'none';
-            document.getElementById('step-quiz').style.display = 'block';
+            document.querySelectorAll('.diagnostic-card').forEach(c => c.classList.remove('active'));
+            document.getElementById('step-quiz').classList.add('active');
 
             try {
                 const res = await fetch('../../mock/problems.json');
                 const allProblems = await res.json();
                 
-                const rmProblems = allProblems.filter(p => p.id.startsWith('prob_rm_')).slice(0, 4);
-                const rvProblems = allProblems.filter(p => p.id.startsWith('prob_rv_')).slice(0, 4);
+                // Fisher-Yates shuffle
+                const shuffle = (arr) => {
+                    const a = [...arr];
+                    for (let i = a.length - 1; i > 0; i--) {
+                        const j = Math.floor(Math.random() * (i + 1));
+                        [a[i], a[j]] = [a[j], a[i]];
+                    }
+                    return a;
+                };
+
+                // We need 4 RM and 4 RV: 2 basic + 1 medium + 1 hard each
+                const getQuestions = (prefix) => {
+                    const pool = allProblems.filter(p => p.id.startsWith(prefix));
+                    const basics = shuffle(pool.filter(p => p.difficulty === 'basic')).slice(0, 2);
+                    const mediums = shuffle(pool.filter(p => p.difficulty === 'medium')).slice(0, 1);
+                    const hards  = shuffle(pool.filter(p => p.difficulty === 'hard')).slice(0, 1);
+                    return [...basics, ...mediums, ...hards];
+                };
+
+                const rmProblems = getQuestions('prob_rm_');
+                const rvProblems = getQuestions('prob_rv_');
                 
                 problems = [...rmProblems, ...rvProblems];
                 renderQuestion();
@@ -131,8 +302,8 @@
         }
 
         async function finishDiagnostic() {
-            document.getElementById('step-quiz').style.display = 'none';
-            document.getElementById('step-loading').style.display = 'block';
+            document.querySelectorAll('.diagnostic-card').forEach(c => c.classList.remove('active'));
+            document.getElementById('step-loading').classList.add('active');
 
             // Guardar resultados en el localStorage del usuario
             const session = Storage.getSession();
@@ -140,16 +311,26 @@
             const userIndex = users.findIndex(u => u.id === session.userId);
             
             if (userIndex !== -1) {
+                users[userIndex].target = state.university;
+                users[userIndex].career = state.career;
+                users[userIndex].hardestCourse = state.hardestCourse;
                 users[userIndex].diagnosticResults = diagnosticResults;
                 localStorage.setItem('eduquest_db_users', JSON.stringify(users));
+                // Update session info if needed
+                // Not calling Storage.saveSession here because users[userIndex] is a user object, not a session object.
+                // The session object only needs userId and role, which haven't changed.
             }
 
             // Llamar al AI Engine
             if (window.AIEngine) {
                 await AIEngine.generatePersonalizedRoadmap(diagnosticResults);
-                window.location.href = '../student/roadmap.html';
+                // Fake delay to show loading state nicely
+                setTimeout(() => {
+                    window.location.href = '../student/roadmap.html';
+                }, 1500);
             } else {
                 console.error("AI Engine no está cargado.");
+                window.location.href = '../student/roadmap.html';
             }
         }
     </script>
