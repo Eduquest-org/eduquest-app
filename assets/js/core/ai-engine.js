@@ -104,10 +104,9 @@ const AIEngine = {
 
             // Obtener perfil del usuario
             const session = Storage.getSession();
-            const users = JSON.parse(localStorage.getItem('eduquest_db_users')) || [];
-            const user = users.find(u => u.id === session.userId) || {};
-            const targetUniv = user.target || 'UNI';
-            const career = user.career || 'Ingeniería';
+            const user = UserManager.getCurrentUserDoc() || {};
+            const targetUniv = (user.profile && user.profile.target) || 'UNI';
+            const career = (user.profile && user.profile.career) || 'Ingeniería';
 
             // Obtener pesos para la universidad objetivo
             const univWeights = allWeights[targetUniv] || allWeights['UNI'] || {};
@@ -223,11 +222,8 @@ FORMATO DE RESPUESTA EXACTO:
                 routes, allCourses, allTopics, targetUniv
             );
 
-            // 13. Guardar en localStorage
-            localStorage.setItem(
-                `eduquest_roadmap_${session.userId}`,
-                JSON.stringify(roadmapCards)
-            );
+            // 13. Guardar en el documento del usuario
+            UserManager.saveCustomRoadmap(session.userId, roadmapCards);
 
             console.log('[AIEngine] Rutas generadas:', roadmapCards.length, 'cursos');
             return roadmapCards;
@@ -291,7 +287,7 @@ FORMATO DE RESPUESTA EXACTO:
         }];
         const session = Storage.getSession();
         if (session) {
-            localStorage.setItem(`eduquest_roadmap_${session.userId}`, JSON.stringify(fallbackMap));
+            UserManager.saveCustomRoadmap(session.userId, fallbackMap);
         }
         return fallbackMap;
     }

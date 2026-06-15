@@ -1,9 +1,14 @@
+// ==========================================================================
+// assets/js/core/current-user.js
+// SERVICIO DE LECTURA DEL USUARIO ACTIVO (sesión actual)
+// ==========================================================================
+// Lee datos del usuario logueado usando UserManager.
+// Provee acceso rápido a nombre, email, avatar, stats, profile, etc.
+// ==========================================================================
+
 const CurrentUserService = {
     getProfile() {
-        const session = Storage.getSession();
-        if (!session) return null;
-        const users = JSON.parse(localStorage.getItem('eduquest_db_users')) || [];
-        return users.find(u => u.id === session.userId) || null;
+        return UserManager.getCurrentUserDoc();
     },
     getName() {
         return this.getProfile()?.name || '';
@@ -22,7 +27,7 @@ const CurrentUserService = {
         return this.getProfile()?.role || '';
     },
     getAvatar() {
-        return this.getProfile()?.avatar || '👤';
+        return this.getProfile()?.profile?.avatar || '👤';
     },
     getInitials() {
         const name = this.getName();
@@ -30,8 +35,41 @@ const CurrentUserService = {
         const parts = name.split(' ');
         return parts.length > 1 ? (parts[0][0] + parts[1][0]).toUpperCase() : name[0].toUpperCase();
     },
+
+    /**
+     * Obtiene un valor del subobjeto `profile` del usuario.
+     * Ej: getProfileField('target') → "UNI"
+     */
+    getProfileField(key) {
+        return this.getProfile()?.profile?.[key] || '';
+    },
+
+    /**
+     * Obtiene un valor del subobjeto `stats` del usuario.
+     * Ej: getStatField('totalXp') → 1150
+     */
+    getStatField(key) {
+        return this.getProfile()?.stats?.[key] || '';
+    },
+
+    /**
+     * Retrocompatible con el uso anterior de getStat(key).
+     * Busca primero en `stats`, luego en `profile`, luego en raíz.
+     */
     getStat(key) {
-        return this.getProfile()?.[key] || '';
+        const user = this.getProfile();
+        if (!user) return '';
+
+        // Buscar en stats
+        if (user.stats && user.stats[key] !== undefined) return user.stats[key];
+
+        // Buscar en profile
+        if (user.profile && user.profile[key] !== undefined) return user.profile[key];
+
+        // Buscar en raíz (retrocompatibilidad para datos no migrados)
+        if (user[key] !== undefined) return user[key];
+
+        return '';
     }
 };
 

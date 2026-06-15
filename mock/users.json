@@ -6,12 +6,24 @@
       "email": "chris@eduquest.pe",
       "password": "123",
       "role": "student",
-      "target": "UNI",
-      "career": "Ingeniería de Sistemas",
-      "totalXp": 1150,
-      "streakDays": 3,
-      "rankingPos": "#3 en Aula",
-      "avatar": "🚀"
+      "profile": {
+        "avatar": "🚀",
+        "target": "UNI",
+        "career": "Ingeniería de Sistemas"
+      },
+      "stats": {
+        "totalXp": 1150,
+        "streakDays": 3,
+        "rankingPos": "#3 en Aula"
+      },
+      "learningProgress": {
+        "lastAccessedCourse": null,
+        "lastAccessedTopic": null,
+        "completedTopics": [],
+        "diagnosticResults": [],
+        "hardestCourse": null,
+        "customRoadmap": []
+      }
     },
     {
       "id": "U_HENRY",
@@ -19,32 +31,79 @@
       "email": "mendoza@eduquest.pe",
       "password": "UNI",
       "role": "teacher",
-      "classrooms": ["C_01"],
-      "avatar": "👨‍🏫"
+      "profile": {
+        "avatar": "👨‍🏫"
+      },
+      "classrooms": ["C_01"]
     },
     {
       "id": "U_01",
       "name": "Matias Del Castillo",
       "role": "student",
-      "target": "UNI",
-      "career": "Ing. de Sistemas",
-      "avatar": "🎓"
+      "profile": {
+        "avatar": "🎓",
+        "target": "UNI",
+        "career": "Ing. de Sistemas"
+      },
+      "stats": {
+        "totalXp": 1420,
+        "streakDays": 5,
+        "rankingPos": "#1 en Aula"
+      },
+      "learningProgress": {
+        "lastAccessedCourse": null,
+        "lastAccessedTopic": null,
+        "completedTopics": [],
+        "diagnosticResults": [],
+        "hardestCourse": null,
+        "customRoadmap": []
+      }
     },
     {
       "id": "U_02",
       "name": "Vanessa Barrientos",
       "role": "student",
-      "target": "UNI",
-      "career": "Ing. Industrial",
-      "avatar": "🧠"
+      "profile": {
+        "avatar": "🧠",
+        "target": "UNI",
+        "career": "Ing. Industrial"
+      },
+      "stats": {
+        "totalXp": 1280,
+        "streakDays": 2,
+        "rankingPos": "#2 en Aula"
+      },
+      "learningProgress": {
+        "lastAccessedCourse": null,
+        "lastAccessedTopic": null,
+        "completedTopics": [],
+        "diagnosticResults": [],
+        "hardestCourse": null,
+        "customRoadmap": []
+      }
     },
     {
       "id": "U_03",
       "name": "Vivianne Rios",
       "role": "student",
-      "target": "UNI",
-      "career": "Ing. Mecatronica",
-      "avatar": "O"
+      "profile": {
+        "avatar": "🌟",
+        "target": "UNI",
+        "career": "Ing. Mecatronica"
+      },
+      "stats": {
+        "totalXp": 980,
+        "streakDays": 1,
+        "rankingPos": "#4 en Aula"
+      },
+      "learningProgress": {
+        "lastAccessedCourse": null,
+        "lastAccessedTopic": null,
+        "completedTopics": [],
+        "diagnosticResults": [],
+        "hardestCourse": null,
+        "customRoadmap": []
+      }
     }
   ]
 }

@@ -126,6 +126,7 @@
     </div>
 
     <script src="../../assets/js/core/storage.js"></script>
+    <script src="../../assets/js/core/user-manager.js"></script>
     <script src="../../assets/js/core/auth.js"></script>
     <script src="../../assets/js/core/ai-engine.js"></script>
     <script>
@@ -305,20 +306,36 @@
             document.querySelectorAll('.diagnostic-card').forEach(c => c.classList.remove('active'));
             document.getElementById('step-loading').classList.add('active');
 
-            // Guardar resultados en el localStorage del usuario
+            // Guardar resultados en el documento del usuario via UserManager
             const session = Storage.getSession();
-            const users = JSON.parse(localStorage.getItem('eduquest_db_users')) || [];
-            const userIndex = users.findIndex(u => u.id === session.userId);
             
-            if (userIndex !== -1) {
-                users[userIndex].target = state.university;
-                users[userIndex].career = state.career;
-                users[userIndex].hardestCourse = state.hardestCourse;
-                users[userIndex].diagnosticResults = diagnosticResults;
-                localStorage.setItem('eduquest_db_users', JSON.stringify(users));
-                // Update session info if needed
-                // Not calling Storage.saveSession here because users[userIndex] is a user object, not a session object.
-                // The session object only needs userId and role, which haven't changed.
+            if (session && window.UserManager) {
+                // Actualizar perfil con universidad y carrera elegidas
+                UserManager.updateProfile(session.userId, {
+                    target: state.university,
+                    career: state.career
+                });
+
+                // Guardar curso más difícil en learningProgress
+                const users = UserManager.getAllUsers();
+                const userIdx = users.findIndex(u => u.id === session.userId);
+                if (userIdx !== -1) {
+                    if (!users[userIdx].learningProgress) {
+                        users[userIdx].learningProgress = {
+                            lastAccessedCourse: null,
+                            lastAccessedTopic: null,
+                            completedTopics: [],
+                            diagnosticResults: [],
+                            hardestCourse: null,
+                            customRoadmap: []
+                        };
+                    }
+                    users[userIdx].learningProgress.hardestCourse = state.hardestCourse;
+                    UserManager.saveAllUsers(users);
+                }
+
+                // Guardar resultados del diagnóstico
+                UserManager.saveDiagnosticResults(session.userId, diagnosticResults);
             }
 
             // Llamar al AI Engine
