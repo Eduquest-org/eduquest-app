@@ -1,0 +1,120 @@
+:root {
+  --teal: #0E8F86;
+  --teal-soft: #E4F4F2;
+  --rose: #C2486B;
+  --rose-soft: #FBEAEF;
+  --slate: #516390;
+  --slate-soft: #EDEFF5;
+  --bronze: #B0623A;
+  --bronze-soft: #FBEAE0;
+  --silver: #9CA0AE;
+  --silver-soft: #F1F2F5;
+}
+
+.content { max-width:1180px; }
+
+/* ===== Screen 1: section picker ===== */
+.page-head{margin-bottom:22px;}
+.page-head h2{font-size:24px;margin-bottom:6px;}
+.page-head p{font-size:14px;color:var(--muted);}
+
+.filter-chips{display:flex;gap:8px;margin-bottom:22px;flex-wrap:wrap;}
+.chip{padding:8px 16px;border-radius:999px;border:1px solid var(--border);background:var(--surface);font-size:13px;font-weight:600;color:var(--ink-soft);cursor:pointer;transition:background .15s,color .15s,border-color .15s;}
+.chip:hover{border-color:var(--brand-soft);}
+.chip.active{background:var(--brand);color:#fff;border-color:transparent;}
+
+.section-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:18px;}
+.section-card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:22px;cursor:pointer;box-shadow:var(--shadow-sm);transition:transform .15s,box-shadow .15s;position:relative;overflow:hidden;}
+.section-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-md);}
+
+.course-icon-chip{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:14px;}
+.course-icon-chip svg{width:21px;height:21px;}
+.section-card h4{font-size:16.5px;margin-bottom:4px;}
+.section-card .course-tag{font-size:12.5px;color:var(--muted);margin-bottom:18px;}
+.section-card-stats{display:flex;gap:22px;margin-bottom:18px;}
+.section-card-stats .stat .num{font-size:17px;font-weight:700;font-family:'Outfit',sans-serif;}
+.section-card-stats .stat .lbl{font-size:11px;color:var(--muted);}
+.avatar-stack{display:flex;align-items:center;margin-bottom:6px;}
+.avatar-stack .mini-avatar{width:28px;height:28px;border-radius:50%;border:2px solid var(--surface);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;margin-left:-8px;font-family:'Outfit',sans-serif;}
+.avatar-stack .mini-avatar:first-child{margin-left:0;}
+.avatar-stack .more{font-size:12px;color:var(--muted);margin-left:10px;font-weight:600;}
+.enter-row{display:flex;align-items:center;gap:5px;margin-top:10px;color:var(--amber-dark);font-size:13px;font-weight:600;}
+.enter-row svg{width:14px;height:14px;}
+
+/* ===== Screen 2: section detail ===== */
+.back-link{display:inline-flex;align-items:center;gap:6px;color:var(--ink-soft);font-size:13.5px;font-weight:600;margin-bottom:18px;cursor:pointer;}
+.back-link svg{width:15px;height:15px;}
+.back-link:hover{color:var(--ink);}
+
+.section-header{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;flex-wrap:wrap;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px;margin-bottom:22px;box-shadow:var(--shadow-sm);}
+.section-title-row{display:flex;align-items:center;gap:14px;}
+.section-title-block h2{font-size:21px;margin-bottom:5px;}
+.section-title-block p{font-size:13.5px;color:var(--muted);}
+.section-stats{display:flex;gap:26px;}
+.mini-stat{text-align:right;}
+.mini-stat .val{font-size:19px;font-weight:700;font-family:'Outfit',sans-serif;color:var(--ink);}
+.mini-stat.amber .val{color:var(--amber-dark);}
+.mini-stat .lbl{font-size:11.5px;color:var(--muted);margin-top:2px;}
+.section-actions{display:flex;gap:10px;flex-wrap:wrap;}
+.btn-line{background:transparent;border:1.5px solid var(--border);color:var(--ink-soft);}
+.btn-line:hover{border-color:var(--amber-line);color:var(--amber-dark);background:var(--amber-soft);}
+
+.ranking-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:26px;box-shadow:var(--shadow-sm);}
+.panel-head-row{display:flex;align-items:center;gap:10px;margin-bottom:18px;}
+.panel-icon-trophy{width:32px;height:32px;border-radius:9px;background:var(--amber-soft);color:var(--amber-dark);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.panel-icon-trophy svg{width:17px;height:17px;}
+.panel-head-row h3{font-size:17px;}
+
+.ranking-toolbar{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:22px;}
+.toolbar-tabs{display:flex;gap:4px;background:var(--bg);padding:4px;border-radius:11px;}
+.toolbar-tab{padding:7px 14px;border-radius:8px;font-size:12.5px;font-weight:600;color:var(--ink-soft);cursor:pointer;border:none;background:transparent;}
+.toolbar-tab.active{background:var(--surface);color:var(--ink);box-shadow:var(--shadow-sm);}
+.mini-search{display:flex;align-items:center;gap:8px;background:var(--bg);border:1px solid var(--border);border-radius:11px;padding:8px 12px;min-width:210px;}
+.mini-search input{border:none;background:transparent;outline:none;font-size:13.5px;width:100%;color:var(--ink);font-family:'Inter',sans-serif;}
+.mini-search svg{width:15px;height:15px;color:var(--muted);flex-shrink:0;}
+
+.podium{display:flex;gap:16px;justify-content:center;align-items:flex-end;margin-bottom:30px;flex-wrap:wrap;}
+.podium-card{flex:1;max-width:210px;min-width:160px;background:var(--bg);border:1px solid var(--border);border-radius:18px;padding:22px 16px 18px;text-align:center;position:relative;}
+.podium-card.rank-1{order:2;margin-top:0;border-color:var(--amber-line);background:var(--amber-soft);}
+.podium-card.rank-2{order:1;margin-top:30px;}
+.podium-card.rank-3{order:3;margin-top:30px;}
+.medal{position:absolute;top:-14px;left:50%;transform:translateX(-50%);width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#fff;font-family:'Outfit',sans-serif;box-shadow:var(--shadow-sm);}
+.medal.gold{background:linear-gradient(155deg,#F8C24A,#D98A0E);}
+.medal.silver{background:linear-gradient(155deg,#C9CCD6,#9CA0AE);}
+.medal.bronze{background:linear-gradient(155deg,#D89465,#B0623A);}
+.podium-avatar{width:54px;height:54px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:17px;font-family:'Outfit',sans-serif;margin:6px auto 12px;}
+.podium-name{font-size:14px;font-weight:600;margin-bottom:4px;}
+.podium-xp{font-size:19px;font-weight:700;color:var(--amber-dark);font-family:'Outfit',sans-serif;}
+.podium-xp span{font-size:11px;color:var(--muted);font-weight:500;}
+.podium-liga{display:inline-block;font-size:10.5px;font-weight:700;padding:3px 10px;border-radius:999px;margin-top:8px;}
+
+.rank-list{display:flex;flex-direction:column;}
+.rank-row{display:grid;grid-template-columns:32px 40px 1fr auto auto;align-items:center;gap:14px;padding:13px 8px;border-bottom:1px solid var(--border);border-radius:12px;}
+.rank-row:last-child{border-bottom:none;}
+.rank-row:hover{background:var(--bg);}
+.rank-num{font-size:14px;font-weight:700;color:var(--muted);text-align:center;}
+.rank-avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:13.5px;font-family:'Outfit',sans-serif;flex-shrink:0;}
+.rank-name{font-size:14.5px;font-weight:600;}
+.rank-activity{font-size:12.5px;color:var(--muted);margin-top:2px;}
+.rank-liga{font-size:11px;font-weight:700;padding:5px 11px;border-radius:999px;white-space:nowrap;}
+.rank-liga.plat{background:var(--slate-soft);color:var(--slate);}
+.rank-liga.oro{background:var(--amber-soft);color:var(--amber-dark);}
+.rank-liga.plata{background:var(--silver-soft);color:#7A7E8C;}
+.rank-liga.bronce{background:var(--bronze-soft);color:var(--bronze);}
+.rank-xp{font-size:15px;font-weight:700;color:var(--ink);text-align:right;white-space:nowrap;font-family:'Outfit',sans-serif;}
+.rank-xp span{font-size:11px;color:var(--muted);font-weight:500;font-family:'Inter',sans-serif;margin-left:3px;}
+.empty-row{padding:30px 0;text-align:center;color:var(--muted);font-size:13.5px;}
+
+/* ===== Responsive ===== */
+@media (max-width:1100px){
+  .section-header{flex-direction:column;}
+  .section-stats{width:100%;justify-content:space-between;}
+}
+@media (max-width:760px){
+  .rank-row{grid-template-columns:26px 36px 1fr auto;}
+  .rank-liga{display:none;}
+  .ranking-toolbar{flex-direction:column;align-items:stretch;}
+  .mini-search{min-width:0;}
+}
+
+.hidden { display: none !important; }
