@@ -312,7 +312,8 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 24px 32px 18px;
+    gap: 12px;
+    padding: 20px 24px 16px;
     background: #fff;
     border-bottom: 1px solid var(--border);
 }
@@ -333,13 +334,19 @@
 
 .quiz-header-center {
     text-align: center;
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
 }
 
 .quiz-header-center h3 {
     font-family: 'Sora', sans-serif;
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 700;
     color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 #quiz-timer {
@@ -352,6 +359,12 @@
     font-size: 13px;
     font-weight: 700;
     color: var(--sub);
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.quiz-btn-exit {
+    flex-shrink: 0;
 }
 
 .quiz-question-card {
