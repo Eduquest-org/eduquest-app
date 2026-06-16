@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>EduQuest — Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Inter:wght@400;500;600;700;900&family=Sora:wght@700;800&display=swap" rel="stylesheet">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -14,6 +15,8 @@
   <link rel="stylesheet" href="../../assets/css/global/variables.css">
   <link rel="stylesheet" href="../../assets/css/components/buttons.css">
   <link rel="stylesheet" href="../../assets/css/pages/student-dashboard.css">
+  <link rel="stylesheet" href="../../assets/css/components/charts.css">
+    <link rel="stylesheet" href="../../assets/css/components/sidebar.css">
   <link rel="stylesheet" href="../../assets/css/components/feed-card.css">
   <link rel="stylesheet" href="../../assets/css/components/loader.css">
 </head>
@@ -30,7 +33,7 @@
         
         <div class="create-post-card">
           <div class="create-post-header">
-            <div class="user-avatar-mini" data-user-avatar>U</div>
+            <div class="user-avatar-mini">U</div>
             <input type="text" id="post-input" class="form-input" placeholder="¿Qué duda académica tienes hoy? (Ej: Geometría UNI...)">
           </div>
           <div class="create-post-actions">
@@ -49,20 +52,28 @@
           <p>Gana 850 XP más para subir de liga.</p>
           
           <div class="xp-stats">
-            <span class="xp-current" data-user-xp>Cargando...</span>
+            <span class="xp-current">1,150 XP</span>
             <span class="xp-goal">/ 2,000 XP</span>
           </div>
           
           <div class="progress-bar-container">
             <div class="progress-bar" style="width: 65%;"></div>
           </div>
-          <span class="widget-meta">🔥 Racha de <span data-user-streak></span> consecutivos</span>
+          <span class="widget-meta">🔥 Racha de 3 días consecutivos</span>
         </div>
+
+
 
         <div class="widget-card challenge-card card card-md">
           <h3>🎯 Misión Diaria</h3>
           <p>Completa un simulacro de Álgebra Nivel UNI sin usar la calculadora.</p>
           <button class="btn outline sm full" onclick="window.location.href='quizzes.html'" style="margin-top: 12px; width: 100%;">Ir al Simulacro</button>
+        </div>
+
+        <div class="widget-card challenge-card card card-md">
+          <h3>📊 Dasboard Rendimiento</h3>
+            <canvas id="globalChart"></canvas>
+          <button class="btn outline sm full" onclick="window.location.href='estadisticas-rendimiento.html'" style="margin-top: 12px; width: 100%;">Ver Rendimiento</button>
         </div>
 
         <div class="widget-card ranking-card card card-md">
@@ -87,10 +98,10 @@
             <li style="background: rgba(29, 158, 117, 0.1); border-radius: 8px; padding: 6px 8px;">
               <div class="rank-user">
                 <span class="rank-num" style="color: var(--green);">3</span> 
-                <span class="user-avatar-mini" style="width: 28px; height: 28px; font-size: 14px;" data-user-avatar>✨</span>
-                <strong>Tú (<span data-user-firstname></span>)</strong>
+                <span class="user-avatar-mini" style="width: 28px; height: 28px; font-size: 14px;">✨</span>
+                <strong>Tú</strong>
               </div>
-              <span class="rank-pts" data-user-xp></span>
+              <span class="rank-pts">1,150 XP</span>
             </li>
           </ul>
           <a href="rankings.html" class="widget-link" style="display: block; text-align: center; margin-top: 8px;">Ver tabla completa →</a>
@@ -101,16 +112,18 @@
     </main>
 
   </div>
+  <script src="../../assets/js/student/estadisticas-rendimiento.js"></script>
   <script src="../../assets/js/components/global-loader.js"></script>
   <script src="../../assets/js/utils/component-loader.js"></script>
   <script src="../../assets/js/student/dashboard.js"></script>
   <script src="../../assets/js/student/feed.js"></script>
-
   <script src="../../assets/js/core/storage.js"></script>
   <script src="../../assets/js/core/user-manager.js"></script>
   <script src="../../assets/js/core/auth.js"></script>
   <script src="../../assets/js/core/router.js"></script>
   <script src="../../assets/js/core/current-user.js"></script>
   <script src="../../assets/js/core/app.js"></script>
+
+
 </body>
 </html>

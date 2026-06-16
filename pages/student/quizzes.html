@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EduQuest — Quizzez</title>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Inter:wght@400;500;600;700;900&family=Sora:wght@700;800&display=swap" rel="stylesheet">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Sora:wght@700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="../../assets/css/global/reset.css">
+  <link rel="stylesheet" href="../../assets/css/global/global.css">
+  <link rel="stylesheet" href="../../assets/css/global/variables.css">
+  <link rel="stylesheet" href="../../assets/css/components/buttons.css">
+  <link rel="stylesheet" href="../../assets/css/pages/student-dashboard.css">
+  <link rel="stylesheet" href="../../assets/css/components/sidebar.css">
+  <link rel="stylesheet" href="../../assets/css/components/feed-card.css">
+  <link rel="stylesheet" href="../../assets/css/components/cards.css">
+  <link rel="stylesheet" href="../../assets/css/components/loader.css">
+</head>
+<body>
+    <div id="topbar-container" data-path="../../components/topbar-students.html"></div>
+    <div class="app-shell" id="student-shell">
+        <div id="sidebar-container" data-path="../../components/sidebar.html"></div>
+        <main class="main-content">
+        <div class="content">
+                    <div class="back-btn-container">
+                    <a class="back-link" href="../../pages/student/roadmap.html">← Volver a mis rutas</a>
+                    </div>
+
+            <h1>Mundo: Álgebra Preuniversitaria</h1>
+            <p>Marca una respuesta por 3 preguntas</p>
+
+            <form id="quizForm">
+
+                <div class="question-card">
+                    <h3>Pregunta 1</h3>
+
+                    <p>Si se cumple que:</p>
+
+                    <div class="equation">
+                        x + 1/2 = 3
+                    </div>
+
+                    <p>Marque la respuesta correcta:</p>
+
+                    <label><input type="radio" name="q1" value="1"> 1</label>
+                    <label><input type="radio" name="q1" value="2"> 2</label>
+                    <label><input type="radio" name="q1" value="2.5"> 2.5</label>
+                </div>
+                <div class="question-card">
+                    <h3>Pregunta 2</h3>
+
+                    <p>Si se cumple que:</p>
+
+                    <div class="equation">
+                        x + 1/x = 3
+                    </div>
+
+                    <p>Marque la respuesta correcta:</p>
+
+                    <label><input type="radio" name="q2" value="1"> 1</label>
+                    <label><input type="radio" name="q2" value="2"> 2</label>
+                    <label><input type="radio" name="q2" value="3"> 3</label>
+                </div>
+
+                <div class="question-card">
+                    <h3>Pregunta 3</h3>
+
+                    <p>Si se cumple que:</p>
+
+                    <div class="equation">
+                        x² - 4 = 0
+                    </div>
+
+                    <p>Marque la respuesta correcta:</p>
+
+                    <label><input type="radio" name="q3" value="1"> 1</label>
+                    <label><input type="radio" name="q3" value="2"> 2</label>
+                    <label><input type="radio" name="q3" value="4"> 4</label>
+                </div>
+
+               <a class="btn btn-primary" href="../../pages/student/roadmap.html" role="button">Enviar</a>
+
+            </form>
+
+        </div>
+
+    </main>
+    </div>
+
+  <script src="../../assets/js/components/global-loader.js"></script>
+  <script src="../../assets/js/utils/component-loader.js"></script>
+  <script src="../../assets/js/student/dashboard.js"></script>
+  <script src="../../assets/js/student/feed.js"></script>
+  <script src="../../assets/js/core/storage.js"></script>
+  <script src="../../assets/js/core/user-manager.js"></script>
+  <script src="../../assets/js/core/auth.js"></script>
+  <script src="../../assets/js/core/router.js"></script>
+  <script src="../../assets/js/core/current-user.js"></script>
+  <script src="../../assets/js/core/app.js"></script>
+  <script src="../../assets/js/quizzes.js"></script>
+
+</body>
+</html>

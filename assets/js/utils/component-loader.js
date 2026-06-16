@@ -28,7 +28,7 @@ function activateSidebarCurrentPage() {
         currentPage = "dashboard.html";
     }
 
-    const sidebarItems = document.querySelectorAll('.sidebar .sb-item, .sb-nav .sb-item');
+    const sidebarItems = document.querySelectorAll('.sidebar .sb-item, .sb-nav .sb-item, .sidebar .nav-item');
     
     if (sidebarItems.length === 0) {
         setTimeout(activateSidebarCurrentPage, 30);
@@ -38,13 +38,27 @@ function activateSidebarCurrentPage() {
     sidebarItems.forEach(item => {
         const targetPage = item.getAttribute('data-page');
 
-        if (currentPage === targetPage) {
+        if (currentPage === targetPage || (currentPage === 'dashboard.html' && targetPage === 'index.html')) {
             item.classList.add('on'); 
+            item.classList.add('active'); 
             const dot = item.querySelector('.sb-dot');
             if (dot) dot.classList.add('g'); 
         } else {
             item.classList.remove('on');
+            item.classList.remove('active');
         }
+    });
+
+    // Control de Sidebar Móvil para panel de profesor
+    const sidebar = document.getElementById('sidebar');
+    const backdrop = document.getElementById('backdrop');
+    document.getElementById('menuToggle')?.addEventListener('click', ()=>{
+      sidebar?.classList.toggle('open');
+      backdrop?.classList.toggle('open');
+    });
+    backdrop?.addEventListener('click', ()=>{
+      sidebar?.classList.remove('open');
+      backdrop?.classList.remove('open');
     });
 }
 

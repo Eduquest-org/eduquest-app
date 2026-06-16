@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EduQuest · Classroom</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="../../assets/css/pages/teacher-classrooms.css">
+</head>
+
+<body>
+
+  <div class="app">
+
+    <div id="sidebar-container" data-path="../../components/sidebar-profesor.html"></div>
+
+    <div class="main-wrap">
+
+      <div id="topbar-container" data-path="../../components/topbar-teacher.html"></div>
+
+      <div class="content">
+
+        <!-- ============ SCREEN 1: selección de sección ============ -->
+        <div id="screen-select">
+          <div class="page-head">
+            <h2>Classroom</h2>
+            <p>Selecciona una sección para ver el curso y la actividad de tus alumnos.</p>
+          </div>
+
+          <div class="filter-chips" id="filterChips">
+            <button class="chip active" data-course="todas">Todas</button>
+            <button class="chip" data-course="Física">Física</button>
+            <button class="chip" data-course="Álgebra">Álgebra</button>
+            <button class="chip" data-course="Química">Química</button>
+            <button class="chip" data-course="Razonamiento Matemático">Raz. Matemático</button>
+          </div>
+
+          <div class="section-grid" id="sectionGrid"></div>
+        </div>
+
+        <!-- ============ SCREEN 2: detalle de sección ============ -->
+        <div id="screen-detail" class="hidden">
+          <span class="back-link" id="backLink">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <polyline points="15 18 9 12 15 6" />
+            </svg>
+            Volver a secciones
+          </span>
+
+          <div class="section-header">
+            <div class="section-title-row">
+              <div class="course-icon-chip" id="detailIconChip"></div>
+              <div class="section-title-block">
+                <h2 id="detailTitle">—</h2>
+                <p id="detailSubtitle">—</p>
+              </div>
+            </div>
+            <div class="section-stats">
+              <div class="mini-stat amber">
+                <div class="val" id="detailAvgXp">—</div>
+                <div class="lbl">XP promedio</div>
+              </div>
+              <div class="mini-stat">
+                <div class="val" id="detailActivity">—</div>
+                <div class="lbl">Actividad semanal</div>
+              </div>
+              <div class="mini-stat">
+                <div class="val" id="detailCount">—</div>
+                <div class="lbl">Alumnos</div>
+              </div>
+            </div>
+            <div class="section-actions">
+              <button class="btn btn-purple">Asignar tarea</button>
+              <button class="btn btn-line">Calificar tareas</button>
+            </div>
+          </div>
+
+          <div class="ranking-panel">
+            <div class="panel-head-row">
+              <div class="panel-icon-trophy">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4Z" />
+                  <path d="M7 6H4a2 2 0 0 0 0 4h.5M17 6h3a2 2 0 0 1 0 4h-.5" />
+                </svg>
+              </div>
+              <h3>Ranking de actividad</h3>
+            </div>
+
+            <div class="ranking-toolbar">
+              <div class="toolbar-tabs">
+                <button class="toolbar-tab active" data-period="semana">Esta semana</button>
+                <button class="toolbar-tab" data-period="mes">Este mes</button>
+                <button class="toolbar-tab" data-period="todo">Todo el tiempo</button>
+              </div>
+              <div class="mini-search">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                  <circle cx="11" cy="11" r="7" />
+                  <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                </svg>
+                <input type="text" id="studentSearch" placeholder="Buscar alumno...">
+              </div>
+            </div>
+
+            <div class="podium" id="podium"></div>
+            <div class="rank-list" id="rankList"></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="../../assets/js/utils/component-loader.js"></script>
+  <script src="../../assets/js/core/storage.js"></script>
+  <script src="../../assets/js/core/user-manager.js"></script>
+  <script src="../../assets/js/core/auth.js"></script>
+  <script src="../../assets/js/core/current-user.js"></script>
+  <script src="../../assets/js/teacher/classrooms.js"></script>
+
+</body>
+
+</html>

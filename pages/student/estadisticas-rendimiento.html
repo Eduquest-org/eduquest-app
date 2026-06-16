@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>EduQuest - Dashboard de Rendimiento</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="../../assets/css/global/reset.css">
+  <link rel="stylesheet" href="../../assets/css/global/global.css">
+  <link rel="stylesheet" href="../../assets/css/global/variables.css">
+  <link rel="stylesheet" href="../../assets/css/components/buttons.css">
+  <link rel="stylesheet" href="../../assets/css/pages/student-dashboard.css">
+  <link rel="stylesheet" href="../../assets/css/components/feed-card.css">
+  <link rel="stylesheet" href="../../assets/css/components/cards.css">
+  <link rel="stylesheet" href="../../assets/css/components/loader.css">
+  <link rel="stylesheet" href="../../assets/css/components/charts.css">
+</head>
+<body>
+    <div id="topbar-container" data-path="../../components/topbar-students.html"></div>
+    <div class="app-shell" id="student-shell">
+          <div id="sidebar-container" data-path="../../components/sidebar.html"></div>
+        <div class="content">
+            <div class="view-header">
+            <h1>Dashboard Rendimiento</h1>
+            <p>Visualiza tus aciertos y errores por materia.</p>
+            <p> </p>
+            </div>
+        <div class="stats-grid">
+
+            <div class="stat-card">
+                <h4>Promedio General</h4>
+                <h2>78%</h2>
+            </div>
+
+            <div class="stat-card">
+                <h4>Mejor Materia</h4>
+                <h2>Álgebra</h2>
+                <span>90%</span>
+            </div>
+
+            <div class="stat-card">
+                <h4>Materia a Reforzar</h4>
+                <h2>Física</h2>
+                <span>65%</span>
+            </div>
+
+            <div class="stat-card">
+                <h4>Simulacros</h4>
+                <h2>12</h2>
+            </div>
+
+        </div>
+
+        <div class="charts">
+
+            <div class="card">
+                <h3>Aciertos y Errores por Materia</h3>
+                <canvas id="subjectChart"></canvas>
+            </div>
+
+            <div class="card">
+                <h3>Rendimiento Global</h3>
+                <canvas id="globalChart"></canvas>
+            </div>
+
+        </div>
+
+        <div class="card">
+
+            <h3>Detalle por Materia</h3>
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>Materia</th>
+                        <th>Aciertos</th>
+                        <th>Errores</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    <tr>
+                        <td>Álgebra</td>
+                        <td>90%</td>
+                        <td>10%</td>
+                        <td>
+                            <span class="badge excelente">
+                                Excelente
+                            </span>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>Aritmética</td>
+                        <td>78%</td>
+                        <td>22%</td>
+                        <td>
+                            <span class="badge bueno">
+                                Bueno
+                            </span>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>Geometría</td>
+                        <td>72%</td>
+                        <td>28%</td>
+                        <td>
+                            <span class="badge bueno">
+                                Bueno
+                            </span>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>Física</td>
+                        <td>65%</td>
+                        <td>35%</td>
+                        <td>
+                            <span class="badge reforzar">
+                                Reforzar
+                            </span>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>Química</td>
+                        <td>83%</td>
+                        <td>17%</td>
+                        <td>
+                            <span class="badge excelente">
+                                Excelente
+                            </span>
+                        </td>
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        <div class="card recommendation">
+
+            <h3>Recomendaciones Automáticas</h3>
+
+            <ul>
+                <li>
+                    Física: reforzar cinemática y dinámica.
+                </li>
+
+                <li>
+                    Geometría: practicar áreas y volúmenes.
+                </li>
+
+                <li>
+                    Álgebra: desbloquear ejercicios avanzados.
+                </li>
+            </ul>
+
+        </div>
+
+    </div>
+</div>
+
+</div>
+  <script src="../../assets/js/components/global-loader.js"></script>
+  <script src="../../assets/js/utils/component-loader.js"></script>
+  <script src="../../assets/js/student/estadisticas-rendimiento.js"></script>
+    <script src="../../assets/js/student/dashboard.js"></script>
+  <script src="../../assets/js/student/feed.js"></script>
+  <script src="../../assets/js/core/storage.js"></script>
+  <script src="../../assets/js/core/user-manager.js"></script>
+  <script src="../../assets/js/core/auth.js"></script>
+  <script src="../../assets/js/core/router.js"></script>
+  <script src="../../assets/js/core/current-user.js"></script>
+  <script src="../../assets/js/core/app.js"></script>
+  <script src="../../assets/js/quizzes.js"></script>
+</body>
+</html>
