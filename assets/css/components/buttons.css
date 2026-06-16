@@ -1,0 +1,97 @@
+/* ======================================
+   EDUQUEST BUTTON SYSTEM
+====================================== */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  font-family: inherit;
+  font-weight: 700;
+  text-align: center;
+  text-decoration: none;
+
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+
+  transition: 0.2s ease;
+}
+
+/* Sizes */
+.btn-sm {
+  font-size: 13px;
+  padding: 10px 20px;
+}
+
+.btn-md {
+  font-size: 15px;
+  padding: 14px 32px;
+}
+
+.btn-lg {
+  font-size: 16px;
+  padding: 16px 40px;
+}
+
+.btn-full {
+  width: 100%;
+}
+
+/* Variants */
+.btn-primary {
+  background: var(--green);
+  color: var(--neutral-0);
+}
+
+.btn-primary:hover {
+  background: var(--green-500);
+}
+
+.btn-secondary {
+  background: var(--amber);
+  color: var(--neutral-900);
+}
+
+.btn-secondary:hover {
+  background: var(--amber-400);
+  color: var(--neutral-0);
+}
+
+.btn-teacher {
+  background: var(--indigo);
+  color: var(--neutral-0);
+}
+
+.btn-teacher:hover {
+  background: var(--indigo-400);
+}
+
+.btn-dark {
+  background: var(--dark);
+  color: var(--neutral-0);
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+.btn-outline:hover {
+  background: var(--fill);
+}
+
+.btn-danger {
+  background: var(--error-bg);
+  color: var(--error);
+  border: 1px solid var(--error);
+}
+
+.btn-disabled,
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

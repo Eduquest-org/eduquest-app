@@ -63,6 +63,18 @@ document.addEventListener("DOMContentLoaded", async () => {
         fetchPromises.push(loadComponent("sidebar-container", path));
     }
 
+    const navbarContainer =
+        document.getElementById("navbar-container");
+
+    if (navbarContainer) {
+        const path =
+            navbarContainer.getAttribute("data-path");
+
+        fetchPromises.push(
+            loadComponent("navbar-container", path)
+        );
+    }
+
     await Promise.all(fetchPromises);
 
     activateSidebarCurrentPage();
@@ -79,3 +91,4 @@ document.addEventListener("DOMContentLoaded", async () => {
         }, 100);
     }
 });
+

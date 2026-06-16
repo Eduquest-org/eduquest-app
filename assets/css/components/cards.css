@@ -1,0 +1,85 @@
+/* ======================================
+   EDUQUEST CARD SYSTEM
+====================================== */
+
+.card {
+  background: var(--neutral-0);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-3);
+  box-sizing: border-box;
+}
+
+/* Sizes */
+
+.card-sm {
+  padding: var(--space-2);
+}
+
+.card-md {
+  padding: var(--space-3);
+}
+
+.card-lg {
+  padding: var(--space-4);
+}
+
+/* Interaction */
+
+.card-hover {
+  transition: all 0.2s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+}
+
+/* Layout helpers */
+
+.card-full {
+  width: 100%;
+}
+
+.card-header {
+  margin-bottom: var(--space-2);
+}
+
+.card-title {
+  font-family: 'Sora', sans-serif;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.card-text {
+  color: var(--sub);
+  line-height: 1.5;
+}
+
+/* Variants */
+
+.card-soft {
+  background: var(--neutral-50);
+}
+
+.card-success {
+  background: var(--success-bg);
+  border-color: var(--success);
+}
+
+.card-warning {
+  background: var(--warning-bg);
+  border-color: var(--warning);
+}
+
+.card-danger {
+  background: var(--error-bg);
+  border-color: var(--error);
+}
+
+.card-dark {
+  background: var(--dark);
+  border-color: var(--dark);
+  color: var(--neutral-0);
+}

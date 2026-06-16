@@ -27,29 +27,6 @@
 }
 
 /* =======================================================
-   2. BANNER DE PERFIL EXPRESS COMPARTIDO
-   ======================================================= */
-.student-summary-banner {
-  background: #ffffff;
-  border: 1px solid var(--border);
-  border-radius: 18px;
-  padding: 20px 28px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.01);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 20px;
-}
-.profile-express-left { display: flex; align-items: center; gap: 16px; }
-.profile-express-avatar { width: 50px; height: 50px; border-radius: 50%; background: rgba(127, 119, 221, 0.1); color: var(--indigo); display: flex; align-items: center; justify-content: center; font-size: 22px; }
-.profile-express-welcome h3 { font-family: 'Sora', sans-serif; font-size: 16px; font-weight: 700; color: var(--dark); margin-bottom: 2px; }
-.profile-express-welcome p { font-size: 13px; color: var(--sub); }
-.profile-express-stats { display: flex; align-items: center; gap: 32px; }
-.express-stat-item { text-align: right; }
-.express-stat-val { font-family: 'Sora', sans-serif; font-size: 16px; font-weight: 800; color: var(--dark); display: block; }
-.express-stat-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); }
-
-/* =======================================================
    3. TABLA DE CLASIFICACIÓN (LEADERBOARD)
    ======================================================= */
 .leaderboard-card-wrapper {
@@ -179,8 +156,3 @@
   color: #475569;
   line-height: 1.5;
 }
-
-.advice-card { background: linear-gradient(135deg, rgba(29, 158, 117, 0.03), rgba(29, 158, 117, 0.01)); border-color: rgba(29, 158, 117, 0.2); }
-.advice-card h3 { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
-.advice-text { font-style: italic; color: #4b5563; font-size: 13px; line-height: 1.5; margin-bottom: 10px; }
-.advice-author { font-size: 11px; font-weight: 700; color: var(--green); }
