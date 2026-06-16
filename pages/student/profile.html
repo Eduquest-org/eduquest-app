@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EduQuest — Mi Perfil & Logros</title>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Inter:wght@400;500;600;700;900&family=Sora:wght@700;800&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../../assets/css/global/reset.css">
+  <link rel="stylesheet" href="../../assets/css/global/variables.css">
+  <link rel="stylesheet" href="../../assets/css/components/buttons.css">
+  <link rel="stylesheet" href="../../assets/css/pages/student-dashboard.css">
+  <link rel="stylesheet" href="../../assets/css/pages/profile.css">
+  <link rel="stylesheet" href="../../assets/css/components/modals.css">
+</head>
+<body>
+
+  <!-- Preloader de carga -->
+  <div id="app-preloader" style="position: fixed; top:0; left:0; width:100vw; height:100vh; background:#fff; z-index:99999; display:flex; flex-direction:column; align-items:center; justify-content:center; transition: opacity 0.4s ease;">
+    <div class="spinner" style="width:40px; height:40px; border:3px solid var(--border); border-top-color:var(--indigo); border-radius:50%; animation: spin 0.8s linear infinite;"></div>
+    <p style="margin-top:16px; font-weight:600; color:var(--text)">Cargando tu vitrina de medallas...</p>
+  </div>
+
+  <div id="topbar-container" data-path="../../components/topbar-students.html"></div>
+  <div class="app-shell" id="student-shell">
+    
+    <div id="sidebar-container" data-path="../../components/sidebar.html"></div>
+
+    <main class="dashboard-content profile-main-layout">
+      
+      <!-- CABECERA DE PERFIL PERSONALIZADA -->
+      <div class="profile-header-banner">
+        <div class="profile-avatar-wrapper">
+          <div class="profile-avatar-display" id="profile-avatar-btn" onclick="toggleAvatarDropdown()">
+            <span id="profile-current-avatar">🚀</span>
+            <div class="avatar-edit-overlay">Editar</div>
+          </div>
+          
+          <!-- Selector de Emojis desplegable -->
+          <div class="avatar-selection-dropdown" id="avatar-dropdown">
+            <span onclick="changeUserAvatar('🚀')">🚀</span>
+            <span onclick="changeUserAvatar('🧠')">🧠</span>
+            <span onclick="changeUserAvatar('🎓')">🎓</span>
+            <span onclick="changeUserAvatar('🌟')">🌟</span>
+            <span onclick="changeUserAvatar('🦁')">🦁</span>
+            <span onclick="changeUserAvatar('🦉')">🦉</span>
+            <span onclick="changeUserAvatar('🦖')">🦖</span>
+            <span onclick="changeUserAvatar('🔥')">🔥</span>
+            <span onclick="changeUserAvatar('⚡')">⚡</span>
+            <span onclick="changeUserAvatar('🎨')">🎨</span>
+            <span onclick="changeUserAvatar('🏆')">🏆</span>
+            <span onclick="changeUserAvatar('🧪')">🧪</span>
+          </div>
+        </div>
+
+        <div class="profile-details-column">
+          <h2 id="profile-full-name">Cargando Nombre...</h2>
+          <p class="profile-meta-subtitle" id="profile-email">email@eduquest.pe</p>
+          <div class="profile-badges-row">
+            <span class="target-tag-badge" id="profile-uni-target">Meta: UNI</span>
+            <span class="career-tag-badge" id="profile-career">Ingeniería</span>
+          </div>
+        </div>
+
+        <div class="profile-quick-stats">
+          <div class="quick-stat-pill">
+            <span class="pill-number" id="profile-xp-value" style="color: var(--green);">0</span>
+            <span class="pill-label">XP Acumulado</span>
+          </div>
+          <div class="quick-stat-pill">
+            <span class="pill-number" id="profile-streak-value" style="color: var(--amber);">🔥 0</span>
+            <span class="pill-label">Racha Activa</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ESTADÍSTICAS Y VITRINA DE INSIGNIAS -->
+      <div class="profile-body-grid">
+        
+        <!-- COLUMNA IZQUIERDA: METRICAS ACADÉMICAS -->
+        <div class="profile-stats-panel">
+          <h3>📊 Estadísticas de Aprendizaje</h3>
+          <div class="stats-cards-grid">
+            <div class="stat-metric-card">
+              <div class="stat-metric-icon">🏆</div>
+              <div class="stat-metric-info">
+                <span class="stat-val" id="stats-total-xp">1,150</span>
+                <span class="stat-lbl">XP Totales</span>
+              </div>
+            </div>
+            <div class="stat-metric-card">
+              <div class="stat-metric-icon">🔥</div>
+              <div class="stat-metric-info">
+                <span class="stat-val" id="stats-streak-days">3 días</span>
+                <span class="stat-lbl">Racha Actual</span>
+              </div>
+            </div>
+            <div class="stat-metric-card">
+              <div class="stat-metric-icon">📝</div>
+              <div class="stat-metric-info">
+                <span class="stat-val" id="stats-completed-quizzes">0</span>
+                <span class="stat-lbl">Simulacros Resueltos</span>
+              </div>
+            </div>
+            <div class="stat-metric-card">
+              <div class="stat-metric-icon">🎯</div>
+              <div class="stat-metric-info">
+                <span class="stat-val" id="stats-completed-challenges">0</span>
+                <span class="stat-lbl">Retos Diarios Cumplidos</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- COLUMNA DERECHA: VITRINA DE LOGROS (INSIGNIAS) -->
+        <div class="profile-badges-panel">
+          <div class="panel-header-badges">
+            <h3>🏅 Mis Insignias Digitales</h3>
+            <span id="badges-unlocked-ratio">0 / 6 Desbloqueadas</span>
+          </div>
+
+          <div class="badges-showcase-grid" id="badges-gallery-container">
+            <!-- Insignias generadas dinámicamente por JS -->
+          </div>
+        </div>
+
+      </div>
+
+    </main>
+
+  </div>
+
+  <script src="../../assets/js/components/global-loader.js"></script>
+  <script src="../../assets/js/utils/component-loader.js"></script>
+  <script src="../../assets/js/core/storage.js"></script>
+  <script src="../../assets/js/core/user-manager.js"></script>
+  <script src="../../assets/js/student/gamification.js"></script>
+  <script src="../../assets/js/student/profile.js"></script>
+  
+  <script src="../../assets/js/core/auth.js"></script>
+  <script src="../../assets/js/core/router.js"></script>
+  <script src="../../assets/js/core/current-user.js"></script>
+  <script src="../../assets/js/core/app.js"></script>
+</body>
+</html>

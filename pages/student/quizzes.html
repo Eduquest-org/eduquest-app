@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EduQuest — Simulacros & Práctica</title>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Inter:wght@400;500;600;700;900&family=Sora:wght@700;800&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../../assets/css/global/reset.css">
+  <link rel="stylesheet" href="../../assets/css/global/variables.css">
+  <link rel="stylesheet" href="../../assets/css/components/buttons.css">
+  <link rel="stylesheet" href="../../assets/css/pages/student-dashboard.css">
+  <link rel="stylesheet" href="../../assets/css/pages/quizzes.css">
+  <link rel="stylesheet" href="../../assets/css/components/modals.css">
+</head>
+<body>
+
+  <!-- Preloader de carga interactivo -->
+  <div id="app-preloader" style="position: fixed; top:0; left:0; width:100vw; height:100vh; background:#fff; z-index:99999; display:flex; flex-direction:column; align-items:center; justify-content:center; transition: opacity 0.4s ease;">
+    <div class="spinner" style="width:40px; height:40px; border:3px solid var(--border); border-top-color:var(--green); border-radius:50%; animation: spin 0.8s linear infinite;"></div>
+    <p style="margin-top:16px; font-weight:600; color:var(--text)">Preparando tu aula de simulación...</p>
+  </div>
+  
+  <div id="topbar-container" data-path="../../components/topbar-students.html"></div>
+  <div class="app-shell" id="student-shell">
+    
+    <div id="sidebar-container" data-path="../../components/sidebar.html"></div>
+
+    <main class="dashboard-content quizzes-main-layout">
+      
+      <!-- PANTALLA 1: CATÁLOGO DE SIMULACROS / SELECCIÓN -->
+      <section id="quizzes-selection-view" class="quiz-view-section active">
+        <div class="quizzes-welcome-card">
+          <div class="welcome-text">
+            <h2>🧠 Centro de Práctica & Simulacros</h2>
+            <p>Elige una materia para medir tu velocidad o toma un Simulacro de Admisión General cronometrado e interactivo.</p>
+          </div>
+          <div class="admission-banner-card" onclick="startGeneralMockExam()">
+            <div class="banner-badge">RECOMENDADO</div>
+            <h3>⚡ Simulacro General de Admisión</h3>
+            <p>10 preguntas aleatorias de Habilidades (RM, RV) con tiempo límite.</p>
+            <div class="banner-footer-stats">
+              <span>⏱️ 10 minutos</span>
+              <span>🔥 +300 XP Máx</span>
+            </div>
+            <button class="btn green btn-start-mock">Iniciar Examen</button>
+          </div>
+        </div>
+
+        <div class="quizzes-catalog-section" style="display: flex; flex-direction: column; gap: 16px;">
+          <div class="quizzes-filter-row">
+            <span class="filter-title">Filtrar Cursos:</span>
+            <div class="filters-container">
+              <button class="filter-chip active" onclick="filterCourses('todos', this)">Todos</button>
+              <button class="filter-chip" onclick="filterCourses('Habilidades', this)">Habilidades</button>
+              <button class="filter-chip" onclick="filterCourses('Matemáticas', this)">Matemáticas</button>
+              <button class="filter-chip" onclick="filterCourses('Ciencias', this)">Ciencias</button>
+              <button class="filter-chip" onclick="filterCourses('Letras', this)">Letras</button>
+            </div>
+          </div>
+
+          <!-- Grid de Cursos -->
+          <div id="courses-quizzes-grid" class="courses-quizzes-grid">
+            <!-- Dinámico -->
+          </div>
+        </div>
+      </section>
+
+      <!-- PANTALLA 2: EJECUCIÓN DEL EXAMEN ACTIVO -->
+      <section id="quiz-runner-view" class="quiz-view-section">
+        <div class="quiz-runner-container">
+          <div class="quiz-runner-header">
+            <button class="quiz-btn-exit" onclick="confirmExitQuiz()">← Salir</button>
+            <div class="quiz-header-center">
+              <h3 id="quiz-run-title">Práctica: Álgebra</h3>
+              <span id="quiz-timer">⏱️ 00:00</span>
+            </div>
+            <div class="quiz-progress-text" id="quiz-run-progress">Pregunta 1 de 5</div>
+          </div>
+
+          <div class="progress-bar-container" style="height: 4px; border-radius: 0; margin-bottom: 24px;">
+            <div class="progress-bar" id="quiz-run-pbar" style="width: 20%; background: var(--green);"></div>
+          </div>
+
+          <div class="quiz-question-card card">
+            <div class="quiz-question-statement" id="quiz-question-text">
+              ¿Cuál es la idea principal de este texto?
+            </div>
+            
+            <div class="quiz-options-list" id="quiz-options-container">
+              <!-- Opciones dinámicas -->
+            </div>
+
+            <!-- Caja de Retroalimentación de la Pregunta -->
+            <div class="quiz-feedback-box" id="quiz-feedback-panel" style="display: none;">
+              <div class="feedback-status-row">
+                <span class="feedback-indicator-icon">✅</span>
+                <strong class="feedback-indicator-title">¡Respuesta Correcta!</strong>
+              </div>
+              <p class="feedback-explanation-text" id="quiz-explanation-text">
+                El texto habla de cómo las estrellas mueren y liberan helio, por lo tanto la opción B resume la idea.
+              </p>
+            </div>
+          </div>
+
+          <div class="quiz-runner-footer">
+            <button class="btn outline" id="quiz-btn-prev" onclick="prevQuestion()" style="display: none;">Anterior</button>
+            <button class="btn green" id="quiz-btn-submit" onclick="submitAnswer()">Verificar Respuesta</button>
+            <button class="btn dark" id="quiz-btn-next" onclick="nextQuestion()" style="display: none;">Siguiente Pregunta</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- PANTALLA 3: PANTALLA DE RESULTADOS -->
+      <section id="quiz-results-view" class="quiz-view-section">
+        <div class="results-card card">
+          <div class="results-badge">¡PRÁCTICA COMPLETADA!</div>
+          <h2 id="results-headline">¡Buen trabajo! 🎉</h2>
+          <p id="results-subheadline">Has culminado con éxito este cuestionario.</p>
+
+          <!-- Marcadores de Desempeño -->
+          <div class="results-metrics-grid">
+            <div class="metric-box">
+              <span class="metric-value" id="results-score">4 / 5</span>
+              <span class="metric-label">Respuestas Correctas</span>
+            </div>
+            <div class="metric-box">
+              <span class="metric-value" id="results-accuracy">80%</span>
+              <span class="metric-label">Precisión</span>
+            </div>
+            <div class="metric-box">
+              <span class="metric-value" id="results-xp-gained" style="color: var(--green);">+250 XP</span>
+              <span class="metric-label">Progreso Sumado</span>
+            </div>
+            <div class="metric-box">
+              <span class="metric-value" id="results-time">02:34</span>
+              <span class="metric-label">Tiempo Empleado</span>
+            </div>
+          </div>
+
+          <div class="results-action-row">
+            <button class="btn outline" onclick="exitToSelection()">Hacer otra práctica</button>
+            <button class="btn green" onclick="window.location.href='roadmap.html'">Volver a Mi Ruta</button>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+  </div>
+
+  <script src="../../assets/js/components/global-loader.js"></script>
+  <script src="../../assets/js/utils/component-loader.js"></script>
+  <script src="../../assets/js/core/storage.js"></script>
+  <script src="../../assets/js/core/user-manager.js"></script>
+  <script src="../../assets/js/student/gamification.js"></script>
+  <script src="../../assets/js/student/quizzes.js"></script>
+  
+  <script src="../../assets/js/core/auth.js"></script>
+  <script src="../../assets/js/core/router.js"></script>
+  <script src="../../assets/js/core/current-user.js"></script>
+  <script src="../../assets/js/core/app.js"></script>
+</body>
+</html>

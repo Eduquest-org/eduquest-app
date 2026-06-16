@@ -8,7 +8,84 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  // Renderizar la misión diaria
+  renderDailyChallengeWidget();
 });
+
+function renderDailyChallengeWidget() {
+  const descEl = document.getElementById("challenge-desc");
+  const pbarEl = document.getElementById("challenge-pbar");
+  const progTextEl = document.getElementById("challenge-progress-text");
+  const btnEl = document.getElementById("challenge-action-btn");
+
+  if (!descEl || !pbarEl || !progTextEl || !btnEl) return;
+
+  const session = Storage.getSession();
+  if (!session) return;
+
+  const user = UserManager.getUserById(session.userId);
+  if (!user || !user.stats || !user.stats.dailyChallenge) return;
+
+  const challenge = user.stats.dailyChallenge;
+
+  // 1. Mostrar descripción
+  descEl.innerHTML = challenge.description;
+
+  // 2. Mostrar progreso
+  const pct = Math.min(100, Math.round((challenge.current / challenge.target) * 100));
+  pbarEl.style.width = pct + "%";
+  
+  let unit = "";
+  if (challenge.type === "total_xp") unit = " XP";
+  else if (challenge.type === "quiz_questions") unit = " aciertos";
+  else if (challenge.type === "create_post") unit = " pub";
+  else unit = " compl.";
+
+  progTextEl.innerHTML = `Progreso: ${challenge.current} / ${challenge.target}${unit} (${pct}%)`;
+
+  // 3. Estilo del botón según estado
+  if (challenge.completed) {
+    pbarEl.style.background = "var(--green)";
+    pbarEl.style.boxShadow = "0 0 8px var(--green)";
+    btnEl.innerHTML = "¡Misión Cumplida! 🎉";
+    btnEl.disabled = true;
+    btnEl.style.background = "rgba(29, 158, 117, 0.15)";
+    btnEl.style.color = "var(--green)";
+    btnEl.style.borderColor = "var(--green)";
+    btnEl.style.cursor = "default";
+    btnEl.onclick = null;
+  } else {
+    pbarEl.style.background = "var(--amber)";
+    btnEl.disabled = false;
+    btnEl.style.cursor = "pointer";
+    btnEl.style.background = "";
+    btnEl.style.color = "";
+    btnEl.style.borderColor = "";
+
+    // Acciones y textos personalizados según el tipo de reto
+    if (challenge.type === "create_post") {
+      btnEl.innerHTML = "Escribir Duda en Foro";
+      btnEl.onclick = () => {
+        const postInput = document.getElementById("post-input");
+        if (postInput) {
+          postInput.focus();
+          postInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      };
+    } else if (challenge.type === "total_xp") {
+      btnEl.innerHTML = "Ver Mi Ruta IA";
+      btnEl.onclick = () => {
+        window.location.href = "roadmap.html";
+      };
+    } else {
+      btnEl.innerHTML = "Ir a Practicar";
+      btnEl.onclick = () => {
+        window.location.href = "quizzes.html";
+      };
+    }
+  }
+}
+
 
 
 
