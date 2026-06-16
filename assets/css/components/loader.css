@@ -1,4 +1,17 @@
+:root {
+  --green: #1D9E75;
+  --green-soft: #E1F5EE;
 
+  --amber: #EF9F27;
+  --indigo: #7F77DD;
+
+  --navy: #092C4C;
+  --dark: #111;
+
+  --border: #D4E2DA;
+  --muted: #8AA89A;
+  --white: #fff;
+}
 
 #global-loader {
   position: fixed;

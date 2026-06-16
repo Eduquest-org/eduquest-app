@@ -1,143 +1,133 @@
-// assets/js/student/roadmap.js
+// Datos Generales del Estudiante (Gamificación Básica para evitar carga cognitiva)
+const studentStats = {
+    name: "Chris Carrasco",
+    avatar: "🚀",
+    target: "Meta: UNI",
+    career: "Ingeniería de Sistemas",
+    totalXp: "1,150 XP",
+    streakDays: "3 Días",
+    rankingPos: "#3 en Aula"
+};
+
+// Banco de datos local de Cursos con Trazabilidad al temario de Admisión
+const globalRutasData = [
+    {
+        id: "ALGEBRA",
+        name: "Álgebra Preuniversitaria",
+        icon: "📐",
+        color: "#1D9E75",
+        meta: "Meta: UNI",
+        progressPct: 40,
+        completedLevels: 2,
+        totalLevels: 5,
+        xpEarned: 450,
+        levels: [
+            { id: 1, title: "Leyes de Exponentes y Radicación", status: "completed" },
+            { id: 2, title: "Polinomios y Grados Especiales", status: "completed" },
+            { id: 3, title: "Productos Notables Avanzados", status: "unlocked" },
+            { id: 4, title: "División Polinomial y Ruffini", status: "locked" },
+            { id: 5, title: "Teorema del Resto y Factorización", status: "locked" }
+        ]
+    },
+    {
+        id: "GEOMETRIA",
+        name: "Geometría del Espacio",
+        icon: "🔮",
+        color: "#7F77DD",
+        meta: "Meta: UNI",
+        progressPct: 0,
+        completedLevels: 0,
+        totalLevels: 3,
+        xpEarned: 0,
+        levels: [
+            { id: 6, title: "Segmentos y Ángulos Pro", status: "unlocked" },
+            { id: 7, title: "Triángulos: Congruencia y Semejanza", status: "locked" },
+            { id: 8, title: "Polígonos y Cuadriláteros", status: "locked" }
+        ]
+    },
+    {
+        id: "FISICA",
+        name: "Física y Cinemática",
+        icon: "⚡",
+        color: "#EF9F27",
+        meta: "Meta: San Marcos",
+        progressPct: 100,
+        completedLevels: 3,
+        totalLevels: 3,
+        xpEarned: 700,
+        levels: [
+            { id: 9, title: "Análisis Dimensional y Vectores", status: "completed" },
+            { id: 10, title: "Movimiento Rectilíneo Uniforme (MRU)", status: "completed" },
+            { id: 11, title: "Movimiento Parabólico de Caída Libre", status: "completed" }
+        ]
+    },
+    {
+        id: "LECTORA",
+        name: "Comprensión Lectora",
+        icon: "📚",
+        color: "#E24B4A",
+        meta: "Meta: San Marcos",
+        progressPct: 66,
+        completedLevels: 2,
+        totalLevels: 3,
+        xpEarned: 500,
+        levels: [
+            { id: 12, title: "Jerarquía Textual y Tema Central", status: "completed" },
+            { id: 13, title: "Sentido Contextual y Sinonimia", status: "completed" },
+            { id: 14, title: "Inferencia y Extrapolación Fija", status: "unlocked" }
+        ]
+    }
+];
 
 document.addEventListener("DOMContentLoaded", () => {
+    // 1. Renderizar el Banner del Perfil Express
     buildStudentProfileBanner();
+
+    // 2. Renderizar la cuadrícula de Cursos (Hub Principal)
     buildCourseSelectionGrid();
 
+    // 3. Control nuclear del preloader
     setTimeout(() => {
         const preloader = document.getElementById("app-preloader");
         if (preloader) preloader.classList.add("fade-out-loader");
     }, 350);
 });
 
+// NUEVO: Generar dinámicamente el perfil del alumno en la parte superior
 function buildStudentProfileBanner() {
     const bannerContainer = document.getElementById("student-profile-summary");
     if (!bannerContainer) return;
 
     bannerContainer.innerHTML = `
         <div class="profile-express-left">
-            <div class="profile-express-avatar" data-user-avatar></div>
+            <div class="profile-express-avatar">${studentStats.avatar}</div>
             <div class="profile-express-welcome">
-                <h3>¡Hola, <span data-user-firstname></span>!</h3>
-                <p>Meta: <span data-user-target></span> • <span data-user-career></span></p>
+                <h3>¡Hola, ${studentStats.name}!</h3>
+                <p>${studentStats.target} • ${studentStats.career}</p>
             </div>
         </div>
         <div class="profile-express-stats">
             <div class="express-stat-item">
-                <span class="express-stat-val" style="color: var(--green);" data-user-xp></span>
+                <span class="express-stat-val" style="color: var(--green);">${studentStats.totalXp}</span>
                 <span class="express-stat-label">Progreso Total</span>
             </div>
             <div class="express-stat-item">
-                <span class="express-stat-val" style="color: var(--amber);">🔥 <span data-user-streak></span></span>
+                <span class="express-stat-val" style="color: var(--amber);">🔥 ${studentStats.streakDays}</span>
                 <span class="express-stat-label">Racha Activa</span>
             </div>
             <div class="express-stat-item">
-                <span class="express-stat-val" style="color: var(--indigo);" data-user-ranking></span>
+                <span class="express-stat-val" style="color: var(--indigo);">${studentStats.rankingPos}</span>
                 <span class="express-stat-label">Competencia</span>
             </div>
         </div>
     `;
-
-    if (window.UserBindingManager) UserBindingManager.bindAll();
 }
 
-async function fetchDynamicRoadmap() {
-    const session = Storage.getSession();
-
-    // Obtener temas completados del usuario para calcular progreso
-    let completedTopics = [];
-    if (session && window.UserManager) {
-        const user = UserManager.getUserById(session.userId);
-        if (user && user.learningProgress) {
-            completedTopics = user.learningProgress.completedTopics || [];
-        }
-    }
-
-    // Si existe una ruta IA personalizada, mostrar SOLO esa ruta
-    if (session && window.UserManager) {
-        const aiRoutes = UserManager.getCustomRoadmap(session.userId);
-        if (aiRoutes.length > 0) {
-            // Recalcular progreso basado en completedTopics
-            return aiRoutes.map(route => {
-                const completedLevels = route.levels.filter(lvl => completedTopics.includes(lvl.id)).length;
-                const totalLevels = route.levels.length;
-                const progressPct = totalLevels > 0 ? Math.round((completedLevels / totalLevels) * 100) : 0;
-
-                return {
-                    ...route,
-                    completedLevels,
-                    progressPct,
-                    xpEarned: completedLevels * 50,
-                    levels: route.levels.map((lvl, idx) => {
-                        if (completedTopics.includes(lvl.id)) {
-                            return { ...lvl, status: 'completed' };
-                        }
-                        // El primer nivel no-completado se desbloquea
-                        const allPreviousCompleted = route.levels.slice(0, idx).every(
-                            prev => completedTopics.includes(prev.id)
-                        );
-                        if (idx === 0 || allPreviousCompleted) {
-                            return { ...lvl, status: 'unlocked' };
-                        }
-                        return { ...lvl, status: 'locked' };
-                    })
-                };
-            });
-        }
-    }
-
-    // Fallback: si no hay ruta IA (usuario sin diagnóstico), mostrar catálogo genérico
-    const [coursesRes, topicsRes] = await Promise.all([
-        fetch("../../mock/courses.json"),
-        fetch("../../mock/topics.json")
-    ]);
-    const courses = await coursesRes.json();
-    const topics = await topicsRes.json();
-
-    let userTarget = "UNI";
-    if (window.CurrentUserService) {
-        userTarget = CurrentUserService.getStat('target') || "UNI";
-    }
-
-    return courses.map(course => {
-        const courseTopics = topics.filter(t => t.courseId === course.id);
-        const completedLevels = courseTopics.filter(t => completedTopics.includes(t.id)).length;
-        const total = courseTopics.length;
-        const progressPct = total > 0 ? Math.round((completedLevels / total) * 100) : 0;
-
-        return {
-            id: course.id,
-            name: course.name,
-            icon: course.icon,
-            color: course.color,
-            meta: `Meta: ${userTarget}`,
-            progressPct: progressPct,
-            completedLevels: completedLevels,
-            totalLevels: total,
-            xpEarned: completedLevels * 50,
-            levels: courseTopics.map((t, idx) => {
-                if (completedTopics.includes(t.id)) {
-                    return { id: t.id, title: t.name, status: 'completed' };
-                }
-                const allPreviousCompleted = courseTopics.slice(0, idx).every(
-                    prev => completedTopics.includes(prev.id)
-                );
-                if (idx === 0 || allPreviousCompleted) {
-                    return { id: t.id, title: t.name, status: 'unlocked' };
-                }
-                return { id: t.id, title: t.name, status: 'locked' };
-            })
-        };
-    });
-}
-
-async function buildCourseSelectionGrid() {
+// Renderizar dinámicamente las tarjetas de Cursos
+function buildCourseSelectionGrid() {
     const grid = document.getElementById("courses-grid");
     if (!grid) return;
     grid.innerHTML = "";
-
-    const globalRutasData = await fetchDynamicRoadmap();
-    window._cachedRutasData = globalRutasData; 
 
     globalRutasData.forEach(curso => {
         const card = document.createElement("div");
@@ -170,8 +160,8 @@ async function buildCourseSelectionGrid() {
     });
 }
 
+// Función SPA para abrir el mapa Candy Crush de un curso específico
 function openSpecificCourseMap(courseId) {
-    const globalRutasData = window._cachedRutasData || [];
     const cursoSeleccionado = globalRutasData.find(c => c.id === courseId);
     if (!cursoSeleccionado) return;
 
@@ -193,7 +183,7 @@ function openSpecificCourseMap(courseId) {
 
         node.innerHTML = `
             <div class="node-circle" onclick="launchQuizChallenge('${lvl.id}', '${lvl.status}')">
-                <span>${idx + 1}</span>
+                <span>${lvl.id}</span>
                 <div class="node-tooltip">
                     <strong>${lvl.title}</strong>
                     <span class="tooltip-status">${stateLabel}</span>

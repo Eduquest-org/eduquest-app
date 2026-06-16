@@ -150,6 +150,13 @@
 .btn-enter-route { width: 100%; padding: 12px; border: none; border-radius: 10px; font-weight: 700; font-size: 13px; cursor: pointer; text-align: center; background: var(--fill); color: var(--dark); transition: 0.2s; border: 1px solid var(--border); margin-top: auto; }
 .course-card:hover .btn-enter-route { background: var(--dark); color: #ffffff; border-color: var(--dark); }
 
+/* =======================================================
+   3. EL SENDERO DEL MAPA GAMIFICADO (ZIG-ZAG)
+   ======================================================= */
+.back-btn-container { margin-bottom: 24px; }
+.back-link { display: inline-flex; align-items: center; gap: 8px; color: var(--indigo); font-size: 14px; font-weight: 700; text-decoration: none; cursor: pointer; transition: 0.2s; padding: 6px 12px; border-radius: 8px; }
+.back-link:hover { background: rgba(127, 119, 221, 0.08); transform: translateX(-2px); }
+
 .map-card-wrapper { background: #ffffff; border: 1px solid var(--border); border-radius: 20px; padding: 40px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); }
 .path-loop-container { display: flex; flex-direction: column; align-items: center; position: relative; gap: 45px; padding: 20px 0; width: 100%; }
 

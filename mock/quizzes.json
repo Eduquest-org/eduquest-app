@@ -1,16 +1,1 @@
-[
-  {
-    "id": "quiz_alg_leyes",
-    "topicId": "topic_leyes_exp",
-    "title": "Práctica: Exponentes",
-    "xpReward": 150,
-    "problemIds": ["prob_alg_001"]
-  },
-  {
-    "id": "quiz_fis_cinematica",
-    "topicId": "topic_mruv",
-    "title": "Reto MRUV",
-    "xpReward": 250,
-    "problemIds": ["prob_fis_001"]
-  }
-]
+{}

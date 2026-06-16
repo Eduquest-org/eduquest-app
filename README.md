@@ -1,10 +1,10 @@
-# EduQuest Web App — Plataforma de Clasificación Académica
+# 🗺️ EduQuest Web App — Plataforma de Clasificación Académica
 
 Prototipo de alta fidelidad para **EduQuest**, un SaaS educativo gamificado e impulsado por Inteligencia Artificial enfocado en la preparación preuniversitaria de élite para exámenes de admisión en el Perú (UNI, UNMSM, PUCP).
 
 ---
 
-## Arquitectura de Archivos y Componentes
+## 🛠️ Arquitectura de Archivos y Componentes
 
 El proyecto sigue una estructura limpia y desacoplada para mitigar la duplicidad de código y asegurar la inyección síncrona de componentes compartidos:
 
