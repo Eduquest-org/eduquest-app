@@ -1,0 +1,20 @@
+[
+  { "id": "res_lec_01", "courseId": "course_algebra", "topicId": "topic_leyes_exp", "type": "leccion", "title": "Introducción a los Exponentes", "url": "/lecciones/exp-1" },
+  { "id": "res_lec_02", "courseId": "course_algebra", "topicId": "topic_leyes_exp", "type": "leccion", "title": "Propiedades Radicativas", "url": "/lecciones/exp-2" },
+  { "id": "res_pdf_01", "courseId": "course_algebra", "topicId": "topic_leyes_exp", "type": "recurso", "title": "Ejercicios Resueltos Exponentes PDF", "url": "/docs/exp-ejercicios.pdf" },
+  { "id": "res_qz_01", "courseId": "course_algebra", "topicId": "topic_leyes_exp", "type": "quiz", "title": "Mini-Quiz Exponentes Básicos", "url": "/quiz/exp-1" },
+  { "id": "res_ex_01", "courseId": "course_algebra", "topicId": "topic_leyes_exp", "type": "examen", "title": "Evaluación de Exponentes y Raíces", "url": "/examen/exp" },
+  { "id": "res_boss_01", "courseId": "course_algebra", "topicId": "topic_leyes_exp", "type": "desafio_final", "title": "Reto UNI: Exponentes", "url": "/reto/exp-uni" },
+  
+  { "id": "res_lec_03", "courseId": "course_algebra", "topicId": "topic_polinomios", "type": "leccion", "title": "Concepto de Polinomio y Grados", "url": "/lecciones/pol-1" },
+  { "id": "res_pdf_02", "courseId": "course_algebra", "topicId": "topic_polinomios", "type": "recurso", "title": "Guía de Polinomios y Valor Numérico", "url": "/docs/pol-guia.pdf" },
+  { "id": "res_qz_02", "courseId": "course_algebra", "topicId": "topic_polinomios", "type": "quiz", "title": "Comprobación de Grados Absolutos y Relativos", "url": "/quiz/pol-1" },
+  { "id": "res_ex_02", "courseId": "course_algebra", "topicId": "topic_polinomios", "type": "examen", "title": "Simulacro: Polinomios", "url": "/examen/pol" },
+  { "id": "res_boss_02", "courseId": "course_algebra", "topicId": "topic_polinomios", "type": "desafio_final", "title": "Problemas de Examen de Admisión", "url": "/reto/pol-adm" },
+
+  { "id": "res_lec_04", "courseId": "course_fisica", "topicId": "topic_mru", "type": "leccion", "title": "¿Qué es el MRU?", "url": "/lecciones/mru-1" },
+  { "id": "res_pdf_03", "courseId": "course_fisica", "topicId": "topic_mru", "type": "recurso", "title": "Formulario y Ejercicios MRU", "url": "/docs/mru-form.pdf" },
+  { "id": "res_qz_03", "courseId": "course_fisica", "topicId": "topic_mru", "type": "quiz", "title": "Quiz Rápido MRU", "url": "/quiz/mru-1" },
+  { "id": "res_ex_03", "courseId": "course_fisica", "topicId": "topic_mru", "type": "examen", "title": "Examen MRU", "url": "/examen/mru" },
+  { "id": "res_boss_03", "courseId": "course_fisica", "topicId": "topic_mru", "type": "desafio_final", "title": "Reto Físico Universitario", "url": "/reto/mru-uni" }
+]

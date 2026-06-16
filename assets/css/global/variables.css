@@ -11,6 +11,110 @@
   --muted:   #888;
   --dark:    #111;
   --navy:    #092C4C;
+
+  /* ======================================
+     STYLE GUIDE EDUQUEST
+  ====================================== */
+
+  /* GREEN */
+
+  --green-100:#E1F5EE;
+  --green-200:#9FE1CB;
+  --green-300:#5DCAA5;
+  --green-400:#1D9E75;
+  --green-500:#0F6E56;
+  --green-600:#085041;
+  --green-700:#04342C;
+
+  /* AMBER */
+
+  --amber-100:#FAEEDA;
+  --amber-200:#FAC775;
+  --amber-300:#EF9F27;
+  --amber-400:#BA7517;
+  --amber-500:#854F0B;
+
+  /* INDIGO */
+
+  --indigo-100:#EEEDFE;
+  --indigo-200:#CECBF6;
+  --indigo-300:#7F77DD;
+  --indigo-400:#534AB7;
+  --indigo-500:#3C3489;
+
+  /* SEMANTIC */
+
+  --success:#1D9E75;
+  --success-bg:#E1F5EE;
+
+  --warning:#EF9F27;
+  --warning-bg:#FAEEDA;
+
+  --error:#E24B4A;
+  --error-bg:#FCEBEB;
+
+  /* NEUTRALS */
+
+  --neutral-0:#FFFFFF;
+  --neutral-50:#F7FCF9;
+  --neutral-100:#D4E2DA;
+  --neutral-300:#8AA89A;
+  --neutral-700:#1F3329;
+  --neutral-900:#0C1A15;
+
+    /* =========================
+     SPACING
+  ========================= */
+
+  --space-1: 8px;
+  --space-2: 16px;
+  --space-3: 24px;
+  --space-4: 32px;
+  --space-5: 40px;
+  --space-6: 56px;
+  --space-7: 72px;
+  --space-8: 80px;
+  --space-9: 96px;
+  --space-10: 120px;
+
+  /* =========================
+     BORDER RADIUS
+  ========================= */
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-xl: 24px;
+  --radius-pill: 999px;
+
+  /* =========================
+     SHADOWS
+  ========================= */
+
+  --shadow-sm:
+    0 2px 8px rgba(0,0,0,.04);
+
+  --shadow-md:
+    0 4px 15px rgba(0,0,0,.02);
+
+  --shadow-lg:
+    0 10px 30px rgba(0,0,0,.08);
+
+  /* =========================
+    SOFT BACKGROUNDS
+  ========================= */
+
+  --green-soft: var(--green-100);
+  --amber-soft: var(--amber-100);
+  --indigo-soft: var(--indigo-100);
+
+  --green-border: var(--green-200);
+  --amber-border: var(--amber-200);
+  --indigo-border: var(--indigo-200);
+
+  --surface: var(--neutral-0);
+  --background: var(--neutral-50);
+
   /* Variable calculada dinámicamente para centrar el contenido a 1280px quitando los bordes grises */
   --pad-x:   max(80px, calc((100vw - 1280px) / 2));
 }

@@ -197,5 +197,82 @@
     "name": "Oraciones Eliminadas",
     "difficulty": "advanced",
     "prerequisites": ["topic_rv_oraciones", "topic_rv_analogias"]
+  },
+  {
+    "id": "topic_aritmetica_razones",
+    "courseId": "course_aritmetica",
+    "name": "Razones y Proporciones",
+    "difficulty": "basic",
+    "prerequisites": []
+  },
+  {
+    "id": "topic_aritmetica_magnitudes",
+    "courseId": "course_aritmetica",
+    "name": "Magnitudes Proporcionales",
+    "difficulty": "medium",
+    "prerequisites": ["topic_aritmetica_razones"]
+  },
+  {
+    "id": "topic_aritmetica_tantoporciento",
+    "courseId": "course_aritmetica",
+    "name": "Tanto por Cuanto y Porcentajes",
+    "difficulty": "medium",
+    "prerequisites": ["topic_aritmetica_magnitudes"]
+  },
+  {
+    "id": "topic_aritmetica_estadistica",
+    "courseId": "course_aritmetica",
+    "name": "Estadística Básica",
+    "difficulty": "medium",
+    "prerequisites": []
+  },
+  {
+    "id": "topic_trigonometria_angulo",
+    "courseId": "course_trigonometria",
+    "name": "Ángulo Trigonométrico",
+    "difficulty": "basic",
+    "prerequisites": []
+  },
+  {
+    "id": "topic_trigonometria_razones_agudos",
+    "courseId": "course_trigonometria",
+    "name": "Razones Trigonométricas de Ángulos Agudos",
+    "difficulty": "medium",
+    "prerequisites": ["topic_trigonometria_angulo"]
+  },
+  {
+    "id": "topic_trigonometria_identidades",
+    "courseId": "course_trigonometria",
+    "name": "Identidades Trigonométricas",
+    "difficulty": "advanced",
+    "prerequisites": ["topic_trigonometria_razones_agudos"]
+  },
+  {
+    "id": "topic_quimica_materia",
+    "courseId": "course_quimica",
+    "name": "Materia y sus Propiedades",
+    "difficulty": "basic",
+    "prerequisites": []
+  },
+  {
+    "id": "topic_quimica_atomo",
+    "courseId": "course_quimica",
+    "name": "Modelo Atómico Actual",
+    "difficulty": "medium",
+    "prerequisites": ["topic_quimica_materia"]
+  },
+  {
+    "id": "topic_quimica_configuracion",
+    "courseId": "course_quimica",
+    "name": "Configuración Electrónica",
+    "difficulty": "medium",
+    "prerequisites": ["topic_quimica_atomo"]
+  },
+  {
+    "id": "topic_quimica_tabla",
+    "courseId": "course_quimica",
+    "name": "Tabla Periódica",
+    "difficulty": "medium",
+    "prerequisites": ["topic_quimica_configuracion"]
   }
 ]

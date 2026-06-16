@@ -36,79 +36,6 @@
 .view-header p { font-size: 14px; color: var(--sub); }
 
 /* =======================================================
-   NUEVO: ESTILOS DEL BANNER DE PERFIL EXPRESS
-   ======================================================= */
-.student-summary-banner {
-  background: #ffffff;
-  border: 1px solid var(--border);
-  border-radius: 18px;
-  padding: 20px 28px;
-  margin-bottom: 32px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.01);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 20px;
-}
-
-.profile-express-left {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.profile-express-avatar {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  background: rgba(127, 119, 221, 0.1);
-  color: var(--indigo);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 22px;
-}
-
-.profile-express-welcome h3 {
-  font-family: 'Sora', sans-serif;
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--dark);
-  margin-bottom: 2px;
-}
-
-.profile-express-welcome p {
-  font-size: 13px;
-  color: var(--sub);
-}
-
-.profile-express-stats {
-  display: flex;
-  align-items: center;
-  gap: 32px;
-}
-
-.express-stat-item {
-  text-align: right;
-}
-
-.express-stat-val {
-  font-family: 'Sora', sans-serif;
-  font-size: 16px;
-  font-weight: 800;
-  color: var(--dark);
-  display: block;
-}
-
-.express-stat-label {
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: var(--muted);
-}
-
-/* =======================================================
    2. GRID DE SELECCIÓN DE CURSOS
    ======================================================= */
 .courses-grid { 
@@ -186,3 +113,97 @@
 .completed .tooltip-status { color: #4ade80; }
 .unlocked .tooltip-status { color: #fbbf24; }
 .locked .tooltip-status { color: #94a3b8; }
+
+/* =======================================================
+   4. NODOS EXPANDIBLES (RAG SUB-ITEMS)
+   ======================================================= */
+.node-content-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.rag-expansion-panel {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 16px;
+  width: 260px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+  display: flex;
+  flex-direction: column;
+  pointer-events: none;
+}
+
+.rag-expansion-panel.expanded {
+  max-height: 600px;
+  opacity: 1;
+  padding: 16px;
+  margin-top: 16px;
+  pointer-events: auto;
+}
+
+.rag-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: 8px;
+  border: 1px solid transparent;
+  background: rgba(255, 255, 255, 0.5);
+}
+.rag-item:last-child { margin-bottom: 0; }
+
+.rag-item:hover {
+  background: #ffffff;
+  transform: translateX(4px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+}
+
+.rag-item-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.rag-item-details { display: flex; flex-direction: column; }
+.rag-item-type { font-size: 10px; text-transform: uppercase; font-weight: 800; letter-spacing: 0.5px; color: var(--sub); margin-bottom: 2px;}
+.rag-item-title { font-size: 12px; font-weight: 700; color: var(--dark); line-height: 1.3;}
+
+/* Variantes visuales por tipo de contenido */
+.type-leccion .rag-item-icon { background: rgba(59, 130, 246, 0.15); color: #2563eb; }
+.type-leccion:hover { border-color: rgba(59, 130, 246, 0.2); }
+
+.type-recurso .rag-item-icon { background: rgba(168, 85, 247, 0.15); color: #9333ea; }
+.type-recurso:hover { border-color: rgba(168, 85, 247, 0.2); }
+
+.type-quiz .rag-item-icon { background: rgba(245, 158, 11, 0.15); color: #d97706; }
+.type-quiz:hover { border-color: rgba(245, 158, 11, 0.2); }
+
+.type-examen .rag-item-icon { background: rgba(239, 68, 68, 0.15); color: #dc2626; }
+.type-examen:hover { border-color: rgba(239, 68, 68, 0.2); }
+
+.type-desafio .rag-item-icon { background: rgba(34, 197, 94, 0.15); color: #16a34a; }
+.type-desafio:hover { border-color: rgba(34, 197, 94, 0.2); }
+
+.rag-empty-state {
+  font-size: 12px;
+  color: var(--muted);
+  text-align: center;
+  padding: 10px;
+  font-weight: 500;
+}

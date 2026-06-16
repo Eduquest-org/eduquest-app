@@ -91,7 +91,3 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
-
-.back-btn-container { margin-bottom: 24px; }
-.back-link { display: inline-flex; align-items: center; gap: 8px; color: var(--indigo); font-size: 14px; font-weight: 700; text-decoration: none; cursor: pointer; transition: 0.2s; padding: 6px 12px; border-radius: 8px; }
-.back-link:hover { background: rgba(127, 119, 221, 0.08); transform: translateX(-2px); }
