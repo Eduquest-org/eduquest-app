@@ -80,17 +80,13 @@
 
       <div id="student-conditional-fields" class="student-fields">
         <div class="form-group">
-          <label for="reg-target">Universidad Objetivo</label>
-          <select id="reg-target">
-            <option value="Meta: UNI">Meta: UNI (Ingeniería)</option>
-            <option value="Meta: San Marcos">Meta: San Marcos (UNMSM)</option>
-            <option value="Meta: PUCP">Meta: Católica (PUCP)</option>
-          </select>
+          <label for="reg-birthdate">Fecha de nacimiento</label>
+          <input type="date" id="reg-birthdate" required>
         </div>
 
         <div class="form-group">
-          <label for="reg-career">Carrera Profesional</label>
-          <input type="text" id="reg-career" placeholder="Ej: Ingeniería de Sistemas">
+          <label for="reg-grad-year">Año de egreso o postulación</label>
+          <input type="number" id="reg-grad-year" placeholder="Ej: 2024" min="1990" max="2030" required>
         </div>
       </div>
 
@@ -102,17 +98,10 @@
     </div>
   </div>
 
-  <script src="../../core/auth.js"></script>
-  <script>
-    // Pequeño script visual auxiliar para ocultar campos si elige profesor
-    const originalSelectRole = selectRole;
-    selectRole = function(role) {
-        originalSelectRole(role);
-        const extraFields = document.getElementById("student-conditional-fields");
-        if(extraFields) {
-            extraFields.style.display = (role === 'student') ? 'block' : 'none';
-        }
-    }
-  </script>
+  <script src="../../assets/js/core/storage.js"></script>
+  <script src="../../assets/js/core/user-manager.js"></script>
+  <script src="../../assets/js/core/auth.js"></script>
+  <script src="../../assets/js/core/router.js"></script>
+  <script src="../../assets/js/core/app.js"></script>
 </body>
 </html>

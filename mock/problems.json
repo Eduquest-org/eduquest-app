@@ -1,0 +1,773 @@
+[
+  {
+    "id": "prob_alg_001",
+    "topicId": "topic_leyes_exp",
+    "difficulty": "basic",
+    "statement": "Reducir la expresión: (x^2 * x^3)^4",
+    "options": [
+      "x^10",
+      "x^20",
+      "x^24",
+      "x^18"
+    ],
+    "correctOption": 1,
+    "explanation": "x^2 * x^3 = x^5, luego (x^5)^4 = x^20"
+  },
+  {
+    "id": "prob_alg_002",
+    "topicId": "topic_leyes_exp",
+    "difficulty": "basic",
+    "statement": "Simplificar: a^3 * a^5",
+    "options": [
+      "a^15",
+      "a^8",
+      "a^3",
+      "a^2"
+    ],
+    "correctOption": 1,
+    "explanation": "Se suman exponentes: 3 + 5 = 8"
+  },
+  {
+    "id": "prob_alg_003",
+    "topicId": "topic_polinomios",
+    "difficulty": "basic",
+    "statement": "Suma: (2x + 3) + (x + 5)",
+    "options": [
+      "3x + 8",
+      "2x + 8",
+      "3x + 5",
+      "x + 8"
+    ],
+    "correctOption": 0,
+    "explanation": "Se suman términos semejantes: 2x + x = 3x y 3 + 5 = 8"
+  },
+  {
+    "id": "prob_alg_004",
+    "topicId": "topic_polinomios",
+    "difficulty": "basic",
+    "statement": "Grado del polinomio: 5x^3 + 2x^2 + 7",
+    "options": [
+      "1",
+      "2",
+      "3",
+      "5"
+    ],
+    "correctOption": 2,
+    "explanation": "El mayor exponente es 3"
+  },
+  {
+    "id": "prob_alg_005",
+    "topicId": "topic_prod_notables",
+    "difficulty": "medium",
+    "statement": "(x + 2)^2 es igual a:",
+    "options": [
+      "x^2 + 4",
+      "x^2 + 4x + 4",
+      "x^2 + 2x + 4",
+      "x^2 + 2"
+    ],
+    "correctOption": 1,
+    "explanation": "(a+b)^2 = a^2 + 2ab + b^2"
+  },
+  {
+    "id": "prob_alg_006",
+    "topicId": "topic_prod_notables",
+    "difficulty": "medium",
+    "statement": "(x + 3)(x - 3) es:",
+    "options": [
+      "x^2 + 9",
+      "x^2 - 9",
+      "x^2 + 6x - 9",
+      "x^2 - 6x + 9"
+    ],
+    "correctOption": 1,
+    "explanation": "Diferencia de cuadrados: a^2 - b^2"
+  },
+  {
+    "id": "prob_alg_007",
+    "topicId": "topic_div_polinomial",
+    "difficulty": "medium",
+    "statement": "Dividir: (x^2 - 9) / (x - 3)",
+    "options": [
+      "x - 3",
+      "x + 3",
+      "x^2 + 3",
+      "x - 9"
+    ],
+    "correctOption": 1,
+    "explanation": "Factorizando: (x-3)(x+3)/(x-3) = x+3"
+  },
+  {
+    "id": "prob_alg_008",
+    "topicId": "topic_div_polinomial",
+    "difficulty": "medium",
+    "statement": "Ruffini: (x^2 + 5x + 6) / (x + 2)",
+    "options": [
+      "x + 3",
+      "x + 2",
+      "x + 4",
+      "x + 1"
+    ],
+    "correctOption": 0,
+    "explanation": "x^2 + 5x + 6 = (x+2)(x+3)"
+  },
+  {
+    "id": "prob_alg_009",
+    "topicId": "topic_sistemas_ecuaciones",
+    "difficulty": "medium",
+    "statement": "x + y = 10, x - y = 2. Hallar x",
+    "options": [
+      "4",
+      "5",
+      "6",
+      "7"
+    ],
+    "correctOption": 2,
+    "explanation": "Sumando: 2x = 12 → x = 6"
+  },
+  {
+    "id": "prob_alg_010",
+    "topicId": "topic_inecuaciones",
+    "difficulty": "medium",
+    "statement": "Resuelve: 3x + 2 < 11",
+    "options": [
+      "x < 2",
+      "x < 3",
+      "x < 4",
+      "x < 5"
+    ],
+    "correctOption": 2,
+    "explanation": "3x < 9 → x < 3"
+  },
+  {
+    "id": "prob_geo_001",
+    "topicId": "topic_geometria_plana",
+    "difficulty": "basic",
+    "statement": "Área de un triángulo con base 8 y altura 5",
+    "options": [
+      "20",
+      "30",
+      "40",
+      "10"
+    ],
+    "correctOption": 0,
+    "explanation": "(8*5)/2 = 20"
+  },
+  {
+    "id": "prob_geo_002",
+    "topicId": "topic_geometria_espacial",
+    "difficulty": "medium",
+    "statement": "Volumen de un cubo de lado 3",
+    "options": [
+      "9",
+      "18",
+      "27",
+      "12"
+    ],
+    "correctOption": 2,
+    "explanation": "V = a^3 = 27"
+  },
+  {
+    "id": "prob_geo_003",
+    "topicId": "topic_trigonometria_basica",
+    "difficulty": "basic",
+    "statement": "cos(60°) es:",
+    "options": [
+      "1/2",
+      "√3/2",
+      "0",
+      "1"
+    ],
+    "correctOption": 0,
+    "explanation": "Valor trigonométrico básico"
+  },
+  {
+    "id": "prob_geo_004",
+    "topicId": "topic_trigonometria_avanzada",
+    "difficulty": "medium",
+    "statement": "sen^2(x) + cos^2(x) es igual a:",
+    "options": [
+      "0",
+      "1",
+      "2",
+      "sen(x)"
+    ],
+    "correctOption": 1,
+    "explanation": "Identidad pitagórica"
+  },
+  {
+    "id": "prob_fis_001",
+    "topicId": "topic_mru",
+    "difficulty": "basic",
+    "statement": "Un móvil recorre 120 m en 6 s. Velocidad:",
+    "options": [
+      "10",
+      "15",
+      "20",
+      "25"
+    ],
+    "correctOption": 2,
+    "explanation": "v = 120/6 = 20 m/s"
+  },
+  {
+    "id": "prob_fis_002",
+    "topicId": "topic_mruv",
+    "difficulty": "medium",
+    "statement": "v = 0, a = 3 m/s², t = 4 s. Velocidad final:",
+    "options": [
+      "10",
+      "12",
+      "14",
+      "16"
+    ],
+    "correctOption": 1,
+    "explanation": "v = at = 12 m/s"
+  },
+  {
+    "id": "prob_fis_003",
+    "topicId": "topic_caida_libre",
+    "difficulty": "medium",
+    "statement": "Caída libre en 2 s (g=10). Velocidad:",
+    "options": [
+      "10",
+      "15",
+      "20",
+      "25"
+    ],
+    "correctOption": 2,
+    "explanation": "v = 20 m/s"
+  },
+  {
+    "id": "prob_lect_001",
+    "topicId": "topic_idea_principal",
+    "difficulty": "basic",
+    "statement": "La idea principal de un texto informativo es:",
+    "options": [
+      "Un detalle secundario",
+      "El tema central",
+      "Una opinión",
+      "Un ejemplo"
+    ],
+    "correctOption": 1,
+    "explanation": "Resume el contenido del texto"
+  },
+  {
+    "id": "prob_lect_002",
+    "topicId": "topic_comprension_inferencial",
+    "difficulty": "medium",
+    "statement": "Si alguien dice 'no estudió y desaprobó', se infiere que:",
+    "options": [
+      "Aprobó",
+      "El estudio influye en el resultado",
+      "No hay relación",
+      "Fue suerte"
+    ],
+    "correctOption": 1,
+    "explanation": "Relación causal lógica"
+  },
+  {
+    "id": "prob_rm_001",
+    "topicId": "topic_rm_sucesiones",
+    "difficulty": "basic",
+    "statement": "¿Qué número sigue en la serie: 2, 6, 12, 20, 30...?",
+    "options": [
+      "40",
+      "42",
+      "38",
+      "44"
+    ],
+    "correctOption": 1,
+    "explanation": "La diferencia aumenta: +4, +6, +8, +10. Luego +12. 30+12 = 42."
+  },
+  {
+    "id": "prob_rm_002",
+    "topicId": "topic_rm_operadores",
+    "difficulty": "medium",
+    "statement": "Si a * b = a^2 - b, calcula 4 * 5.",
+    "options": [
+      "9",
+      "11",
+      "21",
+      "16"
+    ],
+    "correctOption": 1,
+    "explanation": "4^2 - 5 = 16 - 5 = 11."
+  },
+  {
+    "id": "prob_rm_003",
+    "topicId": "topic_rm_edades",
+    "difficulty": "medium",
+    "statement": "Hace 5 años tenía la mitad de la edad que tendré dentro de 5 años. ¿Qué edad tengo?",
+    "options": [
+      "10",
+      "15",
+      "20",
+      "25"
+    ],
+    "correctOption": 1,
+    "explanation": "x - 5 = (x + 5) / 2 => 2x - 10 = x + 5 => x = 15."
+  },
+  {
+    "id": "prob_rm_004",
+    "topicId": "topic_rm_fracciones",
+    "difficulty": "basic",
+    "statement": "¿Cuánto le falta a 2/5 para ser igual a 1?",
+    "options": [
+      "1/5",
+      "2/5",
+      "3/5",
+      "4/5"
+    ],
+    "correctOption": 2,
+    "explanation": "1 - 2/5 = 3/5."
+  },
+  {
+    "id": "prob_rv_001",
+    "topicId": "topic_rv_sinonimos",
+    "difficulty": "basic",
+    "statement": "Sinónimo de EFÍMERO:",
+    "options": [
+      "Eterno",
+      "Pasajero",
+      "Real",
+      "Falso"
+    ],
+    "correctOption": 1,
+    "explanation": "Efímero significa que dura poco tiempo."
+  },
+  {
+    "id": "prob_rv_002",
+    "topicId": "topic_rv_analogias",
+    "difficulty": "medium",
+    "statement": "HOJA es a ÁRBOL como:",
+    "options": [
+      "Pétalo a Flor",
+      "Raíz a Tallo",
+      "Agua a Río",
+      "Nube a Cielo"
+    ],
+    "correctOption": 0,
+    "explanation": "Relación parte-todo."
+  },
+  {
+    "id": "prob_rv_003",
+    "topicId": "topic_rv_oraciones",
+    "difficulty": "medium",
+    "statement": "El río estaba tan _____ que se podía ver el fondo.",
+    "options": [
+      "profundo",
+      "turbio",
+      "cristalino",
+      "caudaloso"
+    ],
+    "correctOption": 2,
+    "explanation": "Cristalino permite ver a través de él."
+  },
+  {
+    "id": "prob_rv_004",
+    "topicId": "topic_rv_eliminadas",
+    "difficulty": "medium",
+    "statement": "(I) El sol es una estrella. (II) Nos proporciona luz y calor. (III) La luna es un satélite. (IV) Sin el sol, no habría vida. ¿Qué oración se elimina por impertinencia?",
+    "options": [
+      "I",
+      "II",
+      "III",
+      "IV"
+    ],
+    "correctOption": 2,
+    "explanation": "La III habla de la luna, rompiendo el tema del sol."
+  },
+  {
+    "id": "prob_rm_005",
+    "topicId": "topic_rm_sucesiones",
+    "difficulty": "basic",
+    "statement": "¿Qué número sigue en la serie: 3, 8, 15, 24, 35...?",
+    "options": [
+      "46",
+      "48",
+      "50",
+      "52"
+    ],
+    "correctOption": 1,
+    "explanation": "Las diferencias son +5, +7, +9, +11. Sigue +13. 35 + 13 = 48."
+  },
+  {
+    "id": "prob_rm_006",
+    "topicId": "topic_rm_sucesiones",
+    "difficulty": "medium",
+    "statement": "¿Qué número sigue en la serie: 1, 4, 9, 16, 25...?",
+    "options": [
+      "30",
+      "34",
+      "36",
+      "49"
+    ],
+    "correctOption": 2,
+    "explanation": "Son cuadrados perfectos: 1², 2², 3², 4², 5². Sigue 6² = 36."
+  },
+  {
+    "id": "prob_rm_007",
+    "topicId": "topic_rm_operadores",
+    "difficulty": "basic",
+    "statement": "Si a ★ b = a + 2b, calcula 5 ★ 3.",
+    "options": [
+      "8",
+      "10",
+      "11",
+      "12"
+    ],
+    "correctOption": 2,
+    "explanation": "5 + 2(3) = 11."
+  },
+  {
+    "id": "prob_rm_008",
+    "topicId": "topic_rm_operadores",
+    "difficulty": "medium",
+    "statement": "Si a ⊗ b = 2a - b, calcula 7 ⊗ 4.",
+    "options": [
+      "10",
+      "12",
+      "14",
+      "18"
+    ],
+    "correctOption": 0,
+    "explanation": "2(7) - 4 = 14 - 4 = 10."
+  },
+  {
+    "id": "prob_rm_009",
+    "topicId": "topic_rm_edades",
+    "difficulty": "medium",
+    "statement": "La edad de Ana es el doble de la de Luis. Si juntos tienen 36 años, ¿cuántos años tiene Ana?",
+    "options": [
+      "12",
+      "18",
+      "24",
+      "30"
+    ],
+    "correctOption": 2,
+    "explanation": "Luis = x, Ana = 2x. Entonces 3x = 36 → x = 12. Ana = 24."
+  },
+  {
+    "id": "prob_rm_010",
+    "topicId": "topic_rm_edades",
+    "difficulty": "medium",
+    "statement": "Dentro de 4 años tendré 20 años. ¿Qué edad tengo actualmente?",
+    "options": [
+      "14",
+      "15",
+      "16",
+      "17"
+    ],
+    "correctOption": 2,
+    "explanation": "20 - 4 = 16."
+  },
+  {
+    "id": "prob_rm_011",
+    "topicId": "topic_rm_fracciones",
+    "difficulty": "basic",
+    "statement": "¿Cuál es la mitad de 3/4?",
+    "options": [
+      "3/8",
+      "1/2",
+      "3/6",
+      "1/4"
+    ],
+    "correctOption": 0,
+    "explanation": "(3/4) ÷ 2 = 3/8."
+  },
+  {
+    "id": "prob_rm_012",
+    "topicId": "topic_rm_fracciones",
+    "difficulty": "medium",
+    "statement": "Si una botella está llena en 3/5 de su capacidad, ¿qué fracción falta para llenarse?",
+    "options": [
+      "1/5",
+      "2/5",
+      "3/5",
+      "4/5"
+    ],
+    "correctOption": 1,
+    "explanation": "1 - 3/5 = 2/5."
+  },
+  {
+    "id": "prob_rm_013",
+    "topicId": "topic_rm_planteo_ecuaciones",
+    "difficulty": "medium",
+    "statement": "Un número aumentado en 7 da 18. ¿Cuál es el número?",
+    "options": [
+      "9",
+      "10",
+      "11",
+      "12"
+    ],
+    "correctOption": 2,
+    "explanation": "x + 7 = 18 → x = 11."
+  },
+  {
+    "id": "prob_rm_014",
+    "topicId": "topic_rm_planteo_ecuaciones",
+    "difficulty": "medium",
+    "statement": "El triple de un número menos 2 es igual a 16. Hallar el número.",
+    "options": [
+      "4",
+      "5",
+      "6",
+      "7"
+    ],
+    "correctOption": 2,
+    "explanation": "3x - 2 = 16 → 3x = 18 → x = 6."
+  },
+  {
+    "id": "prob_rm_015",
+    "topicId": "topic_rm_conteo",
+    "difficulty": "basic",
+    "statement": "¿Cuántos números de una cifra existen?",
+    "options": [
+      "8",
+      "9",
+      "10",
+      "11"
+    ],
+    "correctOption": 2,
+    "explanation": "Del 0 al 9 existen 10 números de una cifra."
+  },
+  {
+    "id": "prob_rm_016",
+    "topicId": "topic_rm_conteo",
+    "difficulty": "medium",
+    "statement": "¿Cuántos números de dos cifras se pueden formar con los dígitos 1, 2 y 3 sin repetir?",
+    "options": [
+      "3",
+      "6",
+      "9",
+      "12"
+    ],
+    "correctOption": 1,
+    "explanation": "3 opciones para la primera posición y 2 para la segunda: 3×2=6."
+  },
+  {
+    "id": "prob_rv_005",
+    "topicId": "topic_rv_sinonimos",
+    "difficulty": "basic",
+    "statement": "Sinónimo de DILIGENTE:",
+    "options": [
+      "Perezoso",
+      "Aplicado",
+      "Lento",
+      "Débil"
+    ],
+    "correctOption": 1,
+    "explanation": "Diligente significa cuidadoso y aplicado."
+  },
+  {
+    "id": "prob_rv_006",
+    "topicId": "topic_rv_sinonimos",
+    "difficulty": "basic",
+    "statement": "Sinónimo de ABUNDANTE:",
+    "options": [
+      "Escaso",
+      "Pobre",
+      "Copioso",
+      "Pequeño"
+    ],
+    "correctOption": 2,
+    "explanation": "Copioso significa abundante."
+  },
+  {
+    "id": "prob_rv_007",
+    "topicId": "topic_rv_analogias",
+    "difficulty": "medium",
+    "statement": "MÉDICO es a HOSPITAL como:",
+    "options": [
+      "Profesor a Escuela",
+      "Alumno a Libro",
+      "Actor a Cine",
+      "Chofer a Auto"
+    ],
+    "correctOption": 0,
+    "explanation": "Relación profesional-lugar de trabajo."
+  },
+  {
+    "id": "prob_rv_008",
+    "topicId": "topic_rv_analogias",
+    "difficulty": "medium",
+    "statement": "PEZ es a AGUA como:",
+    "options": [
+      "Ave a Aire",
+      "Perro a Casa",
+      "Auto a Pista",
+      "Árbol a Bosque"
+    ],
+    "correctOption": 0,
+    "explanation": "Relación ser vivo-medio donde se desplaza."
+  },
+  {
+    "id": "prob_rv_009",
+    "topicId": "topic_rv_oraciones",
+    "difficulty": "basic",
+    "statement": "El alumno fue muy _____ y terminó primero el examen.",
+    "options": [
+      "lento",
+      "aplicado",
+      "torpe",
+      "desordenado"
+    ],
+    "correctOption": 1,
+    "explanation": "Aplicado encaja con el contexto."
+  },
+  {
+    "id": "prob_rv_010",
+    "topicId": "topic_rv_oraciones",
+    "difficulty": "medium",
+    "statement": "La conferencia fue tan _____ que nadie dejó de prestar atención.",
+    "options": [
+      "aburrida",
+      "extensa",
+      "interesante",
+      "breve"
+    ],
+    "correctOption": 2,
+    "explanation": "Interesante justifica la atención del público."
+  },
+  {
+    "id": "prob_rv_013",
+    "topicId": "topic_comprension_inferencial",
+    "difficulty": "medium",
+    "statement": "Si un aviso dice 'Prohibido estacionar', se infiere que:",
+    "options": [
+      "Es obligatorio estacionar",
+      "Los vehículos pueden detenerse libremente",
+      "No se permite dejar vehículos en ese lugar",
+      "Solo pueden estacionar bicicletas"
+    ],
+    "correctOption": 2,
+    "explanation": "La prohibición implica que no está permitido estacionar."
+  },
+  {
+    "id": "prob_rv_014",
+    "topicId": "topic_comprension_inferencial",
+    "difficulty": "medium",
+    "statement": "Si una persona usa paraguas y lleva impermeable, se puede inferir que:",
+    "options": [
+      "Hace mucho calor",
+      "Está lloviendo o podría llover",
+      "Va a nadar",
+      "Está en la playa"
+    ],
+    "correctOption": 1,
+    "explanation": "Ambos objetos se utilizan comúnmente cuando llueve."
+  },
+  {
+    "id": "prob_rm_021",
+    "topicId": "topic_rm_sucesiones",
+    "difficulty": "hard",
+    "statement": "Determine el término que sigue: 1, 2, 6, 24, 120, 720, ...",
+    "options": [
+      "1440",
+      "5040",
+      "7200",
+      "8400"
+    ],
+    "correctOption": 1,
+    "explanation": "Es la sucesión de factoriales: 1!, 2!, 3!, 4!, 5!, 6!. Sigue 7! = 5040."
+  },
+  {
+    "id": "prob_rm_022",
+    "topicId": "topic_rm_logica",
+    "difficulty": "hard",
+    "statement": "En una reunión hay 20 personas. Cada una saluda exactamente una vez a cada una de las demás. ¿Cuántos saludos se realizaron?",
+    "options": [
+      "190",
+      "200",
+      "210",
+      "380"
+    ],
+    "correctOption": 0,
+    "explanation": "Número de parejas distintas: C(20,2) = 20×19/2 = 190."
+  },
+  {
+    "id": "prob_rm_023",
+    "topicId": "topic_rm_edades",
+    "difficulty": "hard",
+    "statement": "La edad actual de un padre es el triple de la de su hijo. Dentro de 15 años, la edad del padre será el doble de la de su hijo. ¿Cuál es la edad actual del hijo?",
+    "options": [
+      "10",
+      "12",
+      "15",
+      "18"
+    ],
+    "correctOption": 2,
+    "explanation": "Padre=3x. En 15 años: 3x+15=2(x+15). Entonces x=15."
+  },
+  {
+    "id": "prob_rm_024",
+    "topicId": "topic_rm_conteo",
+    "difficulty": "hard",
+    "statement": "¿Cuántos números de tres cifras diferentes pueden formarse con los dígitos 1, 2, 3, 4 y 5 de modo que sean mayores que 300?",
+    "options": [
+      "36",
+      "48",
+      "60",
+      "72"
+    ],
+    "correctOption": 0,
+    "explanation": "Primera cifra: 3,4,5 (3 opciones). Luego 4 opciones para la segunda y 3 para la tercera. Total: 3×4×3 = 36."
+  },
+  {
+    "id": "prob_rv_019",
+    "topicId": "topic_rv_analogias",
+    "difficulty": "hard",
+    "statement": "EPIDERMIS es a PIEL como:",
+    "options": [
+      "Corteza a Árbol",
+      "Página a Libro",
+      "Techo a Casa",
+      "Raíz a Planta"
+    ],
+    "correctOption": 0,
+    "explanation": "La epidermis es una capa de la piel; la corteza es una capa del árbol."
+  },
+  {
+    "id": "prob_rv_020",
+    "topicId": "topic_rv_sinonimos",
+    "difficulty": "hard",
+    "statement": "Sinónimo contextual de EXIGUO:",
+    "options": [
+      "Escaso",
+      "Amplio",
+      "Extenso",
+      "Completo"
+    ],
+    "correctOption": 0,
+    "explanation": "Exiguo significa insuficiente o escaso."
+  },
+  {
+    "id": "prob_rv_021",
+    "topicId": "topic_comprension_inferencial",
+    "difficulty": "hard",
+    "statement": "Si una persona afirma: 'Todos los alumnos aprobaron el examen', ¿cuál de las siguientes conclusiones es necesariamente verdadera?",
+    "options": [
+      "Algunos alumnos desaprobaron",
+      "Ningún alumno desaprobó",
+      "Todos obtuvieron la misma nota",
+      "El examen fue fácil"
+    ],
+    "correctOption": 1,
+    "explanation": "La afirmación implica directamente que ningún alumno desaprobó."
+  },
+  {
+    "id": "prob_rv_022",
+    "topicId": "topic_rv_eliminadas",
+    "difficulty": "hard",
+    "statement": "(I) La lectura fortalece el vocabulario. (II) Favorece la comprensión lectora. (III) Estimula el pensamiento crítico. (IV) Los volcanes son aberturas de la corteza terrestre. (V) Contribuye al desarrollo intelectual. ¿Qué oración se elimina?",
+    "options": [
+      "I",
+      "II",
+      "III",
+      "IV",
+      "V"
+    ],
+    "correctOption": 3,
+    "explanation": "La oración IV rompe la unidad temática sobre los beneficios de la lectura."
+  }
+]

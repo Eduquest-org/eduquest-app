@@ -1,0 +1,16 @@
+[
+  {
+    "id": "comment_01",
+    "postId": "post_01",
+    "authorId": "U_01",
+    "content": "Tienes que aplicar la regla de la mano derecha primero.",
+    "createdAt": "2026-06-11T10:15:00Z"
+  },
+  {
+    "id": "comment_02",
+    "postId": "post_01",
+    "authorId": "U_HENRY",
+    "content": "Recuerda repasar la teoría del producto cruz en tu roadmap actual.",
+    "createdAt": "2026-06-11T10:30:00Z"
+  }
+]

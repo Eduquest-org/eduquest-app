@@ -1,15 +1,3 @@
-// 1. Estadísticas Gamificadas Básicas para el Banner Superior de Comunidad
-const communityStudentData = {
-    name: "Chris Carrasco",
-    avatar: "👥",
-    target: "Meta: UNI",
-    career: "Ingeniería de Sistemas",
-    joinedCircles: "1 Sala",
-    totalContributions: "14 Aportes",
-    streakDays: "3 Días"
-};
-
-// 2. Base de datos simulada del tablón de salas preuniversitarias (EP-04)
 const mockCirclesData = [
     {
         id: "C_01",
@@ -31,7 +19,7 @@ const mockCirclesData = [
         membersCount: 38,
         colorTheme: "#E24B4A",
         bgTheme: "rgba(226, 75, 74, 0.1)",
-        isJoined: true // Chris ya arranca dentro de este círculo
+        isJoined: true
     },
     {
         id: "C_03",
@@ -60,48 +48,49 @@ const mockCirclesData = [
 let activeCourseFilter = "ALL";
 
 document.addEventListener("DOMContentLoaded", () => {
-    // Inicializar inyecciones dinámicas
     buildCommunityProfileBanner();
     renderCirclesStream();
 
-    // Apagado automático del preloader modular
     setTimeout(() => {
         const preloader = document.getElementById("app-preloader");
         if (preloader) preloader.classList.add("fade-out-loader");
     }, 350);
 });
 
-// Inyectar el Banner Express Superior
 function buildCommunityProfileBanner() {
     const container = document.getElementById("community-profile-summary");
     if (!container) return;
 
     container.innerHTML = `
         <div class="profile-express-left">
-            <div class="profile-express-avatar">${communityStudentData.avatar}</div>
+            <div class="profile-express-avatar" data-user-avatar></div>
             <div class="profile-express-welcome">
-                <h3>Comunidad de ${communityStudentData.name}</h3>
-                <p>${communityStudentData.target} • ${communityStudentData.career}</p>
+                <h3>Comunidad de <span data-user-firstname></span></h3>
+                <p><span data-user-target></span> • <span data-user-career></span></p>
             </div>
         </div>
         <div class="profile-express-stats">
             <div class="express-stat-item">
-                <span id="banner-joined-count" class="express-stat-val" style="color: var(--indigo);">${communityStudentData.joinedCircles}</span>
+                <span id="banner-joined-count" class="express-stat-val" style="color: var(--indigo);">0 Salas</span>
                 <span class="express-stat-label">Mis Círculos</span>
             </div>
             <div class="express-stat-item">
-                <span class="express-stat-val" style="color: var(--green);">${communityStudentData.totalXp || '14'}</span>
+                <span class="express-stat-val" style="color: var(--green);" data-user-xp></span>
                 <span class="express-stat-label">Aportes Aula</span>
             </div>
             <div class="express-stat-item">
-                <span class="express-stat-val" style="color: var(--amber);">🔥 ${communityStudentData.streakDays}</span>
+                <span class="express-stat-val" style="color: var(--amber);">🔥 <span data-user-streak></span></span>
                 <span class="express-stat-label">Racha Activa</span>
             </div>
         </div>
     `;
+
+    if (window.UserBindingManager) UserBindingManager.bindAll();
+
+    const totalJoined = mockCirclesData.filter(c => c.isJoined).length;
+    document.getElementById("banner-joined-count").innerText = `${totalJoined} ${totalJoined === 1 ? 'Sala' : 'Salas'}`;
 }
 
-// Renderizar el tablón de círculos con filtros asíncronos
 function renderCirclesStream() {
     const container = document.getElementById("active-circles-container");
     if (!container) return;
@@ -135,11 +124,9 @@ function renderCirclesStream() {
     });
 }
 
-// Controlar los clicks de las pestañas superiores (Filtros)
 function filterCirclesByCourse(courseCode) {
     activeCourseFilter = courseCode;
 
-    // Cambiar estado visual del botón activo
     const tabs = document.querySelectorAll(".filter-tabs-bar .tab-btn");
     tabs.forEach(tab => {
         if (tab.getAttribute("onclick").includes(`'${courseCode}'`)) {
@@ -152,7 +139,6 @@ function filterCirclesByCourse(courseCode) {
     renderCirclesStream();
 }
 
-// Lógica reactiva de unirse/salir del grupo (Actualiza contadores y el banner express)
 function toggleCircleMembership(id) {
     const circle = mockCirclesData.find(c => c.id === id);
     if (!circle) return;
@@ -165,11 +151,9 @@ function toggleCircleMembership(id) {
         circle.membersCount++;
     }
 
-    // Calcular cuántas salas totales está metido el alumno e incrementar banner superior
     const totalJoined = mockCirclesData.filter(c => c.isJoined).length;
     document.getElementById("banner-joined-count").innerText = `${totalJoined} ${totalJoined === 1 ? 'Sala' : 'Salas'}`;
 
-    // Refrescar el tablón gráfico de inmediato
     renderCirclesStream();
 }
 

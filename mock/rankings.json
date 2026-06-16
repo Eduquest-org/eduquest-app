@@ -1,1 +1,5 @@
-{}
+[
+  { "userId": "U_01", "xp": 1420, "streakDays": 12 },
+  { "userId": "U_02", "xp": 1280, "streakDays": 8 },
+  { "userId": "U_CHRIS", "xp": 1150, "streakDays": 3 }
+]

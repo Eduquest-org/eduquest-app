@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>EduQuest — Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Inter:wght@400;500;600;700;900&family=Sora:wght@700;800&display=swap" rel="stylesheet">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -12,7 +13,10 @@
 
   <link rel="stylesheet" href="../../assets/css/global/reset.css">
   <link rel="stylesheet" href="../../assets/css/global/variables.css">
+  <link rel="stylesheet" href="../../assets/css/components/buttons.css">
   <link rel="stylesheet" href="../../assets/css/pages/student-dashboard.css">
+  <link rel="stylesheet" href="../../assets/css/components/charts.css">
+    <link rel="stylesheet" href="../../assets/css/components/sidebar.css">
   <link rel="stylesheet" href="../../assets/css/components/feed-card.css">
   <link rel="stylesheet" href="../../assets/css/components/loader.css">
 </head>
@@ -30,7 +34,7 @@
         <div class="create-post-card">
           <div class="create-post-header">
             <div class="user-avatar-mini">U</div>
-            <input type="text" id="post-input" placeholder="¿Qué duda académica tienes hoy? (Ej: Geometría UNI...)">
+            <input type="text" id="post-input" class="form-input" placeholder="¿Qué duda académica tienes hoy? (Ej: Geometría UNI...)">
           </div>
           <div class="create-post-actions">
             <span class="post-tag-selector"><i class="icon">🏷️</i> Agregar Curso</span>
@@ -43,7 +47,7 @@
 
       <aside class="widgets-column">
 
-        <div class="widget-card summary-card">
+        <div class="widget-card summary-card card card-md">
           <h3>📊 Tu Resumen de Hoy</h3>
           <p>Gana 850 XP más para subir de liga.</p>
           
@@ -60,13 +64,19 @@
 
 
 
-        <div class="widget-card challenge-card">
+        <div class="widget-card challenge-card card card-md">
           <h3>🎯 Misión Diaria</h3>
           <p>Completa un simulacro de Álgebra Nivel UNI sin usar la calculadora.</p>
           <button class="btn outline sm full" onclick="window.location.href='quizzes.html'" style="margin-top: 12px; width: 100%;">Ir al Simulacro</button>
         </div>
 
-        <div class="widget-card ranking-card">
+        <div class="widget-card challenge-card card card-md">
+          <h3>📊 Dasboard Rendimiento</h3>
+            <canvas id="globalChart"></canvas>
+          <button class="btn outline sm full" onclick="window.location.href='estadisticas-rendimiento.html'" style="margin-top: 12px; width: 100%;">Ver Rendimiento</button>
+        </div>
+
+        <div class="widget-card ranking-card card card-md">
           <h3>🏆 Top 3 de tu Aula</h3>
           <ul class="mini-ranking-list">
             <li>
@@ -102,10 +112,18 @@
     </main>
 
   </div>
+  <script src="../../assets/js/student/estadisticas-rendimiento.js"></script>
   <script src="../../assets/js/components/global-loader.js"></script>
   <script src="../../assets/js/utils/component-loader.js"></script>
   <script src="../../assets/js/student/dashboard.js"></script>
   <script src="../../assets/js/student/feed.js"></script>
+  <script src="../../assets/js/core/storage.js"></script>
+  <script src="../../assets/js/core/user-manager.js"></script>
+  <script src="../../assets/js/core/auth.js"></script>
+  <script src="../../assets/js/core/router.js"></script>
+  <script src="../../assets/js/core/current-user.js"></script>
+  <script src="../../assets/js/core/app.js"></script>
+
 
 </body>
 </html>
