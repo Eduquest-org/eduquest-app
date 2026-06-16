@@ -9,6 +9,9 @@
   
   <link rel="stylesheet" href="../../assets/css/global/reset.css">
   <link rel="stylesheet" href="../../assets/css/global/variables.css">
+  <link rel="stylesheet" href="../../assets/css/components/buttons.css">
+  <link rel="stylesheet" href="../../assets/css/components/profile-banner.css">
+  <link rel="stylesheet" href="../../assets/css/components/advice-card.css">
   <link rel="stylesheet" href="../../assets/css/pages/student-dashboard.css">
   <link rel="stylesheet" href="../../assets/css/pages/community-circles.css">
 </head>
@@ -43,10 +46,10 @@
           <button class="tab-btn" onclick="filterCirclesByCourse('LECTORA')">📚 Lectura</button>
         </div>
 
-        <div class="create-circle-card">
+        <div class="create-circle-card card">
           <div class="create-circle-trigger">
             <span class="user-avatar-placeholder" data-user-avatar>🎓</span>
-            <input type="text" id="new-circle-input" placeholder="¿Quieres armar un nuevo grupo de repaso rápido? Ponle un nombre aquí...">
+            <input type="text" id="new-circle-input" class="form-input" placeholder="¿Quieres armar un nuevo grupo de repaso rápido? Ponle un nombre aquí...">
             <button class="tab-btn" onclick="triggerCreateCircleMock()">Crear Círculo</button>
           </div>
         </div>
@@ -58,7 +61,7 @@
 
       <aside class="community-sidebar-column">
         
-        <div class="community-sidebar-card">
+        <div class="community-sidebar-card card card-md">
           <h3>🔥 Tendencia en tu Aula</h3>
           <p>Los grupos con más debate en las últimas horas.</p>
           <ul class="trending-circles-list">
@@ -79,7 +82,7 @@
           </ul>
         </div>
 
-        <div class="community-sidebar-card advice-card">
+        <div class="community-sidebar-card advice-card card-md">
           <h3>🧠 Recordatorio de Enfoque</h3>
           <p class="advice-text">"El aprendizaje en grupo acelera tu retención hasta un 60%, pero cuida los distractores. ¡A por esa meta preuniversitaria!"</p>
           <span class="advice-author">— Tutor Inteligente EduQuest</span>
