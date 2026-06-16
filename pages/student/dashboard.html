@@ -16,6 +16,7 @@
   <link rel="stylesheet" href="../../assets/css/pages/student-dashboard.css">
   <link rel="stylesheet" href="../../assets/css/components/feed-card.css">
   <link rel="stylesheet" href="../../assets/css/components/loader.css">
+  <link rel="stylesheet" href="../../assets/css/components/modals.css">
 </head>
 <body>
 
@@ -59,10 +60,14 @@
           <span class="widget-meta">🔥 Racha de <span data-user-streak></span> consecutivos</span>
         </div>
 
-        <div class="widget-card challenge-card card card-md">
+        <div class="widget-card challenge-card card card-md" id="daily-challenge-widget">
           <h3>🎯 Misión Diaria</h3>
-          <p>Completa un simulacro de Álgebra Nivel UNI sin usar la calculadora.</p>
-          <button class="btn outline sm full" onclick="window.location.href='quizzes.html'" style="margin-top: 12px; width: 100%;">Ir al Simulacro</button>
+          <p id="challenge-desc">Cargando reto del día...</p>
+          <div class="progress-bar-container" style="margin-top: 10px; margin-bottom: 6px;">
+            <div class="progress-bar" id="challenge-pbar" style="width: 0%;"></div>
+          </div>
+          <span class="widget-meta" id="challenge-progress-text">Progreso: -- / --</span>
+          <button class="btn outline sm full" id="challenge-action-btn" onclick="window.location.href='quizzes.html'" style="margin-top: 12px; width: 100%;">Ir al Simulacro</button>
         </div>
 
         <div class="widget-card ranking-card card card-md">
@@ -108,6 +113,7 @@
 
   <script src="../../assets/js/core/storage.js"></script>
   <script src="../../assets/js/core/user-manager.js"></script>
+  <script src="../../assets/js/student/gamification.js"></script>
   <script src="../../assets/js/core/auth.js"></script>
   <script src="../../assets/js/core/router.js"></script>
   <script src="../../assets/js/core/current-user.js"></script>
