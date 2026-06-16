@@ -185,24 +185,76 @@ function openSpecificCourseMap(courseId) {
     const pattern = ["node-left", "node-center", "node-right", "node-center"];
 
     cursoSeleccionado.nodes.forEach((lvl, idx) => {
-        const node = document.createElement("div");
+        const nodeWrapper = document.createElement("div");
         const position = pattern[idx % pattern.length];
-        node.className = `roadmap-node ${lvl.status} ${position}`;
+        nodeWrapper.className = `roadmap-node ${lvl.status} ${position}`;
 
         let stateLabel = "Bloqueado";
         if (lvl.status === "completed") stateLabel = "¡Superado! ✨";
         if (lvl.status === "unlocked") stateLabel = "¡Disponible! 🔥";
 
-        node.innerHTML = `
-            <div class="node-circle" onclick="launchQuizChallenge('${lvl.id}', '${lvl.status}')">
-                <span>${idx + 1}</span>
-                <div class="node-tooltip">
-                    <strong>${lvl.title}</strong>
-                    <span class="tooltip-status">${stateLabel}</span>
+        // Generar contenido del panel expandible basado en RAG
+        let panelContentHTML = "";
+        const content = lvl.data ? lvl.data.content : null;
+
+        if (content) {
+            const types = [
+                { key: 'lecciones', icon: '📚', typeClass: 'type-leccion', label: 'Lección' },
+                { key: 'recursos', icon: '📎', typeClass: 'type-recurso', label: 'Recurso' },
+                { key: 'quiz', icon: '🧠', typeClass: 'type-quiz', label: 'Quiz' },
+                { key: 'examen', icon: '📝', typeClass: 'type-examen', label: 'Examen' },
+                { key: 'desafio_final', icon: '🏆', typeClass: 'type-desafio', label: 'Desafío' }
+            ];
+
+            let hasItems = false;
+            types.forEach(t => {
+                if (content[t.key] && content[t.key].length > 0) {
+                    content[t.key].forEach(item => {
+                        hasItems = true;
+                        panelContentHTML += `
+                            <div class="rag-item ${t.typeClass}" onclick="handleRagItemClick(event, '${item.id}', '${t.key}', '${lvl.status}')">
+                                <div class="rag-item-icon">${t.icon}</div>
+                                <div class="rag-item-details">
+                                    <span class="rag-item-type">${t.label}</span>
+                                    <span class="rag-item-title">${item.title || 'Contenido Recomendado'}</span>
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+            });
+
+            if (!hasItems) {
+                panelContentHTML = `<div class="rag-empty-state">Práctica libre disponible en breve.</div>`;
+            }
+        } else {
+            // Fallback (sin RAG)
+            panelContentHTML = `
+                <div class="rag-item type-quiz" onclick="handleRagItemClick(event, '${lvl.id}', 'quiz', '${lvl.status}')">
+                    <div class="rag-item-icon">🧠</div>
+                    <div class="rag-item-details">
+                        <span class="rag-item-type">Simulacro</span>
+                        <span class="rag-item-title">Práctica General</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        nodeWrapper.innerHTML = `
+            <div class="node-content-wrapper">
+                <div class="node-circle" onclick="toggleNodeExpansion(this, '${lvl.status}')">
+                    <span>${idx + 1}</span>
+                    <div class="node-tooltip">
+                        <strong>${lvl.title}</strong>
+                        <span class="tooltip-status">${stateLabel}</span>
+                    </div>
+                </div>
+                <div class="rag-expansion-panel">
+                    ${panelContentHTML}
                 </div>
             </div>
         `;
-        mapContainer.appendChild(node);
+        mapContainer.appendChild(nodeWrapper);
     });
 
     document.getElementById("course-selection-view").classList.remove("active");
@@ -214,10 +266,35 @@ function switchBackToSelection() {
     document.getElementById("course-selection-view").classList.add("active");
 }
 
-function launchQuizChallenge(id, status) {
+function toggleNodeExpansion(circleElement, status) {
     if (status === "locked") {
-        alert("🔒 Nivel Bloqueado: Necesitas completar los simulacros previos de este curso para abrir el tema.");
+        alert("🔒 Nivel Bloqueado: Necesitas completar los temas previos para desbloquear este nodo.");
         return;
     }
-    window.location.href = `quizzes.html?level=${id}`;
+
+    // Cerrar otros paneles abiertos (Opcional, para mantener solo uno abierto)
+    document.querySelectorAll('.rag-expansion-panel.expanded').forEach(panel => {
+        if (panel !== circleElement.nextElementSibling) {
+            panel.classList.remove('expanded');
+        }
+    });
+
+    const panel = circleElement.nextElementSibling;
+    if (panel) {
+        panel.classList.toggle('expanded');
+    }
+}
+
+function handleRagItemClick(event, id, type, status) {
+    event.stopPropagation(); // Evitar que el click cierre el panel
+    
+    if (status === "locked") return;
+
+    if (type === 'quiz' || type === 'examen' || type === 'desafio_final') {
+        window.location.href = `quizzes.html?level=${id}&type=${type}`;
+    } else {
+        // Es un PDF, Lección o Recurso
+        alert(`Abrir visor de recurso para el ID: ${id} (Próximamente modal integrado)`);
+        // Aquí conectaremos luego con un Modal Visor
+    }
 }
