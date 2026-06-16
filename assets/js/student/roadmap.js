@@ -59,8 +59,9 @@ async function fetchDynamicRoadmap() {
         if (aiRoutes.length > 0) {
             // Recalcular progreso basado en completedTopics
             return aiRoutes.map(route => {
-                const completedLevels = route.levels.filter(lvl => completedTopics.includes(lvl.id)).length;
-                const totalLevels = route.levels.length;
+                const safeNodes = route.nodes || [];
+                const completedLevels = safeNodes.filter(n => completedTopics.includes(n.id)).length;
+                const totalLevels = safeNodes.length;
                 const progressPct = totalLevels > 0 ? Math.round((completedLevels / totalLevels) * 100) : 0;
 
                 return {
@@ -68,18 +69,19 @@ async function fetchDynamicRoadmap() {
                     completedLevels,
                     progressPct,
                     xpEarned: completedLevels * 50,
-                    levels: route.levels.map((lvl, idx) => {
-                        if (completedTopics.includes(lvl.id)) {
-                            return { ...lvl, status: 'completed' };
+                    nodes: safeNodes.map((n, idx) => {
+                        const title = n.data ? n.data.title : n.title;
+                        if (completedTopics.includes(n.id)) {
+                            return { ...n, title, status: 'completed' };
                         }
                         // El primer nivel no-completado se desbloquea
-                        const allPreviousCompleted = route.levels.slice(0, idx).every(
+                        const allPreviousCompleted = safeNodes.slice(0, idx).every(
                             prev => completedTopics.includes(prev.id)
                         );
                         if (idx === 0 || allPreviousCompleted) {
-                            return { ...lvl, status: 'unlocked' };
+                            return { ...n, title, status: 'unlocked' };
                         }
-                        return { ...lvl, status: 'locked' };
+                        return { ...n, title, status: 'locked' };
                     })
                 };
             });
@@ -115,7 +117,7 @@ async function fetchDynamicRoadmap() {
             completedLevels: completedLevels,
             totalLevels: total,
             xpEarned: completedLevels * 50,
-            levels: courseTopics.map((t, idx) => {
+            nodes: courseTopics.map((t, idx) => {
                 if (completedTopics.includes(t.id)) {
                     return { id: t.id, title: t.name, status: 'completed' };
                 }
@@ -182,7 +184,7 @@ function openSpecificCourseMap(courseId) {
 
     const pattern = ["node-left", "node-center", "node-right", "node-center"];
 
-    cursoSeleccionado.levels.forEach((lvl, idx) => {
+    cursoSeleccionado.nodes.forEach((lvl, idx) => {
         const node = document.createElement("div");
         const position = pattern[idx % pattern.length];
         node.className = `roadmap-node ${lvl.status} ${position}`;
