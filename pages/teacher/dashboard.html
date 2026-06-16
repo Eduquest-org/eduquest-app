@@ -1,24 +1,213 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EduQuest — Teacher Dashboard</title>
-    <link rel="stylesheet" href="../../assets/css/global/reset.css">
-    <link rel="stylesheet" href="../../assets/css/global/variables.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EduQuest · Panel del docente</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/css/pages/teacher-dashboard.css">
 </head>
 <body>
-    <div style="padding: 40px;">
-        <h1>Dashboard para Docentes</h1>
-        <p>Bienvenido al panel de control de tu aula virtual, <strong data-user-name></strong>.</p>
-        <button onclick="logout()" style="margin-top: 20px; padding: 10px 20px; cursor: pointer;">Cerrar Sesión</button>
-    </div>
 
-    <script src="../../assets/js/core/storage.js"></script>
-    <script src="../../assets/js/core/user-manager.js"></script>
-    <script src="../../assets/js/core/auth.js"></script>
-    <script src="../../assets/js/core/router.js"></script>
-    <script src="../../assets/js/core/current-user.js"></script>
-    <script src="../../assets/js/core/app.js"></script>
+<div class="app">
+  <div id="sidebar-container" data-path="../../components/sidebar-profesor.html"></div>
+  <div class="main-wrap">
+    <div id="topbar-container" data-path="../../components/topbar-teacher.html"></div>
+    <div class="content">
+
+      <!-- LEFT / MAIN COLUMN -->
+      <main>
+
+        <!-- Quick actions -->
+        <div class="quick-actions">
+
+          <div class="action-tile">
+            <div class="tile-icon purple">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M9 21v-6h6v6"/><path d="M9 8h.01M15 8h.01M9 11.5h.01M15 11.5h.01"/></svg>
+            </div>
+            <h4>Crear aula</h4>
+            <p>Abre un espacio nuevo para una sección.</p>
+          </div>
+
+          <div class="action-tile">
+            <div class="tile-icon amber">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+            </div>
+            <h4>Ver secciones</h4>
+            <p>Revisa el progreso de cada aula.</p>
+          </div>
+
+          <div class="action-tile">
+            <div class="tile-icon purple">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="18" rx="2"/><path d="M9 4h6a1 1 0 0 1 1 1v1H8V5a1 1 0 0 1 1-1Z"/><path d="m9 13 2 2 4-4"/></svg>
+            </div>
+            <h4>Asignar tarea</h4>
+            <p>Envía una tarea a tus alumnos.</p>
+          </div>
+
+          <div class="action-tile">
+            <span class="tile-badge">12</span>
+            <div class="tile-icon amber">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z"/></svg>
+            </div>
+            <h4>Calificar tareas</h4>
+            <p>Entregas pendientes por revisar.</p>
+          </div>
+
+        </div>
+
+        <!-- Composer -->
+        <section class="panel composer">
+          <div class="composer-row">
+            <div class="avatar">T</div>
+            <input type="text" placeholder="Comparte un anuncio o recordatorio con tus alumnos...">
+          </div>
+          <div class="composer-footer">
+            <button class="ghost-link">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5 12 20.5a4.5 4.5 0 0 1-6.36-6.36l8.49-8.49a3 3 0 0 1 4.24 4.24l-8 8a1.5 1.5 0 0 1-2.12-2.12l7-7"/></svg>
+              Agregar recurso
+            </button>
+            <button class="btn btn-amber">Publicar anuncio</button>
+          </div>
+        </section>
+
+        <!-- Feed -->
+        <div class="feed-header">
+          <h3>Dudas pendientes</h3>
+          <span>2 esperando respuesta</span>
+        </div>
+
+        <div class="feed">
+
+          <article class="feed-card">
+            <div class="feed-top">
+              <div class="feed-avatar" style="background:var(--brand);">C</div>
+              <div class="feed-meta">
+                <div class="feed-name">Chris Carrasco</div>
+                <div class="feed-time">Hace 2 horas</div>
+              </div>
+              <span class="tag physics">Física</span>
+            </div>
+            <p class="feed-text">No logro plantear el producto vectorial para hallar el ángulo entre dos direcciones en 3D — se pierde apenas llega al determinante. ¿Alguien tiene un ejemplo guiado?</p>
+            <div class="feed-footer">
+              <div class="feed-stats">
+                <span class="stat-pill">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 10v12"/><path d="M15 5.88 14 10h6.29a2 2 0 0 1 1.94 2.5l-1.54 6A2 2 0 0 1 18.75 20H7a2 2 0 0 1-2-2v-7a2 2 0 0 1 .58-1.41L9.5 6a1 1 0 0 1 1.5.86V9"/></svg>
+                  24 con la misma duda
+                </span>
+                <span class="stat-pill">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 1 1 17 0Z"/></svg>
+                  2 comentarios
+                </span>
+              </div>
+              <button class="btn-outline-amber">Responder</button>
+            </div>
+          </article>
+
+          <article class="feed-card">
+            <div class="feed-top">
+              <div class="feed-avatar" style="background:var(--amber-dark);">M</div>
+              <div class="feed-meta">
+                <div class="feed-name">Mariana Pérez</div>
+                <div class="feed-time">Hace 5 horas</div>
+              </div>
+              <span class="tag algebra">Álgebra</span>
+            </div>
+            <p class="feed-text">En sistemas de ecuaciones con tres variables, ¿cuándo conviene usar reducción en vez de sustitución? Tengo un ejercicio del simulacro que no me cierra.</p>
+            <div class="feed-footer">
+              <div class="feed-stats">
+                <span class="stat-pill">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 10v12"/><path d="M15 5.88 14 10h6.29a2 2 0 0 1 1.94 2.5l-1.54 6A2 2 0 0 1 18.75 20H7a2 2 0 0 1-2-2v-7a2 2 0 0 1 .58-1.41L9.5 6a1 1 0 0 1 1.5.86V9"/></svg>
+                  9 con la misma duda
+                </span>
+                <span class="stat-pill">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 1 1 17 0Z"/></svg>
+                  0 comentarios
+                </span>
+              </div>
+              <button class="btn-outline-amber">Responder</button>
+            </div>
+          </article>
+
+        </div>
+
+      </main>
+
+      <!-- RIGHT COLUMN -->
+      <aside class="right-col">
+
+        <div class="panel">
+          <div class="panel-head">
+            <div class="panel-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+            </div>
+            <h3>Secciones</h3>
+          </div>
+          <p class="panel-sub">3 aulas activas · 87 alumnos en total</p>
+
+          <div class="stat-row">
+            <span class="stat-big">142</span>
+            <span class="stat-of">/ 180 tareas</span>
+          </div>
+          <p class="stat-label">Tareas calificadas este mes</p>
+          <div class="progress-track"><div class="progress-fill" style="width:79%"></div></div>
+
+          <div class="streak-row">🔥 Racha de revisión: 3 días consecutivos</div>
+
+          <span class="panel-link">Ver secciones →</span>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <div class="panel-icon purple">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="18" rx="2"/><path d="M9 4h6a1 1 0 0 1 1 1v1H8V5a1 1 0 0 1 1-1Z"/><path d="m9 13 2 2 4-4"/></svg>
+            </div>
+            <h3>Asignar tarea</h3>
+          </div>
+          <p class="panel-sub">Elige una sección y envía una tarea nueva.</p>
+          <button class="btn btn-purple full-btn">Asignar tarea</button>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <div class="panel-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><rect x="7" y="13" width="3" height="5"/><rect x="12" y="9" width="3" height="9"/><rect x="17" y="6" width="3" height="12"/></svg>
+            </div>
+            <h3>Dashboard Rendimiento</h3>
+          </div>
+
+          <div class="bar-stack">
+            <div class="bar-amber" style="width:80%"></div>
+            <div class="bar-red" style="width:20%"></div>
+          </div>
+
+          <div class="legend">
+            <div class="legend-row">
+              <span class="legend-key"><span class="legend-swatch amber"></span>Aciertos</span>
+              <span class="legend-value">1,284</span>
+            </div>
+            <div class="legend-row">
+              <span class="legend-key"><span class="legend-swatch red"></span>Errores</span>
+              <span class="legend-value">316</span>
+            </div>
+          </div>
+
+          <p class="panel-foot-note">80% de aciertos en general</p>
+        </div>
+
+      </aside>
+
+    </div>
+  </div>
+</div>
+
+<script src="../../assets/js/utils/component-loader.js"></script>
+<script src="../../assets/js/core/storage.js"></script>
+<script src="../../assets/js/core/user-manager.js"></script>
+<script src="../../assets/js/core/auth.js"></script>
+<script src="../../assets/js/core/current-user.js"></script>
+<script src="../../assets/js/teacher/dashboard.js"></script>
+
 </body>
 </html>
