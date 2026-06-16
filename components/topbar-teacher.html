@@ -1,0 +1,17 @@
+<div class="topbar">
+  <div class="search-wrapper">
+    <span class="search-icon">🔍</span>
+    <input type="text" id="teacher-search" oninput="filterTeacherStudents(this.value)" placeholder="Buscar alumno, grupo o materia...">
+  </div>
+
+  <div class="topbar-right">
+    <button class="nav-icon-btn" title="Alertas pendientes" onclick="notifyComingSoon('Centro de alertas')">
+      🔔 <span class="notification-badge"></span>
+    </button>
+    <span class="badge-teacher-view">Vista Docente</span>
+    <button class="user-profile-btn">
+      <span class="user-name-top" data-user-name>Docente</span>
+      <div class="user-avatar-top" data-user-initials>··</div>
+    </button>
+  </div>
+</div>

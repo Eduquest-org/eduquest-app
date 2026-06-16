@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EduQuest — Configuración Docente</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=DM+Sans:wght@400;500;700&family=Inter:wght@400;500;600;700;900&family=Sora:wght@700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="../../assets/css/global/reset.css">
+  <link rel="stylesheet" href="../../assets/css/global/variables.css">
+  <link rel="stylesheet" href="../../assets/css/components/buttons.css">
+  <link rel="stylesheet" href="../../assets/css/pages/teacher-dashboard.css">
+</head>
+<body>
+
+  <div id="app-preloader">
+    <div class="spinner"></div>
+    <p>Abriendo tu configuración...</p>
+  </div>
+
+  <div id="topbar-container" data-path="../../components/topbar-teacher.html"></div>
+
+  <div class="app-shell">
+    <div id="sidebar-container" data-path="../../components/sidebar-teacher.html"></div>
+
+    <main class="teacher-content">
+
+      <div class="page-head">
+        <h1>Configuración</h1>
+        <p>Administra tu perfil docente y tus preferencias de notificación.</p>
+      </div>
+
+      <div class="card" style="max-width:760px;">
+        <div class="card-h" style="margin-bottom:18px;">Perfil del docente</div>
+        <div class="form-grid">
+          <div class="form-row">
+            <label class="form-label" for="set-name">Nombre</label>
+            <input id="set-name" class="form-input" type="text" placeholder="Tu nombre">
+          </div>
+          <div class="form-row">
+            <label class="form-label" for="set-email">Correo</label>
+            <input id="set-email" class="form-input" type="email" disabled>
+          </div>
+          <div class="form-row">
+            <label class="form-label" for="set-class">Nombre del aula</label>
+            <input id="set-class" class="form-input" type="text" placeholder="Ej: Aula 3246 - UNI">
+          </div>
+          <div class="form-row">
+            <label class="form-label" for="set-target">Institución objetivo</label>
+            <select id="set-target" class="form-input">
+              <option value="UNI">UNI</option>
+              <option value="San Marcos">San Marcos</option>
+              <option value="PUCP">PUCP</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="max-width:760px; margin-top:20px;">
+        <div class="card-h" style="margin-bottom:6px;">Notificaciones</div>
+        <div class="switch-row">
+          <div>
+            <div class="switch-txt-title">Alertas de riesgo</div>
+            <div class="switch-txt-sub">Avisarme cuando un alumno entre en riesgo.</div>
+          </div>
+          <label class="switch"><input type="checkbox" id="notif-risk"><span class="slider"></span></label>
+        </div>
+        <div class="switch-row">
+          <div>
+            <div class="switch-txt-title">Resumen semanal</div>
+            <div class="switch-txt-sub">Recibir un resumen del avance del aula cada lunes.</div>
+          </div>
+          <label class="switch"><input type="checkbox" id="notif-weekly"><span class="slider"></span></label>
+        </div>
+        <div class="switch-row">
+          <div>
+            <div class="switch-txt-title">Nuevos alumnos</div>
+            <div class="switch-txt-sub">Notificar cuando un alumno se una al aula.</div>
+          </div>
+          <label class="switch"><input type="checkbox" id="notif-new"><span class="slider"></span></label>
+        </div>
+      </div>
+
+      <div style="max-width:760px; margin-top:20px; display:flex; gap:12px;">
+        <button class="btn btn-teacher btn-md" onclick="saveSettings()">Guardar cambios</button>
+        <button class="btn btn-outline btn-md" onclick="resetSettings()">Restablecer</button>
+      </div>
+
+    </main>
+  </div>
+
+  <script src="../../assets/js/utils/component-loader.js"></script>
+  <script src="../../assets/js/teacher/teacher-common.js"></script>
+  <script src="../../assets/js/teacher/settings.js"></script>
+
+  <script src="../../assets/js/core/storage.js"></script>
+  <script src="../../assets/js/core/user-manager.js"></script>
+  <script src="../../assets/js/core/auth.js"></script>
+  <script src="../../assets/js/core/router.js"></script>
+  <script src="../../assets/js/core/current-user.js"></script>
+  <script src="../../assets/js/core/app.js"></script>
+</body>
+</html>

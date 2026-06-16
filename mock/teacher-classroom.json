@@ -1,0 +1,22 @@
+{
+  "classroomId": "C_01",
+  "classroomName": "Aula 3246 - UNI",
+  "sessionsActive": 8,
+  "students": [
+    { "id": "S_01", "name": "Rodrigo Méndez",  "initials": "RM", "subject": "Álgebra",        "target": "UNI",        "progress": 68, "lastActivity": "hace 1h",     "status": "encamino"  },
+    { "id": "S_02", "name": "María López",      "initials": "ML", "subject": "Física",         "target": "San Marcos", "progress": 42, "lastActivity": "hace 3d",     "status": "riesgo"    },
+    { "id": "S_03", "name": "Carlos Paredes",   "initials": "CP", "subject": "Química",        "target": "PUCP",       "progress": 88, "lastActivity": "hace 2h",     "status": "excelente" },
+    { "id": "S_04", "name": "Ana Torres",       "initials": "AT", "subject": "Matemáticas",    "target": "UNI",        "progress": 55, "lastActivity": "hace 6h",     "status": "moderado"  },
+    { "id": "S_05", "name": "Diego Flores",     "initials": "DF", "subject": "Álgebra",        "target": "UNI",        "progress": 22, "lastActivity": "hace 5d",     "status": "riesgo"    },
+    { "id": "S_06", "name": "Lucía Ramos",      "initials": "LR", "subject": "Comp. Lectora",  "target": "San Marcos", "progress": 74, "lastActivity": "hace 4h",     "status": "encamino"  },
+    { "id": "S_07", "name": "Kevin Quispe",     "initials": "KQ", "subject": "Aritmética",     "target": "UNI",        "progress": 91, "lastActivity": "hace 30 min", "status": "excelente" },
+    { "id": "S_08", "name": "Daniela Soto",     "initials": "DS", "subject": "Biología",       "target": "Cayetano",   "progress": 50, "lastActivity": "hace 1d",     "status": "moderado"  },
+    { "id": "S_09", "name": "Mateo Ríos",       "initials": "MR", "subject": "Geometría",      "target": "UNI",        "progress": 63, "lastActivity": "hace 8h",     "status": "encamino"  },
+    { "id": "S_10", "name": "Valeria Núñez",    "initials": "VN", "subject": "Trigonometría",  "target": "San Marcos", "progress": 35, "lastActivity": "hace 4d",     "status": "riesgo"    }
+  ],
+  "groups": [
+    { "name": "Grupo A — UNI",        "members": 18, "status": "activo"   },
+    { "name": "Grupo B — San Marcos", "members": 14, "status": "atencion" },
+    { "name": "Grupo C — PUCP",       "members": 10, "status": "activo"   }
+  ]
+}

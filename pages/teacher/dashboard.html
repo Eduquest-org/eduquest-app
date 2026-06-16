@@ -1,24 +1,122 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EduQuest — Teacher Dashboard</title>
-    <link rel="stylesheet" href="../../assets/css/global/reset.css">
-    <link rel="stylesheet" href="../../assets/css/global/variables.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EduQuest — Panel Docente</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=DM+Sans:wght@400;500;700&family=Inter:wght@400;500;600;700;900&family=Sora:wght@700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="../../assets/css/global/reset.css">
+  <link rel="stylesheet" href="../../assets/css/global/variables.css">
+  <link rel="stylesheet" href="../../assets/css/components/buttons.css">
+  <link rel="stylesheet" href="../../assets/css/pages/teacher-dashboard.css">
 </head>
 <body>
-    <div style="padding: 40px;">
-        <h1>Dashboard para Docentes</h1>
-        <p>Bienvenido al panel de control de tu aula virtual, <strong data-user-name></strong>.</p>
-        <button onclick="logout()" style="margin-top: 20px; padding: 10px 20px; cursor: pointer;">Cerrar Sesión</button>
-    </div>
 
-    <script src="../../assets/js/core/storage.js"></script>
-    <script src="../../assets/js/core/user-manager.js"></script>
-    <script src="../../assets/js/core/auth.js"></script>
-    <script src="../../assets/js/core/router.js"></script>
-    <script src="../../assets/js/core/current-user.js"></script>
-    <script src="../../assets/js/core/app.js"></script>
+  <div id="app-preloader">
+    <div class="spinner"></div>
+    <p>Cargando el panel de tu aula virtual...</p>
+  </div>
+
+  <div id="topbar-container" data-path="../../components/topbar-teacher.html"></div>
+
+  <div class="app-shell">
+    <div id="sidebar-container" data-path="../../components/sidebar-teacher.html"></div>
+
+    <main class="teacher-content">
+
+      <div class="page-head">
+        <h1>Panel Docente</h1>
+        <p>Hola, <span data-user-firstname>Docente</span> — resumen de <strong id="teacher-classroom-name">tu aula</strong>.</p>
+      </div>
+
+      <!-- Métricas (calculadas desde la data) -->
+      <div class="stats-row">
+        <div class="scard">
+          <div class="scard-lbl">Total Alumnos</div>
+          <div class="scard-val" id="stat-total">—</div>
+          <div class="scard-sub">Matriculados en el aula</div>
+        </div>
+        <div class="scard">
+          <div class="scard-lbl">En Riesgo</div>
+          <div class="scard-val col-r" id="stat-risk">—</div>
+          <div class="scard-sub">Requieren atención</div>
+        </div>
+        <div class="scard">
+          <div class="scard-lbl">Avance Promedio</div>
+          <div class="scard-val col-g" id="stat-progress">—</div>
+          <div class="scard-sub">Media del aula</div>
+        </div>
+        <div class="scard">
+          <div class="scard-lbl">Sesiones Activas</div>
+          <div class="scard-val col-i" id="stat-sessions">—</div>
+          <div class="scard-sub">Ahora mismo</div>
+        </div>
+      </div>
+
+      <div class="teacher-grid">
+
+        <!-- Tabla de alumnos -->
+        <div class="card">
+          <div class="tbl-toolbar">
+            <div class="card-h">Mis Alumnos</div>
+            <div class="tbl-tools">
+              <select class="filter-select" id="teacher-filter" onchange="filterByStatus(this.value)" aria-label="Filtrar por estado">
+                <option value="all">Todos los estados</option>
+                <option value="riesgo">En riesgo</option>
+                <option value="moderado">Moderado</option>
+                <option value="encamino">En camino</option>
+                <option value="excelente">Excelente</option>
+              </select>
+              <button class="btn btn-teacher btn-sm" onclick="addStudentPrompt()">+ Agregar alumno</button>
+            </div>
+          </div>
+
+          <table class="tbl">
+            <thead>
+              <tr>
+                <th>Alumno</th>
+                <th>Materia · Meta</th>
+                <th>Avance</th>
+                <th>Última actividad</th>
+                <th>Estado</th>
+                <th>Acción</th>
+              </tr>
+            </thead>
+            <tbody id="teacher-students-body">
+              <tr><td colspan="6" class="tbl-empty">Cargando alumnos…</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Alertas + grupos -->
+        <div>
+          <div class="card">
+            <div class="card-h" style="margin-bottom:14px;">Alertas pendientes</div>
+            <div id="teacher-alerts"></div>
+          </div>
+          <div class="card">
+            <div class="card-h" style="margin-bottom:14px;">Grupos activos</div>
+            <div id="teacher-groups"></div>
+          </div>
+        </div>
+
+      </div>
+
+    </main>
+  </div>
+
+  <script src="../../assets/js/utils/component-loader.js"></script>
+  <script src="../../assets/js/teacher/dashboard.js"></script>
+
+  <script src="../../assets/js/core/storage.js"></script>
+  <script src="../../assets/js/core/user-manager.js"></script>
+  <script src="../../assets/js/core/auth.js"></script>
+  <script src="../../assets/js/core/router.js"></script>
+  <script src="../../assets/js/core/current-user.js"></script>
+  <script src="../../assets/js/core/app.js"></script>
 </body>
 </html>

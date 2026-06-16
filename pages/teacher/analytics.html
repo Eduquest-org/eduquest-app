@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EduQuest — Analytics Docente</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=DM+Sans:wght@400;500;700&family=Inter:wght@400;500;600;700;900&family=Sora:wght@700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="../../assets/css/global/reset.css">
+  <link rel="stylesheet" href="../../assets/css/global/variables.css">
+  <link rel="stylesheet" href="../../assets/css/components/buttons.css">
+  <link rel="stylesheet" href="../../assets/css/pages/teacher-dashboard.css">
+</head>
+<body>
+
+  <div id="app-preloader">
+    <div class="spinner"></div>
+    <p>Calculando las analíticas de tu aula...</p>
+  </div>
+
+  <div id="topbar-container" data-path="../../components/topbar-teacher.html"></div>
+
+  <div class="app-shell">
+    <div id="sidebar-container" data-path="../../components/sidebar-teacher.html"></div>
+
+    <main class="teacher-content">
+
+      <div class="page-head">
+        <h1>Analytics</h1>
+        <p>Métricas agregadas de <strong id="teacher-classroom-name">tu aula</strong> para detectar tendencias y focos de atención.</p>
+      </div>
+
+      <div class="stats-row">
+        <div class="scard"><div class="scard-lbl">Total Alumnos</div><div class="scard-val" id="stat-total">—</div><div class="scard-sub">Matriculados</div></div>
+        <div class="scard"><div class="scard-lbl">En Riesgo</div><div class="scard-val col-r" id="stat-risk">—</div><div class="scard-sub">Requieren atención</div></div>
+        <div class="scard"><div class="scard-lbl">Avance Promedio</div><div class="scard-val col-g" id="stat-progress">—</div><div class="scard-sub">Media del aula</div></div>
+        <div class="scard"><div class="scard-lbl">Materias</div><div class="scard-val col-i" id="stat-subjects">—</div><div class="scard-sub">En seguimiento</div></div>
+      </div>
+
+      <div class="tcols-2">
+        <div class="card">
+          <div class="card-h" style="margin-bottom:18px;">Avance promedio por materia</div>
+          <div id="bars-subject"></div>
+        </div>
+        <div class="card">
+          <div class="card-h" style="margin-bottom:18px;">Distribución por estado</div>
+          <div id="bars-status"></div>
+          <div class="legend" id="status-legend"></div>
+        </div>
+      </div>
+
+      <div class="tcols-2" style="margin-top:20px;">
+        <div class="card">
+          <div class="card-h" style="margin-bottom:14px;">⚠ Necesitan apoyo</div>
+          <div id="list-support" class="alert-list"></div>
+        </div>
+        <div class="card">
+          <div class="card-h" style="margin-bottom:14px;">🌟 Top del aula</div>
+          <div id="list-top" class="alert-list"></div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <script src="../../assets/js/utils/component-loader.js"></script>
+  <script src="../../assets/js/teacher/teacher-common.js"></script>
+  <script src="../../assets/js/teacher/analytics.js"></script>
+
+  <script src="../../assets/js/core/storage.js"></script>
+  <script src="../../assets/js/core/user-manager.js"></script>
+  <script src="../../assets/js/core/auth.js"></script>
+  <script src="../../assets/js/core/router.js"></script>
+  <script src="../../assets/js/core/current-user.js"></script>
+  <script src="../../assets/js/core/app.js"></script>
+</body>
+</html>
