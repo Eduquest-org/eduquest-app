@@ -769,5 +769,203 @@
     ],
     "correctOption": 3,
     "explanation": "La oración IV rompe la unidad temática sobre los beneficios de la lectura."
+  },
+  {
+    "id": "prob_arit_001",
+    "topicId": "topic_aritmetica_razones",
+    "difficulty": "basic",
+    "statement": "Si a/b = 2/3 y a + b = 25. Hallar a.",
+    "options": ["5", "10", "15", "20"],
+    "correctOption": 1,
+    "explanation": "2k + 3k = 25 -> 5k = 25 -> k = 5. Entonces a = 2(5) = 10."
+  },
+  {
+    "id": "prob_arit_002",
+    "topicId": "topic_aritmetica_razones",
+    "difficulty": "medium",
+    "statement": "Dos números están en relación de 4 a 7. Si su diferencia es 15, ¿cuál es el mayor?",
+    "options": ["20", "25", "35", "40"],
+    "correctOption": 2,
+    "explanation": "7k - 4k = 15 -> 3k = 15 -> k = 5. El mayor es 7(5) = 35."
+  },
+  {
+    "id": "prob_arit_003",
+    "topicId": "topic_aritmetica_magnitudes",
+    "difficulty": "basic",
+    "statement": "A es directamente proporcional a B. Cuando A=12, B=4. Hallar A cuando B=6.",
+    "options": ["14", "16", "18", "20"],
+    "correctOption": 2,
+    "explanation": "A/B = k. 12/4 = 3. A/6 = 3 -> A = 18."
+  },
+  {
+    "id": "prob_arit_004",
+    "topicId": "topic_aritmetica_magnitudes",
+    "difficulty": "medium",
+    "statement": "A es inversamente proporcional a B. Cuando A=5, B=12. Hallar B cuando A=10.",
+    "options": ["4", "5", "6", "8"],
+    "correctOption": 2,
+    "explanation": "A*B = k. 5*12 = 60. 10*B = 60 -> B = 6."
+  },
+  {
+    "id": "prob_arit_005",
+    "topicId": "topic_aritmetica_tantoporciento",
+    "difficulty": "basic",
+    "statement": "¿El 20% de qué número es 40?",
+    "options": ["100", "150", "200", "250"],
+    "correctOption": 2,
+    "explanation": "0.20 * x = 40 -> x = 40 / 0.20 = 200."
+  },
+  {
+    "id": "prob_arit_006",
+    "topicId": "topic_aritmetica_tantoporciento",
+    "difficulty": "medium",
+    "statement": "Un artículo sube de 50 a 60 soles. ¿Cuál es el incremento porcentual?",
+    "options": ["10%", "15%", "20%", "25%"],
+    "correctOption": 2,
+    "explanation": "Incremento = 10 soles. 10 / 50 = 0.2 = 20%."
+  },
+  {
+    "id": "prob_arit_007",
+    "topicId": "topic_aritmetica_estadistica",
+    "difficulty": "basic",
+    "statement": "¿Cuál es la mediana de los datos: 2, 4, 6, 8, 10?",
+    "options": ["4", "5", "6", "8"],
+    "correctOption": 2,
+    "explanation": "El valor central es 6."
+  },
+  {
+    "id": "prob_arit_008",
+    "topicId": "topic_aritmetica_estadistica",
+    "difficulty": "medium",
+    "statement": "¿Cuál es el promedio de 12, 15, 18 y 23?",
+    "options": ["15", "16", "17", "18"],
+    "correctOption": 2,
+    "explanation": "(12+15+18+23)/4 = 68 / 4 = 17."
+  },
+  {
+    "id": "prob_trig_001",
+    "topicId": "topic_trigonometria_angulo",
+    "difficulty": "basic",
+    "statement": "Convertir 30° a radianes.",
+    "options": ["pi/6", "pi/4", "pi/3", "pi/2"],
+    "correctOption": 0,
+    "explanation": "30 * (pi/180) = pi/6 radianes."
+  },
+  {
+    "id": "prob_trig_002",
+    "topicId": "topic_trigonometria_angulo",
+    "difficulty": "medium",
+    "statement": "Convertir pi/4 radianes a grados sexagesimales.",
+    "options": ["30°", "45°", "60°", "90°"],
+    "correctOption": 1,
+    "explanation": "(pi/4) * (180/pi) = 45°."
+  },
+  {
+    "id": "prob_trig_003",
+    "topicId": "topic_trigonometria_razones_agudos",
+    "difficulty": "basic",
+    "statement": "Si sen(a) = 3/5, ¿cuál es la hipotenusa en un triángulo rectángulo?",
+    "options": ["3", "4", "5", "6"],
+    "correctOption": 2,
+    "explanation": "El seno es cateto opuesto / hipotenusa. Por lo tanto, la hipotenusa es proporcional a 5."
+  },
+  {
+    "id": "prob_trig_004",
+    "topicId": "topic_trigonometria_razones_agudos",
+    "difficulty": "medium",
+    "statement": "Calcular tan(45°).",
+    "options": ["0", "1", "1.5", "2"],
+    "correctOption": 1,
+    "explanation": "Los catetos son iguales en un triángulo de 45°, por lo que tan(45°) = 1."
+  },
+  {
+    "id": "prob_trig_005",
+    "topicId": "topic_trigonometria_identidades",
+    "difficulty": "advanced",
+    "statement": "Simplificar: (sen x)^2 + (cos x)^2 + (tan x)^2",
+    "options": ["(sec x)^2", "(csc x)^2", "1", "0"],
+    "correctOption": 0,
+    "explanation": "sen^2 + cos^2 = 1. Luego 1 + tan^2 = sec^2."
+  },
+  {
+    "id": "prob_trig_006",
+    "topicId": "topic_trigonometria_identidades",
+    "difficulty": "advanced",
+    "statement": "A qué equivale 1 - sen^2(x)",
+    "options": ["tan^2(x)", "sec^2(x)", "cos^2(x)", "csc^2(x)"],
+    "correctOption": 2,
+    "explanation": "Por identidad pitagórica, 1 - sen^2(x) = cos^2(x)."
+  },
+  {
+    "id": "prob_quim_001",
+    "topicId": "topic_quimica_materia",
+    "difficulty": "basic",
+    "statement": "Es una propiedad extensiva de la materia:",
+    "options": ["Densidad", "Punto de ebullición", "Masa", "Dureza"],
+    "correctOption": 2,
+    "explanation": "La masa depende de la cantidad de materia, por lo tanto es extensiva."
+  },
+  {
+    "id": "prob_quim_002",
+    "topicId": "topic_quimica_materia",
+    "difficulty": "medium",
+    "statement": "Cambio de estado de sólido a gas directamente:",
+    "options": ["Evaporación", "Fusión", "Condensación", "Sublimación"],
+    "correctOption": 3,
+    "explanation": "La sublimación es el paso directo de sólido a gaseoso (ej. hielo seco)."
+  },
+  {
+    "id": "prob_quim_003",
+    "topicId": "topic_quimica_atomo",
+    "difficulty": "basic",
+    "statement": "Partícula subatómica con carga positiva:",
+    "options": ["Electrón", "Protón", "Neutrón", "Fotón"],
+    "correctOption": 1,
+    "explanation": "El protón se ubica en el núcleo y tiene carga positiva."
+  },
+  {
+    "id": "prob_quim_004",
+    "topicId": "topic_quimica_atomo",
+    "difficulty": "medium",
+    "statement": "¿Qué son los isótopos?",
+    "options": ["Igual masa, distinto número atómico", "Igual número de neutrones", "Igual número de protones, distinto número de neutrones", "Átomos sin electrones"],
+    "correctOption": 2,
+    "explanation": "Los isótopos son átomos del mismo elemento (mismo Z) con distinta masa (distinto número de neutrones)."
+  },
+  {
+    "id": "prob_quim_005",
+    "topicId": "topic_quimica_configuracion",
+    "difficulty": "medium",
+    "statement": "Capacidad máxima de electrones en el subnivel p:",
+    "options": ["2", "6", "10", "14"],
+    "correctOption": 1,
+    "explanation": "El subnivel p tiene 3 orbitales, por lo que alberga un máximo de 6 electrones."
+  },
+  {
+    "id": "prob_quim_006",
+    "topicId": "topic_quimica_configuracion",
+    "difficulty": "advanced",
+    "statement": "¿Cuál es la configuración del Carbono (Z=6)?",
+    "options": ["1s2 2s2 2p2", "1s2 2s2 2p4", "1s2 2s2", "1s2 2p4"],
+    "correctOption": 0,
+    "explanation": "Para Z=6, se distribuyen 6 electrones: 1s2 2s2 2p2."
+  },
+  {
+    "id": "prob_quim_007",
+    "topicId": "topic_quimica_tabla",
+    "difficulty": "basic",
+    "statement": "Los elementos del grupo VIIA son conocidos como:",
+    "options": ["Gases Nobles", "Metales Alcalinos", "Halógenos", "Anfígenos"],
+    "correctOption": 2,
+    "explanation": "El grupo VIIA está compuesto por Flúor, Cloro, Bromo, Yodo (Halógenos)."
+  },
+  {
+    "id": "prob_quim_008",
+    "topicId": "topic_quimica_tabla",
+    "difficulty": "medium",
+    "statement": "¿Qué elemento tiene mayor electronegatividad?",
+    "options": ["Francio", "Oxígeno", "Flúor", "Nitrógeno"],
+    "correctOption": 2,
+    "explanation": "El flúor es el elemento más electronegativo de la tabla periódica."
   }
 ]
