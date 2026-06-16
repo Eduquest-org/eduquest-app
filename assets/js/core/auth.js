@@ -105,6 +105,7 @@ const Auth = {
 
     register() {
         const nameInput = document.getElementById('reg-name');
+        const lastNameInput = document.getElementById('reg-lastname');
         const emailInput = document.getElementById('reg-email');
         const passInput = document.getElementById('reg-password');
         const birthdateInput = document.getElementById('reg-birthdate');
@@ -112,7 +113,9 @@ const Auth = {
 
         if (!nameInput || !emailInput || !passInput) return;
 
-        const name = nameInput.value.trim();
+        const firstName = nameInput.value.trim();
+        const lastName = lastNameInput?.value.trim() || '';
+        const name = lastName ? `${firstName} ${lastName}` : firstName;
         const email = emailInput.value.trim().toLowerCase();
         const pass = passInput.value.trim();
 
@@ -179,6 +182,7 @@ const Auth = {
         Storage.saveSession(session);
 
         nameInput.value = ""; emailInput.value = ""; passInput.value = "";
+        if (lastNameInput) lastNameInput.value = "";
         if (birthdateInput) birthdateInput.value = "";
         if (gradYearInput) gradYearInput.value = "";
 

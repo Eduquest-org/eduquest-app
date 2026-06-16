@@ -258,7 +258,7 @@ function openSpecificCourseMap(courseId) {
     });
 
     document.getElementById("course-selection-view").classList.remove("active");
-    document.getElementById("course-map-view").classList.add("add", "active");
+    document.getElementById("course-map-view").classList.add("active");
 }
 
 function switchBackToSelection() {

@@ -11,6 +11,12 @@
   --dark:    #111;
   --navy:    #092C4C;
 
+  /* Tokens de texto/estado usados por login.css, buttons.css y register.html
+     (consistentes con la paleta de student-dashboard.css) */
+  --text:    #111827;
+  --sub:     #6b7280;
+  --red:     #E24B4A; /* alias legible de --red-err / --error */
+
   /* ======================================
      STYLE GUIDE EDUQUEST
   ====================================== */

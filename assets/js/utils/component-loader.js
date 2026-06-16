@@ -12,8 +12,8 @@ async function loadComponent(containerId, path) {
         const response = await fetch(path);
         const html = await response.text();
         container.innerHTML = html;
-        GlobalLoader.hide(500); 
-        return true; 
+        if (typeof GlobalLoader !== 'undefined') GlobalLoader.hide(500);
+        return true;
     } catch (error) {
         console.error(`Error crítico cargando el componente [${containerId}]:`, error);
         return false;
