@@ -139,6 +139,7 @@
             max-width: 900px;
             width: 100%;
             margin: 0 auto;
+            overflow-y: auto;
         }
 
         .screen.on {
@@ -328,7 +329,21 @@
             align-items: center;
             justify-content: space-between;
             margin-top: auto;
-            padding-top: 32px;
+            padding: 32px 0 40px;
+            position: sticky;
+            bottom: -40px;
+            background: var(--bg2);
+            z-index: 10;
+        }
+        .nav-row::before {
+            content: '';
+            position: absolute;
+            top: -40px;
+            left: 0;
+            right: 0;
+            height: 40px;
+            background: linear-gradient(to top, var(--bg2) 10%, transparent);
+            pointer-events: none;
         }
 
         .arrow-group {
@@ -552,6 +567,26 @@
             color: var(--tx2);
             line-height: 1.65;
             max-width: 320px;
+        }
+
+        /* ── Responsive adjustments ── */
+        @media (max-width: 600px) {
+            .screen {
+                padding: 24px;
+            }
+            .top-bar {
+                padding: 24px 24px 0;
+            }
+            .uni-row {
+                grid-template-columns: 1fr;
+            }
+            .intro-cards {
+                grid-template-columns: 1fr;
+            }
+            .nav-row {
+                bottom: -24px;
+                padding: 20px 0 24px;
+            }
         }
     </style>
 </head>
@@ -925,10 +960,6 @@
                 diagnosticResults.push({ topicId: q.topicId, isCorrect: ans[i] === q.a });
             });
 
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('on'));
-            document.getElementById('sl').classList.add('on');
-            document.getElementById('topbar').style.width = '100%';
-
             const session = Storage.getSession();
             if (session && window.UserManager) {
                 UserManager.updateProfile(session.userId, { target: D.uni, career: D.career });
@@ -947,19 +978,18 @@
                         };
                     }
                     users[userIdx].learningProgress.hardestCourse = D.hard;
+                    // Limpiar el roadmap para forzar regeneración
+                    users[userIdx].learningProgress.customRoadmap = [];
                     UserManager.saveAllUsers(users);
                 }
 
                 UserManager.saveDiagnosticResults(session.userId, diagnosticResults);
             }
-            if (window.AIEngine) {
-                AIEngine.generatePersonalizedRoadmap(diagnosticResults)
-                  .then(() => setTimeout(() => { window.location.href = '../student/roadmap.html'; }, 1200));
-            } else {
-                setTimeout(() => { window.location.href = '../student/roadmap.html'; }, 1500);
-            }
 
             console.log('Diagnóstico completado:', { perfil: D, resultados: diagnosticResults });
+            
+            // Pasamos un parámetro por URL en lugar de storage para ser a prueba de balas contra la caché
+            window.location.href = '../student/roadmap.html?generate=true';
         }
     </script>
 </body>

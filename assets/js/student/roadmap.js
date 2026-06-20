@@ -125,7 +125,83 @@ async function fetchDynamicRoadmap() {
 async function buildCourseSelectionGrid() {
     const grid = document.getElementById("courses-grid");
     if (!grid) return;
+
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('generate') === 'true') {
+        // Convertimos el param en estado persistente
+        localStorage.setItem('pendingAIGeneration', 'true');
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
+
+    if (localStorage.getItem('pendingAIGeneration') === 'true') {
+        // Remover la bandera inicial inmediatamente
+        localStorage.removeItem('pendingAIGeneration');
+        
+        const preloader = document.getElementById("app-preloader");
+        if (preloader) preloader.classList.add("fade-out-loader");
+
+        // Generate Roadmap (Solo Fase 1 y encolar)
+        const session = Storage.getSession();
+        if (session && window.UserManager && window.AIEngine) {
+            const user = UserManager.getUserById(session.userId);
+            if (user && user.learningProgress && user.learningProgress.diagnosticResults) {
+                // Ejecutar asíncronamente sin bloquear el flujo principal
+                (async () => {
+                    try {
+                        localStorage.setItem('aiPhase1', 'true');
+                        // Forzar re-render inmediato para mostrar el banner de Fase 1
+                        buildCourseSelectionGrid();
+                        
+                        await AIEngine.generatePersonalizedRoadmap(user.learningProgress.diagnosticResults);
+                        
+                        localStorage.removeItem('aiPhase1');
+                        // Re-render para cambiar al banner de Fase 2 (cola)
+                        buildCourseSelectionGrid();
+                    } catch (e) {
+                        console.error("Generación interrumpida o fallida:", e);
+                        localStorage.removeItem('aiPhase1');
+                        buildCourseSelectionGrid();
+                    }
+                })();
+                return; // Cortar aquí la primera ejecución, el IIFE se encargará del render
+            }
+        }
+    }
+
     grid.innerHTML = "";
+
+    const isPhase1 = localStorage.getItem('aiPhase1') === 'true';
+    const aiQueueStr = localStorage.getItem('aiQueue');
+    const isPhase2 = aiQueueStr && aiQueueStr !== '[]';
+
+    // Mostrar banners de estado
+    if (isPhase1 || isPhase2) {
+        const banner = document.createElement("div");
+        banner.style.gridColumn = "1 / -1";
+        banner.style.display = "flex";
+        banner.style.alignItems = "center";
+        banner.style.gap = "16px";
+        banner.style.padding = "16px 24px";
+        banner.style.background = "rgba(29, 158, 117, 0.1)";
+        banner.style.border = "1px solid var(--green)";
+        banner.style.borderRadius = "12px";
+        banner.style.marginBottom = "24px";
+        
+        let title = isPhase1 ? "Analizando resultados..." : "Generando rutas personalizadas...";
+        let desc = isPhase1 
+            ? "Tu tutor IA está calibrando las prioridades de estudio." 
+            : `Quedan ${JSON.parse(aiQueueStr).length} cursos por procesar. Puedes navegar por otras páginas, te avisaremos al terminar.`;
+
+        banner.innerHTML = `
+            <div class="spinner" style="width: 24px; height: 24px; border: 3px solid rgba(29,158,117,0.3); border-top-color: var(--green); border-radius: 50%; animation: spin 0.85s linear infinite; flex-shrink: 0;"></div>
+            <div>
+                <h4 style="margin: 0; color: var(--green); font-size: 15px;">${title}</h4>
+                <p style="margin: 4px 0 0 0; color: var(--text-light); font-size: 13px;">${desc}</p>
+            </div>
+            <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
+        `;
+        grid.appendChild(banner);
+    }
 
     const globalRutasData = await fetchDynamicRoadmap();
     window._cachedRutasData = globalRutasData; 
