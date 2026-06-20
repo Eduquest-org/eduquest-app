@@ -50,13 +50,24 @@
           </div>
           <div class="auth-r">
             <div class="auth-form">
+              <div class="mobile-only" style="margin-bottom:40px;">
+                <div style="cursor:pointer;" onclick="window.location.href='../../index.html'">
+                  <div class="row gap12">
+                    <div class="sb-icon green">EQ</div>
+                    <span style="font-family:'Sora',sans-serif;font-weight:800;font-size:20px;color:var(--dark);">EduQuest</span>
+                  </div>
+                </div>
+              </div>
               <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:28px;color:var(--text);">Bienvenido de vuelta</div>
               <p class="col-s mt8" style="font-size:15px;">Ingresa tus datos para continuar</p>
               <div class="mt32">
                 <div class="fg"><div class="flabel">Usuario o Correo</div><input type="text" id="login-user" class="finput" placeholder="Ej: matias o vivi"></div>
                 <div class="fg"><div class="flabel">Contraseña</div><input type="password" id="login-pass" class="finput focus" placeholder="••••••••••"></div>
                 <div class="row between mb16">
-                  <div class="row gap8 cursor-pointer"><div class="ph-box" style="width:17px;height:17px;border-radius:4px;padding:0;"></div><span class="sm col-s">Recordarme</span></div>
+                  <label class="row gap8 cursor-pointer" style="margin:0;">
+                    <input type="checkbox" id="login-remember" style="width:16px;height:16px;cursor:pointer;accent-color:var(--green);margin:0;">
+                    <span class="sm col-s">Recordarme</span>
+                  </label>
                   <span class="sm fw7 col-g cursor-pointer">¿Olvidaste tu contraseña?</span>
                 </div>
                 

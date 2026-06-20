@@ -29,15 +29,15 @@
                 <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:30px;color:#fff;line-height:1.2;margin-top:32px;">Empieza gratis en menos de 2 minutos</div>
                 <p style="color:#6b7f74;font-size:16px;line-height:1.65;margin-top:16px;">Crea tu cuenta y comienza tu ruta de forma inmediata.</p>
                 
-                <div style="margin-top:32px;background:#0f2217;border:1px solid #1f3d28;border-radius:14px;padding:22px;">
+                <div class="desktop-only" style="margin-top:32px;background:#0f2217;border:1px solid #1f3d28;border-radius:14px;padding:22px;">
                   <div class="cav" style="font-size:15px;color:var(--green);font-weight:700;margin-bottom:14px;">¿Eres estudiante o docente?</div>
-                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-                    <div class="role-card active" id="card-student" onclick="selectRole('student')">
+                  <div class="role-grid">
+                    <div class="role-card role-card-student active" onclick="selectRole('student')">
                       <div style="font-size:22px;margin-bottom:8px;">🎓</div>
                       <div style="color:#fff;font-weight:700;font-size:14px;">Estudiante</div>
                       <div style="color:#6b7f74;font-size:12px;margin-top:4px;">Prepara tu ingreso</div>
                     </div>
-                    <div class="role-card" id="card-teacher" onclick="selectRole('teacher')">
+                    <div class="role-card role-card-teacher" onclick="selectRole('teacher')">
                       <div style="font-size:22px;margin-bottom:8px;">👩‍🏫</div>
                       <div style="color:#fff;font-weight:700;font-size:14px;">Docente</div>
                       <div style="color:#6b7f74;font-size:12px;margin-top:4px;">Monitorea tu aula</div>
@@ -49,21 +49,48 @@
             </div>
             <div class="auth-r" style="align-items:flex-start;padding-top:56px;overflow-y:auto;">
               <div class="auth-form">
+                
+                <div class="mobile-only" style="margin-bottom:40px;">
+                  <div style="cursor:pointer;" onclick="window.location.href='../../index.html'">
+                    <div class="row gap12">
+                      <div class="sb-icon green">EQ</div>
+                      <span style="font-family:'Sora',sans-serif;font-weight:800;font-size:20px;color:var(--dark);">EduQuest</span>
+                    </div>
+                  </div>
+                </div>
+
                 <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:26px;color:var(--text);">Crea tu cuenta</div>
                 <p class="col-s mt8" style="font-size:15px;">Sin tarjeta de crédito · Es gratis</p>
-                <div class="mt28">
-                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                
+                <div class="mobile-only mt24">
+                  <div style="background:#f9fafb;border:1px solid var(--border);border-radius:14px;padding:20px;">
+                    <div class="cav" style="font-size:15px;color:var(--green);font-weight:700;margin-bottom:14px;">¿Eres estudiante o docente?</div>
+                    <div class="role-grid">
+                      <div class="role-card role-card-student light active" onclick="selectRole('student')">
+                        <div style="font-size:22px;margin-bottom:8px;">🎓</div>
+                        <div style="color:var(--dark);font-weight:700;font-size:14px;">Estudiante</div>
+                      </div>
+                      <div class="role-card role-card-teacher light" onclick="selectRole('teacher')">
+                        <div style="font-size:22px;margin-bottom:8px;">👩‍🏫</div>
+                        <div style="color:var(--dark);font-weight:700;font-size:14px;">Docente</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="mt32">
+                  <div class="form-grid">
                     <div class="fg"><div class="flabel">Nombre</div><input type="text" id="reg-name" class="finput" placeholder="Tu nombre"></div>
                     <div class="fg"><div class="flabel">Apellido</div><input type="text" id="reg-lastname" class="finput" placeholder="Tu apellido"></div>
                   </div>
                   <div class="fg"><div class="flabel">Correo electrónico</div><input type="email" id="reg-email" class="finput" placeholder="tu@email.com"></div>
-                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                  <div class="form-grid">
                     <div class="fg"><div class="flabel">Contraseña</div><input type="password" id="reg-password" class="finput" placeholder="••••••••"></div>
                     <div class="fg"><div class="flabel">Confirmar contraseña</div><input type="password" id="reg-confirm-password" class="finput" placeholder="••••••••"></div>
                   </div>
 
                   <div id="student-conditional-fields" style="display: block;">
-                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                  <div class="form-grid">
                     <div class="fg">
                       <div class="flabel">Fecha de nacimiento</div>
                       <input type="date" id="reg-birthdate" class="finput cursor-pointer">
@@ -74,10 +101,10 @@
                     </div>
                   </div>
                   </div>
-                  <div class="row gap8 mb16 mt4 cursor-pointer">
-                    <div class="ph-box" style="width:17px;height:17px;border-radius:4px;padding:0;background:var(--green);border:none;flex-shrink:0;"></div>
+                  <label class="row gap8 mb16 mt4 cursor-pointer" style="margin-left:0; align-items:flex-start;">
+                    <input type="checkbox" id="reg-terms" style="width:16px;height:16px;flex-shrink:0;cursor:pointer;accent-color:var(--green);margin-top:2px;">
                     <span class="sm col-s">Acepto los <span class="fw7 col-g">Términos de servicio</span> y la <span class="fw7 col-g">Política de privacidad</span></span>
-                  </div>
+                  </label>
                   <div class="btn full dark" onclick="register()">Crear cuenta gratuita</div>
                   <div class="divider"><div class="div-line"></div><span class="div-txt">o</span><div class="div-line"></div></div>
                   

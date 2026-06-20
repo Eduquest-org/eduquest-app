@@ -72,3 +72,27 @@
   letter-spacing: 0.5px;
   color: var(--muted);
 }
+
+/* ======================================
+   RESPONSIVE (MÓVIL)
+====================================== */
+@media (max-width: 650px) {
+  .student-summary-banner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 16px;
+  }
+  
+  .profile-express-stats {
+    width: 100%;
+    justify-content: flex-start;
+    gap: 24px;
+    border-top: 1px solid var(--border);
+    padding-top: 12px;
+  }
+
+  .express-stat-item {
+    text-align: left;
+  }
+}
