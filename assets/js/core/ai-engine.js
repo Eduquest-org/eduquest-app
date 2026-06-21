@@ -200,7 +200,7 @@ const AIEngine = {
             const coursePriorities = aiPlan.coursePriorities || [];
             const returnedPriorities = new Map(coursePriorities.map(p => [p.courseId, p.priority]));
 
-            // FASE 2: GENERACIÓN DE NODOS (RAG EN PARALELO)
+            // FASE 2: GENERACIÓN DE NODOS 
             console.log('[AIEngine] Fase 1 completada. Iniciando Fase 2: RAG paralelo por curso...');
 
             const sortedRelevantCourses = relevantCourses.map(c => ({
@@ -258,11 +258,11 @@ const AIEngine = {
             // Guardar el estado inicial en localStorage
             localStorage.setItem('aiQueue', JSON.stringify(aiQueue));
             localStorage.setItem('aiResults', JSON.stringify(initialRoutes));
-            
+
             // Iniciar el procesamiento en background sin esperar a que termine
             console.log('[AIEngine] Cola preparada con', aiQueue.length, 'cursos. Iniciando processQueue() en segundo plano...');
             this.processQueue();
-            
+
             return initialRoutes;
 
         } catch (error) {
@@ -274,95 +274,108 @@ const AIEngine = {
 
     // ─── Proceso asíncrono en segundo plano ─────────────────────────────
     async processQueue() {
-        // Verificar si hay procesos pendientes
-        const queueStr = localStorage.getItem('aiQueue');
-        if (!queueStr) return;
-        
-        const queue = JSON.parse(queueStr);
-        if (queue.length === 0) {
-            // Cola vacía, el trabajo ha terminado
-            localStorage.removeItem('aiQueue');
-            console.log('[AIEngine] Cola de generación finalizada exitosamente.');
-            
-            // Mostrar Toast global
-            if (window.app && window.app.showToast) {
-                window.app.showToast('¡Tu ruta ha sido completamente generada por la IA!', 'success');
-            } else {
-                alert('¡Tu ruta ha sido completamente generada por la IA!');
-            }
-            
-            // Refrescar Mis Rutas si estamos en esa vista
-            if (window.location.pathname.includes('roadmap.html') && typeof buildCourseSelectionGrid === 'function') {
-                const grid = document.getElementById("courses-grid");
-                if (grid) grid.innerHTML = '';
-                buildCourseSelectionGrid();
-            }
-            return;
-        }
-
-        // Extraer el primer elemento de la cola
-        const currentTask = queue[0];
-        console.log(`[AIEngine] Procesando curso en background: ${currentTask.course.name}...`);
+        // Bloqueo global para prevenir que se ejecuten múltiples processQueue a la vez
+        if (window._isProcessingAIQueue) return;
+        window._isProcessingAIQueue = true;
 
         try {
-            // Generar ruta para este curso
-            const route = await this._generateCourseNodes(
-                currentTask.course, 
-                currentTask.priority, 
-                currentTask.strengths, 
-                currentTask.weaknesses, 
-                currentTask.topics
-            );
+            // Verificar si hay procesos pendientes
+            const queueStr = localStorage.getItem('aiQueue');
+            if (!queueStr) return;
 
-            // Leer resultados actuales
-            let aiResults = JSON.parse(localStorage.getItem('aiResults') || '[]');
-            
-            // Añadir o reemplazar la ruta exitosa en los resultados
-            if (route) {
+            const queue = JSON.parse(queueStr);
+            if (queue.length === 0) {
+                // Cola vacía, el trabajo ha terminado
+                localStorage.removeItem('aiQueue');
+                console.log('[AIEngine] Cola de generación finalizada exitosamente.');
+
+                // Mostrar Toast global
+                if (window.app && window.app.showToast) {
+                    window.app.showToast('¡Tu ruta ha sido completamente generada por la IA!', 'success');
+                } else {
+                    alert('¡Tu ruta ha sido completamente generada por la IA!');
+                }
+
+                // Refrescar Mis Rutas si estamos en esa vista
+                if (window.location.pathname.includes('roadmap.html') && typeof buildCourseSelectionGrid === 'function') {
+                    const grid = document.getElementById("courses-grid");
+                    if (grid) grid.innerHTML = '';
+                    buildCourseSelectionGrid();
+                }
+                return;
+            }
+
+            // Extraer el primer elemento de la cola
+            const currentTask = queue[0];
+            console.log(`[AIEngine] Procesando curso en background: ${currentTask.course.name}...`);
+
+            try {
+                // Generar ruta para este curso
+                const route = await this._generateCourseNodes(
+                    currentTask.course,
+                    currentTask.priority,
+                    currentTask.strengths,
+                    currentTask.weaknesses,
+                    currentTask.topics
+                );
+
+                // Si la IA falla (ej: por rate limit), forzamos un error para que vaya al catch
+                // y REINTENTE sin eliminar el curso de la cola.
+                if (!route) {
+                    throw new Error("Generación fallida o rate limit excedido. Forzando reintento.");
+                }
+
+                // Leer resultados actuales
+                let aiResults = JSON.parse(localStorage.getItem('aiResults') || '[]');
+
+                // Añadir o reemplazar la ruta exitosa en los resultados
                 const existingIdx = aiResults.findIndex(r => r.courseId === route.courseId);
                 if (existingIdx !== -1) {
                     aiResults[existingIdx] = route;
                 } else {
                     aiResults.push(route);
                 }
-            }
-            
-            // Transformar todo y guardar en el progreso del usuario
-            const session = Storage.getSession();
-            if (session && window.UserManager) {
-                const allCoursesRes = await fetch("../../mock/courses.json");
-                const allCourses = await allCoursesRes.json();
-                
-                let targetUniv = "UNI";
-                if (window.CurrentUserService) {
-                    targetUniv = CurrentUserService.getStat('target') || "UNI";
+
+                // Transformar todo y guardar en el progreso del usuario
+                const session = Storage.getSession();
+                if (session && window.UserManager) {
+                    const allCoursesRes = await fetch("../../mock/courses.json");
+                    const allCourses = await allCoursesRes.json();
+
+                    let targetUniv = "UNI";
+                    if (window.CurrentUserService) {
+                        targetUniv = CurrentUserService.getStat('target') || "UNI";
+                    }
+
+                    const roadmapCards = this._transformToFrontendFormat(aiResults, allCourses, targetUniv);
+                    UserManager.saveCustomRoadmap(session.userId, roadmapCards);
+
+                    // Actualizar aiResults para la siguiente iteración
+                    localStorage.setItem('aiResults', JSON.stringify(aiResults));
+
+                    // Remover el curso procesado de la cola y continuar con el siguiente
+                    queue.shift();
+                    localStorage.setItem('aiQueue', JSON.stringify(queue));
+
+                    // Refrescar Mis Rutas si estamos en esa vista para que se vea el progreso
+                    if (window.location.pathname.includes('roadmap.html') && typeof buildCourseSelectionGrid === 'function') {
+                        const grid = document.getElementById("courses-grid");
+                        if (grid) grid.innerHTML = '';
+                        buildCourseSelectionGrid();
+                    }
+
+                    // Llamada recursiva al siguiente en la cola (después de 10 segundos para máxima seguridad de Rate Limit)
+                    setTimeout(() => this.processQueue(), 10000);
                 }
 
-                const roadmapCards = this._transformToFrontendFormat(aiResults, allCourses, targetUniv);
-                UserManager.saveCustomRoadmap(session.userId, roadmapCards);
-                
-                // Actualizar aiResults para la siguiente iteración
-                localStorage.setItem('aiResults', JSON.stringify(aiResults));
-                
-                // Remover el curso procesado de la cola y continuar con el siguiente
-                queue.shift();
-                localStorage.setItem('aiQueue', JSON.stringify(queue));
-                
-                // Refrescar Mis Rutas si estamos en esa vista para que se vea el progreso
-                if (window.location.pathname.includes('roadmap.html') && typeof buildCourseSelectionGrid === 'function') {
-                    const grid = document.getElementById("courses-grid");
-                    if (grid) grid.innerHTML = '';
-                    buildCourseSelectionGrid();
-                }
-
-                // Llamada recursiva al siguiente en la cola (después de 4 segundos para no exceder Rate Limit de 15 RPM)
-                setTimeout(() => this.processQueue(), 4000);
+            } catch (error) {
+                console.error(`[AIEngine] Error procesando ${currentTask.course.name} en background:`, error);
+                // Reintentar en 20 segundos si hubo error (ej: rate limit)
+                setTimeout(() => this.processQueue(), 20000);
             }
-
-        } catch (error) {
-            console.error(`[AIEngine] Error procesando ${currentTask.course.name} en background:`, error);
-            // Reintentar en 20 segundos si hubo error (ej: rate limit)
-            setTimeout(() => this.processQueue(), 20000);
+        } finally {
+            // Liberamos el candado sea cual sea el resultado
+            window._isProcessingAIQueue = false;
         }
     },
 

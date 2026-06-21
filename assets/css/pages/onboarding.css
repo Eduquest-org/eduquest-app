@@ -1,0 +1,582 @@
+/* ── EduQuest Onboarding — Diagnóstico Inicial ── */
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --g: #1D9E75;
+    --gd: #0F6E56;
+    --gl: rgba(29, 158, 117, 0.08);
+    --gl2: rgba(29, 158, 117, 0.15);
+    --bg: #f4f7f5;
+    --bg2: #ffffff;
+    --bg3: #f9fbf9;
+    --bg4: #f0f4f2;
+    --br: #e2e8e4;
+    --br2: #c5d4cd;
+    --tx: #111827;
+    --tx2: #4b5563;
+    --tx3: #6b7280;
+}
+
+html,
+body {
+    min-height: 100vh;
+    margin: 0;
+    background: var(--bg2);
+    font-family: 'Inter', system-ui, sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ── Shell ── */
+.shell {
+    background: var(--bg2);
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* ── Top progress bar ── */
+.prog-bar-top {
+    height: 3px;
+    background: var(--br);
+    flex-shrink: 0;
+}
+
+.prog-bar-top-fill {
+    height: 100%;
+    background: var(--g);
+    transition: width 0.5s cubic-bezier(.4, 0, .2, 1);
+    width: 0%;
+}
+
+/* ── Top bar ── */
+.top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 32px 40px 0;
+    flex-shrink: 0;
+    max-width: 900px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+}
+
+.logo-mark {
+    width: 32px;
+    height: 32px;
+    background: var(--g);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: -0.5px;
+}
+
+.logo-name {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--tx);
+    letter-spacing: -0.3px;
+}
+
+.step-pills {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+.sp {
+    height: 5px;
+    border-radius: 3px;
+    background: var(--br);
+    transition: background 0.3s, width 0.3s;
+    width: 28px;
+}
+
+.sp.done {
+    background: var(--g);
+}
+
+.sp.active {
+    background: var(--g);
+    width: 42px;
+}
+
+/* ── Screens ── */
+.screen {
+    display: none;
+    flex: 1;
+    flex-direction: column;
+    padding: 40px 40px 40px;
+    animation: fadeUp 0.3s ease;
+    max-width: 900px;
+    width: 100%;
+    margin: 0 auto;
+    overflow-y: auto;
+}
+
+.screen.on {
+    display: flex;
+}
+
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ── Typography ── */
+.step-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--g);
+    margin-bottom: 10px;
+}
+
+.q-title {
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--tx);
+    letter-spacing: -0.5px;
+    margin-bottom: 10px;
+    line-height: 1.25;
+}
+
+.q-sub {
+    font-size: 15px;
+    color: var(--tx2);
+    line-height: 1.65;
+    margin-bottom: 32px;
+}
+
+/* ── University tiles ── */
+.uni-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.uni-tile {
+    background: var(--bg3);
+    border: 2px solid var(--br);
+    border-radius: 14px;
+    padding: 22px 14px 18px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s, transform 0.1s;
+    user-select: none;
+}
+
+.uni-tile:hover {
+    border-color: var(--br2);
+    background: var(--bg4);
+}
+
+.uni-tile.sel {
+    border-color: var(--g);
+    background: var(--gl);
+}
+
+.uni-tile:active {
+    transform: scale(0.97);
+}
+
+.uni-ico {
+    font-size: 34px;
+    margin-bottom: 10px;
+    display: block;
+}
+
+.uni-code {
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--tx);
+    display: block;
+    margin-bottom: 3px;
+}
+
+.uni-full {
+    font-size: 11px;
+    color: var(--tx3);
+    display: block;
+}
+
+.uni-check {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 1.5px solid var(--br2);
+    margin: 12px auto 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    color: transparent;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.uni-tile.sel .uni-check {
+    background: var(--g);
+    border-color: var(--g);
+    color: #fff;
+}
+
+/* ── Chips ── */
+.chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 9px;
+    margin-bottom: 24px;
+}
+
+.chip {
+    padding: 9px 17px;
+    background: var(--bg3);
+    border: 1.5px solid var(--br);
+    border-radius: 30px;
+    font-size: 14px;
+    color: var(--tx2);
+    font-weight: 500;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s, color 0.15s, transform 0.1s;
+    user-select: none;
+}
+
+.chip:hover {
+    border-color: var(--br2);
+    color: var(--tx);
+}
+
+.chip.sel {
+    border-color: var(--g);
+    background: var(--gl);
+    color: var(--tx);
+    font-weight: 600;
+}
+
+.chip:active {
+    transform: scale(0.96);
+}
+
+/* ── Intro cards ── */
+.intro-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 26px;
+}
+
+.icard {
+    background: var(--bg3);
+    border: 1px solid var(--br);
+    border-radius: 12px;
+    padding: 18px 14px;
+    text-align: center;
+}
+
+.icard-val {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--g);
+    margin-bottom: 4px;
+}
+
+.icard-lab {
+    font-size: 12px;
+    color: var(--tx3);
+    font-weight: 500;
+}
+
+/* ── Nav row ── */
+.nav-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: auto;
+    padding: 32px 0 40px;
+    position: sticky;
+    bottom: -40px;
+    background: var(--bg2);
+    z-index: 10;
+}
+.nav-row::before {
+    content: '';
+    position: absolute;
+    top: -40px;
+    left: 0;
+    right: 0;
+    height: 40px;
+    background: linear-gradient(to top, var(--bg2) 10%, transparent);
+    pointer-events: none;
+}
+
+.arrow-group {
+    display: flex;
+    gap: 8px;
+}
+
+.arr {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1.5px solid var(--br);
+    background: var(--bg3);
+    color: var(--tx2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 17px;
+    user-select: none;
+    transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+
+.arr:hover:not([disabled]) {
+    border-color: var(--g);
+    color: var(--g);
+    background: var(--gl);
+}
+
+.arr[disabled] {
+    opacity: 0.28;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.btn-main {
+    background: var(--g);
+    color: #fff;
+    border: none;
+    padding: 12px 26px;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: 'Inter', system-ui, sans-serif;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    transition: background 0.15s, transform 0.1s;
+}
+
+.btn-main:hover {
+    background: var(--gd);
+}
+
+.btn-main:active {
+    transform: scale(0.97);
+}
+
+.btn-main:disabled {
+    background: #e5e7eb;
+    color: #9ca3af;
+    cursor: not-allowed;
+}
+
+/* ── Quiz ── */
+.quiz-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.quiz-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: var(--gl2);
+    border: 1px solid rgba(29, 158, 117, 0.3);
+    border-radius: 20px;
+    padding: 5px 13px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #4ecb9e;
+    letter-spacing: 0.02em;
+}
+
+.quiz-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--g);
+    flex-shrink: 0;
+}
+
+.quiz-prog {
+    font-size: 13px;
+    color: var(--tx3);
+    font-weight: 600;
+}
+
+.quiz-q {
+    font-size: 18px;
+    color: var(--tx);
+    font-weight: 700;
+    line-height: 1.55;
+    margin-bottom: 22px;
+    letter-spacing: -0.2px;
+}
+
+.opts {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 4px;
+}
+
+.opt {
+    background: var(--bg3);
+    border: 1.5px solid var(--br);
+    border-radius: 11px;
+    padding: 14px 18px;
+    color: var(--tx2);
+    font-size: 14px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    user-select: none;
+    transition: border-color 0.15s, background 0.15s, color 0.15s, transform 0.1s;
+}
+
+.opt:hover {
+    border-color: var(--br2);
+    color: var(--tx);
+    background: var(--bg4);
+}
+
+.opt.sel {
+    border-color: var(--g);
+    background: var(--gl);
+    color: var(--tx);
+}
+
+.opt:active {
+    transform: scale(0.99);
+}
+
+.opt-letter {
+    min-width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 1.5px solid var(--br2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--tx3);
+    flex-shrink: 0;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.opt.sel .opt-letter {
+    background: var(--g);
+    border-color: var(--g);
+    color: #fff;
+}
+
+.quiz-progbar {
+    height: 3px;
+    background: var(--br);
+    border-radius: 2px;
+    margin: 18px 0 0;
+}
+
+.quiz-progbar-fill {
+    height: 100%;
+    background: var(--g);
+    border-radius: 2px;
+    transition: width 0.4s cubic-bezier(.4, 0, .2, 1);
+}
+
+/* ── Loading ── */
+.load-wrap {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    text-align: center;
+}
+
+.spinner {
+    width: 46px;
+    height: 46px;
+    border: 3px solid var(--br);
+    border-top-color: var(--g);
+    border-radius: 50%;
+    animation: spin 0.85s linear infinite;
+    margin-bottom: 24px;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.load-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--tx);
+    margin-bottom: 8px;
+}
+
+.load-sub {
+    font-size: 14px;
+    color: var(--tx2);
+    line-height: 1.65;
+    max-width: 320px;
+}
+
+/* ── Responsive adjustments ── */
+@media (max-width: 600px) {
+    .screen {
+        padding: 24px;
+    }
+    .top-bar {
+        padding: 24px 24px 0;
+    }
+    .uni-row {
+        grid-template-columns: 1fr;
+    }
+    .intro-cards {
+        grid-template-columns: 1fr;
+    }
+    .nav-row {
+        bottom: -24px;
+        padding: 20px 0 24px;
+    }
+}
