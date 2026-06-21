@@ -1,20 +1,2351 @@
 [
-  { "id": "res_lec_01", "courseId": "course_algebra", "topicId": "topic_leyes_exp", "type": "leccion", "title": "Introducción a los Exponentes", "url": "/lecciones/exp-1" },
-  { "id": "res_lec_02", "courseId": "course_algebra", "topicId": "topic_leyes_exp", "type": "leccion", "title": "Propiedades Radicativas", "url": "/lecciones/exp-2" },
-  { "id": "res_pdf_01", "courseId": "course_algebra", "topicId": "topic_leyes_exp", "type": "recurso", "title": "Ejercicios Resueltos Exponentes PDF", "url": "/docs/exp-ejercicios.pdf" },
-  { "id": "res_qz_01", "courseId": "course_algebra", "topicId": "topic_leyes_exp", "type": "quiz", "title": "Mini-Quiz Exponentes Básicos", "url": "/quiz/exp-1" },
-  { "id": "res_ex_01", "courseId": "course_algebra", "topicId": "topic_leyes_exp", "type": "examen", "title": "Evaluación de Exponentes y Raíces", "url": "/examen/exp" },
-  { "id": "res_boss_01", "courseId": "course_algebra", "topicId": "topic_leyes_exp", "type": "desafio_final", "title": "Reto UNI: Exponentes", "url": "/reto/exp-uni" },
-  
-  { "id": "res_lec_03", "courseId": "course_algebra", "topicId": "topic_polinomios", "type": "leccion", "title": "Concepto de Polinomio y Grados", "url": "/lecciones/pol-1" },
-  { "id": "res_pdf_02", "courseId": "course_algebra", "topicId": "topic_polinomios", "type": "recurso", "title": "Guía de Polinomios y Valor Numérico", "url": "/docs/pol-guia.pdf" },
-  { "id": "res_qz_02", "courseId": "course_algebra", "topicId": "topic_polinomios", "type": "quiz", "title": "Comprobación de Grados Absolutos y Relativos", "url": "/quiz/pol-1" },
-  { "id": "res_ex_02", "courseId": "course_algebra", "topicId": "topic_polinomios", "type": "examen", "title": "Simulacro: Polinomios", "url": "/examen/pol" },
-  { "id": "res_boss_02", "courseId": "course_algebra", "topicId": "topic_polinomios", "type": "desafio_final", "title": "Problemas de Examen de Admisión", "url": "/reto/pol-adm" },
-
-  { "id": "res_lec_04", "courseId": "course_fisica", "topicId": "topic_mru", "type": "leccion", "title": "¿Qué es el MRU?", "url": "/lecciones/mru-1" },
-  { "id": "res_pdf_03", "courseId": "course_fisica", "topicId": "topic_mru", "type": "recurso", "title": "Formulario y Ejercicios MRU", "url": "/docs/mru-form.pdf" },
-  { "id": "res_qz_03", "courseId": "course_fisica", "topicId": "topic_mru", "type": "quiz", "title": "Quiz Rápido MRU", "url": "/quiz/mru-1" },
-  { "id": "res_ex_03", "courseId": "course_fisica", "topicId": "topic_mru", "type": "examen", "title": "Examen MRU", "url": "/examen/mru" },
-  { "id": "res_boss_03", "courseId": "course_fisica", "topicId": "topic_mru", "type": "desafio_final", "title": "Reto Físico Universitario", "url": "/reto/mru-uni" }
+  {
+    "id": "res_lec_01",
+    "courseId": "course_algebra",
+    "topicId": "topic_leyes_exp",
+    "type": "leccion",
+    "title": "Introducción a los Exponentes",
+    "url": "/lecciones/exp-1",
+    "description": "Conceptos básicos de exponentes. Enseña qué es una base y una potencia, ideal para alumnos que confunden la suma con la multiplicación iterada."
+  },
+  {
+    "id": "res_lec_02",
+    "courseId": "course_algebra",
+    "topicId": "topic_leyes_exp",
+    "type": "leccion",
+    "title": "Propiedades Radicativas",
+    "url": "/lecciones/exp-2",
+    "description": "Lección avanzada sobre raíces y exponentes fraccionarios. Explica cómo transformar un radical en potencia, útil para resolver ecuaciones con raíces complejas."
+  },
+  {
+    "id": "res_pdf_01",
+    "courseId": "course_algebra",
+    "topicId": "topic_leyes_exp",
+    "type": "recurso",
+    "title": "Ejercicios Resueltos Exponentes PDF",
+    "url": "/docs/exp-ejercicios.pdf",
+    "description": "Documento PDF con 50 ejercicios paso a paso aplicando leyes de exponentes como producto de bases iguales y potencia de potencia."
+  },
+  {
+    "id": "res_qz_01",
+    "courseId": "course_algebra",
+    "topicId": "topic_leyes_exp",
+    "type": "quiz",
+    "title": "Mini-Quiz Exponentes Básicos",
+    "url": "/quiz/exp-1",
+    "description": "Pequeño test interactivo para evaluar la comprensión rápida de las leyes fundamentales de los exponentes. Ideal para diagnóstico rápido."
+  },
+  {
+    "id": "res_ex_01",
+    "courseId": "course_algebra",
+    "topicId": "topic_leyes_exp",
+    "type": "examen",
+    "title": "Evaluación de Exponentes y Raíces",
+    "url": "/examen/exp",
+    "description": "Examen completo que abarca toda la unidad de leyes de exponentes y radicación, simulando dificultad de examen de admisión universitario."
+  },
+  {
+    "id": "res_boss_01",
+    "courseId": "course_algebra",
+    "topicId": "topic_leyes_exp",
+    "type": "desafio_final",
+    "title": "Reto UNI: Exponentes",
+    "url": "/reto/exp-uni",
+    "description": "Desafío extremo con problemas tipo olimpiada y examen de admisión UNI sobre exponentes infinitos y ecuaciones exponenciales complejas."
+  },
+  {
+    "id": "res_lec_03",
+    "courseId": "course_algebra",
+    "topicId": "topic_polinomios",
+    "type": "leccion",
+    "title": "Concepto de Polinomio y Grados",
+    "url": "/lecciones/pol-1",
+    "description": "Lección teórica sobre qué es un polinomio, diferencia entre monomio y binomio, y cálculo de Grado Relativo y Grado Absoluto."
+  },
+  {
+    "id": "res_pdf_02",
+    "courseId": "course_algebra",
+    "topicId": "topic_polinomios",
+    "type": "recurso",
+    "title": "Guía de Polinomios y Valor Numérico",
+    "url": "/docs/pol-guia.pdf",
+    "description": "Guía teórica y práctica en PDF enfocada exclusivamente en evaluar polinomios mediante el cálculo del valor numérico P(x)."
+  },
+  {
+    "id": "res_qz_02",
+    "courseId": "course_algebra",
+    "topicId": "topic_polinomios",
+    "type": "quiz",
+    "title": "Comprobación de Grados Absolutos y Relativos",
+    "url": "/quiz/pol-1",
+    "description": "Cuestionario rápido de opción múltiple para identificar instantáneamente grados absolutos y relativos en monomios y polinomios."
+  },
+  {
+    "id": "res_ex_02",
+    "courseId": "course_algebra",
+    "topicId": "topic_polinomios",
+    "type": "examen",
+    "title": "Simulacro: Polinomios",
+    "url": "/examen/pol",
+    "description": "Simulacro de examen sobre polinomios que incluye suma, resta, grados, y valor numérico. Dificultad intermedia."
+  },
+  {
+    "id": "res_boss_02",
+    "courseId": "course_algebra",
+    "topicId": "topic_polinomios",
+    "type": "desafio_final",
+    "title": "Problemas de Examen de Admisión",
+    "url": "/reto/pol-adm",
+    "description": "Problemas de nivel avanzado sobre polinomios idénticos, polinomios completos y ordenados, extraídos de exámenes de admisión reales."
+  },
+  {
+    "id": "res_lec_04",
+    "courseId": "course_fisica",
+    "topicId": "topic_mru",
+    "type": "leccion",
+    "title": "¿Qué es el MRU?",
+    "url": "/lecciones/mru-1",
+    "description": "Introducción a la cinemática básica. Explica el Movimiento Rectilíneo Uniforme (MRU), concepto de velocidad constante y fórmula d=v*t."
+  },
+  {
+    "id": "res_pdf_03",
+    "courseId": "course_fisica",
+    "topicId": "topic_mru",
+    "type": "recurso",
+    "title": "Formulario y Ejercicios MRU",
+    "url": "/docs/mru-form.pdf",
+    "description": "Hoja de fórmulas esenciales para MRU y MRUV, acompañada de 20 problemas de tiempo de encuentro y alcance."
+  },
+  {
+    "id": "res_qz_03",
+    "courseId": "course_fisica",
+    "topicId": "topic_mru",
+    "type": "quiz",
+    "title": "Quiz Rápido MRU",
+    "url": "/quiz/mru-1",
+    "description": "Cuestionario corto para validar el entendimiento de velocidad constante y conversión de unidades (km/h a m/s)."
+  },
+  {
+    "id": "res_ex_03",
+    "courseId": "course_fisica",
+    "topicId": "topic_mru",
+    "type": "examen",
+    "title": "Examen MRU",
+    "url": "/examen/mru",
+    "description": "Examen completo del capítulo de cinemática básica evaluando posición, velocidad, desplazamiento y problemas de encuentro."
+  },
+  {
+    "id": "res_boss_03",
+    "courseId": "course_fisica",
+    "topicId": "topic_mru",
+    "type": "desafio_final",
+    "title": "Reto Físico Universitario",
+    "url": "/reto/mru-uni",
+    "description": "Ejercicios de MRU de altísima dificultad que incluyen trenes cruzando túneles, sonidos y ecos, típicos de exámenes de ingeniería."
+  },
+  {
+    "id": "res_lec_100",
+    "courseId": "course_rv",
+    "topicId": "topic_rv_sinonimos",
+    "type": "leccion",
+    "title": "Lección Fundamental: Sinónimos y Antónimos",
+    "url": "/lecciones/rv_sinonimos-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Sinónimos y Antónimos. Ideal para iniciar el estudio."
+  },
+  {
+    "id": "res_pdf_101",
+    "courseId": "course_rv",
+    "topicId": "topic_rv_sinonimos",
+    "type": "recurso",
+    "title": "Guía en PDF de Sinónimos y Antónimos",
+    "url": "/docs/rv_sinonimos-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Sinónimos y Antónimos."
+  },
+  {
+    "id": "res_qz_102",
+    "courseId": "course_rv",
+    "topicId": "topic_rv_sinonimos",
+    "type": "quiz",
+    "title": "Quiz Rápido: Sinónimos y Antónimos",
+    "url": "/quiz/rv_sinonimos-1",
+    "description": "Test interactivo de 5 preguntas para evaluar tu comprensión inmediata sobre Sinónimos y Antónimos."
+  },
+  {
+    "id": "res_ex_103",
+    "courseId": "course_rv",
+    "topicId": "topic_rv_sinonimos",
+    "type": "examen",
+    "title": "Examen de Sinónimos y Antónimos",
+    "url": "/examen/rv_sinonimos",
+    "description": "Evaluación completa y rigurosa sobre todos los subtemas de Sinónimos y Antónimos."
+  },
+  {
+    "id": "res_boss_104",
+    "courseId": "course_rv",
+    "topicId": "topic_rv_sinonimos",
+    "type": "desafio_final",
+    "title": "Reto Admisión: Sinónimos y Antónimos",
+    "url": "/reto/rv_sinonimos-uni",
+    "description": "Desafío con preguntas reales de examen de admisión universitario sobre Sinónimos y Antónimos. Nivel avanzado."
+  },
+  {
+    "id": "res_lec_105",
+    "courseId": "course_rv",
+    "topicId": "topic_rv_analogias",
+    "type": "leccion",
+    "title": "Lección Fundamental: Analogías Verbales",
+    "url": "/lecciones/rv_analogias-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Analogías Verbales. Ideal para iniciar el estudio."
+  },
+  {
+    "id": "res_pdf_106",
+    "courseId": "course_rv",
+    "topicId": "topic_rv_analogias",
+    "type": "recurso",
+    "title": "Guía en PDF de Analogías Verbales",
+    "url": "/docs/rv_analogias-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Analogías Verbales."
+  },
+  {
+    "id": "res_qz_107",
+    "courseId": "course_rv",
+    "topicId": "topic_rv_analogias",
+    "type": "quiz",
+    "title": "Quiz Rápido: Analogías Verbales",
+    "url": "/quiz/rv_analogias-1",
+    "description": "Test interactivo de 5 preguntas para evaluar tu comprensión inmediata sobre Analogías Verbales."
+  },
+  {
+    "id": "res_ex_108",
+    "courseId": "course_rv",
+    "topicId": "topic_rv_analogias",
+    "type": "examen",
+    "title": "Examen de Analogías Verbales",
+    "url": "/examen/rv_analogias",
+    "description": "Evaluación completa y rigurosa sobre todos los subtemas de Analogías Verbales."
+  },
+  {
+    "id": "res_boss_109",
+    "courseId": "course_rv",
+    "topicId": "topic_rv_analogias",
+    "type": "desafio_final",
+    "title": "Reto Admisión: Analogías Verbales",
+    "url": "/reto/rv_analogias-uni",
+    "description": "Desafío con preguntas reales de examen de admisión universitario sobre Analogías Verbales. Nivel avanzado."
+  },
+  {
+    "id": "res_lec_110",
+    "courseId": "course_rv",
+    "topicId": "topic_rv_oraciones",
+    "type": "leccion",
+    "title": "Lección Fundamental: Oraciones Incompletas",
+    "url": "/lecciones/rv_oraciones-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Oraciones Incompletas. Ideal para iniciar el estudio."
+  },
+  {
+    "id": "res_pdf_111",
+    "courseId": "course_rv",
+    "topicId": "topic_rv_oraciones",
+    "type": "recurso",
+    "title": "Guía en PDF de Oraciones Incompletas",
+    "url": "/docs/rv_oraciones-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Oraciones Incompletas."
+  },
+  {
+    "id": "res_qz_112",
+    "courseId": "course_rv",
+    "topicId": "topic_rv_oraciones",
+    "type": "quiz",
+    "title": "Quiz Rápido: Oraciones Incompletas",
+    "url": "/quiz/rv_oraciones-1",
+    "description": "Test interactivo de 5 preguntas para evaluar tu comprensión inmediata sobre Oraciones Incompletas."
+  },
+  {
+    "id": "res_ex_113",
+    "courseId": "course_rv",
+    "topicId": "topic_rv_oraciones",
+    "type": "examen",
+    "title": "Examen de Oraciones Incompletas",
+    "url": "/examen/rv_oraciones",
+    "description": "Evaluación completa y rigurosa sobre todos los subtemas de Oraciones Incompletas."
+  },
+  {
+    "id": "res_boss_114",
+    "courseId": "course_rv",
+    "topicId": "topic_rv_oraciones",
+    "type": "desafio_final",
+    "title": "Reto Admisión: Oraciones Incompletas",
+    "url": "/reto/rv_oraciones-uni",
+    "description": "Desafío con preguntas reales de examen de admisión universitario sobre Oraciones Incompletas. Nivel avanzado."
+  },
+  {
+    "id": "res_lec_115",
+    "courseId": "course_rv",
+    "topicId": "topic_rv_eliminadas",
+    "type": "leccion",
+    "title": "Lección Fundamental: Oraciones Eliminadas",
+    "url": "/lecciones/rv_eliminadas-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Oraciones Eliminadas. Ideal para iniciar el estudio."
+  },
+  {
+    "id": "res_pdf_116",
+    "courseId": "course_rv",
+    "topicId": "topic_rv_eliminadas",
+    "type": "recurso",
+    "title": "Guía en PDF de Oraciones Eliminadas",
+    "url": "/docs/rv_eliminadas-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Oraciones Eliminadas."
+  },
+  {
+    "id": "res_qz_117",
+    "courseId": "course_rv",
+    "topicId": "topic_rv_eliminadas",
+    "type": "quiz",
+    "title": "Quiz Rápido: Oraciones Eliminadas",
+    "url": "/quiz/rv_eliminadas-1",
+    "description": "Test interactivo de 5 preguntas para evaluar tu comprensión inmediata sobre Oraciones Eliminadas."
+  },
+  {
+    "id": "res_ex_118",
+    "courseId": "course_rv",
+    "topicId": "topic_rv_eliminadas",
+    "type": "examen",
+    "title": "Examen de Oraciones Eliminadas",
+    "url": "/examen/rv_eliminadas",
+    "description": "Evaluación completa y rigurosa sobre todos los subtemas de Oraciones Eliminadas."
+  },
+  {
+    "id": "res_boss_119",
+    "courseId": "course_rv",
+    "topicId": "topic_rv_eliminadas",
+    "type": "desafio_final",
+    "title": "Reto Admisión: Oraciones Eliminadas",
+    "url": "/reto/rv_eliminadas-uni",
+    "description": "Desafío con preguntas reales de examen de admisión universitario sobre Oraciones Eliminadas. Nivel avanzado."
+  },
+  {
+    "id": "res_lec_120",
+    "courseId": "course_lectora",
+    "topicId": "topic_comprension_inferencial",
+    "type": "leccion",
+    "title": "Lección Fundamental: Comprensión Inferencial de Textos",
+    "url": "/lecciones/comprension_inferencial-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Comprensión Inferencial de Textos. Ideal para iniciar el estudio."
+  },
+  {
+    "id": "res_pdf_121",
+    "courseId": "course_lectora",
+    "topicId": "topic_comprension_inferencial",
+    "type": "recurso",
+    "title": "Guía en PDF de Comprensión Inferencial de Textos",
+    "url": "/docs/comprension_inferencial-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Comprensión Inferencial de Textos."
+  },
+  {
+    "id": "res_qz_122",
+    "courseId": "course_lectora",
+    "topicId": "topic_comprension_inferencial",
+    "type": "quiz",
+    "title": "Quiz Rápido: Comprensión Inferencial de Textos",
+    "url": "/quiz/comprension_inferencial-1",
+    "description": "Test interactivo de 5 preguntas para evaluar tu comprensión inmediata sobre Comprensión Inferencial de Textos."
+  },
+  {
+    "id": "res_ex_123",
+    "courseId": "course_lectora",
+    "topicId": "topic_comprension_inferencial",
+    "type": "examen",
+    "title": "Examen de Comprensión Inferencial de Textos",
+    "url": "/examen/comprension_inferencial",
+    "description": "Evaluación completa y rigurosa sobre todos los subtemas de Comprensión Inferencial de Textos."
+  },
+  {
+    "id": "res_boss_124",
+    "courseId": "course_lectora",
+    "topicId": "topic_comprension_inferencial",
+    "type": "desafio_final",
+    "title": "Reto Admisión: Comprensión Inferencial de Textos",
+    "url": "/reto/comprension_inferencial-uni",
+    "description": "Desafío con preguntas reales de examen de admisión universitario sobre Comprensión Inferencial de Textos. Nivel avanzado."
+  },
+  {
+    "id": "res_lec_125",
+    "courseId": "course_lectora",
+    "topicId": "topic_idea_principal",
+    "type": "leccion",
+    "title": "Lección Fundamental: Identificación de Idea Principal",
+    "url": "/lecciones/idea_principal-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Identificación de Idea Principal. Ideal para iniciar el estudio."
+  },
+  {
+    "id": "res_pdf_126",
+    "courseId": "course_lectora",
+    "topicId": "topic_idea_principal",
+    "type": "recurso",
+    "title": "Guía en PDF de Identificación de Idea Principal",
+    "url": "/docs/idea_principal-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Identificación de Idea Principal."
+  },
+  {
+    "id": "res_qz_127",
+    "courseId": "course_lectora",
+    "topicId": "topic_idea_principal",
+    "type": "quiz",
+    "title": "Quiz Rápido: Identificación de Idea Principal",
+    "url": "/quiz/idea_principal-1",
+    "description": "Test interactivo de 5 preguntas para evaluar tu comprensión inmediata sobre Identificación de Idea Principal."
+  },
+  {
+    "id": "res_ex_128",
+    "courseId": "course_lectora",
+    "topicId": "topic_idea_principal",
+    "type": "examen",
+    "title": "Examen de Identificación de Idea Principal",
+    "url": "/examen/idea_principal",
+    "description": "Evaluación completa y rigurosa sobre todos los subtemas de Identificación de Idea Principal."
+  },
+  {
+    "id": "res_boss_129",
+    "courseId": "course_lectora",
+    "topicId": "topic_idea_principal",
+    "type": "desafio_final",
+    "title": "Reto Admisión: Identificación de Idea Principal",
+    "url": "/reto/idea_principal-uni",
+    "description": "Desafío con preguntas reales de examen de admisión universitario sobre Identificación de Idea Principal. Nivel avanzado."
+  },
+  {
+    "id": "res_lec_130",
+    "courseId": "course_lectora",
+    "topicId": "topic_cohesion_coherencia",
+    "type": "leccion",
+    "title": "Lección Fundamental: Cohesión y Coherencia Textual",
+    "url": "/lecciones/cohesion_coherencia-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Cohesión y Coherencia Textual. Ideal para iniciar el estudio."
+  },
+  {
+    "id": "res_pdf_131",
+    "courseId": "course_lectora",
+    "topicId": "topic_cohesion_coherencia",
+    "type": "recurso",
+    "title": "Guía en PDF de Cohesión y Coherencia Textual",
+    "url": "/docs/cohesion_coherencia-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Cohesión y Coherencia Textual."
+  },
+  {
+    "id": "res_qz_132",
+    "courseId": "course_lectora",
+    "topicId": "topic_cohesion_coherencia",
+    "type": "quiz",
+    "title": "Quiz Rápido: Cohesión y Coherencia Textual",
+    "url": "/quiz/cohesion_coherencia-1",
+    "description": "Test interactivo de 5 preguntas para evaluar tu comprensión inmediata sobre Cohesión y Coherencia Textual."
+  },
+  {
+    "id": "res_ex_133",
+    "courseId": "course_lectora",
+    "topicId": "topic_cohesion_coherencia",
+    "type": "examen",
+    "title": "Examen de Cohesión y Coherencia Textual",
+    "url": "/examen/cohesion_coherencia",
+    "description": "Evaluación completa y rigurosa sobre todos los subtemas de Cohesión y Coherencia Textual."
+  },
+  {
+    "id": "res_boss_134",
+    "courseId": "course_lectora",
+    "topicId": "topic_cohesion_coherencia",
+    "type": "desafio_final",
+    "title": "Reto Admisión: Cohesión y Coherencia Textual",
+    "url": "/reto/cohesion_coherencia-uni",
+    "description": "Desafío con preguntas reales de examen de admisión universitario sobre Cohesión y Coherencia Textual. Nivel avanzado."
+  },
+  {
+    "id": "res_lec_135",
+    "courseId": "course_lectora",
+    "topicId": "topic_tipos_texto",
+    "type": "leccion",
+    "title": "Lección Fundamental: Tipos de Texto y Propósito Comunicativo",
+    "url": "/lecciones/tipos_texto-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Tipos de Texto y Propósito Comunicativo. Ideal para iniciar el estudio."
+  },
+  {
+    "id": "res_pdf_136",
+    "courseId": "course_lectora",
+    "topicId": "topic_tipos_texto",
+    "type": "recurso",
+    "title": "Guía en PDF de Tipos de Texto y Propósito Comunicativo",
+    "url": "/docs/tipos_texto-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Tipos de Texto y Propósito Comunicativo."
+  },
+  {
+    "id": "res_qz_137",
+    "courseId": "course_lectora",
+    "topicId": "topic_tipos_texto",
+    "type": "quiz",
+    "title": "Quiz Rápido: Tipos de Texto y Propósito Comunicativo",
+    "url": "/quiz/tipos_texto-1",
+    "description": "Test interactivo de 5 preguntas para evaluar tu comprensión inmediata sobre Tipos de Texto y Propósito Comunicativo."
+  },
+  {
+    "id": "res_ex_138",
+    "courseId": "course_lectora",
+    "topicId": "topic_tipos_texto",
+    "type": "examen",
+    "title": "Examen de Tipos de Texto y Propósito Comunicativo",
+    "url": "/examen/tipos_texto",
+    "description": "Evaluación completa y rigurosa sobre todos los subtemas de Tipos de Texto y Propósito Comunicativo."
+  },
+  {
+    "id": "res_boss_139",
+    "courseId": "course_lectora",
+    "topicId": "topic_tipos_texto",
+    "type": "desafio_final",
+    "title": "Reto Admisión: Tipos de Texto y Propósito Comunicativo",
+    "url": "/reto/tipos_texto-uni",
+    "description": "Desafío con preguntas reales de examen de admisión universitario sobre Tipos de Texto y Propósito Comunicativo. Nivel avanzado."
+  },
+  {
+    "id": "res_lec_140",
+    "courseId": "course_rm",
+    "topicId": "topic_rm_fracciones",
+    "type": "leccion",
+    "title": "Lección Fundamental: Planteo de Fracciones",
+    "url": "/lecciones/rm_fracciones-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Planteo de Fracciones. Ideal para iniciar el estudio."
+  },
+  {
+    "id": "res_pdf_141",
+    "courseId": "course_rm",
+    "topicId": "topic_rm_fracciones",
+    "type": "recurso",
+    "title": "Guía en PDF de Planteo de Fracciones",
+    "url": "/docs/rm_fracciones-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Planteo de Fracciones."
+  },
+  {
+    "id": "res_qz_142",
+    "courseId": "course_rm",
+    "topicId": "topic_rm_fracciones",
+    "type": "quiz",
+    "title": "Quiz Rápido: Planteo de Fracciones",
+    "url": "/quiz/rm_fracciones-1",
+    "description": "Test interactivo de 5 preguntas para evaluar tu comprensión inmediata sobre Planteo de Fracciones."
+  },
+  {
+    "id": "res_ex_143",
+    "courseId": "course_rm",
+    "topicId": "topic_rm_fracciones",
+    "type": "examen",
+    "title": "Examen de Planteo de Fracciones",
+    "url": "/examen/rm_fracciones",
+    "description": "Evaluación completa y rigurosa sobre todos los subtemas de Planteo de Fracciones."
+  },
+  {
+    "id": "res_boss_144",
+    "courseId": "course_rm",
+    "topicId": "topic_rm_fracciones",
+    "type": "desafio_final",
+    "title": "Reto Admisión: Planteo de Fracciones",
+    "url": "/reto/rm_fracciones-uni",
+    "description": "Desafío con preguntas reales de examen de admisión universitario sobre Planteo de Fracciones. Nivel avanzado."
+  },
+  {
+    "id": "res_lec_145",
+    "courseId": "course_rm",
+    "topicId": "topic_rm_edades",
+    "type": "leccion",
+    "title": "Lección Fundamental: Problemas sobre Edades",
+    "url": "/lecciones/rm_edades-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Problemas sobre Edades. Ideal para iniciar el estudio."
+  },
+  {
+    "id": "res_pdf_146",
+    "courseId": "course_rm",
+    "topicId": "topic_rm_edades",
+    "type": "recurso",
+    "title": "Guía en PDF de Problemas sobre Edades",
+    "url": "/docs/rm_edades-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Problemas sobre Edades."
+  },
+  {
+    "id": "res_qz_147",
+    "courseId": "course_rm",
+    "topicId": "topic_rm_edades",
+    "type": "quiz",
+    "title": "Quiz Rápido: Problemas sobre Edades",
+    "url": "/quiz/rm_edades-1",
+    "description": "Test interactivo de 5 preguntas para evaluar tu comprensión inmediata sobre Problemas sobre Edades."
+  },
+  {
+    "id": "res_ex_148",
+    "courseId": "course_rm",
+    "topicId": "topic_rm_edades",
+    "type": "examen",
+    "title": "Examen de Problemas sobre Edades",
+    "url": "/examen/rm_edades",
+    "description": "Evaluación completa y rigurosa sobre todos los subtemas de Problemas sobre Edades."
+  },
+  {
+    "id": "res_boss_149",
+    "courseId": "course_rm",
+    "topicId": "topic_rm_edades",
+    "type": "desafio_final",
+    "title": "Reto Admisión: Problemas sobre Edades",
+    "url": "/reto/rm_edades-uni",
+    "description": "Desafío con preguntas reales de examen de admisión universitario sobre Problemas sobre Edades. Nivel avanzado."
+  },
+  {
+    "id": "res_lec_150",
+    "courseId": "course_rm",
+    "topicId": "topic_rm_operadores",
+    "type": "leccion",
+    "title": "Lección Fundamental: Operadores Matemáticos",
+    "url": "/lecciones/rm_operadores-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Operadores Matemáticos. Ideal para iniciar el estudio."
+  },
+  {
+    "id": "res_pdf_151",
+    "courseId": "course_rm",
+    "topicId": "topic_rm_operadores",
+    "type": "recurso",
+    "title": "Guía en PDF de Operadores Matemáticos",
+    "url": "/docs/rm_operadores-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Operadores Matemáticos."
+  },
+  {
+    "id": "res_qz_152",
+    "courseId": "course_rm",
+    "topicId": "topic_rm_operadores",
+    "type": "quiz",
+    "title": "Quiz Rápido: Operadores Matemáticos",
+    "url": "/quiz/rm_operadores-1",
+    "description": "Test interactivo de 5 preguntas para evaluar tu comprensión inmediata sobre Operadores Matemáticos."
+  },
+  {
+    "id": "res_ex_153",
+    "courseId": "course_rm",
+    "topicId": "topic_rm_operadores",
+    "type": "examen",
+    "title": "Examen de Operadores Matemáticos",
+    "url": "/examen/rm_operadores",
+    "description": "Evaluación completa y rigurosa sobre todos los subtemas de Operadores Matemáticos."
+  },
+  {
+    "id": "res_boss_154",
+    "courseId": "course_rm",
+    "topicId": "topic_rm_operadores",
+    "type": "desafio_final",
+    "title": "Reto Admisión: Operadores Matemáticos",
+    "url": "/reto/rm_operadores-uni",
+    "description": "Desafío con preguntas reales de examen de admisión universitario sobre Operadores Matemáticos. Nivel avanzado."
+  },
+  {
+    "id": "res_lec_155",
+    "courseId": "course_rm",
+    "topicId": "topic_rm_sucesiones",
+    "type": "leccion",
+    "title": "Lección Fundamental: Sucesiones y Series",
+    "url": "/lecciones/rm_sucesiones-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Sucesiones y Series. Ideal para iniciar el estudio."
+  },
+  {
+    "id": "res_pdf_156",
+    "courseId": "course_rm",
+    "topicId": "topic_rm_sucesiones",
+    "type": "recurso",
+    "title": "Guía en PDF de Sucesiones y Series",
+    "url": "/docs/rm_sucesiones-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Sucesiones y Series."
+  },
+  {
+    "id": "res_qz_157",
+    "courseId": "course_rm",
+    "topicId": "topic_rm_sucesiones",
+    "type": "quiz",
+    "title": "Quiz Rápido: Sucesiones y Series",
+    "url": "/quiz/rm_sucesiones-1",
+    "description": "Test interactivo de 5 preguntas para evaluar tu comprensión inmediata sobre Sucesiones y Series."
+  },
+  {
+    "id": "res_ex_158",
+    "courseId": "course_rm",
+    "topicId": "topic_rm_sucesiones",
+    "type": "examen",
+    "title": "Examen de Sucesiones y Series",
+    "url": "/examen/rm_sucesiones",
+    "description": "Evaluación completa y rigurosa sobre todos los subtemas de Sucesiones y Series."
+  },
+  {
+    "id": "res_boss_159",
+    "courseId": "course_rm",
+    "topicId": "topic_rm_sucesiones",
+    "type": "desafio_final",
+    "title": "Reto Admisión: Sucesiones y Series",
+    "url": "/reto/rm_sucesiones-uni",
+    "description": "Desafío con preguntas reales de examen de admisión universitario sobre Sucesiones y Series. Nivel avanzado."
+  },
+  {
+    "id": "res_lec_160",
+    "courseId": "course_aritmetica",
+    "topicId": "topic_aritmetica_razones",
+    "type": "leccion",
+    "title": "Lección Fundamental: Razones y Proporciones",
+    "url": "/lecciones/aritmetica_razones-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Razones y Proporciones. Ideal para iniciar el estudio."
+  },
+  {
+    "id": "res_pdf_161",
+    "courseId": "course_aritmetica",
+    "topicId": "topic_aritmetica_razones",
+    "type": "recurso",
+    "title": "Guía en PDF de Razones y Proporciones",
+    "url": "/docs/aritmetica_razones-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Razones y Proporciones."
+  },
+  {
+    "id": "res_qz_162",
+    "courseId": "course_aritmetica",
+    "topicId": "topic_aritmetica_razones",
+    "type": "quiz",
+    "title": "Quiz Rápido: Razones y Proporciones",
+    "url": "/quiz/aritmetica_razones-1",
+    "description": "Test interactivo de 5 preguntas para evaluar tu comprensión inmediata sobre Razones y Proporciones."
+  },
+  {
+    "id": "res_ex_163",
+    "courseId": "course_aritmetica",
+    "topicId": "topic_aritmetica_razones",
+    "type": "examen",
+    "title": "Examen de Razones y Proporciones",
+    "url": "/examen/aritmetica_razones",
+    "description": "Evaluación completa y rigurosa sobre todos los subtemas de Razones y Proporciones."
+  },
+  {
+    "id": "res_boss_164",
+    "courseId": "course_aritmetica",
+    "topicId": "topic_aritmetica_razones",
+    "type": "desafio_final",
+    "title": "Reto Admisión: Razones y Proporciones",
+    "url": "/reto/aritmetica_razones-uni",
+    "description": "Desafío con preguntas reales de examen de admisión universitario sobre Razones y Proporciones. Nivel avanzado."
+  },
+  {
+    "id": "res_lec_165",
+    "courseId": "course_aritmetica",
+    "topicId": "topic_aritmetica_magnitudes",
+    "type": "leccion",
+    "title": "Lección Fundamental: Magnitudes Proporcionales",
+    "url": "/lecciones/aritmetica_magnitudes-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Magnitudes Proporcionales. Ideal para iniciar el estudio."
+  },
+  {
+    "id": "res_pdf_166",
+    "courseId": "course_aritmetica",
+    "topicId": "topic_aritmetica_magnitudes",
+    "type": "recurso",
+    "title": "Guía en PDF de Magnitudes Proporcionales",
+    "url": "/docs/aritmetica_magnitudes-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Magnitudes Proporcionales."
+  },
+  {
+    "id": "res_qz_167",
+    "courseId": "course_aritmetica",
+    "topicId": "topic_aritmetica_magnitudes",
+    "type": "quiz",
+    "title": "Quiz Rápido: Magnitudes Proporcionales",
+    "url": "/quiz/aritmetica_magnitudes-1",
+    "description": "Test interactivo de 5 preguntas para evaluar tu comprensión inmediata sobre Magnitudes Proporcionales."
+  },
+  {
+    "id": "res_ex_168",
+    "courseId": "course_aritmetica",
+    "topicId": "topic_aritmetica_magnitudes",
+    "type": "examen",
+    "title": "Examen de Magnitudes Proporcionales",
+    "url": "/examen/aritmetica_magnitudes",
+    "description": "Evaluación completa y rigurosa sobre todos los subtemas de Magnitudes Proporcionales."
+  },
+  {
+    "id": "res_boss_169",
+    "courseId": "course_aritmetica",
+    "topicId": "topic_aritmetica_magnitudes",
+    "type": "desafio_final",
+    "title": "Reto Admisión: Magnitudes Proporcionales",
+    "url": "/reto/aritmetica_magnitudes-uni",
+    "description": "Desafío con preguntas reales de examen de admisión universitario sobre Magnitudes Proporcionales. Nivel avanzado."
+  },
+  {
+    "id": "res_lec_170",
+    "courseId": "course_aritmetica",
+    "topicId": "topic_aritmetica_tantoporciento",
+    "type": "leccion",
+    "title": "Lección Fundamental: Tanto por Cuanto y Porcentajes",
+    "url": "/lecciones/aritmetica_tantoporciento-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Tanto por Cuanto y Porcentajes. Ideal para iniciar el estudio."
+  },
+  {
+    "id": "res_pdf_171",
+    "courseId": "course_aritmetica",
+    "topicId": "topic_aritmetica_tantoporciento",
+    "type": "recurso",
+    "title": "Guía en PDF de Tanto por Cuanto y Porcentajes",
+    "url": "/docs/aritmetica_tantoporciento-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Tanto por Cuanto y Porcentajes."
+  },
+  {
+    "id": "res_qz_172",
+    "courseId": "course_aritmetica",
+    "topicId": "topic_aritmetica_tantoporciento",
+    "type": "quiz",
+    "title": "Quiz Rápido: Tanto por Cuanto y Porcentajes",
+    "url": "/quiz/aritmetica_tantoporciento-1",
+    "description": "Test interactivo de 5 preguntas para evaluar tu comprensión inmediata sobre Tanto por Cuanto y Porcentajes."
+  },
+  {
+    "id": "res_ex_173",
+    "courseId": "course_aritmetica",
+    "topicId": "topic_aritmetica_tantoporciento",
+    "type": "examen",
+    "title": "Examen de Tanto por Cuanto y Porcentajes",
+    "url": "/examen/aritmetica_tantoporciento",
+    "description": "Evaluación completa y rigurosa sobre todos los subtemas de Tanto por Cuanto y Porcentajes."
+  },
+  {
+    "id": "res_boss_174",
+    "courseId": "course_aritmetica",
+    "topicId": "topic_aritmetica_tantoporciento",
+    "type": "desafio_final",
+    "title": "Reto Admisión: Tanto por Cuanto y Porcentajes",
+    "url": "/reto/aritmetica_tantoporciento-uni",
+    "description": "Desafío con preguntas reales de examen de admisión universitario sobre Tanto por Cuanto y Porcentajes. Nivel avanzado."
+  },
+  {
+    "id": "res_lec_175",
+    "courseId": "course_aritmetica",
+    "topicId": "topic_aritmetica_estadistica",
+    "type": "leccion",
+    "title": "Lección Fundamental: Estadística Básica",
+    "url": "/lecciones/aritmetica_estadistica-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Estadística Básica. Ideal para iniciar el estudio."
+  },
+  {
+    "id": "res_pdf_176",
+    "courseId": "course_aritmetica",
+    "topicId": "topic_aritmetica_estadistica",
+    "type": "recurso",
+    "title": "Guía en PDF de Estadística Básica",
+    "url": "/docs/aritmetica_estadistica-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Estadística Básica."
+  },
+  {
+    "id": "res_qz_177",
+    "courseId": "course_aritmetica",
+    "topicId": "topic_aritmetica_estadistica",
+    "type": "quiz",
+    "title": "Quiz Rápido: Estadística Básica",
+    "url": "/quiz/aritmetica_estadistica-1",
+    "description": "Test interactivo de 5 preguntas para evaluar tu comprensión inmediata sobre Estadística Básica."
+  },
+  {
+    "id": "res_ex_178",
+    "courseId": "course_aritmetica",
+    "topicId": "topic_aritmetica_estadistica",
+    "type": "examen",
+    "title": "Examen de Estadística Básica",
+    "url": "/examen/aritmetica_estadistica",
+    "description": "Evaluación completa y rigurosa sobre todos los subtemas de Estadística Básica."
+  },
+  {
+    "id": "res_boss_179",
+    "courseId": "course_aritmetica",
+    "topicId": "topic_aritmetica_estadistica",
+    "type": "desafio_final",
+    "title": "Reto Admisión: Estadística Básica",
+    "url": "/reto/aritmetica_estadistica-uni",
+    "description": "Desafío con preguntas reales de examen de admisión universitario sobre Estadística Básica. Nivel avanzado."
+  },
+  {
+    "id": "res_lec_180",
+    "courseId": "course_algebra",
+    "topicId": "topic_prod_notables",
+    "type": "leccion",
+    "title": "Lección Fundamental: Productos Notables Avanzados",
+    "url": "/lecciones/prod_notables-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Productos Notables Avanzados. Ideal para iniciar el estudio."
+  },
+  {
+    "id": "res_pdf_181",
+    "courseId": "course_algebra",
+    "topicId": "topic_prod_notables",
+    "type": "recurso",
+    "title": "Guía en PDF de Productos Notables Avanzados",
+    "url": "/docs/prod_notables-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Productos Notables Avanzados."
+  },
+  {
+    "id": "res_qz_182",
+    "courseId": "course_algebra",
+    "topicId": "topic_prod_notables",
+    "type": "quiz",
+    "title": "Quiz Rápido: Productos Notables Avanzados",
+    "url": "/quiz/prod_notables-1",
+    "description": "Test interactivo de 5 preguntas para evaluar tu comprensión inmediata sobre Productos Notables Avanzados."
+  },
+  {
+    "id": "res_ex_183",
+    "courseId": "course_algebra",
+    "topicId": "topic_prod_notables",
+    "type": "examen",
+    "title": "Examen de Productos Notables Avanzados",
+    "url": "/examen/prod_notables",
+    "description": "Evaluación completa y rigurosa sobre todos los subtemas de Productos Notables Avanzados."
+  },
+  {
+    "id": "res_boss_184",
+    "courseId": "course_algebra",
+    "topicId": "topic_prod_notables",
+    "type": "desafio_final",
+    "title": "Reto Admisión: Productos Notables Avanzados",
+    "url": "/reto/prod_notables-uni",
+    "description": "Desafío con preguntas reales de examen de admisión universitario sobre Productos Notables Avanzados. Nivel avanzado."
+  },
+  {
+    "id": "res_lec_185",
+    "courseId": "course_algebra",
+    "topicId": "topic_div_polinomial",
+    "type": "leccion",
+    "title": "Lección Fundamental: División Polinomial y Ruffini",
+    "url": "/lecciones/div_polinomial-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre División Polinomial y Ruffini. Ideal para iniciar el estudio."
+  },
+  {
+    "id": "res_pdf_186",
+    "courseId": "course_algebra",
+    "topicId": "topic_div_polinomial",
+    "type": "recurso",
+    "title": "Guía en PDF de División Polinomial y Ruffini",
+    "url": "/docs/div_polinomial-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre División Polinomial y Ruffini."
+  },
+  {
+    "id": "res_qz_187",
+    "courseId": "course_algebra",
+    "topicId": "topic_div_polinomial",
+    "type": "quiz",
+    "title": "Quiz Rápido: División Polinomial y Ruffini",
+    "url": "/quiz/div_polinomial-1",
+    "description": "Test interactivo de 5 preguntas para evaluar tu comprensión inmediata sobre División Polinomial y Ruffini."
+  },
+  {
+    "id": "res_ex_188",
+    "courseId": "course_algebra",
+    "topicId": "topic_div_polinomial",
+    "type": "examen",
+    "title": "Examen de División Polinomial y Ruffini",
+    "url": "/examen/div_polinomial",
+    "description": "Evaluación completa y rigurosa sobre todos los subtemas de División Polinomial y Ruffini."
+  },
+  {
+    "id": "res_boss_189",
+    "courseId": "course_algebra",
+    "topicId": "topic_div_polinomial",
+    "type": "desafio_final",
+    "title": "Reto Admisión: División Polinomial y Ruffini",
+    "url": "/reto/div_polinomial-uni",
+    "description": "Desafío con preguntas reales de examen de admisión universitario sobre División Polinomial y Ruffini. Nivel avanzado."
+  },
+  {
+    "id": "res_lec_190",
+    "courseId": "course_algebra",
+    "topicId": "topic_ecuaciones_lineales",
+    "type": "leccion",
+    "title": "Lección Fundamental: Ecuaciones Lineales y Problemas de Planteo",
+    "url": "/lecciones/ecuaciones_lineales-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Ecuaciones Lineales y Problemas de Planteo. Ideal para iniciar el estudio."
+  },
+  {
+    "id": "res_pdf_191",
+    "courseId": "course_algebra",
+    "topicId": "topic_ecuaciones_lineales",
+    "type": "recurso",
+    "title": "Guía en PDF de Ecuaciones Lineales y Problemas de Planteo",
+    "url": "/docs/ecuaciones_lineales-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Ecuaciones Lineales y Problemas de Planteo."
+  },
+  {
+    "id": "res_qz_192",
+    "courseId": "course_algebra",
+    "topicId": "topic_ecuaciones_lineales",
+    "type": "quiz",
+    "title": "Quiz Rápido: Ecuaciones Lineales y Problemas de Planteo",
+    "url": "/quiz/ecuaciones_lineales-1",
+    "description": "Test interactivo de 5 preguntas para evaluar tu comprensión inmediata sobre Ecuaciones Lineales y Problemas de Planteo."
+  },
+  {
+    "id": "res_ex_193",
+    "courseId": "course_algebra",
+    "topicId": "topic_ecuaciones_lineales",
+    "type": "examen",
+    "title": "Examen de Ecuaciones Lineales y Problemas de Planteo",
+    "url": "/examen/ecuaciones_lineales",
+    "description": "Evaluación completa y rigurosa sobre todos los subtemas de Ecuaciones Lineales y Problemas de Planteo."
+  },
+  {
+    "id": "res_boss_194",
+    "courseId": "course_algebra",
+    "topicId": "topic_ecuaciones_lineales",
+    "type": "desafio_final",
+    "title": "Reto Admisión: Ecuaciones Lineales y Problemas de Planteo",
+    "url": "/reto/ecuaciones_lineales-uni",
+    "description": "Desafío con preguntas reales de examen de admisión universitario sobre Ecuaciones Lineales y Problemas de Planteo. Nivel avanzado."
+  },
+  {
+    "id": "res_lec_195",
+    "courseId": "course_algebra",
+    "topicId": "topic_sistemas_ecuaciones",
+    "type": "leccion",
+    "title": "Lección Fundamental: Sistemas de Ecuaciones (2x2 y 3x3)",
+    "url": "/lecciones/sistemas_ecuaciones-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Sistemas de Ecuaciones (2x2 y 3x3). Ideal para iniciar el estudio."
+  },
+  {
+    "id": "res_pdf_196",
+    "courseId": "course_algebra",
+    "topicId": "topic_sistemas_ecuaciones",
+    "type": "recurso",
+    "title": "Guía en PDF de Sistemas de Ecuaciones (2x2 y 3x3)",
+    "url": "/docs/sistemas_ecuaciones-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Sistemas de Ecuaciones (2x2 y 3x3)."
+  },
+  {
+    "id": "res_qz_197",
+    "courseId": "course_algebra",
+    "topicId": "topic_sistemas_ecuaciones",
+    "type": "quiz",
+    "title": "Quiz Rápido: Sistemas de Ecuaciones (2x2 y 3x3)",
+    "url": "/quiz/sistemas_ecuaciones-1",
+    "description": "Test interactivo de 5 preguntas para evaluar tu comprensión inmediata sobre Sistemas de Ecuaciones (2x2 y 3x3)."
+  },
+  {
+    "id": "res_ex_198",
+    "courseId": "course_algebra",
+    "topicId": "topic_sistemas_ecuaciones",
+    "type": "examen",
+    "title": "Examen de Sistemas de Ecuaciones (2x2 y 3x3)",
+    "url": "/examen/sistemas_ecuaciones",
+    "description": "Evaluación completa y rigurosa sobre todos los subtemas de Sistemas de Ecuaciones (2x2 y 3x3)."
+  },
+  {
+    "id": "res_boss_199",
+    "courseId": "course_algebra",
+    "topicId": "topic_sistemas_ecuaciones",
+    "type": "desafio_final",
+    "title": "Reto Admisión: Sistemas de Ecuaciones (2x2 y 3x3)",
+    "url": "/reto/sistemas_ecuaciones-uni",
+    "description": "Desafío con preguntas reales de examen de admisión universitario sobre Sistemas de Ecuaciones (2x2 y 3x3). Nivel avanzado."
+  },
+  {
+    "id": "res_lec_200",
+    "courseId": "course_algebra",
+    "topicId": "topic_inecuaciones",
+    "type": "leccion",
+    "title": "Lección Fundamental: Inecuaciones y Valor Absoluto",
+    "url": "/lecciones/inecuaciones-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Inecuaciones y Valor Absoluto. Ideal para iniciar el estudio."
+  },
+  {
+    "id": "res_pdf_201",
+    "courseId": "course_algebra",
+    "topicId": "topic_inecuaciones",
+    "type": "recurso",
+    "title": "Guía en PDF de Inecuaciones y Valor Absoluto",
+    "url": "/docs/inecuaciones-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Inecuaciones y Valor Absoluto."
+  },
+  {
+    "id": "res_qz_202",
+    "courseId": "course_algebra",
+    "topicId": "topic_inecuaciones",
+    "type": "quiz",
+    "title": "Quiz Rápido: Inecuaciones y Valor Absoluto",
+    "url": "/quiz/inecuaciones-1",
+    "description": "Test interactivo de 5 preguntas para evaluar tu comprensión inmediata sobre Inecuaciones y Valor Absoluto."
+  },
+  {
+    "id": "res_ex_203",
+    "courseId": "course_algebra",
+    "topicId": "topic_inecuaciones",
+    "type": "examen",
+    "title": "Examen de Inecuaciones y Valor Absoluto",
+    "url": "/examen/inecuaciones",
+    "description": "Evaluación completa y rigurosa sobre todos los subtemas de Inecuaciones y Valor Absoluto."
+  },
+  {
+    "id": "res_boss_204",
+    "courseId": "course_algebra",
+    "topicId": "topic_inecuaciones",
+    "type": "desafio_final",
+    "title": "Reto Admisión: Inecuaciones y Valor Absoluto",
+    "url": "/reto/inecuaciones-uni",
+    "description": "Desafío con preguntas reales de examen de admisión universitario sobre Inecuaciones y Valor Absoluto. Nivel avanzado."
+  },
+  {
+    "id": "res_lec_205",
+    "courseId": "course_algebra",
+    "topicId": "topic_factorizacion",
+    "type": "leccion",
+    "title": "Lección Fundamental: Factorización Avanzada",
+    "url": "/lecciones/factorizacion-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Factorización Avanzada. Ideal para iniciar el estudio."
+  },
+  {
+    "id": "res_pdf_206",
+    "courseId": "course_algebra",
+    "topicId": "topic_factorizacion",
+    "type": "recurso",
+    "title": "Guía en PDF de Factorización Avanzada",
+    "url": "/docs/factorizacion-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Factorización Avanzada."
+  },
+  {
+    "id": "res_qz_207",
+    "courseId": "course_algebra",
+    "topicId": "topic_factorizacion",
+    "type": "quiz",
+    "title": "Quiz Rápido: Factorización Avanzada",
+    "url": "/quiz/factorizacion-1",
+    "description": "Test interactivo de 5 preguntas para evaluar tu comprensión inmediata sobre Factorización Avanzada."
+  },
+  {
+    "id": "res_ex_208",
+    "courseId": "course_algebra",
+    "topicId": "topic_factorizacion",
+    "type": "examen",
+    "title": "Examen de Factorización Avanzada",
+    "url": "/examen/factorizacion",
+    "description": "Evaluación completa y rigurosa sobre todos los subtemas de Factorización Avanzada."
+  },
+  {
+    "id": "res_boss_209",
+    "courseId": "course_algebra",
+    "topicId": "topic_factorizacion",
+    "type": "desafio_final",
+    "title": "Reto Admisión: Factorización Avanzada",
+    "url": "/reto/factorizacion-uni",
+    "description": "Desafío con preguntas reales de examen de admisión universitario sobre Factorización Avanzada. Nivel avanzado."
+  },
+  {
+    "id": "res_lec_210",
+    "courseId": "course_geometria",
+    "topicId": "topic_geometria_plana",
+    "type": "leccion",
+    "title": "Lección Fundamental: Geometría Plana (Triángulos y Circunferencia)",
+    "url": "/lecciones/geometria_plana-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Geometría Plana (Triángulos y Circunferencia). Ideal para iniciar el estudio."
+  },
+  {
+    "id": "res_pdf_211",
+    "courseId": "course_geometria",
+    "topicId": "topic_geometria_plana",
+    "type": "recurso",
+    "title": "Guía en PDF de Geometría Plana (Triángulos y Circunferencia)",
+    "url": "/docs/geometria_plana-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Geometría Plana (Triángulos y Circunferencia)."
+  },
+  {
+    "id": "res_qz_212",
+    "courseId": "course_geometria",
+    "topicId": "topic_geometria_plana",
+    "type": "quiz",
+    "title": "Quiz Rápido: Geometría Plana (Triángulos y Circunferencia)",
+    "url": "/quiz/geometria_plana-1",
+    "description": "Test interactivo de 5 preguntas para evaluar tu comprensión inmediata sobre Geometría Plana (Triángulos y Circunferencia)."
+  },
+  {
+    "id": "res_ex_213",
+    "courseId": "course_geometria",
+    "topicId": "topic_geometria_plana",
+    "type": "examen",
+    "title": "Examen de Geometría Plana (Triángulos y Circunferencia)",
+    "url": "/examen/geometria_plana",
+    "description": "Evaluación completa y rigurosa sobre todos los subtemas de Geometría Plana (Triángulos y Circunferencia)."
+  },
+  {
+    "id": "res_boss_214",
+    "courseId": "course_geometria",
+    "topicId": "topic_geometria_plana",
+    "type": "desafio_final",
+    "title": "Reto Admisión: Geometría Plana (Triángulos y Circunferencia)",
+    "url": "/reto/geometria_plana-uni",
+    "description": "Desafío con preguntas reales de examen de admisión universitario sobre Geometría Plana (Triángulos y Circunferencia). Nivel avanzado."
+  },
+  {
+    "id": "res_lec_215",
+    "courseId": "course_geometria",
+    "topicId": "topic_geometria_espacial",
+    "type": "leccion",
+    "title": "Lección Fundamental: Geometría del Espacio (Cuerpos Geométricos)",
+    "url": "/lecciones/geometria_espacial-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Geometría del Espacio (Cuerpos Geométricos). Ideal para iniciar el estudio."
+  },
+  {
+    "id": "res_pdf_216",
+    "courseId": "course_geometria",
+    "topicId": "topic_geometria_espacial",
+    "type": "recurso",
+    "title": "Guía en PDF de Geometría del Espacio (Cuerpos Geométricos)",
+    "url": "/docs/geometria_espacial-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Geometría del Espacio (Cuerpos Geométricos)."
+  },
+  {
+    "id": "res_qz_217",
+    "courseId": "course_geometria",
+    "topicId": "topic_geometria_espacial",
+    "type": "quiz",
+    "title": "Quiz Rápido: Geometría del Espacio (Cuerpos Geométricos)",
+    "url": "/quiz/geometria_espacial-1",
+    "description": "Test interactivo de 5 preguntas para evaluar tu comprensión inmediata sobre Geometría del Espacio (Cuerpos Geométricos)."
+  },
+  {
+    "id": "res_ex_218",
+    "courseId": "course_geometria",
+    "topicId": "topic_geometria_espacial",
+    "type": "examen",
+    "title": "Examen de Geometría del Espacio (Cuerpos Geométricos)",
+    "url": "/examen/geometria_espacial",
+    "description": "Evaluación completa y rigurosa sobre todos los subtemas de Geometría del Espacio (Cuerpos Geométricos)."
+  },
+  {
+    "id": "res_boss_219",
+    "courseId": "course_geometria",
+    "topicId": "topic_geometria_espacial",
+    "type": "desafio_final",
+    "title": "Reto Admisión: Geometría del Espacio (Cuerpos Geométricos)",
+    "url": "/reto/geometria_espacial-uni",
+    "description": "Desafío con preguntas reales de examen de admisión universitario sobre Geometría del Espacio (Cuerpos Geométricos). Nivel avanzado."
+  },
+  {
+    "id": "res_lec_220",
+    "courseId": "course_geometria",
+    "topicId": "topic_trigonometria_basica",
+    "type": "leccion",
+    "title": "Lección Fundamental: Trigonometría Básica",
+    "url": "/lecciones/trigonometria_basica-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Trigonometría Básica. Ideal para iniciar el estudio."
+  },
+  {
+    "id": "res_pdf_221",
+    "courseId": "course_geometria",
+    "topicId": "topic_trigonometria_basica",
+    "type": "recurso",
+    "title": "Guía en PDF de Trigonometría Básica",
+    "url": "/docs/trigonometria_basica-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Trigonometría Básica."
+  },
+  {
+    "id": "res_qz_222",
+    "courseId": "course_geometria",
+    "topicId": "topic_trigonometria_basica",
+    "type": "quiz",
+    "title": "Quiz Rápido: Trigonometría Básica",
+    "url": "/quiz/trigonometria_basica-1",
+    "description": "Test interactivo de 5 preguntas para evaluar tu comprensión inmediata sobre Trigonometría Básica."
+  },
+  {
+    "id": "res_ex_223",
+    "courseId": "course_geometria",
+    "topicId": "topic_trigonometria_basica",
+    "type": "examen",
+    "title": "Examen de Trigonometría Básica",
+    "url": "/examen/trigonometria_basica",
+    "description": "Evaluación completa y rigurosa sobre todos los subtemas de Trigonometría Básica."
+  },
+  {
+    "id": "res_boss_224",
+    "courseId": "course_geometria",
+    "topicId": "topic_trigonometria_basica",
+    "type": "desafio_final",
+    "title": "Reto Admisión: Trigonometría Básica",
+    "url": "/reto/trigonometria_basica-uni",
+    "description": "Desafío con preguntas reales de examen de admisión universitario sobre Trigonometría Básica. Nivel avanzado."
+  },
+  {
+    "id": "res_lec_225",
+    "courseId": "course_geometria",
+    "topicId": "topic_trigonometria_avanzada",
+    "type": "leccion",
+    "title": "Lección Fundamental: Trigonometría Avanzada y Identidades",
+    "url": "/lecciones/trigonometria_avanzada-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Trigonometría Avanzada y Identidades. Ideal para iniciar el estudio."
+  },
+  {
+    "id": "res_pdf_226",
+    "courseId": "course_geometria",
+    "topicId": "topic_trigonometria_avanzada",
+    "type": "recurso",
+    "title": "Guía en PDF de Trigonometría Avanzada y Identidades",
+    "url": "/docs/trigonometria_avanzada-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Trigonometría Avanzada y Identidades."
+  },
+  {
+    "id": "res_qz_227",
+    "courseId": "course_geometria",
+    "topicId": "topic_trigonometria_avanzada",
+    "type": "quiz",
+    "title": "Quiz Rápido: Trigonometría Avanzada y Identidades",
+    "url": "/quiz/trigonometria_avanzada-1",
+    "description": "Test interactivo de 5 preguntas para evaluar tu comprensión inmediata sobre Trigonometría Avanzada y Identidades."
+  },
+  {
+    "id": "res_ex_228",
+    "courseId": "course_geometria",
+    "topicId": "topic_trigonometria_avanzada",
+    "type": "examen",
+    "title": "Examen de Trigonometría Avanzada y Identidades",
+    "url": "/examen/trigonometria_avanzada",
+    "description": "Evaluación completa y rigurosa sobre todos los subtemas de Trigonometría Avanzada y Identidades."
+  },
+  {
+    "id": "res_boss_229",
+    "courseId": "course_geometria",
+    "topicId": "topic_trigonometria_avanzada",
+    "type": "desafio_final",
+    "title": "Reto Admisión: Trigonometría Avanzada y Identidades",
+    "url": "/reto/trigonometria_avanzada-uni",
+    "description": "Desafío con preguntas reales de examen de admisión universitario sobre Trigonometría Avanzada y Identidades. Nivel avanzado."
+  },
+  {
+    "id": "res_lec_230",
+    "courseId": "course_trigonometria",
+    "topicId": "topic_trigonometria_angulo",
+    "type": "leccion",
+    "title": "Lección Fundamental: Ángulo Trigonométrico",
+    "url": "/lecciones/trigonometria_angulo-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Ángulo Trigonométrico. Ideal para iniciar el estudio."
+  },
+  {
+    "id": "res_pdf_231",
+    "courseId": "course_trigonometria",
+    "topicId": "topic_trigonometria_angulo",
+    "type": "recurso",
+    "title": "Guía en PDF de Ángulo Trigonométrico",
+    "url": "/docs/trigonometria_angulo-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Ángulo Trigonométrico."
+  },
+  {
+    "id": "res_qz_232",
+    "courseId": "course_trigonometria",
+    "topicId": "topic_trigonometria_angulo",
+    "type": "quiz",
+    "title": "Quiz Rápido: Ángulo Trigonométrico",
+    "url": "/quiz/trigonometria_angulo-1",
+    "description": "Test interactivo de 5 preguntas para evaluar tu comprensión inmediata sobre Ángulo Trigonométrico."
+  },
+  {
+    "id": "res_ex_233",
+    "courseId": "course_trigonometria",
+    "topicId": "topic_trigonometria_angulo",
+    "type": "examen",
+    "title": "Examen de Ángulo Trigonométrico",
+    "url": "/examen/trigonometria_angulo",
+    "description": "Evaluación completa y rigurosa sobre todos los subtemas de Ángulo Trigonométrico."
+  },
+  {
+    "id": "res_boss_234",
+    "courseId": "course_trigonometria",
+    "topicId": "topic_trigonometria_angulo",
+    "type": "desafio_final",
+    "title": "Reto Admisión: Ángulo Trigonométrico",
+    "url": "/reto/trigonometria_angulo-uni",
+    "description": "Desafío con preguntas reales de examen de admisión universitario sobre Ángulo Trigonométrico. Nivel avanzado."
+  },
+  {
+    "id": "res_lec_235",
+    "courseId": "course_trigonometria",
+    "topicId": "topic_trigonometria_razones_agudos",
+    "type": "leccion",
+    "title": "Lección Fundamental: Razones Trigonométricas de Ángulos Agudos",
+    "url": "/lecciones/trigonometria_razones_agudos-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Razones Trigonométricas de Ángulos Agudos. Ideal para iniciar el estudio."
+  },
+  {
+    "id": "res_pdf_236",
+    "courseId": "course_trigonometria",
+    "topicId": "topic_trigonometria_razones_agudos",
+    "type": "recurso",
+    "title": "Guía en PDF de Razones Trigonométricas de Ángulos Agudos",
+    "url": "/docs/trigonometria_razones_agudos-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Razones Trigonométricas de Ángulos Agudos."
+  },
+  {
+    "id": "res_qz_237",
+    "courseId": "course_trigonometria",
+    "topicId": "topic_trigonometria_razones_agudos",
+    "type": "quiz",
+    "title": "Quiz Rápido: Razones Trigonométricas de Ángulos Agudos",
+    "url": "/quiz/trigonometria_razones_agudos-1",
+    "description": "Test interactivo de 5 preguntas para evaluar tu comprensión inmediata sobre Razones Trigonométricas de Ángulos Agudos."
+  },
+  {
+    "id": "res_ex_238",
+    "courseId": "course_trigonometria",
+    "topicId": "topic_trigonometria_razones_agudos",
+    "type": "examen",
+    "title": "Examen de Razones Trigonométricas de Ángulos Agudos",
+    "url": "/examen/trigonometria_razones_agudos",
+    "description": "Evaluación completa y rigurosa sobre todos los subtemas de Razones Trigonométricas de Ángulos Agudos."
+  },
+  {
+    "id": "res_boss_239",
+    "courseId": "course_trigonometria",
+    "topicId": "topic_trigonometria_razones_agudos",
+    "type": "desafio_final",
+    "title": "Reto Admisión: Razones Trigonométricas de Ángulos Agudos",
+    "url": "/reto/trigonometria_razones_agudos-uni",
+    "description": "Desafío con preguntas reales de examen de admisión universitario sobre Razones Trigonométricas de Ángulos Agudos. Nivel avanzado."
+  },
+  {
+    "id": "res_lec_240",
+    "courseId": "course_trigonometria",
+    "topicId": "topic_trigonometria_identidades",
+    "type": "leccion",
+    "title": "Lección Fundamental: Identidades Trigonométricas",
+    "url": "/lecciones/trigonometria_identidades-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Identidades Trigonométricas. Ideal para iniciar el estudio."
+  },
+  {
+    "id": "res_pdf_241",
+    "courseId": "course_trigonometria",
+    "topicId": "topic_trigonometria_identidades",
+    "type": "recurso",
+    "title": "Guía en PDF de Identidades Trigonométricas",
+    "url": "/docs/trigonometria_identidades-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Identidades Trigonométricas."
+  },
+  {
+    "id": "res_qz_242",
+    "courseId": "course_trigonometria",
+    "topicId": "topic_trigonometria_identidades",
+    "type": "quiz",
+    "title": "Quiz Rápido: Identidades Trigonométricas",
+    "url": "/quiz/trigonometria_identidades-1",
+    "description": "Test interactivo de 5 preguntas para evaluar tu comprensión inmediata sobre Identidades Trigonométricas."
+  },
+  {
+    "id": "res_ex_243",
+    "courseId": "course_trigonometria",
+    "topicId": "topic_trigonometria_identidades",
+    "type": "examen",
+    "title": "Examen de Identidades Trigonométricas",
+    "url": "/examen/trigonometria_identidades",
+    "description": "Evaluación completa y rigurosa sobre todos los subtemas de Identidades Trigonométricas."
+  },
+  {
+    "id": "res_boss_244",
+    "courseId": "course_trigonometria",
+    "topicId": "topic_trigonometria_identidades",
+    "type": "desafio_final",
+    "title": "Reto Admisión: Identidades Trigonométricas",
+    "url": "/reto/trigonometria_identidades-uni",
+    "description": "Desafío con preguntas reales de examen de admisión universitario sobre Identidades Trigonométricas. Nivel avanzado."
+  },
+  {
+    "id": "res_lec_245",
+    "courseId": "course_probabilidad",
+    "topicId": "topic_intro_probabilidad",
+    "type": "leccion",
+    "title": "Lección Fundamental: Introducción a Probabilidad",
+    "url": "/lecciones/intro_probabilidad-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Introducción a Probabilidad. Ideal para iniciar el estudio."
+  },
+  {
+    "id": "res_pdf_246",
+    "courseId": "course_probabilidad",
+    "topicId": "topic_intro_probabilidad",
+    "type": "recurso",
+    "title": "Guía en PDF de Introducción a Probabilidad",
+    "url": "/docs/intro_probabilidad-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Introducción a Probabilidad."
+  },
+  {
+    "id": "res_qz_247",
+    "courseId": "course_probabilidad",
+    "topicId": "topic_intro_probabilidad",
+    "type": "quiz",
+    "title": "Quiz Rápido: Introducción a Probabilidad",
+    "url": "/quiz/intro_probabilidad-1",
+    "description": "Test interactivo de 5 preguntas para evaluar tu comprensión inmediata sobre Introducción a Probabilidad."
+  },
+  {
+    "id": "res_ex_248",
+    "courseId": "course_probabilidad",
+    "topicId": "topic_intro_probabilidad",
+    "type": "examen",
+    "title": "Examen de Introducción a Probabilidad",
+    "url": "/examen/intro_probabilidad",
+    "description": "Evaluación completa y rigurosa sobre todos los subtemas de Introducción a Probabilidad."
+  },
+  {
+    "id": "res_boss_249",
+    "courseId": "course_probabilidad",
+    "topicId": "topic_intro_probabilidad",
+    "type": "desafio_final",
+    "title": "Reto Admisión: Introducción a Probabilidad",
+    "url": "/reto/intro_probabilidad-uni",
+    "description": "Desafío con preguntas reales de examen de admisión universitario sobre Introducción a Probabilidad. Nivel avanzado."
+  },
+  {
+    "id": "res_lec_250",
+    "courseId": "course_lenguaje",
+    "topicId": "topic_intro_lenguaje",
+    "type": "leccion",
+    "title": "Lección Fundamental: Introducción a Lenguaje",
+    "url": "/lecciones/intro_lenguaje-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Introducción a Lenguaje. Ideal para iniciar el estudio."
+  },
+  {
+    "id": "res_pdf_251",
+    "courseId": "course_lenguaje",
+    "topicId": "topic_intro_lenguaje",
+    "type": "recurso",
+    "title": "Guía en PDF de Introducción a Lenguaje",
+    "url": "/docs/intro_lenguaje-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Introducción a Lenguaje."
+  },
+  {
+    "id": "res_qz_252",
+    "courseId": "course_lenguaje",
+    "topicId": "topic_intro_lenguaje",
+    "type": "quiz",
+    "title": "Quiz Rápido: Introducción a Lenguaje",
+    "url": "/quiz/intro_lenguaje-1",
+    "description": "Test interactivo de 5 preguntas para evaluar tu comprensión inmediata sobre Introducción a Lenguaje."
+  },
+  {
+    "id": "res_ex_253",
+    "courseId": "course_lenguaje",
+    "topicId": "topic_intro_lenguaje",
+    "type": "examen",
+    "title": "Examen de Introducción a Lenguaje",
+    "url": "/examen/intro_lenguaje",
+    "description": "Evaluación completa y rigurosa sobre todos los subtemas de Introducción a Lenguaje."
+  },
+  {
+    "id": "res_boss_254",
+    "courseId": "course_lenguaje",
+    "topicId": "topic_intro_lenguaje",
+    "type": "desafio_final",
+    "title": "Reto Admisión: Introducción a Lenguaje",
+    "url": "/reto/intro_lenguaje-uni",
+    "description": "Desafío con preguntas reales de examen de admisión universitario sobre Introducción a Lenguaje. Nivel avanzado."
+  },
+  {
+    "id": "res_lec_255",
+    "courseId": "course_literatura",
+    "topicId": "topic_intro_literatura",
+    "type": "leccion",
+    "title": "Lección Fundamental: Introducción a Literatura",
+    "url": "/lecciones/intro_literatura-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Introducción a Literatura. Ideal para iniciar el estudio."
+  },
+  {
+    "id": "res_pdf_256",
+    "courseId": "course_literatura",
+    "topicId": "topic_intro_literatura",
+    "type": "recurso",
+    "title": "Guía en PDF de Introducción a Literatura",
+    "url": "/docs/intro_literatura-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Introducción a Literatura."
+  },
+  {
+    "id": "res_qz_257",
+    "courseId": "course_literatura",
+    "topicId": "topic_intro_literatura",
+    "type": "quiz",
+    "title": "Quiz Rápido: Introducción a Literatura",
+    "url": "/quiz/intro_literatura-1",
+    "description": "Test interactivo de 5 preguntas para evaluar tu comprensión inmediata sobre Introducción a Literatura."
+  },
+  {
+    "id": "res_ex_258",
+    "courseId": "course_literatura",
+    "topicId": "topic_intro_literatura",
+    "type": "examen",
+    "title": "Examen de Introducción a Literatura",
+    "url": "/examen/intro_literatura",
+    "description": "Evaluación completa y rigurosa sobre todos los subtemas de Introducción a Literatura."
+  },
+  {
+    "id": "res_boss_259",
+    "courseId": "course_literatura",
+    "topicId": "topic_intro_literatura",
+    "type": "desafio_final",
+    "title": "Reto Admisión: Introducción a Literatura",
+    "url": "/reto/intro_literatura-uni",
+    "description": "Desafío con preguntas reales de examen de admisión universitario sobre Introducción a Literatura. Nivel avanzado."
+  },
+  {
+    "id": "res_lec_260",
+    "courseId": "course_psicologia",
+    "topicId": "topic_intro_psicologia",
+    "type": "leccion",
+    "title": "Lección Fundamental: Introducción a Psicología",
+    "url": "/lecciones/intro_psicologia-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Introducción a Psicología. Ideal para iniciar el estudio."
+  },
+  {
+    "id": "res_pdf_261",
+    "courseId": "course_psicologia",
+    "topicId": "topic_intro_psicologia",
+    "type": "recurso",
+    "title": "Guía en PDF de Introducción a Psicología",
+    "url": "/docs/intro_psicologia-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Introducción a Psicología."
+  },
+  {
+    "id": "res_qz_262",
+    "courseId": "course_psicologia",
+    "topicId": "topic_intro_psicologia",
+    "type": "quiz",
+    "title": "Quiz Rápido: Introducción a Psicología",
+    "url": "/quiz/intro_psicologia-1",
+    "description": "Test interactivo de 5 preguntas para evaluar tu comprensión inmediata sobre Introducción a Psicología."
+  },
+  {
+    "id": "res_ex_263",
+    "courseId": "course_psicologia",
+    "topicId": "topic_intro_psicologia",
+    "type": "examen",
+    "title": "Examen de Introducción a Psicología",
+    "url": "/examen/intro_psicologia",
+    "description": "Evaluación completa y rigurosa sobre todos los subtemas de Introducción a Psicología."
+  },
+  {
+    "id": "res_boss_264",
+    "courseId": "course_psicologia",
+    "topicId": "topic_intro_psicologia",
+    "type": "desafio_final",
+    "title": "Reto Admisión: Introducción a Psicología",
+    "url": "/reto/intro_psicologia-uni",
+    "description": "Desafío con preguntas reales de examen de admisión universitario sobre Introducción a Psicología. Nivel avanzado."
+  },
+  {
+    "id": "res_lec_265",
+    "courseId": "course_civica",
+    "topicId": "topic_intro_civica",
+    "type": "leccion",
+    "title": "Lección Fundamental: Introducción a Educación Cívica",
+    "url": "/lecciones/intro_civica-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Introducción a Educación Cívica. Ideal para iniciar el estudio."
+  },
+  {
+    "id": "res_pdf_266",
+    "courseId": "course_civica",
+    "topicId": "topic_intro_civica",
+    "type": "recurso",
+    "title": "Guía en PDF de Introducción a Educación Cívica",
+    "url": "/docs/intro_civica-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Introducción a Educación Cívica."
+  },
+  {
+    "id": "res_qz_267",
+    "courseId": "course_civica",
+    "topicId": "topic_intro_civica",
+    "type": "quiz",
+    "title": "Quiz Rápido: Introducción a Educación Cívica",
+    "url": "/quiz/intro_civica-1",
+    "description": "Test interactivo de 5 preguntas para evaluar tu comprensión inmediata sobre Introducción a Educación Cívica."
+  },
+  {
+    "id": "res_ex_268",
+    "courseId": "course_civica",
+    "topicId": "topic_intro_civica",
+    "type": "examen",
+    "title": "Examen de Introducción a Educación Cívica",
+    "url": "/examen/intro_civica",
+    "description": "Evaluación completa y rigurosa sobre todos los subtemas de Introducción a Educación Cívica."
+  },
+  {
+    "id": "res_boss_269",
+    "courseId": "course_civica",
+    "topicId": "topic_intro_civica",
+    "type": "desafio_final",
+    "title": "Reto Admisión: Introducción a Educación Cívica",
+    "url": "/reto/intro_civica-uni",
+    "description": "Desafío con preguntas reales de examen de admisión universitario sobre Introducción a Educación Cívica. Nivel avanzado."
+  },
+  {
+    "id": "res_lec_270",
+    "courseId": "course_historia_peru",
+    "topicId": "topic_intro_historia_peru",
+    "type": "leccion",
+    "title": "Lección Fundamental: Introducción a Historia del Perú",
+    "url": "/lecciones/intro_historia_peru-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Introducción a Historia del Perú. Ideal para iniciar el estudio."
+  },
+  {
+    "id": "res_pdf_271",
+    "courseId": "course_historia_peru",
+    "topicId": "topic_intro_historia_peru",
+    "type": "recurso",
+    "title": "Guía en PDF de Introducción a Historia del Perú",
+    "url": "/docs/intro_historia_peru-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Introducción a Historia del Perú."
+  },
+  {
+    "id": "res_qz_272",
+    "courseId": "course_historia_peru",
+    "topicId": "topic_intro_historia_peru",
+    "type": "quiz",
+    "title": "Quiz Rápido: Introducción a Historia del Perú",
+    "url": "/quiz/intro_historia_peru-1",
+    "description": "Test interactivo de 5 preguntas para evaluar tu comprensión inmediata sobre Introducción a Historia del Perú."
+  },
+  {
+    "id": "res_ex_273",
+    "courseId": "course_historia_peru",
+    "topicId": "topic_intro_historia_peru",
+    "type": "examen",
+    "title": "Examen de Introducción a Historia del Perú",
+    "url": "/examen/intro_historia_peru",
+    "description": "Evaluación completa y rigurosa sobre todos los subtemas de Introducción a Historia del Perú."
+  },
+  {
+    "id": "res_boss_274",
+    "courseId": "course_historia_peru",
+    "topicId": "topic_intro_historia_peru",
+    "type": "desafio_final",
+    "title": "Reto Admisión: Introducción a Historia del Perú",
+    "url": "/reto/intro_historia_peru-uni",
+    "description": "Desafío con preguntas reales de examen de admisión universitario sobre Introducción a Historia del Perú. Nivel avanzado."
+  },
+  {
+    "id": "res_lec_275",
+    "courseId": "course_historia_universal",
+    "topicId": "topic_intro_historia_universal",
+    "type": "leccion",
+    "title": "Lección Fundamental: Introducción a Historia Universal",
+    "url": "/lecciones/intro_historia_universal-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Introducción a Historia Universal. Ideal para iniciar el estudio."
+  },
+  {
+    "id": "res_pdf_276",
+    "courseId": "course_historia_universal",
+    "topicId": "topic_intro_historia_universal",
+    "type": "recurso",
+    "title": "Guía en PDF de Introducción a Historia Universal",
+    "url": "/docs/intro_historia_universal-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Introducción a Historia Universal."
+  },
+  {
+    "id": "res_qz_277",
+    "courseId": "course_historia_universal",
+    "topicId": "topic_intro_historia_universal",
+    "type": "quiz",
+    "title": "Quiz Rápido: Introducción a Historia Universal",
+    "url": "/quiz/intro_historia_universal-1",
+    "description": "Test interactivo de 5 preguntas para evaluar tu comprensión inmediata sobre Introducción a Historia Universal."
+  },
+  {
+    "id": "res_ex_278",
+    "courseId": "course_historia_universal",
+    "topicId": "topic_intro_historia_universal",
+    "type": "examen",
+    "title": "Examen de Introducción a Historia Universal",
+    "url": "/examen/intro_historia_universal",
+    "description": "Evaluación completa y rigurosa sobre todos los subtemas de Introducción a Historia Universal."
+  },
+  {
+    "id": "res_boss_279",
+    "courseId": "course_historia_universal",
+    "topicId": "topic_intro_historia_universal",
+    "type": "desafio_final",
+    "title": "Reto Admisión: Introducción a Historia Universal",
+    "url": "/reto/intro_historia_universal-uni",
+    "description": "Desafío con preguntas reales de examen de admisión universitario sobre Introducción a Historia Universal. Nivel avanzado."
+  },
+  {
+    "id": "res_lec_280",
+    "courseId": "course_geografia",
+    "topicId": "topic_intro_geografia",
+    "type": "leccion",
+    "title": "Lección Fundamental: Introducción a Geografía",
+    "url": "/lecciones/intro_geografia-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Introducción a Geografía. Ideal para iniciar el estudio."
+  },
+  {
+    "id": "res_pdf_281",
+    "courseId": "course_geografia",
+    "topicId": "topic_intro_geografia",
+    "type": "recurso",
+    "title": "Guía en PDF de Introducción a Geografía",
+    "url": "/docs/intro_geografia-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Introducción a Geografía."
+  },
+  {
+    "id": "res_qz_282",
+    "courseId": "course_geografia",
+    "topicId": "topic_intro_geografia",
+    "type": "quiz",
+    "title": "Quiz Rápido: Introducción a Geografía",
+    "url": "/quiz/intro_geografia-1",
+    "description": "Test interactivo de 5 preguntas para evaluar tu comprensión inmediata sobre Introducción a Geografía."
+  },
+  {
+    "id": "res_ex_283",
+    "courseId": "course_geografia",
+    "topicId": "topic_intro_geografia",
+    "type": "examen",
+    "title": "Examen de Introducción a Geografía",
+    "url": "/examen/intro_geografia",
+    "description": "Evaluación completa y rigurosa sobre todos los subtemas de Introducción a Geografía."
+  },
+  {
+    "id": "res_boss_284",
+    "courseId": "course_geografia",
+    "topicId": "topic_intro_geografia",
+    "type": "desafio_final",
+    "title": "Reto Admisión: Introducción a Geografía",
+    "url": "/reto/intro_geografia-uni",
+    "description": "Desafío con preguntas reales de examen de admisión universitario sobre Introducción a Geografía. Nivel avanzado."
+  },
+  {
+    "id": "res_lec_285",
+    "courseId": "course_economia",
+    "topicId": "topic_intro_economia",
+    "type": "leccion",
+    "title": "Lección Fundamental: Introducción a Economía",
+    "url": "/lecciones/intro_economia-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Introducción a Economía. Ideal para iniciar el estudio."
+  },
+  {
+    "id": "res_pdf_286",
+    "courseId": "course_economia",
+    "topicId": "topic_intro_economia",
+    "type": "recurso",
+    "title": "Guía en PDF de Introducción a Economía",
+    "url": "/docs/intro_economia-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Introducción a Economía."
+  },
+  {
+    "id": "res_qz_287",
+    "courseId": "course_economia",
+    "topicId": "topic_intro_economia",
+    "type": "quiz",
+    "title": "Quiz Rápido: Introducción a Economía",
+    "url": "/quiz/intro_economia-1",
+    "description": "Test interactivo de 5 preguntas para evaluar tu comprensión inmediata sobre Introducción a Economía."
+  },
+  {
+    "id": "res_ex_288",
+    "courseId": "course_economia",
+    "topicId": "topic_intro_economia",
+    "type": "examen",
+    "title": "Examen de Introducción a Economía",
+    "url": "/examen/intro_economia",
+    "description": "Evaluación completa y rigurosa sobre todos los subtemas de Introducción a Economía."
+  },
+  {
+    "id": "res_boss_289",
+    "courseId": "course_economia",
+    "topicId": "topic_intro_economia",
+    "type": "desafio_final",
+    "title": "Reto Admisión: Introducción a Economía",
+    "url": "/reto/intro_economia-uni",
+    "description": "Desafío con preguntas reales de examen de admisión universitario sobre Introducción a Economía. Nivel avanzado."
+  },
+  {
+    "id": "res_lec_290",
+    "courseId": "course_filosofia",
+    "topicId": "topic_intro_filosofia",
+    "type": "leccion",
+    "title": "Lección Fundamental: Introducción a Filosofía",
+    "url": "/lecciones/intro_filosofia-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Introducción a Filosofía. Ideal para iniciar el estudio."
+  },
+  {
+    "id": "res_pdf_291",
+    "courseId": "course_filosofia",
+    "topicId": "topic_intro_filosofia",
+    "type": "recurso",
+    "title": "Guía en PDF de Introducción a Filosofía",
+    "url": "/docs/intro_filosofia-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Introducción a Filosofía."
+  },
+  {
+    "id": "res_qz_292",
+    "courseId": "course_filosofia",
+    "topicId": "topic_intro_filosofia",
+    "type": "quiz",
+    "title": "Quiz Rápido: Introducción a Filosofía",
+    "url": "/quiz/intro_filosofia-1",
+    "description": "Test interactivo de 5 preguntas para evaluar tu comprensión inmediata sobre Introducción a Filosofía."
+  },
+  {
+    "id": "res_ex_293",
+    "courseId": "course_filosofia",
+    "topicId": "topic_intro_filosofia",
+    "type": "examen",
+    "title": "Examen de Introducción a Filosofía",
+    "url": "/examen/intro_filosofia",
+    "description": "Evaluación completa y rigurosa sobre todos los subtemas de Introducción a Filosofía."
+  },
+  {
+    "id": "res_boss_294",
+    "courseId": "course_filosofia",
+    "topicId": "topic_intro_filosofia",
+    "type": "desafio_final",
+    "title": "Reto Admisión: Introducción a Filosofía",
+    "url": "/reto/intro_filosofia-uni",
+    "description": "Desafío con preguntas reales de examen de admisión universitario sobre Introducción a Filosofía. Nivel avanzado."
+  },
+  {
+    "id": "res_lec_295",
+    "courseId": "course_logica",
+    "topicId": "topic_intro_logica",
+    "type": "leccion",
+    "title": "Lección Fundamental: Introducción a Lógica",
+    "url": "/lecciones/intro_logica-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Introducción a Lógica. Ideal para iniciar el estudio."
+  },
+  {
+    "id": "res_pdf_296",
+    "courseId": "course_logica",
+    "topicId": "topic_intro_logica",
+    "type": "recurso",
+    "title": "Guía en PDF de Introducción a Lógica",
+    "url": "/docs/intro_logica-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Introducción a Lógica."
+  },
+  {
+    "id": "res_qz_297",
+    "courseId": "course_logica",
+    "topicId": "topic_intro_logica",
+    "type": "quiz",
+    "title": "Quiz Rápido: Introducción a Lógica",
+    "url": "/quiz/intro_logica-1",
+    "description": "Test interactivo de 5 preguntas para evaluar tu comprensión inmediata sobre Introducción a Lógica."
+  },
+  {
+    "id": "res_ex_298",
+    "courseId": "course_logica",
+    "topicId": "topic_intro_logica",
+    "type": "examen",
+    "title": "Examen de Introducción a Lógica",
+    "url": "/examen/intro_logica",
+    "description": "Evaluación completa y rigurosa sobre todos los subtemas de Introducción a Lógica."
+  },
+  {
+    "id": "res_boss_299",
+    "courseId": "course_logica",
+    "topicId": "topic_intro_logica",
+    "type": "desafio_final",
+    "title": "Reto Admisión: Introducción a Lógica",
+    "url": "/reto/intro_logica-uni",
+    "description": "Desafío con preguntas reales de examen de admisión universitario sobre Introducción a Lógica. Nivel avanzado."
+  },
+  {
+    "id": "res_lec_300",
+    "courseId": "course_ingles",
+    "topicId": "topic_intro_ingles",
+    "type": "leccion",
+    "title": "Lección Fundamental: Introducción a Inglés",
+    "url": "/lecciones/intro_ingles-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Introducción a Inglés. Ideal para iniciar el estudio."
+  },
+  {
+    "id": "res_pdf_301",
+    "courseId": "course_ingles",
+    "topicId": "topic_intro_ingles",
+    "type": "recurso",
+    "title": "Guía en PDF de Introducción a Inglés",
+    "url": "/docs/intro_ingles-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Introducción a Inglés."
+  },
+  {
+    "id": "res_qz_302",
+    "courseId": "course_ingles",
+    "topicId": "topic_intro_ingles",
+    "type": "quiz",
+    "title": "Quiz Rápido: Introducción a Inglés",
+    "url": "/quiz/intro_ingles-1",
+    "description": "Test interactivo de 5 preguntas para evaluar tu comprensión inmediata sobre Introducción a Inglés."
+  },
+  {
+    "id": "res_ex_303",
+    "courseId": "course_ingles",
+    "topicId": "topic_intro_ingles",
+    "type": "examen",
+    "title": "Examen de Introducción a Inglés",
+    "url": "/examen/intro_ingles",
+    "description": "Evaluación completa y rigurosa sobre todos los subtemas de Introducción a Inglés."
+  },
+  {
+    "id": "res_boss_304",
+    "courseId": "course_ingles",
+    "topicId": "topic_intro_ingles",
+    "type": "desafio_final",
+    "title": "Reto Admisión: Introducción a Inglés",
+    "url": "/reto/intro_ingles-uni",
+    "description": "Desafío con preguntas reales de examen de admisión universitario sobre Introducción a Inglés. Nivel avanzado."
+  },
+  {
+    "id": "res_lec_305",
+    "courseId": "course_fisica",
+    "topicId": "topic_mruv",
+    "type": "leccion",
+    "title": "Lección Fundamental: Movimiento Rectilíneo Uniformemente Variado (MRUV)",
+    "url": "/lecciones/mruv-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Movimiento Rectilíneo Uniformemente Variado (MRUV). Ideal para iniciar el estudio."
+  },
+  {
+    "id": "res_pdf_306",
+    "courseId": "course_fisica",
+    "topicId": "topic_mruv",
+    "type": "recurso",
+    "title": "Guía en PDF de Movimiento Rectilíneo Uniformemente Variado (MRUV)",
+    "url": "/docs/mruv-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Movimiento Rectilíneo Uniformemente Variado (MRUV)."
+  },
+  {
+    "id": "res_qz_307",
+    "courseId": "course_fisica",
+    "topicId": "topic_mruv",
+    "type": "quiz",
+    "title": "Quiz Rápido: Movimiento Rectilíneo Uniformemente Variado (MRUV)",
+    "url": "/quiz/mruv-1",
+    "description": "Test interactivo de 5 preguntas para evaluar tu comprensión inmediata sobre Movimiento Rectilíneo Uniformemente Variado (MRUV)."
+  },
+  {
+    "id": "res_ex_308",
+    "courseId": "course_fisica",
+    "topicId": "topic_mruv",
+    "type": "examen",
+    "title": "Examen de Movimiento Rectilíneo Uniformemente Variado (MRUV)",
+    "url": "/examen/mruv",
+    "description": "Evaluación completa y rigurosa sobre todos los subtemas de Movimiento Rectilíneo Uniformemente Variado (MRUV)."
+  },
+  {
+    "id": "res_boss_309",
+    "courseId": "course_fisica",
+    "topicId": "topic_mruv",
+    "type": "desafio_final",
+    "title": "Reto Admisión: Movimiento Rectilíneo Uniformemente Variado (MRUV)",
+    "url": "/reto/mruv-uni",
+    "description": "Desafío con preguntas reales de examen de admisión universitario sobre Movimiento Rectilíneo Uniformemente Variado (MRUV). Nivel avanzado."
+  },
+  {
+    "id": "res_lec_310",
+    "courseId": "course_fisica",
+    "topicId": "topic_caida_libre",
+    "type": "leccion",
+    "title": "Lección Fundamental: Caída Libre y Movimiento Vertical",
+    "url": "/lecciones/caida_libre-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Caída Libre y Movimiento Vertical. Ideal para iniciar el estudio."
+  },
+  {
+    "id": "res_pdf_311",
+    "courseId": "course_fisica",
+    "topicId": "topic_caida_libre",
+    "type": "recurso",
+    "title": "Guía en PDF de Caída Libre y Movimiento Vertical",
+    "url": "/docs/caida_libre-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Caída Libre y Movimiento Vertical."
+  },
+  {
+    "id": "res_qz_312",
+    "courseId": "course_fisica",
+    "topicId": "topic_caida_libre",
+    "type": "quiz",
+    "title": "Quiz Rápido: Caída Libre y Movimiento Vertical",
+    "url": "/quiz/caida_libre-1",
+    "description": "Test interactivo de 5 preguntas para evaluar tu comprensión inmediata sobre Caída Libre y Movimiento Vertical."
+  },
+  {
+    "id": "res_ex_313",
+    "courseId": "course_fisica",
+    "topicId": "topic_caida_libre",
+    "type": "examen",
+    "title": "Examen de Caída Libre y Movimiento Vertical",
+    "url": "/examen/caida_libre",
+    "description": "Evaluación completa y rigurosa sobre todos los subtemas de Caída Libre y Movimiento Vertical."
+  },
+  {
+    "id": "res_boss_314",
+    "courseId": "course_fisica",
+    "topicId": "topic_caida_libre",
+    "type": "desafio_final",
+    "title": "Reto Admisión: Caída Libre y Movimiento Vertical",
+    "url": "/reto/caida_libre-uni",
+    "description": "Desafío con preguntas reales de examen de admisión universitario sobre Caída Libre y Movimiento Vertical. Nivel avanzado."
+  },
+  {
+    "id": "res_lec_315",
+    "courseId": "course_fisica",
+    "topicId": "topic_dinamica",
+    "type": "leccion",
+    "title": "Lección Fundamental: Leyes de Newton y Dinámica",
+    "url": "/lecciones/dinamica-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Leyes de Newton y Dinámica. Ideal para iniciar el estudio."
+  },
+  {
+    "id": "res_pdf_316",
+    "courseId": "course_fisica",
+    "topicId": "topic_dinamica",
+    "type": "recurso",
+    "title": "Guía en PDF de Leyes de Newton y Dinámica",
+    "url": "/docs/dinamica-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Leyes de Newton y Dinámica."
+  },
+  {
+    "id": "res_qz_317",
+    "courseId": "course_fisica",
+    "topicId": "topic_dinamica",
+    "type": "quiz",
+    "title": "Quiz Rápido: Leyes de Newton y Dinámica",
+    "url": "/quiz/dinamica-1",
+    "description": "Test interactivo de 5 preguntas para evaluar tu comprensión inmediata sobre Leyes de Newton y Dinámica."
+  },
+  {
+    "id": "res_ex_318",
+    "courseId": "course_fisica",
+    "topicId": "topic_dinamica",
+    "type": "examen",
+    "title": "Examen de Leyes de Newton y Dinámica",
+    "url": "/examen/dinamica",
+    "description": "Evaluación completa y rigurosa sobre todos los subtemas de Leyes de Newton y Dinámica."
+  },
+  {
+    "id": "res_boss_319",
+    "courseId": "course_fisica",
+    "topicId": "topic_dinamica",
+    "type": "desafio_final",
+    "title": "Reto Admisión: Leyes de Newton y Dinámica",
+    "url": "/reto/dinamica-uni",
+    "description": "Desafío con preguntas reales de examen de admisión universitario sobre Leyes de Newton y Dinámica. Nivel avanzado."
+  },
+  {
+    "id": "res_lec_320",
+    "courseId": "course_quimica",
+    "topicId": "topic_quimica_materia",
+    "type": "leccion",
+    "title": "Lección Fundamental: Materia y sus Propiedades",
+    "url": "/lecciones/quimica_materia-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Materia y sus Propiedades. Ideal para iniciar el estudio."
+  },
+  {
+    "id": "res_pdf_321",
+    "courseId": "course_quimica",
+    "topicId": "topic_quimica_materia",
+    "type": "recurso",
+    "title": "Guía en PDF de Materia y sus Propiedades",
+    "url": "/docs/quimica_materia-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Materia y sus Propiedades."
+  },
+  {
+    "id": "res_qz_322",
+    "courseId": "course_quimica",
+    "topicId": "topic_quimica_materia",
+    "type": "quiz",
+    "title": "Quiz Rápido: Materia y sus Propiedades",
+    "url": "/quiz/quimica_materia-1",
+    "description": "Test interactivo de 5 preguntas para evaluar tu comprensión inmediata sobre Materia y sus Propiedades."
+  },
+  {
+    "id": "res_ex_323",
+    "courseId": "course_quimica",
+    "topicId": "topic_quimica_materia",
+    "type": "examen",
+    "title": "Examen de Materia y sus Propiedades",
+    "url": "/examen/quimica_materia",
+    "description": "Evaluación completa y rigurosa sobre todos los subtemas de Materia y sus Propiedades."
+  },
+  {
+    "id": "res_boss_324",
+    "courseId": "course_quimica",
+    "topicId": "topic_quimica_materia",
+    "type": "desafio_final",
+    "title": "Reto Admisión: Materia y sus Propiedades",
+    "url": "/reto/quimica_materia-uni",
+    "description": "Desafío con preguntas reales de examen de admisión universitario sobre Materia y sus Propiedades. Nivel avanzado."
+  },
+  {
+    "id": "res_lec_325",
+    "courseId": "course_quimica",
+    "topicId": "topic_quimica_atomo",
+    "type": "leccion",
+    "title": "Lección Fundamental: Modelo Atómico Actual",
+    "url": "/lecciones/quimica_atomo-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Modelo Atómico Actual. Ideal para iniciar el estudio."
+  },
+  {
+    "id": "res_pdf_326",
+    "courseId": "course_quimica",
+    "topicId": "topic_quimica_atomo",
+    "type": "recurso",
+    "title": "Guía en PDF de Modelo Atómico Actual",
+    "url": "/docs/quimica_atomo-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Modelo Atómico Actual."
+  },
+  {
+    "id": "res_qz_327",
+    "courseId": "course_quimica",
+    "topicId": "topic_quimica_atomo",
+    "type": "quiz",
+    "title": "Quiz Rápido: Modelo Atómico Actual",
+    "url": "/quiz/quimica_atomo-1",
+    "description": "Test interactivo de 5 preguntas para evaluar tu comprensión inmediata sobre Modelo Atómico Actual."
+  },
+  {
+    "id": "res_ex_328",
+    "courseId": "course_quimica",
+    "topicId": "topic_quimica_atomo",
+    "type": "examen",
+    "title": "Examen de Modelo Atómico Actual",
+    "url": "/examen/quimica_atomo",
+    "description": "Evaluación completa y rigurosa sobre todos los subtemas de Modelo Atómico Actual."
+  },
+  {
+    "id": "res_boss_329",
+    "courseId": "course_quimica",
+    "topicId": "topic_quimica_atomo",
+    "type": "desafio_final",
+    "title": "Reto Admisión: Modelo Atómico Actual",
+    "url": "/reto/quimica_atomo-uni",
+    "description": "Desafío con preguntas reales de examen de admisión universitario sobre Modelo Atómico Actual. Nivel avanzado."
+  },
+  {
+    "id": "res_lec_330",
+    "courseId": "course_quimica",
+    "topicId": "topic_quimica_configuracion",
+    "type": "leccion",
+    "title": "Lección Fundamental: Configuración Electrónica",
+    "url": "/lecciones/quimica_configuracion-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Configuración Electrónica. Ideal para iniciar el estudio."
+  },
+  {
+    "id": "res_pdf_331",
+    "courseId": "course_quimica",
+    "topicId": "topic_quimica_configuracion",
+    "type": "recurso",
+    "title": "Guía en PDF de Configuración Electrónica",
+    "url": "/docs/quimica_configuracion-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Configuración Electrónica."
+  },
+  {
+    "id": "res_qz_332",
+    "courseId": "course_quimica",
+    "topicId": "topic_quimica_configuracion",
+    "type": "quiz",
+    "title": "Quiz Rápido: Configuración Electrónica",
+    "url": "/quiz/quimica_configuracion-1",
+    "description": "Test interactivo de 5 preguntas para evaluar tu comprensión inmediata sobre Configuración Electrónica."
+  },
+  {
+    "id": "res_ex_333",
+    "courseId": "course_quimica",
+    "topicId": "topic_quimica_configuracion",
+    "type": "examen",
+    "title": "Examen de Configuración Electrónica",
+    "url": "/examen/quimica_configuracion",
+    "description": "Evaluación completa y rigurosa sobre todos los subtemas de Configuración Electrónica."
+  },
+  {
+    "id": "res_boss_334",
+    "courseId": "course_quimica",
+    "topicId": "topic_quimica_configuracion",
+    "type": "desafio_final",
+    "title": "Reto Admisión: Configuración Electrónica",
+    "url": "/reto/quimica_configuracion-uni",
+    "description": "Desafío con preguntas reales de examen de admisión universitario sobre Configuración Electrónica. Nivel avanzado."
+  },
+  {
+    "id": "res_lec_335",
+    "courseId": "course_quimica",
+    "topicId": "topic_quimica_tabla",
+    "type": "leccion",
+    "title": "Lección Fundamental: Tabla Periódica",
+    "url": "/lecciones/quimica_tabla-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Tabla Periódica. Ideal para iniciar el estudio."
+  },
+  {
+    "id": "res_pdf_336",
+    "courseId": "course_quimica",
+    "topicId": "topic_quimica_tabla",
+    "type": "recurso",
+    "title": "Guía en PDF de Tabla Periódica",
+    "url": "/docs/quimica_tabla-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Tabla Periódica."
+  },
+  {
+    "id": "res_qz_337",
+    "courseId": "course_quimica",
+    "topicId": "topic_quimica_tabla",
+    "type": "quiz",
+    "title": "Quiz Rápido: Tabla Periódica",
+    "url": "/quiz/quimica_tabla-1",
+    "description": "Test interactivo de 5 preguntas para evaluar tu comprensión inmediata sobre Tabla Periódica."
+  },
+  {
+    "id": "res_ex_338",
+    "courseId": "course_quimica",
+    "topicId": "topic_quimica_tabla",
+    "type": "examen",
+    "title": "Examen de Tabla Periódica",
+    "url": "/examen/quimica_tabla",
+    "description": "Evaluación completa y rigurosa sobre todos los subtemas de Tabla Periódica."
+  },
+  {
+    "id": "res_boss_339",
+    "courseId": "course_quimica",
+    "topicId": "topic_quimica_tabla",
+    "type": "desafio_final",
+    "title": "Reto Admisión: Tabla Periódica",
+    "url": "/reto/quimica_tabla-uni",
+    "description": "Desafío con preguntas reales de examen de admisión universitario sobre Tabla Periódica. Nivel avanzado."
+  },
+  {
+    "id": "res_lec_340",
+    "courseId": "course_biologia",
+    "topicId": "topic_intro_biologia",
+    "type": "leccion",
+    "title": "Lección Fundamental: Introducción a Biología",
+    "url": "/lecciones/intro_biologia-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Introducción a Biología. Ideal para iniciar el estudio."
+  },
+  {
+    "id": "res_pdf_341",
+    "courseId": "course_biologia",
+    "topicId": "topic_intro_biologia",
+    "type": "recurso",
+    "title": "Guía en PDF de Introducción a Biología",
+    "url": "/docs/intro_biologia-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Introducción a Biología."
+  },
+  {
+    "id": "res_qz_342",
+    "courseId": "course_biologia",
+    "topicId": "topic_intro_biologia",
+    "type": "quiz",
+    "title": "Quiz Rápido: Introducción a Biología",
+    "url": "/quiz/intro_biologia-1",
+    "description": "Test interactivo de 5 preguntas para evaluar tu comprensión inmediata sobre Introducción a Biología."
+  },
+  {
+    "id": "res_ex_343",
+    "courseId": "course_biologia",
+    "topicId": "topic_intro_biologia",
+    "type": "examen",
+    "title": "Examen de Introducción a Biología",
+    "url": "/examen/intro_biologia",
+    "description": "Evaluación completa y rigurosa sobre todos los subtemas de Introducción a Biología."
+  },
+  {
+    "id": "res_boss_344",
+    "courseId": "course_biologia",
+    "topicId": "topic_intro_biologia",
+    "type": "desafio_final",
+    "title": "Reto Admisión: Introducción a Biología",
+    "url": "/reto/intro_biologia-uni",
+    "description": "Desafío con preguntas reales de examen de admisión universitario sobre Introducción a Biología. Nivel avanzado."
+  }
 ]

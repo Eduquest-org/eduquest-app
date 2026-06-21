@@ -13,6 +13,8 @@
   <link rel="stylesheet" href="../../assets/css/components/profile-banner.css">
   <link rel="stylesheet" href="../../assets/css/pages/student-dashboard.css">
   <link rel="stylesheet" href="../../assets/css/pages/roadmap.css">
+
+    <link rel="icon" type="image/x-icon" href="../../assets/img/logos/eduquest-logo.ico">
 </head>
 <body>
 
@@ -28,33 +30,57 @@
 
     <main class="dashboard-content">
       
-      <section id="course-selection-view" class="view-section active">
-        
-        <div id="student-profile-summary" class="student-summary-banner">
+      <div class="main-column">
+        <section id="course-selection-view" class="view-section active">
+          
+          <div id="student-profile-summary" class="student-summary-banner">
+            </div>
+
+          <div class="view-header">
+            <h2>🗺️ Mis Rutas de Aprendizaje</h2>
+            <p>Selecciona una isla académica mapeada por IA para continuar tu camino al examen de admisión.</p>
+          </div>
+          
+          <div id="courses-grid" class="courses-grid"></div>
+        </section>
+
+        <section id="course-map-view" class="view-section">
+          <div class="back-btn-container">
+            <a class="back-link" onclick="switchBackToSelection()">← Volver a mis rutas</a>
+          </div>
+          
+          <div class="view-header">
+            <h2 id="current-map-title">Mundo: Cargando...</h2>
+            <p>Haz clic en un nivel del mapa para ver su contenido.</p>
           </div>
 
-        <div class="view-header">
-          <h2>🗺️ Mis Rutas de Aprendizaje</h2>
-          <p>Selecciona una isla académica mapeada por IA para continuar tu camino al examen de admisión.</p>
-        </div>
-        
-        <div id="courses-grid" class="courses-grid"></div>
-      </section>
+          <div class="map-card-wrapper">
+            <div id="dynamic-map-container" class="path-loop-container"></div>
+          </div>
+        </section>
+      </div>
 
-      <section id="course-map-view" class="view-section">
-        <div class="back-btn-container">
-          <a class="back-link" onclick="switchBackToSelection()">← Volver a mis rutas</a>
+      <!-- Columna derecha: Wrapper que toma todo el alto para permitir sticky -->
+      <div class="dashboard-widgets" style="align-self: stretch;">
+        <div class="detail-column" id="level-detail-panel" style="display: none;">
+          <div class="detail-empty-state" id="detail-empty">
+            <div class="detail-empty-icon">📍</div>
+            <p>Selecciona un nivel del mapa para ver su contenido y recursos.</p>
+          </div>
+          <div class="detail-content" id="detail-content" style="display:none;">
+            <div class="detail-header">
+              <div class="detail-node-badge" id="detail-badge">1</div>
+              <div class="detail-header-info">
+                <h3 id="detail-title">Nombre del tema</h3>
+                <span class="detail-status-pill" id="detail-status">DISPONIBLE</span>
+              </div>
+            </div>
+            <div class="detail-divider"></div>
+            <div class="detail-section-label">Recursos del nivel</div>
+            <div id="detail-items-list" class="detail-items-list"></div>
+          </div>
         </div>
-        
-        <div class="view-header">
-          <h2 id="current-map-title">Mundo: Cargando...</h2>
-          <p>Revienta las burbujas completando los retos para avanzar en el mapa.</p>
-        </div>
-
-        <div class="map-card-wrapper">
-          <div id="dynamic-map-container" class="path-loop-container"></div>
-        </div>
-      </section>
+      </div>
 
     </main>
   </div>
@@ -63,6 +89,7 @@
   <script src="../../assets/js/student/roadmap.js"></script>
   <script src="../../assets/js/core/storage.js"></script>
   <script src="../../assets/js/core/user-manager.js"></script>
+  <script src="../../assets/js/core/ai-engine.js"></script>
   <script src="../../assets/js/core/auth.js"></script>
   <script src="../../assets/js/core/router.js"></script>
   <script src="../../assets/js/core/current-user.js"></script>

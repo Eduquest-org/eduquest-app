@@ -2,12 +2,12 @@
  * AIEngine — Motor de Planificación Académica.
  *
  * Arquitectura (Cascade Prompting & RAG):
- * - FASE 1: Se envía un prompt global para obtener la PRIORIDAD de los cursos basándose en el perfil.
- * - FASE 2: Por cada curso relevante, se envía un prompt inyectando contexto RAG (Recursos) 
- *           para generar una estructura de Nodos y Aristas por Tema.
+ * - FASE 1: Se envía un JSON al backend (/api/plan-priorities) para obtener la PRIORIDAD de los cursos.
+ * - FASE 2: Por cada curso relevante, se envía un JSON al backend (/api/generate-route) 
+ *           para generar una estructura de Nodos y Aristas por Tema inyectando RAG.
  */
 
-const BACKEND_URL = 'https://backend-eta-ten-99.vercel.app';
+const BACKEND_URL = 'https://eduquest-backend-delta.vercel.app';
 
 const AIEngine = {
 
@@ -83,90 +83,42 @@ const AIEngine = {
     },
 
     // ─── FASE 2: RAG y Generación de Nodos por Curso ───────────────
-    async _generateCourseNodes(course, priority, strengths, weaknesses, courseTopics, allResources) {
-        // 1. Ya no recuperamos los recursos localmente, el Backend (Pinecone) lo hará.
-
+    async _generateCourseNodes(course, priority, strengths, weaknesses, courseTopics) {
         const strengthsText = strengths.filter(s => s.courseId === course.id)
-            .map(s => s.topicName).join(', ') || 'Ninguna específica.';
+            .map(s => s.topicName).join(', ') || '';
 
         const weaknessesText = weaknesses.filter(w => w.courseId === course.id)
-            .map(w => w.topicName).join(', ') || 'Ninguna específica.';
+            .map(w => w.topicName).join(', ') || '';
 
         const topicsText = courseTopics.map(t => `- ${t.id}: ${t.name}`).join('\n');
 
         // Construir el query textual para buscar en la base de datos vectorial
-        const queryText = `Curso: ${course.name}. Temas clave: ${courseTopics.map(t=>t.name).join(', ')}. Debilidades del alumno: ${weaknessesText}. Fortalezas: ${strengthsText}.`;
-
-        // 2. Prompt Fase 2 (RAG Inyectado)
-        const prompt = `Eres un arquitecto de rutas de aprendizaje de nivel experto. 
-Tu tarea es diseñar la estructura interna de los nodos (temas) para el curso de: ${course.name}.
-
-PERFIL DEL USUARIO EN ESTE CURSO:
-- Fortalezas: ${strengthsText}
-- Debilidades: ${weaknessesText}
-
-CATÁLOGO DE RECURSOS RECUPERADOS (RAG):
-A continuación tienes los únicos recursos validados que puedes utilizar. NO inventes recursos que no estén en esta lista:
-{RAG_CONTEXT}
-
-TEMAS DEL CURSO (Nodos a generar):
-${topicsText}
-
-INSTRUCCIONES:
-Para cada Tema listado, debes construir un nodo. La estructura interna obligatoria del "content" de cada nodo es:
-1. lecciones
-2. recursos
-3. quiz
-4. examen
-5. desafio_final
-
-- Si el usuario tiene una "Debilidad" en un tema, asígnale más lecciones (si hay disponibles en el catálogo).
-- Si tiene una "Fortaleza", ve directo a un repaso rápido y enfócate en el Examen y Desafío Final.
-- Asigna los IDs y Títulos exactos del catálogo. Si no hay recurso para una categoría, deja el arreglo vacío [].
-- Para las conexiones ("edges"), respeta la progresión lógica de aprendizaje uniendo los nodos generados de forma secuencial.
-
-FORMATO DE SALIDA (STRICT JSON SCHEMA):
-Debes devolver EXCLUSIVAMENTE este JSON:
-{
-  "nodes": [
-    {
-      "id": "node_{TOPIC_ID}",
-      "type": "nivel",
-      "data": {
-         "title": "{TOPIC_NAME}",
-         "content": {
-            "lecciones": [{"id": "{RES_ID}", "title": "{RES_TITLE}"}],
-            "recursos": [],
-            "quiz": [],
-            "examen": [],
-            "desafio_final": []
-         }
-      }
-    }
-  ],
-  "edges": [
-    {"source": "node_{TOPIC_ID_1}", "target": "node_{TOPIC_ID_2}"}
-  ]
-}
-`;
+        const queryText = `Curso: ${course.name}. Temas clave: ${courseTopics.map(t => t.name).join(', ')}. Debilidades del alumno: ${weaknessesText}. Fortalezas: ${strengthsText}.`;
 
         try {
-            console.log(`[AIEngine] Solicitando nodos RAG REAL para curso: ${course.id}`);
+            console.log(`[AIEngine] Solicitando nodos al backend (FASE 2) para curso: ${course.id}`);
+
+            // Enviamos un payload limpio (JSON estructurado) al backend en vez del gran Prompt
+            const payload = {
+                courseName: course.name,
+                strengthsText: strengthsText,
+                weaknessesText: weaknessesText,
+                topicsText: topicsText,
+                queryText: queryText
+            };
+
             const response = await fetch(`${BACKEND_URL}/api/generate-route`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ prompt, queryText })
+                body: JSON.stringify(payload)
             });
 
             const data = await response.json();
-            if (!response.ok) throw new Error(data.error || 'Error del servidor');
+            if (!response.ok) throw new Error(data.error || 'Error del servidor en Fase 2');
 
-            let jsonString = data.text.trim();
-            if (jsonString.startsWith('```')) {
-                jsonString = jsonString.replace(/^```(json)?\n?/, '').replace(/\n?```$/, '').trim();
-            }
+            // El backend ya devuelve el texto en crudo del JSON generado
+            const routeData = JSON.parse(data.text);
 
-            const routeData = JSON.parse(jsonString);
             return {
                 courseId: course.id,
                 priority: priority,
@@ -176,37 +128,30 @@ Debes devolver EXCLUSIVAMENTE este JSON:
 
         } catch (err) {
             console.error(`[AIEngine] Error generando nodos para ${course.id}:`, err);
-            return null; // El frontend lidiará con los fallos omitiendo el curso o usando fallback local
+            return null; // Fallback: se omitirá o se generará localmente
         }
     },
 
     // ─── Punto de entrada ───────────────────────────────────────────
     async generatePersonalizedRoadmap(diagnosticResults) {
         try {
-            console.log('[AIEngine] Iniciando generación de rutas con Cascade Prompting...');
+            console.log('[AIEngine] Iniciando generación de rutas con Cascade Prompting Seguro (Backend)...');
 
-            // Cargar catálogo completo + pesos + simulador de base vectorial (RAG)
-            const [coursesRes, topicsRes, weightsRes, resourcesRes] = await Promise.all([
+            const [coursesRes, topicsRes, weightsRes] = await Promise.all([
                 fetch('../../mock/courses.json'),
                 fetch('../../mock/topics.json'),
-                fetch('../../mock/university-weights.json'),
-                fetch('../../mock/resources.json').catch(() => ({ json: () => [] })) // Fallback si no existe
+                fetch('../../mock/university-weights.json')
             ]);
 
             const allCourses = await coursesRes.json();
             const allTopics = await topicsRes.json();
             const allWeights = await weightsRes.json();
-            let allResources = [];
-            try {
-                allResources = await resourcesRes.json();
-            } catch (e) {
-                console.warn("[AIEngine] mock/resources.json no pudo parsearse o no existe aún.");
-            }
 
             const session = Storage.getSession();
             const user = UserManager.getCurrentUserDoc() || {};
             const targetUniv = (user.profile && user.profile.target) || 'UNI';
             const career = (user.profile && user.profile.career) || 'Ingeniería';
+            const userName = user.name || 'Alumno';
 
             const univWeights = allWeights[targetUniv] || allWeights['UNI'] || {};
 
@@ -219,7 +164,7 @@ Debes devolver EXCLUSIVAMENTE este JSON:
                 diagnosticResults, allTopics, allCourses
             );
 
-            // FASE 1: PROMPT ENRUTADOR (Prioridad)
+            // FASE 1: PROMPT ENRUTADOR (Prioridad) - Ahora llamando al nuevo endpoint
             const courseCatalogText = relevantCourses.map(c => {
                 const weight = univWeights[c.id] || 0;
                 return `- ${c.id}: "${c.name}" (Peso de admisión: ${weight}/100)`;
@@ -233,77 +178,54 @@ Debes devolver EXCLUSIVAMENTE este JSON:
                 ? weaknesses.map(w => `  ✗ ${w.topicName} (${w.courseName})`).join('\n')
                 : '  Ninguna detectada en este diagnóstico.';
 
-            const promptFase1 = `Eres un planificador académico experto para exámenes de admisión en Perú.
-            
-PERFIL DEL ESTUDIANTE:
-- Nombre: ${user.name || 'Alumno'}
-- Universidad objetivo: ${targetUniv}
-- Carrera: ${career}
+            const payloadFase1 = {
+                userName: userName,
+                targetUniv: targetUniv,
+                career: career,
+                strengthsText: strengthsText,
+                weaknessesText: weaknessesText,
+                courseCatalogText: courseCatalogText
+            };
 
-RESULTADOS DEL DIAGNÓSTICO:
-Fortalezas:
-${strengthsText}
-
-Debilidades:
-${weaknessesText}
-
-CURSOS DISPONIBLES Y SU PESO PARA ${targetUniv}:
-${courseCatalogText}
-
-INSTRUCCIONES ESTRICTAS:
-1. Asigna un nivel de prioridad (entero de 1 a 10, donde 1 es la prioridad más alta) a cada curso.
-2. Devuelve EXCLUSIVAMENTE un JSON válido que contenga la prioridad de cada curso.
-
-FORMATO DE RESPUESTA EXACTO:
-{
-  "coursePriorities": [
-    { "courseId": "course_xxx", "priority": 1 }
-  ]
-}
-`;
-
-            const responseFase1 = await fetch(`${BACKEND_URL}/api/generate`, {
+            const responseFase1 = await fetch(`${BACKEND_URL}/api/plan-priorities`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ prompt: promptFase1 })
+                body: JSON.stringify(payloadFase1)
             });
 
             const dataFase1 = await responseFase1.json();
-            if (!responseFase1.ok) throw new Error(dataFase1.error || 'Error del servidor');
+            if (!responseFase1.ok) throw new Error(dataFase1.error || 'Error del servidor en Fase 1');
 
-            let jsonString = dataFase1.text.trim();
-            if (jsonString.startsWith('```')) {
-                jsonString = jsonString.replace(/^```(json)?\n?/, '').replace(/\n?```$/, '').trim();
-            }
-
-            const aiPlan = JSON.parse(jsonString);
+            const aiPlan = JSON.parse(dataFase1.text);
             const coursePriorities = aiPlan.coursePriorities || [];
             const returnedPriorities = new Map(coursePriorities.map(p => [p.courseId, p.priority]));
 
-            // FASE 2: GENERACIÓN DE NODOS (RAG EN PARALELO)
+            // FASE 2: GENERACIÓN DE NODOS 
             console.log('[AIEngine] Fase 1 completada. Iniciando Fase 2: RAG paralelo por curso...');
 
-            // Limitaremos temporalmente la cantidad de llamadas en paralelo a los 3 cursos más prioritarios
-            // para no saturar la API key gratuita de Gemini si es que se usa así.
-            // Los demás usarán un formato fallback local o se generarán vacíos temporalmente.
             const sortedRelevantCourses = relevantCourses.map(c => ({
                 course: c,
                 priority: returnedPriorities.get(c.id) || 99
             })).sort((a, b) => a.priority - b.priority);
 
-            // Seleccionamos el top 3 para procesar con IA compleja
             const topCourses = sortedRelevantCourses.slice(0, 3);
             const restCourses = sortedRelevantCourses.slice(3);
 
-            const aiRoutesPromises = topCourses.map(entry => {
+            // Preparar el estado inicial para la generación en background (solo Top 3)
+            const aiQueue = topCourses.map(entry => {
                 const cTopics = allTopics.filter(t => t.courseId === entry.course.id);
-                return this._generateCourseNodes(entry.course, entry.priority, strengths, weaknesses, cTopics, allResources);
+                return {
+                    course: entry.course,
+                    priority: entry.priority,
+                    topics: cTopics,
+                    strengths: strengths,
+                    weaknesses: weaknesses
+                };
             });
 
-            const generatedTopRoutes = (await Promise.all(aiRoutesPromises)).filter(Boolean);
-
-            // Para el resto de cursos (no Top 3), generamos una estructura local simplificada (Fallback)
-            const fallbackRoutes = restCourses.map(entry => {
+            // Generar estructura local simplificada (Fallback) para TODOS los cursos
+            // Así no desaparecen de la interfaz mientras están en la cola
+            const initialRoutes = sortedRelevantCourses.map(entry => {
                 const cTopics = allTopics.filter(t => t.courseId === entry.course.id);
                 const sortedTopics = this._topologicalSort(cTopics);
 
@@ -317,8 +239,8 @@ FORMATO DE RESPUESTA EXACTO:
                 }));
 
                 const edges = [];
-                for(let i=0; i < nodes.length - 1; i++){
-                    edges.push({ source: nodes[i].id, target: nodes[i+1].id });
+                for (let i = 0; i < nodes.length - 1; i++) {
+                    edges.push({ source: nodes[i].id, target: nodes[i + 1].id });
                 }
 
                 return {
@@ -329,23 +251,131 @@ FORMATO DE RESPUESTA EXACTO:
                 };
             });
 
-            const allRoutes = [...generatedTopRoutes, ...fallbackRoutes];
-
-            // 12. Transformar al formato del frontend
-            const roadmapCards = this._transformToFrontendFormat(
-                allRoutes, allCourses, targetUniv
-            );
-
-            // 13. Guardar en el documento del usuario
+            // Transformar al formato del frontend y guardar inmediatamente para que el grid los muestre
+            const roadmapCards = this._transformToFrontendFormat(initialRoutes, allCourses, targetUniv);
             UserManager.saveCustomRoadmap(session.userId, roadmapCards);
 
-            console.log('[AIEngine] Rutas generadas exitosamente:', roadmapCards.length, 'cursos');
-            return roadmapCards;
+            // Guardar el estado inicial en localStorage
+            localStorage.setItem('aiQueue', JSON.stringify(aiQueue));
+            localStorage.setItem('aiResults', JSON.stringify(initialRoutes));
+
+            // Iniciar el procesamiento en background sin esperar a que termine
+            console.log('[AIEngine] Cola preparada con', aiQueue.length, 'cursos. Iniciando processQueue() en segundo plano...');
+            this.processQueue();
+
+            return initialRoutes;
 
         } catch (error) {
             console.error("[AIEngine] Error crítico en la generación de rutas:", error);
             alert("Hubo un error al generar tus rutas mediante IA. Usando plan de respaldo.");
             return this._generateFallback();
+        }
+    },
+
+    // ─── Proceso asíncrono en segundo plano ─────────────────────────────
+    async processQueue() {
+        // Bloqueo global para prevenir que se ejecuten múltiples processQueue a la vez
+        if (window._isProcessingAIQueue) return;
+        window._isProcessingAIQueue = true;
+
+        try {
+            // Verificar si hay procesos pendientes
+            const queueStr = localStorage.getItem('aiQueue');
+            if (!queueStr) return;
+
+            const queue = JSON.parse(queueStr);
+            if (queue.length === 0) {
+                // Cola vacía, el trabajo ha terminado
+                localStorage.removeItem('aiQueue');
+                console.log('[AIEngine] Cola de generación finalizada exitosamente.');
+
+                // Mostrar Toast global
+                if (window.app && window.app.showToast) {
+                    window.app.showToast('¡Tu ruta ha sido completamente generada por la IA!', 'success');
+                } else {
+                    alert('¡Tu ruta ha sido completamente generada por la IA!');
+                }
+
+                // Refrescar Mis Rutas si estamos en esa vista
+                if (window.location.pathname.includes('roadmap.html') && typeof buildCourseSelectionGrid === 'function') {
+                    const grid = document.getElementById("courses-grid");
+                    if (grid) grid.innerHTML = '';
+                    buildCourseSelectionGrid();
+                }
+                return;
+            }
+
+            // Extraer el primer elemento de la cola
+            const currentTask = queue[0];
+            console.log(`[AIEngine] Procesando curso en background: ${currentTask.course.name}...`);
+
+            try {
+                // Generar ruta para este curso
+                const route = await this._generateCourseNodes(
+                    currentTask.course,
+                    currentTask.priority,
+                    currentTask.strengths,
+                    currentTask.weaknesses,
+                    currentTask.topics
+                );
+
+                // Si la IA falla (ej: por rate limit), forzamos un error para que vaya al catch
+                // y REINTENTE sin eliminar el curso de la cola.
+                if (!route) {
+                    throw new Error("Generación fallida o rate limit excedido. Forzando reintento.");
+                }
+
+                // Leer resultados actuales
+                let aiResults = JSON.parse(localStorage.getItem('aiResults') || '[]');
+
+                // Añadir o reemplazar la ruta exitosa en los resultados
+                const existingIdx = aiResults.findIndex(r => r.courseId === route.courseId);
+                if (existingIdx !== -1) {
+                    aiResults[existingIdx] = route;
+                } else {
+                    aiResults.push(route);
+                }
+
+                // Transformar todo y guardar en el progreso del usuario
+                const session = Storage.getSession();
+                if (session && window.UserManager) {
+                    const allCoursesRes = await fetch("../../mock/courses.json");
+                    const allCourses = await allCoursesRes.json();
+
+                    let targetUniv = "UNI";
+                    if (window.CurrentUserService) {
+                        targetUniv = CurrentUserService.getStat('target') || "UNI";
+                    }
+
+                    const roadmapCards = this._transformToFrontendFormat(aiResults, allCourses, targetUniv);
+                    UserManager.saveCustomRoadmap(session.userId, roadmapCards);
+
+                    // Actualizar aiResults para la siguiente iteración
+                    localStorage.setItem('aiResults', JSON.stringify(aiResults));
+
+                    // Remover el curso procesado de la cola y continuar con el siguiente
+                    queue.shift();
+                    localStorage.setItem('aiQueue', JSON.stringify(queue));
+
+                    // Refrescar Mis Rutas si estamos en esa vista para que se vea el progreso
+                    if (window.location.pathname.includes('roadmap.html') && typeof buildCourseSelectionGrid === 'function') {
+                        const grid = document.getElementById("courses-grid");
+                        if (grid) grid.innerHTML = '';
+                        buildCourseSelectionGrid();
+                    }
+
+                    // Llamada recursiva al siguiente en la cola (después de 10 segundos para máxima seguridad de Rate Limit)
+                    setTimeout(() => this.processQueue(), 10000);
+                }
+
+            } catch (error) {
+                console.error(`[AIEngine] Error procesando ${currentTask.course.name} en background:`, error);
+                // Reintentar en 20 segundos si hubo error (ej: rate limit)
+                setTimeout(() => this.processQueue(), 20000);
+            }
+        } finally {
+            // Liberamos el candado sea cual sea el resultado
+            window._isProcessingAIQueue = false;
         }
     },
 
@@ -357,7 +387,6 @@ FORMATO DE RESPUESTA EXACTO:
                 const course = allCourses.find(c => c.id === route.courseId);
                 if (!course) return null;
 
-                // Ahora los niveles ya no son solo un ID simple, contienen la estructura de Nodos (Grafo)
                 return {
                     id: course.id,
                     name: course.name,

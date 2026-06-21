@@ -192,15 +192,15 @@ const Auth = {
 
     selectRole(role) {
         currentRole = role;
-        document.getElementById('card-student')?.classList.remove('active');
-        document.getElementById('card-teacher')?.classList.remove('active');
+        document.querySelectorAll('.role-card-student').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.role-card-teacher').forEach(el => el.classList.remove('active'));
         
         if (role === 'student') {
-            document.getElementById('card-student')?.classList.add('active');
+            document.querySelectorAll('.role-card-student').forEach(el => el.classList.add('active'));
             const extraFields = document.getElementById("student-conditional-fields");
             if (extraFields) extraFields.style.display = 'block';
         } else {
-            document.getElementById('card-teacher')?.classList.add('active');
+            document.querySelectorAll('.role-card-teacher').forEach(el => el.classList.add('active'));
             const extraFields = document.getElementById("student-conditional-fields");
             if (extraFields) extraFields.style.display = 'none';
         }

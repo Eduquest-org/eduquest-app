@@ -11,21 +11,27 @@
     "courseId": "course_algebra",
     "name": "Polinomios y Grados Especiales",
     "difficulty": "basic",
-    "prerequisites": ["topic_leyes_exp"]
+    "prerequisites": [
+      "topic_leyes_exp"
+    ]
   },
   {
     "id": "topic_prod_notables",
     "courseId": "course_algebra",
     "name": "Productos Notables Avanzados",
     "difficulty": "medium",
-    "prerequisites": ["topic_polinomios"]
+    "prerequisites": [
+      "topic_polinomios"
+    ]
   },
   {
     "id": "topic_div_polinomial",
     "courseId": "course_algebra",
     "name": "División Polinomial y Ruffini",
     "difficulty": "medium",
-    "prerequisites": ["topic_prod_notables"]
+    "prerequisites": [
+      "topic_prod_notables"
+    ]
   },
   {
     "id": "topic_ecuaciones_lineales",
@@ -39,23 +45,28 @@
     "courseId": "course_algebra",
     "name": "Sistemas de Ecuaciones (2x2 y 3x3)",
     "difficulty": "medium",
-    "prerequisites": ["topic_ecuaciones_lineales"]
+    "prerequisites": [
+      "topic_ecuaciones_lineales"
+    ]
   },
   {
     "id": "topic_inecuaciones",
     "courseId": "course_algebra",
     "name": "Inecuaciones y Valor Absoluto",
     "difficulty": "medium",
-    "prerequisites": ["topic_ecuaciones_lineales"]
+    "prerequisites": [
+      "topic_ecuaciones_lineales"
+    ]
   },
   {
     "id": "topic_factorizacion",
     "courseId": "course_algebra",
     "name": "Factorización Avanzada",
     "difficulty": "medium",
-    "prerequisites": ["topic_polinomios"]
+    "prerequisites": [
+      "topic_polinomios"
+    ]
   },
-
   {
     "id": "topic_geometria_plana",
     "courseId": "course_geometria",
@@ -68,7 +79,9 @@
     "courseId": "course_geometria",
     "name": "Geometría del Espacio (Cuerpos Geométricos)",
     "difficulty": "medium",
-    "prerequisites": ["topic_geometria_plana"]
+    "prerequisites": [
+      "topic_geometria_plana"
+    ]
   },
   {
     "id": "topic_trigonometria_basica",
@@ -82,9 +95,10 @@
     "courseId": "course_geometria",
     "name": "Trigonometría Avanzada y Identidades",
     "difficulty": "medium",
-    "prerequisites": ["topic_trigonometria_basica"]
+    "prerequisites": [
+      "topic_trigonometria_basica"
+    ]
   },
-
   {
     "id": "topic_mru",
     "courseId": "course_fisica",
@@ -97,23 +111,28 @@
     "courseId": "course_fisica",
     "name": "Movimiento Rectilíneo Uniformemente Variado (MRUV)",
     "difficulty": "medium",
-    "prerequisites": ["topic_mru"]
+    "prerequisites": [
+      "topic_mru"
+    ]
   },
   {
     "id": "topic_caida_libre",
     "courseId": "course_fisica",
     "name": "Caída Libre y Movimiento Vertical",
     "difficulty": "medium",
-    "prerequisites": ["topic_mruv"]
+    "prerequisites": [
+      "topic_mruv"
+    ]
   },
   {
     "id": "topic_dinamica",
     "courseId": "course_fisica",
     "name": "Leyes de Newton y Dinámica",
     "difficulty": "medium",
-    "prerequisites": ["topic_mruv"]
+    "prerequisites": [
+      "topic_mruv"
+    ]
   },
-
   {
     "id": "topic_comprension_inferencial",
     "courseId": "course_lectora",
@@ -133,7 +152,9 @@
     "courseId": "course_lectora",
     "name": "Cohesión y Coherencia Textual",
     "difficulty": "medium",
-    "prerequisites": ["topic_idea_principal"]
+    "prerequisites": [
+      "topic_idea_principal"
+    ]
   },
   {
     "id": "topic_tipos_texto",
@@ -154,21 +175,28 @@
     "courseId": "course_rm",
     "name": "Problemas sobre Edades",
     "difficulty": "medium",
-    "prerequisites": ["topic_rm_fracciones"]
+    "prerequisites": [
+      "topic_rm_fracciones"
+    ]
   },
   {
     "id": "topic_rm_operadores",
     "courseId": "course_rm",
     "name": "Operadores Matemáticos",
     "difficulty": "medium",
-    "prerequisites": ["topic_rm_fracciones"]
+    "prerequisites": [
+      "topic_rm_fracciones"
+    ]
   },
   {
     "id": "topic_rm_sucesiones",
     "courseId": "course_rm",
     "name": "Sucesiones y Series",
     "difficulty": "advanced",
-    "prerequisites": ["topic_rm_operadores", "topic_rm_edades"]
+    "prerequisites": [
+      "topic_rm_operadores",
+      "topic_rm_edades"
+    ]
   },
   {
     "id": "topic_rv_sinonimos",
@@ -182,21 +210,28 @@
     "courseId": "course_rv",
     "name": "Analogías Verbales",
     "difficulty": "medium",
-    "prerequisites": ["topic_rv_sinonimos"]
+    "prerequisites": [
+      "topic_rv_sinonimos"
+    ]
   },
   {
     "id": "topic_rv_oraciones",
     "courseId": "course_rv",
     "name": "Oraciones Incompletas",
     "difficulty": "medium",
-    "prerequisites": ["topic_rv_sinonimos"]
+    "prerequisites": [
+      "topic_rv_sinonimos"
+    ]
   },
   {
     "id": "topic_rv_eliminadas",
     "courseId": "course_rv",
     "name": "Oraciones Eliminadas",
     "difficulty": "advanced",
-    "prerequisites": ["topic_rv_oraciones", "topic_rv_analogias"]
+    "prerequisites": [
+      "topic_rv_oraciones",
+      "topic_rv_analogias"
+    ]
   },
   {
     "id": "topic_aritmetica_razones",
@@ -210,14 +245,18 @@
     "courseId": "course_aritmetica",
     "name": "Magnitudes Proporcionales",
     "difficulty": "medium",
-    "prerequisites": ["topic_aritmetica_razones"]
+    "prerequisites": [
+      "topic_aritmetica_razones"
+    ]
   },
   {
     "id": "topic_aritmetica_tantoporciento",
     "courseId": "course_aritmetica",
     "name": "Tanto por Cuanto y Porcentajes",
     "difficulty": "medium",
-    "prerequisites": ["topic_aritmetica_magnitudes"]
+    "prerequisites": [
+      "topic_aritmetica_magnitudes"
+    ]
   },
   {
     "id": "topic_aritmetica_estadistica",
@@ -238,14 +277,18 @@
     "courseId": "course_trigonometria",
     "name": "Razones Trigonométricas de Ángulos Agudos",
     "difficulty": "medium",
-    "prerequisites": ["topic_trigonometria_angulo"]
+    "prerequisites": [
+      "topic_trigonometria_angulo"
+    ]
   },
   {
     "id": "topic_trigonometria_identidades",
     "courseId": "course_trigonometria",
     "name": "Identidades Trigonométricas",
     "difficulty": "advanced",
-    "prerequisites": ["topic_trigonometria_razones_agudos"]
+    "prerequisites": [
+      "topic_trigonometria_razones_agudos"
+    ]
   },
   {
     "id": "topic_quimica_materia",
@@ -259,20 +302,117 @@
     "courseId": "course_quimica",
     "name": "Modelo Atómico Actual",
     "difficulty": "medium",
-    "prerequisites": ["topic_quimica_materia"]
+    "prerequisites": [
+      "topic_quimica_materia"
+    ]
   },
   {
     "id": "topic_quimica_configuracion",
     "courseId": "course_quimica",
     "name": "Configuración Electrónica",
     "difficulty": "medium",
-    "prerequisites": ["topic_quimica_atomo"]
+    "prerequisites": [
+      "topic_quimica_atomo"
+    ]
   },
   {
     "id": "topic_quimica_tabla",
     "courseId": "course_quimica",
     "name": "Tabla Periódica",
     "difficulty": "medium",
-    "prerequisites": ["topic_quimica_configuracion"]
+    "prerequisites": [
+      "topic_quimica_configuracion"
+    ]
+  },
+  {
+    "id": "topic_intro_probabilidad",
+    "courseId": "course_probabilidad",
+    "name": "Introducción a Probabilidad",
+    "difficulty": "basic",
+    "prerequisites": []
+  },
+  {
+    "id": "topic_intro_lenguaje",
+    "courseId": "course_lenguaje",
+    "name": "Introducción a Lenguaje",
+    "difficulty": "basic",
+    "prerequisites": []
+  },
+  {
+    "id": "topic_intro_literatura",
+    "courseId": "course_literatura",
+    "name": "Introducción a Literatura",
+    "difficulty": "basic",
+    "prerequisites": []
+  },
+  {
+    "id": "topic_intro_psicologia",
+    "courseId": "course_psicologia",
+    "name": "Introducción a Psicología",
+    "difficulty": "basic",
+    "prerequisites": []
+  },
+  {
+    "id": "topic_intro_civica",
+    "courseId": "course_civica",
+    "name": "Introducción a Educación Cívica",
+    "difficulty": "basic",
+    "prerequisites": []
+  },
+  {
+    "id": "topic_intro_historia_peru",
+    "courseId": "course_historia_peru",
+    "name": "Introducción a Historia del Perú",
+    "difficulty": "basic",
+    "prerequisites": []
+  },
+  {
+    "id": "topic_intro_historia_universal",
+    "courseId": "course_historia_universal",
+    "name": "Introducción a Historia Universal",
+    "difficulty": "basic",
+    "prerequisites": []
+  },
+  {
+    "id": "topic_intro_geografia",
+    "courseId": "course_geografia",
+    "name": "Introducción a Geografía",
+    "difficulty": "basic",
+    "prerequisites": []
+  },
+  {
+    "id": "topic_intro_economia",
+    "courseId": "course_economia",
+    "name": "Introducción a Economía",
+    "difficulty": "basic",
+    "prerequisites": []
+  },
+  {
+    "id": "topic_intro_filosofia",
+    "courseId": "course_filosofia",
+    "name": "Introducción a Filosofía",
+    "difficulty": "basic",
+    "prerequisites": []
+  },
+  {
+    "id": "topic_intro_logica",
+    "courseId": "course_logica",
+    "name": "Introducción a Lógica",
+    "difficulty": "basic",
+    "prerequisites": []
+  },
+  {
+    "id": "topic_intro_ingles",
+    "courseId": "course_ingles",
+    "name": "Introducción a Inglés",
+    "difficulty": "basic",
+    "prerequisites": []
+  },
+  {
+    "id": "topic_intro_biologia",
+    "courseId": "course_biologia",
+    "name": "Introducción a Biología",
+    "difficulty": "basic",
+    "prerequisites": []
   }
 ]
