@@ -109,6 +109,8 @@ const Auth = {
         const passInput = document.getElementById('reg-password');
         const birthdateInput = document.getElementById('reg-birthdate');
         const gradYearInput = document.getElementById('reg-grad-year');
+        const termsCheckbox = document.getElementById('reg-terms');
+        const termsErrorEl = document.getElementById('reg-terms-error');
 
         if (!nameInput || !emailInput || !passInput) return;
 
@@ -117,14 +119,35 @@ const Auth = {
         const pass = passInput.value.trim();
 
         if (!name || !email || !pass) {
-            alert("⚠️ Por favor completa los campos obligatorios.");
+            Auth._showRegError('reg-fields-error', '⚠️ Por favor completa todos los campos obligatorios.');
             return;
         }
+
+        // Validar checkbox de términos y condiciones
+        if (termsCheckbox && !termsCheckbox.checked) {
+            if (termsErrorEl) {
+                termsErrorEl.style.display = 'flex';
+                termsErrorEl.style.animation = 'none';
+                void termsErrorEl.offsetWidth; // reflow para reiniciar animación
+                termsErrorEl.style.animation = '';
+            }
+            // Destacar el label del checkbox
+            const termsLabel = termsCheckbox.closest('label');
+            if (termsLabel) {
+                termsLabel.style.color = '#E24B4A';
+                setTimeout(() => { termsLabel.style.color = ''; }, 3000);
+            }
+            termsCheckbox.focus();
+            return;
+        }
+        // Ocultar error de términos si ya estaba marcado
+        if (termsErrorEl) termsErrorEl.style.display = 'none';
 
         const users = UserManager.getAllUsers();
 
         if (users.some(u => u.email === email)) {
-            alert("⚠️ Este correo electrónico ya está registrado.");
+            Auth._showRegError('reg-fields-error', '⚠️ Este correo electrónico ya está registrado.');
+            if (emailInput) { emailInput.style.borderColor = '#E24B4A'; emailInput.focus(); setTimeout(() => { emailInput.style.borderColor = ''; }, 3000); }
             return;
         }
 
@@ -203,6 +226,21 @@ const Auth = {
             document.querySelectorAll('.role-card-teacher').forEach(el => el.classList.add('active'));
             const extraFields = document.getElementById("student-conditional-fields");
             if (extraFields) extraFields.style.display = 'none';
+        }
+    },
+
+    _showRegError(elementId, message) {
+        const el = document.getElementById(elementId);
+        if (el) {
+            // Si tiene un span hijo para el texto, usarlo; si no, usar el propio elemento
+            const textSpan = el.querySelector('span:last-child') || el;
+            textSpan.textContent = message;
+            el.style.display = 'flex';
+            // Reiniciar animación si la tiene
+            el.style.animation = 'none';
+            void el.offsetWidth;
+            el.style.animation = '';
+            setTimeout(() => { el.style.display = 'none'; }, 5000);
         }
     }
 };

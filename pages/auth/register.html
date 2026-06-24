@@ -103,11 +103,17 @@
                     </div>
                   </div>
                   </div>
-                  <label class="row gap8 mb16 mt4 cursor-pointer" style="margin-left:0; align-items:flex-start;">
-                    <input type="checkbox" id="reg-terms" style="width:16px;height:16px;flex-shrink:0;cursor:pointer;accent-color:var(--green);margin-top:2px;">
+                  <label class="row gap8 mb8 mt4 cursor-pointer" id="terms-label" style="margin-left:0; align-items:flex-start;">
+                    <input type="checkbox" id="reg-terms" style="width:16px;height:16px;flex-shrink:0;cursor:pointer;accent-color:var(--green);margin-top:2px;" onchange="document.getElementById('reg-terms-error').style.display='none'; this.closest('label').style.color=''">
                     <span class="sm col-s">Acepto los <span class="fw7 col-g">Términos de servicio</span> y la <span class="fw7 col-g">Política de privacidad</span></span>
                   </label>
-                  <div class="btn full dark" onclick="register()">Crear cuenta gratuita</div>
+                  <div id="reg-terms-error" style="display:none;align-items:center;gap:8px;background:#fff0f0;border:1.5px solid #E24B4A;border-radius:8px;padding:10px 14px;font-size:13px;color:#E24B4A;font-weight:600;margin-bottom:12px;animation:shakeError 0.4s ease;">
+                    <span>&#x26A0;&#xFE0F;</span> Debes aceptar los Términos y Condiciones para continuar.
+                  </div>
+                  <div id="reg-fields-error" style="display:none;align-items:center;gap:8px;background:#fff0f0;border:1.5px solid #E24B4A;border-radius:8px;padding:10px 14px;font-size:13px;color:#E24B4A;font-weight:600;margin-bottom:12px;">
+                    <span>&#x26A0;&#xFE0F;</span> <span id="reg-fields-error-text"></span>
+                  </div>
+                  <div class="btn full dark" onclick="register()" id="btn-register">Crear cuenta gratuita</div>
                   <div class="divider"><div class="div-line"></div><span class="div-txt">o</span><div class="div-line"></div></div>
                   
                   <button class="btn full outline" style="display:flex; align-items:center; justify-content:center; gap:12px;">

@@ -7,7 +7,7 @@
   display: flex;
   flex-direction: column;
   /* ESTO SEPARA LA CAJA DE PUBLICAR DE LAS PUBLICACIONES Y LOS COMENTARIOS ENTRE SÍ */
-  gap: 32px !important; 
+  gap: 32px !important;
   width: 100%;
   min-width: 0;
 }
@@ -15,7 +15,8 @@
 /* La columna derecha estática que se queda fija al scrollear */
 .widgets-column {
   position: sticky;
-  top: 115px; /* Sincronizado perfectamente con el Topbar de 75px + padding */
+  top: 115px;
+  /* Sincronizado perfectamente con el Topbar de 75px + padding */
   display: flex;
   flex-direction: column;
   gap: 24px;
@@ -25,11 +26,14 @@
 /* =========================================================
    4. TARJETAS (ESTILO PREMIUM AIREADO)
    ========================================================= */
-.create-post-card, .feed-card, .widget-card {
+.create-post-card,
+.feed-card,
+.widget-card {
   background: #ffffff;
   border: 1px solid var(--border, #e5e7eb);
   border-radius: 16px;
-  padding: 32px; /* Más aire en el interior de cada publicación para que no sea tosco */
+  padding: 32px;
+  /* Más aire en el interior de cada publicación para que no sea tosco */
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.015);
   box-sizing: border-box;
   width: 100%;
@@ -37,7 +41,7 @@
 
 /* Margen de seguridad extra en el flujo del documento */
 .feed-card {
-  margin-bottom: 8px; 
+  margin-bottom: 8px;
 }
 
 /* Caja de entrada principal para escribir */
@@ -137,8 +141,9 @@
 .card-header {
   display: flex;
   align-items: center;
-  gap: 16px;
-  margin-bottom: 20px;
+  gap: 12px;
+  margin-bottom: 16px;
+  position: relative;
 }
 
 .author-avatar {
@@ -323,4 +328,797 @@
 
 .widget-link:hover {
   background: rgba(127, 119, 221, 0.05);
+}
+
+/* =========================================================
+   7. ÁREA DE PUBLICACIÓN MEJORADA — IMAGEN
+   ========================================================= */
+
+/* Botones de acción en la barra de herramientas del post */
+.post-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.toolbar-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 20px;
+  border: 1.5px solid var(--border, #e5e7eb);
+  background: transparent;
+  color: var(--sub, #6b7280);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: 'Inter', sans-serif;
+}
+
+.toolbar-btn:hover {
+  background: var(--fill, #f8fafc);
+  border-color: var(--green, #1D9E75);
+  color: var(--green, #1D9E75);
+}
+
+.toolbar-btn.active {
+  background: rgba(29, 158, 117, 0.08);
+  border-color: var(--green, #1D9E75);
+  color: var(--green, #1D9E75);
+}
+
+/* Zona de subida de imagen */
+.image-upload-zone {
+  display: none;
+  border: 2px dashed var(--border, #e5e7eb);
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: var(--fill, #f8fafc);
+  margin-top: 16px;
+  position: relative;
+}
+
+.image-upload-zone.visible {
+  display: block;
+  animation: slideDown 0.25s ease;
+}
+
+.image-upload-zone:hover {
+  border-color: var(--green, #1D9E75);
+  background: rgba(29, 158, 117, 0.04);
+}
+
+.image-upload-zone.dragover {
+  border-color: var(--green, #1D9E75);
+  background: rgba(29, 158, 117, 0.08);
+  transform: scale(1.01);
+}
+
+.upload-icon {
+  font-size: 32px;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.upload-text {
+  font-size: 14px;
+  color: var(--sub, #6b7280);
+  font-weight: 500;
+}
+
+.upload-text strong {
+  color: var(--green, #1D9E75);
+}
+
+.upload-hint {
+  font-size: 12px;
+  color: var(--muted, #9ca3af);
+  margin-top: 4px;
+}
+
+/* Preview de imagen seleccionada */
+.image-preview-container {
+  display: none;
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-top: 16px;
+  border: 1px solid var(--border, #e5e7eb);
+  background: #000;
+  max-height: 260px;
+}
+
+.image-preview-container.visible {
+  display: block;
+  animation: slideDown 0.25s ease;
+}
+
+.image-preview-container img {
+  width: 100%;
+  max-height: 260px;
+  object-fit: contain;
+  display: block;
+}
+
+.image-preview-remove {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 30px;
+  height: 30px;
+  background: rgba(0, 0, 0, 0.65);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1;
+  transition: 0.2s;
+  border: none;
+}
+
+.image-preview-remove:hover {
+  background: #E24B4A;
+}
+
+/* Banner de error de imagen */
+.image-error-banner {
+  display: none;
+  align-items: center;
+  gap: 10px;
+  background: #fff0f0;
+  border: 1.5px solid #E24B4A;
+  border-radius: 10px;
+  padding: 12px 16px;
+  margin-top: 12px;
+  font-size: 13px;
+  color: #E24B4A;
+  font-weight: 600;
+  animation: shakeError 0.4s ease;
+}
+
+.image-error-banner.visible {
+  display: flex;
+}
+
+.image-error-icon {
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+/* Selector de etiqueta */
+.tag-selector-dropdown {
+  display: none;
+  position: absolute;
+  top: calc(100% + 6px);
+  /* Abre HACIA ABAJO desde el botón */
+  left: 0;
+  background: #fff;
+  border: 1px solid var(--border, #e5e7eb);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  z-index: 500;
+  min-width: 220px;
+  overflow: hidden;
+  animation: slideDown 0.2s ease;
+}
+
+.tag-selector-dropdown.open {
+  display: block;
+}
+
+.tag-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: background 0.15s;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text, #111827);
+}
+
+.tag-option:hover {
+  background: var(--fill, #f8fafc);
+}
+
+.tag-option:not(:last-child) {
+  border-bottom: 1px solid var(--fill, #f8fafc);
+}
+
+.tag-selector-wrapper {
+  position: relative;
+}
+
+/* =========================================================
+   8. IMAGEN EN FEED CARDS
+   ========================================================= */
+
+.card-image {
+  border-radius: 12px;
+  overflow: hidden;
+  margin: 12px 0 20px;
+  border: 1px solid var(--border, #e5e7eb);
+  background: #f0f0f0;
+  position: relative;
+  cursor: pointer;
+}
+
+.card-image img {
+  width: 100%;
+  max-height: 360px;
+  object-fit: contain;
+  display: block;
+  background: #f8fafc;
+  transition: transform 0.3s ease;
+}
+
+.card-image:hover img {
+  transform: scale(1.02);
+}
+
+.card-image-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: rgba(29, 158, 117, 0.9);
+  backdrop-filter: blur(4px);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 20px;
+  letter-spacing: 0.3px;
+}
+
+/* Post tag de Duda en verde especial */
+.post-tag.duda-tag {
+  background: rgba(29, 158, 117, 0.12);
+  color: var(--green, #1D9E75);
+}
+
+/* =========================================================
+   9. PANEL DE PUBLICACIONES SIMILARES (ESCENARIO ALTERNATIVO)
+   ========================================================= */
+
+.similar-posts-panel {
+  display: none;
+  border: 1.5px solid var(--indigo, #7F77DD);
+  border-radius: 14px;
+  background: rgba(127, 119, 221, 0.04);
+  overflow: hidden;
+  margin-top: 12px;
+  animation: slideDown 0.3s ease;
+}
+
+.similar-posts-panel.visible {
+  display: block;
+}
+
+.similar-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: rgba(127, 119, 221, 0.08);
+  border-bottom: 1px solid rgba(127, 119, 221, 0.15);
+}
+
+.similar-panel-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--indigo, #7F77DD);
+}
+
+.similar-panel-close {
+  background: none;
+  border: none;
+  color: var(--muted, #9ca3af);
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+  padding: 0 4px;
+  transition: color 0.2s;
+}
+
+.similar-panel-close:hover {
+  color: var(--text, #111827);
+}
+
+.similar-post-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: background 0.15s;
+  border-bottom: 1px solid rgba(127, 119, 221, 0.08);
+  text-decoration: none;
+}
+
+.similar-post-item:last-child {
+  border-bottom: none;
+}
+
+.similar-post-item:hover {
+  background: rgba(127, 119, 221, 0.06);
+}
+
+.similar-post-tag-mini {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 20px;
+  background: rgba(127, 119, 221, 0.12);
+  color: var(--indigo, #7F77DD);
+  font-size: 10px;
+  font-weight: 700;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.similar-post-text {
+  font-size: 13px;
+  color: var(--sub, #6b7280);
+  line-height: 1.4;
+  flex: 1;
+}
+
+.similar-post-text strong {
+  color: var(--text, #111827);
+  font-weight: 600;
+}
+
+.similar-upvotes {
+  font-size: 12px;
+  color: var(--green, #1D9E75);
+  font-weight: 700;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+/* =========================================================
+   10. SECCIÓN DE COMENTARIOS INLINE
+   ========================================================= */
+
+.comments-section {
+  display: none;
+  margin-top: 0;
+  border-top: 1px solid var(--fill, #f3f4f6);
+  padding-top: 20px;
+  animation: slideDown 0.25s ease;
+}
+
+.comments-section.open {
+  display: block;
+}
+
+.comment-item {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding: 14px;
+  border-radius: 10px;
+  background: var(--fill, #f8fafc);
+  border: 1px solid var(--border, #e5e7eb);
+  transition: all 0.2s;
+  position: relative;
+}
+
+.comment-item:hover {
+  border-color: #d1d5db;
+}
+
+.comment-item.pinned-comment {
+  background: linear-gradient(135deg, rgba(29, 158, 117, 0.06), rgba(29, 158, 117, 0.03));
+  border-color: rgba(29, 158, 117, 0.3);
+}
+
+.comment-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--fill, #f3f4f6);
+  border: 1px solid var(--border, #e5e7eb);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.comment-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.comment-author-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+  flex-wrap: wrap;
+}
+
+.comment-author {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text, #111827);
+}
+
+.comment-time {
+  font-size: 11px;
+  color: var(--muted, #9ca3af);
+}
+
+.pin-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(29, 158, 117, 0.12);
+  color: var(--green, #1D9E75);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 20px;
+  letter-spacing: 0.3px;
+}
+
+.comment-text {
+  font-size: 14px;
+  color: var(--sub, #6b7280);
+  line-height: 1.55;
+  margin: 0;
+}
+
+/* Grupo de acciones de comentario */
+.comment-actions-group {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+/* Botón de fijar respuesta y eliminar */
+.pin-btn,
+.delete-action-btn {
+  background: none;
+  border: 1px solid var(--border, #e5e7eb);
+  border-radius: 6px;
+  color: var(--muted, #9ca3af);
+  font-size: 12px;
+  padding: 3px 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.delete-action-btn:hover {
+  border-color: #E24B4A;
+  color: #E24B4A;
+  background: #fff0f0;
+}
+
+/* Botón eliminar post */
+.delete-post-btn {
+  background: none;
+  border: 1px solid transparent;
+  color: var(--muted, #9ca3af);
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  padding: 6px;
+  border-radius: 8px;
+  margin-left: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.delete-post-btn:hover {
+  color: #E24B4A;
+  background: #fff0f0;
+  border-color: #E24B4A;
+}
+
+.pin-btn:hover {
+  border-color: var(--green, #1D9E75);
+  color: var(--green, #1D9E75);
+  background: rgba(29, 158, 117, 0.05);
+}
+
+.pin-btn.active {
+  background: rgba(29, 158, 117, 0.1);
+  border-color: var(--green, #1D9E75);
+  color: var(--green, #1D9E75);
+}
+
+/* Campo para añadir un nuevo comentario */
+.comment-input-row {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin-top: 8px;
+}
+
+.comment-input {
+  flex: 1;
+  border: 1.5px solid var(--border, #e5e7eb);
+  border-radius: 20px;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-family: 'Inter', sans-serif;
+  color: var(--text, #111827);
+  background: #fff;
+  outline: none;
+  transition: all 0.2s;
+  resize: none;
+  line-height: 1.4;
+  min-height: 40px;
+}
+
+.comment-input:focus {
+  border-color: var(--green, #1D9E75);
+  box-shadow: 0 0 0 3px rgba(29, 158, 117, 0.08);
+}
+
+.comment-submit-btn {
+  background: var(--green, #1D9E75);
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  padding: 10px 20px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.comment-submit-btn:hover {
+  opacity: 0.9;
+  box-shadow: 0 4px 12px rgba(29, 158, 117, 0.2);
+}
+
+.comment-submit-btn:active {
+  transform: scale(0.97);
+}
+
+/* =========================================================
+   11. LIGHTBOX DE IMAGEN
+   ========================================================= */
+.image-lightbox-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.88);
+  z-index: 20000;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(8px);
+  cursor: zoom-out;
+}
+
+.image-lightbox-overlay.open {
+  display: flex;
+  animation: fadeInOverlay 0.25s ease;
+}
+
+.image-lightbox-overlay img {
+  max-width: 92vw;
+  max-height: 90vh;
+  object-fit: contain;
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.lightbox-close {
+  position: absolute;
+  top: 20px;
+  right: 24px;
+  color: #fff;
+  font-size: 36px;
+  cursor: pointer;
+  line-height: 1;
+  opacity: 0.8;
+  transition: 0.2s;
+  background: none;
+  border: none;
+}
+
+.lightbox-close:hover {
+  opacity: 1;
+}
+
+/* =========================================================
+   12. ANIMATIONS HELPERS
+   ========================================================= */
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInOverlay {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes shakeError {
+
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  20% {
+    transform: translateX(-8px);
+  }
+
+  40% {
+    transform: translateX(8px);
+  }
+
+  60% {
+    transform: translateX(-5px);
+  }
+
+  80% {
+    transform: translateX(5px);
+  }
+}
+
+/* =========================================================
+   13. RESPONSIVE — MOBILE (≤ 768px)
+   ========================================================= */
+
+@media (max-width: 768px) {
+
+  .create-post-card,
+  .feed-card,
+  .widget-card {
+    padding: 20px 16px;
+    border-radius: 12px;
+  }
+
+  .create-post-header {
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  #post-input {
+    font-size: 15px;
+    padding: 12px 16px;
+  }
+
+  .create-post-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    padding-top: 14px;
+  }
+
+  .post-toolbar {
+    justify-content: flex-start;
+    gap: 6px;
+  }
+
+  .toolbar-btn {
+    font-size: 12px;
+    padding: 7px 11px;
+  }
+
+  .btn.btn-publish {
+    width: 100%;
+    text-align: center;
+  }
+
+  .card-header {
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .author-info h4 {
+    font-size: 14px;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  .user-target {
+    margin-left: 0;
+    font-size: 10px;
+  }
+
+  .post-tag {
+    font-size: 11px;
+    padding: 4px 10px;
+  }
+
+  .card-body p {
+    font-size: 14px;
+  }
+
+  .card-footer {
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 16px;
+  }
+
+  .action-btn {
+    font-size: 13px;
+    padding: 7px 12px;
+  }
+
+  .card-image img {
+    max-height: 240px;
+  }
+
+  .similar-posts-panel {
+    border-radius: 10px;
+  }
+
+  .comment-item {
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px;
+  }
+
+  .comment-avatar {
+    width: 30px;
+    height: 30px;
+    font-size: 14px;
+  }
+
+  .pin-btn {
+    position: static;
+    align-self: flex-end;
+    margin-top: 6px;
+  }
+
+  .comment-input-row {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .comment-submit-btn {
+    width: 100%;
+  }
+
+  .widgets-column {
+    position: static;
+    /* En móvil los widgets no son sticky */
+  }
 }
