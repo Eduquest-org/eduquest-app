@@ -147,7 +147,7 @@ body {
 }
 
 /* =========================================================
-   4. RESPONSIVE (MÓVIL Y TABLET)
+   4. RESPONSIVE (TABLET Y MÓVIL)
    ========================================================= */
 
 /* Ocultar el botón de menú en escritorio */
@@ -166,16 +166,46 @@ body {
 
 .topbar-left { display: flex; align-items: center; gap: 16px; flex: 1; min-width: 0; }
 
+/* === TABLET (≤ 1024px) === */
+@media (max-width: 1024px) {
+  .dashboard-content {
+    grid-template-columns: minmax(0, 1fr) 280px;
+    gap: 24px;
+    padding: 28px;
+  }
+}
+
+/* === MOBILE (≤ 900px) === */
 @media (max-width: 900px) {
   /* 1. Sidebar se oculta a la izquierda (Off-canvas) */
   #sidebar-container {
     transform: translateX(-100%);
     transition: transform 0.3s ease;
     box-shadow: 4px 0 20px rgba(0,0,0,0.1);
+    z-index: 1100;
   }
-  
+
   #sidebar-container.active {
     transform: translateX(0);
+  }
+
+  /* Overlay oscuro para cerrar el sidebar en móvil */
+  .sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    z-index: 1050;
+    backdrop-filter: blur(2px);
+  }
+  .sidebar-overlay.visible {
+    display: block;
+    animation: fadeInOverlayBg 0.2s ease;
+  }
+
+  @keyframes fadeInOverlayBg {
+    from { opacity: 0; }
+    to   { opacity: 1; }
   }
 
   /* 2. Topbar toma el 100% del ancho */
@@ -186,12 +216,12 @@ body {
 
   /* 3. Mostrar botón de menú */
   .mobile-menu-btn { display: block; }
-  
+
   /* Achicar el buscador en móvil */
   .search-wrapper { width: 100%; max-width: none; }
-  .topbar { padding: 0 20px; }
-  
-  /* Ocultar nombre de usuario en móvil para ahorrar espacio */
+  .topbar { padding: 0 16px; gap: 10px; }
+
+  /* Ocultar nombre de usuario en móvil */
   .user-name-top { display: none; }
 
   /* 4. App Shell pierde el margen izquierdo */
@@ -201,7 +231,30 @@ body {
 
   /* 5. Colapsar la grilla del dashboard */
   .dashboard-content {
-    grid-template-columns: 1fr; /* Una sola columna */
-    padding: 20px; /* Menos padding lateral */
+    grid-template-columns: 1fr;
+    padding: 16px;
+    gap: 20px;
+  }
+
+  /* 6. El buscador se achica en móvil para no solaparse */
+  .search-wrapper input {
+    font-size: 14px;
+    padding: 10px 14px 10px 36px;
   }
 }
+
+/* === PEQUEÑO MOBILE (≤ 480px) === */
+@media (max-width: 480px) {
+  .dashboard-content {
+    padding: 12px;
+  }
+
+  .topbar {
+    padding: 0 12px;
+    gap: 8px;
+  }
+
+  .search-wrapper {
+    display: none; /* En pantallas muy pequeñas se oculta el buscador para dar espacio */
+  }
+}

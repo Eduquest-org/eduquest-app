@@ -1,16 +1,52 @@
 [
   {
+    "id": "comment_duda_01",
+    "postId": "post_duda_01",
+    "authorId": "U_01",
+    "authorName": "Matías J.",
+    "authorAvatar": "🎓",
+    "content": "Primero aplica la regla de sustitución: sea u = x² + 1, entonces du = 2x dx. Eso simplifica la integral a ½∫e^u du = ½e^u + C.",
+    "isPinned": false,
+    "createdAt": "2026-06-23T18:45:00Z"
+  },
+  {
+    "id": "comment_duda_02",
+    "postId": "post_duda_01",
+    "authorId": "U_HENRY",
+    "authorName": "Henry P.",
+    "authorAvatar": "👨‍🏫",
+    "content": "Exacto. El truco es identificar la derivada interna. Cuando ves e^(función) siempre piensa en sustitución. Paso a paso: 1) Identifica u=x²+1, 2) du/dx=2x → dx=du/2x, 3) Sustituye y simplifica, 4) Integra e^u, 5) Vuelve a x. ¡Esta técnica cubre el 80% de las integrales del preuniversitario!",
+    "isPinned": true,
+    "createdAt": "2026-06-23T19:10:00Z"
+  },
+  {
+    "id": "comment_duda_03",
+    "postId": "post_duda_01",
+    "authorId": "U_02",
+    "authorName": "Vanessa B.",
+    "authorAvatar": "🧠",
+    "content": "También te recomiendo revisar la sección de integrales del roadmap, hay 3 ejercicios similares con solución detallada.",
+    "isPinned": false,
+    "createdAt": "2026-06-23T19:30:00Z"
+  },
+  {
     "id": "comment_01",
     "postId": "post_01",
     "authorId": "U_01",
+    "authorName": "Matías J.",
+    "authorAvatar": "🎓",
     "content": "Tienes que aplicar la regla de la mano derecha primero.",
+    "isPinned": false,
     "createdAt": "2026-06-11T10:15:00Z"
   },
   {
     "id": "comment_02",
     "postId": "post_01",
     "authorId": "U_HENRY",
+    "authorName": "Henry P.",
+    "authorAvatar": "👨‍🏫",
     "content": "Recuerda repasar la teoría del producto cruz en tu roadmap actual.",
+    "isPinned": false,
     "createdAt": "2026-06-11T10:30:00Z"
   }
 ]
