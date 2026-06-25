@@ -1,6 +1,11 @@
 const SessionManager = {
     async init() {
         await Auth.initDB();
+        
+        if (window.CurrentUserService) {
+            await CurrentUserService.init();
+        }
+
         Router.init();
         
         if (window.UserBindingManager) {
@@ -81,9 +86,5 @@ window.app.showToast = function(message, type = 'success') {
 };
 
 document.addEventListener('click', () => {
-    const session = Storage.getSession();
-    if (session) {
-        session.expiresAt = Date.now() + (60 * 60 * 1000);
-        Storage.saveSession(session);
-    }
+    // Session refresh handled by Supabase automatically
 });

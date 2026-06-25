@@ -147,11 +147,11 @@ const AIEngine = {
             const allTopics = await topicsRes.json();
             const allWeights = await weightsRes.json();
 
-            const session = Storage.getSession();
-            const user = UserManager.getCurrentUserDoc() || {};
-            const targetUniv = (user.profile && user.profile.target) || 'UNI';
-            const career = (user.profile && user.profile.career) || 'Ingeniería';
-            const userName = user.name || 'Alumno';
+            const userProfile = window.CurrentUserService ? window.CurrentUserService.getProfile() : {};
+            const userId = userProfile?.id;
+            const targetUniv = userProfile?.target_university_id || 'UNI';
+            const career = userProfile?.career || 'Ingeniería';
+            const userName = userProfile?.name || 'Alumno';
 
             const univWeights = allWeights[targetUniv] || allWeights['UNI'] || {};
 
@@ -253,7 +253,12 @@ const AIEngine = {
 
             // Transformar al formato del frontend y guardar inmediatamente para que el grid los muestre
             const roadmapCards = this._transformToFrontendFormat(initialRoutes, allCourses, targetUniv);
-            UserManager.saveCustomRoadmap(session.userId, roadmapCards);
+            if (userId) {
+                UserManager.updateProfile(userId, { ai_roadmap: roadmapCards });
+                if (window.CurrentUserService && window.CurrentUserService.getProfile()) {
+                    window.CurrentUserService.getProfile().ai_roadmap = roadmapCards;
+                }
+            }
 
             // Guardar el estado inicial en localStorage
             localStorage.setItem('aiQueue', JSON.stringify(aiQueue));
@@ -337,8 +342,8 @@ const AIEngine = {
                 }
 
                 // Transformar todo y guardar en el progreso del usuario
-                const session = Storage.getSession();
-                if (session && window.UserManager) {
+                const userProfile = window.CurrentUserService ? CurrentUserService.getProfile() : null;
+                if (userProfile && window.UserManager) {
                     const allCoursesRes = await fetch("../../mock/courses.json");
                     const allCourses = await allCoursesRes.json();
 
@@ -348,7 +353,10 @@ const AIEngine = {
                     }
 
                     const roadmapCards = this._transformToFrontendFormat(aiResults, allCourses, targetUniv);
-                    UserManager.saveCustomRoadmap(session.userId, roadmapCards);
+                    UserManager.updateProfile(userProfile.id, { ai_roadmap: roadmapCards });
+                    if (window.CurrentUserService && window.CurrentUserService.getProfile()) {
+                        window.CurrentUserService.getProfile().ai_roadmap = roadmapCards;
+                    }
 
                     // Actualizar aiResults para la siguiente iteración
                     localStorage.setItem('aiResults', JSON.stringify(aiResults));
@@ -426,9 +434,12 @@ const AIEngine = {
             }],
             edges: []
         }];
-        const session = Storage.getSession();
-        if (session) {
-            UserManager.saveCustomRoadmap(session.userId, fallbackMap);
+        const userProfile = window.CurrentUserService ? window.CurrentUserService.getProfile() : null;
+        if (userProfile) {
+            UserManager.updateProfile(userProfile.id, { ai_roadmap: fallbackMap });
+            if (window.CurrentUserService && window.CurrentUserService.getProfile()) {
+                window.CurrentUserService.getProfile().ai_roadmap = fallbackMap;
+            }
         }
         return fallbackMap;
     }

@@ -81,10 +81,7 @@ const CHALLENGE_TEMPLATES = [
 
 const GamificationManager = {
     init() {
-        const session = Storage.getSession();
-        if (!session) return;
-        
-        const user = UserManager.getUserById(session.userId);
+        const user = window.CurrentUserService ? CurrentUserService.getProfile() : null;
         if (!user) return;
 
         // 1. Inicializar Reto Diario si no existe o es de otro día
@@ -98,7 +95,13 @@ const GamificationManager = {
         if (!user.stats) user.stats = {};
         
         const todayStr = new Date().toDateString();
-        const activeChallenge = user.stats.dailyChallenge;
+        // Intentar recuperar de localStorage
+        let activeChallenge = null;
+        try { activeChallenge = JSON.parse(localStorage.getItem('dailyChallenge')); } catch (e) {}
+        
+        if (activeChallenge) {
+            user.stats.dailyChallenge = activeChallenge;
+        }
 
         if (forceReset || !activeChallenge || activeChallenge.date !== todayStr) {
             // Seleccionar un reto aleatorio de las plantillas
@@ -114,15 +117,13 @@ const GamificationManager = {
                 date: todayStr
             };
             
-            UserManager.updateStats(user.id, { dailyChallenge: user.stats.dailyChallenge });
+            // Guardar localmente ya que no existe columna 'dailyChallenge' en Supabase
+            localStorage.setItem('dailyChallenge', JSON.stringify(user.stats.dailyChallenge));
         }
     },
 
     updateDailyChallengeProgress(type, amount) {
-        const session = Storage.getSession();
-        if (!session) return;
-        
-        const user = UserManager.getUserById(session.userId);
+        const user = window.CurrentUserService ? CurrentUserService.getProfile() : null;
         if (!user || !user.stats || !user.stats.dailyChallenge) return;
 
         const challenge = user.stats.dailyChallenge;
@@ -130,20 +131,20 @@ const GamificationManager = {
 
         challenge.current = Math.min(challenge.target, challenge.current + amount);
 
+        // Guardar progreso localmente
+        localStorage.setItem('dailyChallenge', JSON.stringify(challenge));
+
         if (challenge.current >= challenge.target) {
             challenge.completed = true;
+            localStorage.setItem('dailyChallenge', JSON.stringify(challenge));
             
             // Recompensar al usuario con XP
             UserManager.addXp(user.id, challenge.xpReward);
             
             // Incrementar retos completados totales en stats
             const completedCount = (user.stats.completedChallengesCount || 0) + 1;
-            UserManager.updateStats(user.id, { 
-                completedChallengesCount: completedCount
-            });
-
-            // Guardar reto actualizado
-            UserManager.updateStats(user.id, { dailyChallenge: challenge });
+            user.stats.completedChallengesCount = completedCount;
+            localStorage.setItem('completedChallengesCount', completedCount.toString());
 
             // Mostrar modal de felicitación
             this.showCelebrationModal(
@@ -156,8 +157,7 @@ const GamificationManager = {
             // Verificar si el usuario desbloquea insignias por completar retos
             this.checkChallengeMilestones(user.id, completedCount);
         } else {
-            // Solo actualizar el progreso
-            UserManager.updateStats(user.id, { dailyChallenge: challenge });
+            // Ya hemos guardado en localStorage en la línea 135
         }
 
         // Refrescar enlaces e interfaces
@@ -187,7 +187,7 @@ const GamificationManager = {
     },
 
     checkAndAwardBadge(userId, badgeId) {
-        const user = UserManager.getUserById(userId);
+        const user = CurrentUserService.getProfile();
         if (!user) return;
 
         if (!user.profile) user.profile = {};
@@ -275,7 +275,10 @@ const GamificationManager = {
 };
 
 // Auto inicializar al cargar si se incluye el script
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
+    if (window.CurrentUserService) {
+        await CurrentUserService.init();
+    }
     GamificationManager.init();
 });
 

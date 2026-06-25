@@ -50,13 +50,10 @@ async function loadQuizzesSelection() {
         const topics = await topicsRes.json();
 
         // Obtener temas completados por el usuario
-        const session = Storage.getSession();
         let completedTopics = [];
-        if (session) {
-            const user = UserManager.getUserById(session.userId);
-            if (user && user.learningProgress) {
-                completedTopics = user.learningProgress.completedTopics || [];
-            }
+        const user = window.CurrentUserService ? CurrentUserService.getProfile() : null;
+        if (user && user.learningProgress) {
+            completedTopics = user.learningProgress.completedTopics || [];
         }
 
         grid.innerHTML = "";
@@ -362,10 +359,9 @@ function finishQuiz() {
     clearInterval(activeQuizState.timerInterval);
     showPreloader("Compilando tus resultados y sumando XP...");
 
-    const session = Storage.getSession();
-    if (!session) return;
-
-    // Calcular estadísticas
+    const user = window.CurrentUserService ? CurrentUserService.getProfile() : null;
+    if (!user) return;
+    
     let correctCount = 0;
     activeQuizState.problems.forEach((q, idx) => {
         if (activeQuizState.answers[idx] === q.correctOption) {
@@ -390,18 +386,18 @@ function finishQuiz() {
         // Solo marcar tema superado si aprobó con >= 60%
         if (pct >= 60) {
             UserManager.completeTopicProgress(
-                session.userId, 
+                session.user.id, 
                 activeQuizState.topicId, 
                 activeQuizState.courseId, 
                 xpEarned
             );
         } else {
             // Si desaprobó, igual darle su XP menor, pero sin marcar tema
-            UserManager.addXp(session.userId, xpEarned);
+            UserManager.addXp(session.user.id, xpEarned);
         }
     } else {
         // Simulacro general, solo sumar XP
-        UserManager.addXp(session.userId, xpEarned);
+        UserManager.addXp(session.user.id, xpEarned);
     }
 
     // AUMENTAR RETO DIARIO (Hooks)
@@ -415,7 +411,7 @@ function finishQuiz() {
 
         // EVALUAR INSIGNIA: Perfección absoluta (100% de aciertos)
         if (pct === 100) {
-            GamificationManager.checkAndAwardBadge(session.userId, "badge_perfect_score");
+            GamificationManager.checkAndAwardBadge(session.user.id, "badge_perfect_score");
         }
     }
 
