@@ -1,0 +1,96 @@
+/* ==========================================================================
+   assets/css/teacher/reports.css
+   US-18 · Reportes de progreso y exportación (CSV / Excel / PDF)
+   ========================================================================== */
+
+.content.content-full {
+  display: block;
+  grid-template-columns: none;
+  max-width: 1100px;
+}
+
+/* ===== Barra de controles ===== */
+.report-toolbar {
+  display: flex; align-items: flex-end; justify-content: space-between;
+  gap: 20px; flex-wrap: wrap; margin-bottom: 22px;
+}
+.report-controls { display: flex; align-items: flex-end; gap: 18px; flex-wrap: wrap; }
+.rc-field { display: flex; flex-direction: column; gap: 7px; }
+.rc-field > label { font-size: 12.5px; font-weight: 600; color: var(--ink-soft); }
+.rc-field select {
+  border: 1px solid var(--border); background: var(--surface); color: var(--ink);
+  border-radius: 11px; padding: 10px 14px; font-size: 14px; font-weight: 600;
+  font-family: 'Inter', sans-serif; outline: none; cursor: pointer; min-width: 210px;
+}
+.rc-field select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px var(--brand-soft); }
+.report-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+/* ===== Documento del reporte ===== */
+.report-doc {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); box-shadow: var(--shadow-sm);
+  padding: 34px 36px; margin-bottom: 40px;
+}
+.report-doc-head {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: 24px; flex-wrap: wrap;
+  padding-bottom: 20px; border-bottom: 2px solid var(--ink);
+}
+.rd-brand { display: flex; align-items: center; gap: 12px; }
+.rd-logo {
+  width: 44px; height: 44px; border-radius: 12px;
+  background: linear-gradient(155deg, var(--brand), var(--brand-dark));
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-weight: 700; font-size: 16px; font-family: 'Outfit', sans-serif;
+}
+.rd-app { font-size: 18px; font-weight: 700; font-family: 'Outfit', sans-serif; }
+.rd-tag { font-size: 12.5px; color: var(--muted); }
+.rd-meta { display: grid; grid-template-columns: auto; gap: 3px; text-align: right; font-size: 12.5px; color: var(--ink-soft); }
+.rd-meta span { color: var(--muted); margin-right: 4px; }
+
+.rd-title { font-size: 19px; margin: 22px 0 18px; }
+
+.rd-kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; }
+.rd-kpi {
+  border: 1px solid var(--border); border-radius: var(--radius-md);
+  padding: 14px 16px; background: var(--bg);
+}
+.rdk-value { font-size: 23px; font-weight: 700; font-family: 'Outfit', sans-serif; color: var(--brand-dark); }
+.rdk-label { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+.rd-footer { margin-top: 22px; padding-top: 16px; border-top: 1px solid var(--border); font-size: 11.5px; color: var(--muted); text-align: center; }
+
+@media (max-width: 760px) {
+  .rd-kpis { grid-template-columns: 1fr 1fr; }
+  .report-actions { width: 100%; }
+  .rc-field select { min-width: 0; width: 100%; }
+  .rc-field { width: 100%; }
+}
+
+/* ==========================================================================
+   IMPRESIÓN / PDF — aísla el documento del reporte
+   ========================================================================== */
+@media print {
+  @page { margin: 14mm; size: A4 landscape; }
+
+  .sidebar, .sidebar-backdrop, .topbar, #sidebar-container, #topbar-container,
+  .no-print, .page-head, .upgrade-card, .logout-btn { display: none !important; }
+
+  html, body { background: #fff !important; }
+  .app, .main-wrap, .content, .content-full { display: block !important; margin: 0 !important; padding: 0 !important; max-width: none !important; }
+
+  .report-doc {
+    border: none !important; box-shadow: none !important; border-radius: 0 !important;
+    padding: 0 !important; margin: 0 !important;
+  }
+  .report-doc-head { border-bottom: 2px solid #000; }
+
+  /* Evita cortar filas entre páginas */
+  .data-table { font-size: 11px; }
+  .data-table tr { page-break-inside: avoid; }
+  .data-table thead { display: table-header-group; }
+  .badge { border: 1px solid #ccc; }
+
+  /* Forzar impresión de colores de fondo (KPIs, badges) */
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+}
