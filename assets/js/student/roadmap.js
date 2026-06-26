@@ -171,12 +171,10 @@ async function buildCourseSelectionGrid() {
     const isPhase2Active = (localStorage.getItem('aiQueue') || '[]') !== '[]';
 
     if (!isPhase1Active && !isPhase2Active) {
-        console.log("No phase active. urlParams.generate:", urlParams.get('generate'), "hasDiagnostic:", hasDiagnostic, "hasValidRoadmap:", hasValidRoadmap);
         if (urlParams.get('generate') === 'true' || (hasDiagnostic && !hasValidRoadmap)) {
             // Convertimos el param en estado persistente
             localStorage.setItem('pendingAIGeneration', 'true');
             window.history.replaceState({}, document.title, window.location.pathname);
-            console.log("Set pendingAIGeneration to true");
         }
     }
 
@@ -189,11 +187,9 @@ async function buildCourseSelectionGrid() {
 
         // Generate Roadmap (Solo Fase 1 y encolar)
         const { data: { session: currentSession } } = await supabase.auth.getSession();
-        console.log("pendingAIGeneration=true", { currentSession: !!currentSession, hasUser: !!window.CurrentUserService?.getProfile(), hasDiagnostic: !!window.CurrentUserService?.getProfile()?.diagnostic_results, hasAIEngine: !!window.AIEngine });
         if (currentSession && window.CurrentUserService && window.AIEngine) {
             const user = CurrentUserService.getProfile();
             if (user && user.diagnostic_results) {
-                console.log("Ejecutando AIEngine...");
                 // Ejecutar asíncronamente sin bloquear el flujo principal
                 (async () => {
                     try {

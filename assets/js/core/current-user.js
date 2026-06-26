@@ -10,10 +10,8 @@ let currentUserCache = null;
 
 const CurrentUserService = {
     async init() {
-        console.log("[CurrentUserService] init called. UserManager exists?", !!window.UserManager);
         if (window.UserManager) {
             currentUserCache = await UserManager.getCurrentUserDoc();
-            console.log("[CurrentUserService] Result from UserManager:", currentUserCache);
         }
         return currentUserCache;
     },

@@ -16,10 +16,8 @@ const UserManager = {
 
     async getCurrentUserDoc() {
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-        console.log("[UserManager] getSession result:", session ? session.user.id : "NO SESSION", sessionError);
         if (!session) return null;
         const profile = await this.getUserById(session.user.id);
-        console.log("[UserManager] Fetched profile:", profile ? profile.id : "NULL PROFILE");
         return profile;
     },
 
