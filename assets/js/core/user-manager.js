@@ -1,3 +1,12 @@
+/**
+ * @fileoverview Servicio principal de gestión de usuarios y estado en Supabase.
+ * Proporciona métodos para interactuar con la tabla de perfiles, actualizar estadísticas,
+ * gestionar el progreso académico y manipular el mapa de aprendizaje generado por la IA.
+ * 
+ * Este módulo actúa como una capa de abstracción sobre el cliente de Supabase,
+ * unificando las operaciones de lectura y escritura de perfiles de usuario.
+ */
+
 import { supabase } from '../config/supabase.js';
 
 const UserManager = {
@@ -24,7 +33,7 @@ const UserManager = {
     async updateProfile(userId, partialProfile) {
         const { error } = await supabase
             .from('profiles')
-            .update(partialProfile) // target_university_id, career, etc.
+            .update(partialProfile) // Actualizar campos específicos del perfil
             .eq('id', userId);
         if (error) console.error('Error updating profile:', error);
     },
@@ -32,7 +41,7 @@ const UserManager = {
     async updateStats(userId, partialStats) {
         const { error } = await supabase
             .from('profiles')
-            .update(partialStats) // streak_days, total_xp, etc.
+            .update(partialStats) // Actualizar métricas de progreso
             .eq('id', userId);
         if (error) console.error('Error updating stats:', error);
     },
@@ -43,6 +52,16 @@ const UserManager = {
 
         const newXp = (user.total_xp || 0) + amount;
         await this.updateStats(userId, { total_xp: newXp });
+
+        // Sincronizar el estado local y actualizar la interfaz de usuario
+        if (window.CurrentUserService) {
+            const profile = window.CurrentUserService.getProfile();
+            if (profile && profile.id === userId) {
+                profile.total_xp = newXp;
+                if (window.UserBindingManager) window.UserBindingManager.bindAll();
+            }
+        }
+
         return newXp;
     },
 
@@ -85,7 +104,7 @@ const UserManager = {
         if (error) console.error('Error saving diagnostic results:', error);
     },
 
-    // Método obsoleto mantenido para compatibilidad
+    /** @deprecated Método preservado temporalmente para asegurar retrocompatibilidad. */
     migrateUsersToNewSchema() {
         console.log('[UserManager] Supabase migration replaces local schema logic.');
     }
