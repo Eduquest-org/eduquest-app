@@ -99,8 +99,12 @@ const AIEngine = {
         try {
             console.log(`[AIEngine] Solicitando nodos al backend (FASE 2) para curso: ${course.id}`);
 
+            const session = await window.supabase?.auth?.getSession();
+            const userId = session?.data?.session?.user?.id;
+
             // Enviar un payload estructurado en formato JSON al backend
             const payload = {
+                userId: userId,
                 courseId: course.id,
                 courseName: course.name,
                 strengthsText: strengthsText,

@@ -370,3 +370,89 @@
     position: static;
   }
 }
+
+/* =======================================================
+   5. RESOURCE MODAL (PDF / VIDEO)
+   ======================================================= */
+.resource-modal-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background-color: rgba(0,0,0,0.85);
+  z-index: 10000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  backdrop-filter: blur(5px);
+  padding: 20px;
+}
+
+.resource-modal-content {
+  position: relative;
+  width: 90%;
+  max-width: 900px;
+  height: 80%;
+  background: #111827;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  border: 1px solid rgba(255,255,255,0.1);
+  display: flex;
+  flex-direction: column;
+}
+
+.resource-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 20px;
+  background: rgba(0,0,0,0.3);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.resource-modal-header h3 {
+  color: #fff;
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.resource-modal-close {
+  background: none;
+  border: none;
+  color: #a1a1aa;
+  font-size: 24px;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0;
+  transition: color 0.2s;
+}
+
+.resource-modal-close:hover {
+  color: #fff;
+}
+
+.resource-modal-body {
+  flex-grow: 1;
+  position: relative;
+  background: #000;
+}
+
+.resource-modal-iframe {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  border: none;
+}
+
+@media (max-width: 768px) {
+  .resource-modal-overlay {
+    padding: 0;
+  }
+  .resource-modal-content {
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+    border: none;
+  }
+}

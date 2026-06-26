@@ -39,6 +39,20 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     }
+
+    // Inyectar Sistema de Notificaciones en páginas autenticadas
+    const path = window.location.pathname;
+    if (!path.includes('/auth/') && !path.includes('/public/') && path !== '/' && !path.endsWith('index.html')) {
+        const notifStyle = document.createElement('link');
+        notifStyle.rel = 'stylesheet';
+        notifStyle.href = '../../assets/css/components/notifications.css';
+        document.head.appendChild(notifStyle);
+
+        const notifScript = document.createElement('script');
+        notifScript.type = 'module';
+        notifScript.src = '../../assets/js/core/notifications.js';
+        document.body.appendChild(notifScript);
+    }
 });
 
 // Utilidad global de Toast

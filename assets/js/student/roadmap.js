@@ -563,7 +563,7 @@ function handleRagItemClick(event, id, type, status) {
                     console.error("Error al cargar recurso desde Supabase:", error);
                     alert(`No se encontró el recurso con ID: ${id} en la base de datos.`);
                 } else if (data.url) {
-                    window.open(data.url, '_blank');
+                    openResourceModal(data.url);
                 } else {
                     alert(`El recurso ${id} no tiene una URL válida.`);
                 }
@@ -574,6 +574,49 @@ function handleRagItemClick(event, id, type, status) {
             });
     }
 }
+
+function openResourceModal(url) {
+    let finalUrl = url;
+    // Adaptar URLs de YouTube para poder ser insertadas en iframes
+    if (url.includes("youtube.com/watch?v=")) {
+        const videoId = url.split("v=")[1].split("&")[0];
+        finalUrl = `https://www.youtube.com/embed/${videoId}`;
+    } else if (url.includes("youtu.be/")) {
+        const videoId = url.split("youtu.be/")[1].split("?")[0];
+        finalUrl = `https://www.youtube.com/embed/${videoId}`;
+    }
+
+    let modal = document.getElementById("resource-modal-overlay");
+    if (!modal) {
+        modal = document.createElement("div");
+        modal.id = "resource-modal-overlay";
+        modal.className = "resource-modal-overlay";
+
+        modal.innerHTML = `
+            <div class="resource-modal-content">
+                <div class="resource-modal-header">
+                    <h3>Recurso de Aprendizaje</h3>
+                    <button class="resource-modal-close" onclick="document.getElementById('resource-modal-overlay').style.display='none'; document.getElementById('resource-iframe').src='';">&times;</button>
+                </div>
+                <div class="resource-modal-body">
+                    <iframe id="resource-iframe" class="resource-modal-iframe" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+                document.getElementById('resource-iframe').src = '';
+            }
+        });
+    }
+
+    document.getElementById("resource-iframe").src = finalUrl;
+    modal.style.display = "flex";
+}
+
 window.openSpecificCourseMap = openSpecificCourseMap;
 window.switchBackToSelection = switchBackToSelection;
 window.refreshRoadmapUI = buildCourseSelectionGrid;
