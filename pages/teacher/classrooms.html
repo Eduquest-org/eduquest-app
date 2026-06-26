@@ -11,6 +11,7 @@
 <link rel="stylesheet" href="../../assets/css/global/variables.css">
 <link rel="stylesheet" href="../../assets/css/teacher/dashboard.css">
 <link rel="stylesheet" href="../../assets/css/teacher/classrooms.css">
+<link rel="stylesheet" href="../../assets/css/teacher/teacher-ui.css">
 
     <link rel="icon" type="image/x-icon" href="../../assets/img/logos/eduquest-logo.ico">
 </head>
@@ -28,20 +29,33 @@
 
       <!-- ============ SCREEN 1: selección de sección ============ -->
       <div id="screen-select">
-        <div class="page-head">
-          <h2>Classroom</h2>
-          <p>Selecciona una sección para ver el curso y la actividad de tus alumnos.</p>
+        <div class="page-head page-head-row">
+          <div>
+            <h2>Secciones</h2>
+            <p>Selecciona una sección para ver el curso y la actividad de tus alumnos.</p>
+          </div>
+          <button class="btn btn-purple btn-icon" id="openCreateSection">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Crear sección
+          </button>
         </div>
 
-        <div class="filter-chips" id="filterChips">
-          <button class="chip active" data-course="todas">Todas</button>
-          <button class="chip" data-course="Física">Física</button>
-          <button class="chip" data-course="Álgebra">Álgebra</button>
-          <button class="chip" data-course="Química">Química</button>
-          <button class="chip" data-course="Razonamiento Matemático">Raz. Matemático</button>
-        </div>
+        <div class="filter-chips" id="filterChips"></div>
 
         <div class="section-grid" id="sectionGrid"></div>
+
+        <!-- Estado vacío -->
+        <div class="empty-state hidden" id="sectionsEmpty">
+          <div class="empty-ico">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+          </div>
+          <h3>Aún no tienes secciones</h3>
+          <p>Crea tu primera aula para empezar a asignar tareas, retos y a seguir el progreso de tus alumnos.</p>
+          <button class="btn btn-purple btn-icon" id="openCreateSectionEmpty">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Crear sección
+          </button>
+        </div>
       </div>
 
       <!-- ============ SCREEN 2: detalle de sección ============ -->
@@ -57,6 +71,14 @@
             <div class="section-title-block">
               <h2 id="detailTitle">—</h2>
               <p id="detailSubtitle">—</p>
+              <div class="detail-meta-row">
+                <span class="join-code" id="detailJoinCode" title="Código para que los alumnos se unan">
+                  <span id="detailJoinValue">—</span>
+                  <button type="button" id="copyJoinCode" aria-label="Copiar código">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                  </button>
+                </span>
+              </div>
             </div>
           </div>
           <div class="section-stats">
@@ -65,9 +87,29 @@
             <div class="mini-stat"><div class="val" id="detailCount">—</div><div class="lbl">Alumnos</div></div>
           </div>
           <div class="section-actions">
-            <button class="btn btn-purple">Asignar tarea</button>
-            <button class="btn btn-line">Calificar tareas</button>
+            <button class="btn btn-purple btn-icon" data-new-activity="tarea">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="18" rx="2"/><path d="M9 4h6a1 1 0 0 1 1 1v1H8V5a1 1 0 0 1 1-1Z"/><path d="m9 13 2 2 4-4"/></svg>
+              Asignar tarea
+            </button>
+            <button class="btn btn-line" data-new-activity="reto">Crear reto</button>
+            <button class="btn btn-line" data-new-activity="quiz">Crear quiz</button>
+            <a class="btn btn-line btn-icon" id="detailDashboardLink" href="analytics.html">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+              Ver dashboard
+            </a>
           </div>
+        </div>
+
+        <!-- Actividades asignadas -->
+        <div class="ranking-panel activities-panel">
+          <div class="panel-head-row">
+            <div class="panel-icon-trophy purple">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="18" rx="2"/><path d="M9 4h6a1 1 0 0 1 1 1v1H8V5a1 1 0 0 1 1-1Z"/><path d="m9 13 2 2 4-4"/></svg>
+            </div>
+            <h3>Actividades asignadas</h3>
+            <span class="panel-count" id="activitiesCount"></span>
+          </div>
+          <div id="activitiesList"></div>
         </div>
 
         <div class="ranking-panel">
@@ -99,6 +141,130 @@
   </div>
 </div>
 
+<!-- ============ MODAL: crear sección ============ -->
+<div class="tmodal-overlay" id="modal-section" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="modal-section-title">
+  <div class="tmodal">
+    <div class="tmodal-head">
+      <div class="tmodal-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M9 21v-6h6v6"/><path d="M9 8h.01M15 8h.01"/></svg>
+      </div>
+      <div class="tmodal-titles">
+        <div class="tmodal-title" id="modal-section-title">Crear nueva sección</div>
+        <div class="tmodal-subtitle">Configura el aula. Se generará un código de unión para tus alumnos.</div>
+      </div>
+      <button class="tmodal-close" data-close-modal aria-label="Cerrar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <form id="sectionForm" novalidate>
+      <div class="tmodal-body">
+        <div class="field" data-field="course">
+          <label for="sec-course">Curso <span class="req">*</span></label>
+          <select id="sec-course" name="course">
+            <option value="">Selecciona un curso…</option>
+          </select>
+          <div class="field-error"></div>
+        </div>
+        <div class="field" data-field="name">
+          <label for="sec-name">Nombre de la sección <span class="req">*</span></label>
+          <input type="text" id="sec-name" name="name" placeholder="Ej: Física · Sección A" maxlength="60" autocomplete="off">
+          <div class="field-error"></div>
+        </div>
+        <div class="field-grid">
+          <div class="field" data-field="cycle">
+            <label for="sec-cycle">Ciclo</label>
+            <input type="text" id="sec-cycle" name="cycle" placeholder="Ej: Ciclo UNI Intensivo" maxlength="40" autocomplete="off">
+          </div>
+          <div class="field" data-field="shift">
+            <label for="sec-shift">Turno</label>
+            <select id="sec-shift" name="shift">
+              <option value="">—</option>
+              <option value="Mañana">Mañana</option>
+              <option value="Tarde">Tarde</option>
+              <option value="Noche">Noche</option>
+            </select>
+          </div>
+        </div>
+        <div class="field-grid">
+          <div class="field" data-field="schedule">
+            <label for="sec-schedule">Horario</label>
+            <input type="text" id="sec-schedule" name="schedule" placeholder="Ej: Lun y Mié · 8:00 AM" maxlength="40" autocomplete="off">
+          </div>
+          <div class="field" data-field="capacity">
+            <label for="sec-capacity">Capacidad</label>
+            <input type="number" id="sec-capacity" name="capacity" placeholder="30" min="1" max="300">
+            <div class="field-error"></div>
+          </div>
+        </div>
+        <div class="field" data-field="description">
+          <label for="sec-description">Descripción</label>
+          <textarea id="sec-description" name="description" placeholder="Objetivo del aula, universidad objetivo, temario…" maxlength="240"></textarea>
+        </div>
+      </div>
+      <div class="tmodal-foot">
+        <button type="button" class="btn btn-ghost" data-close-modal>Cancelar</button>
+        <button type="submit" class="btn btn-purple">Crear sección</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ============ MODAL: asignar actividad ============ -->
+<div class="tmodal-overlay" id="modal-activity" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="modal-activity-title">
+  <div class="tmodal tmodal-sm">
+    <div class="tmodal-head">
+      <div class="tmodal-icon amber" id="activityIcon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="18" rx="2"/><path d="M9 4h6a1 1 0 0 1 1 1v1H8V5a1 1 0 0 1 1-1Z"/><path d="m9 13 2 2 4-4"/></svg>
+      </div>
+      <div class="tmodal-titles">
+        <div class="tmodal-title" id="modal-activity-title">Asignar tarea</div>
+        <div class="tmodal-subtitle" id="activitySectionName">—</div>
+      </div>
+      <button class="tmodal-close" data-close-modal aria-label="Cerrar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <form id="activityForm" novalidate>
+      <div class="tmodal-body">
+        <div class="field" data-field="type">
+          <label>Tipo de actividad</label>
+          <div class="type-picker" id="activityTypePicker">
+            <button type="button" class="type-option" data-type="tarea"><span class="ico">📋</span>Tarea</button>
+            <button type="button" class="type-option" data-type="reto"><span class="ico">🏆</span>Reto</button>
+            <button type="button" class="type-option" data-type="quiz"><span class="ico">⚡</span>Quiz</button>
+          </div>
+          <input type="hidden" name="type" id="activityType" value="tarea">
+        </div>
+        <div class="field" data-field="title">
+          <label for="act-title">Título <span class="req">*</span></label>
+          <input type="text" id="act-title" name="title" placeholder="Ej: Práctica dirigida de dinámica" maxlength="80" autocomplete="off">
+          <div class="field-error"></div>
+        </div>
+        <div class="field" data-field="topic">
+          <label for="act-topic">Tema</label>
+          <input type="text" id="act-topic" name="topic" placeholder="Ej: Dinámica" maxlength="40" autocomplete="off">
+        </div>
+        <div class="field-grid">
+          <div class="field" data-field="dueDate">
+            <label for="act-due">Fecha límite</label>
+            <input type="date" id="act-due" name="dueDate">
+            <div class="field-error"></div>
+          </div>
+          <div class="field" data-field="points">
+            <label for="act-points">Puntos (XP)</label>
+            <input type="number" id="act-points" name="points" placeholder="100" min="0" max="1000">
+            <div class="field-error"></div>
+          </div>
+        </div>
+      </div>
+      <div class="tmodal-foot">
+        <button type="button" class="btn btn-ghost" data-close-modal>Cancelar</button>
+        <button type="submit" class="btn btn-purple" id="activitySubmit">Asignar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <script src="../../assets/js/utils/component-loader.js"></script>
 <script src="../../assets/js/core/storage.js"></script>
 <script src="../../assets/js/core/user-manager.js"></script>
@@ -107,6 +273,9 @@
 <script src="../../assets/js/core/current-user.js"></script>
 <script src="../../assets/js/core/app.js"></script>
 <script src="../../assets/js/teacher/dashboard.js"></script>
+<script src="../../assets/js/teacher/teacher-common.js"></script>
+<script src="../../assets/js/teacher/teacher-store.js"></script>
+<script src="../../assets/js/teacher/teacher-ui.js"></script>
 <script src="../../assets/js/teacher/classrooms.js"></script>
 
 </body>
