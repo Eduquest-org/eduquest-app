@@ -1,4 +1,7 @@
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
+  if (window.CurrentUserService) {
+    await CurrentUserService.init();
+  }
 
   document.querySelectorAll('.student-screen').forEach(screen => {
     if (!screen.classList.contains('active')) {
@@ -20,13 +23,17 @@ function renderDailyChallengeWidget() {
 
   if (!descEl || !pbarEl || !progTextEl || !btnEl) return;
 
-  const session = Storage.getSession();
-  if (!session) return;
+  const user = window.CurrentUserService ? CurrentUserService.getProfile() : null;
+  if (!user) return;
 
-  const user = UserManager.getUserById(session.userId);
-  if (!user || !user.stats || !user.stats.dailyChallenge) return;
-
-  const challenge = user.stats.dailyChallenge;
+  // Si no hay reto diario en DB (por migración), crear uno de respaldo para UI
+  const challenge = user.dailyChallenge || {
+      description: "Completa 2 quizzes hoy para mantener tu racha.",
+      current: 0,
+      target: 2,
+      type: "quiz_questions",
+      completed: false
+  };
 
   // 1. Mostrar descripción
   descEl.innerHTML = challenge.description;

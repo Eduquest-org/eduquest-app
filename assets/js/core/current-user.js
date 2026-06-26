@@ -6,9 +6,17 @@
 // Provee acceso rápido a nombre, email, avatar, stats, profile, etc.
 // ==========================================================================
 
+let currentUserCache = null;
+
 const CurrentUserService = {
+    async init() {
+        if (window.UserManager) {
+            currentUserCache = await UserManager.getCurrentUserDoc();
+        }
+        return currentUserCache;
+    },
     getProfile() {
-        return UserManager.getCurrentUserDoc();
+        return currentUserCache;
     },
     getName() {
         return this.getProfile()?.name || '';
@@ -27,7 +35,7 @@ const CurrentUserService = {
         return this.getProfile()?.role || '';
     },
     getAvatar() {
-        return this.getProfile()?.profile?.avatar || '👤';
+        return this.getProfile()?.avatar_url || this.getProfile()?.profile?.avatar || '👤';
     },
     getInitials() {
         const name = this.getName();
@@ -60,8 +68,13 @@ const CurrentUserService = {
         const user = this.getProfile();
         if (!user) return '';
 
-        // Buscar en stats
+        // Buscar en stats (o directamente en properties que vienen de Supabase como total_xp)
         if (user.stats && user.stats[key] !== undefined) return user.stats[key];
+        
+        // Mapeos comunes de Supabase a los nombres antiguos
+        if (key === 'totalXp' && user.total_xp !== undefined) return user.total_xp;
+        if (key === 'streakDays' && user.streak_days !== undefined) return user.streak_days;
+        if (key === 'target' && user.target_university_id !== undefined) return user.target_university_id;
 
         // Buscar en profile
         if (user.profile && user.profile[key] !== undefined) return user.profile[key];

@@ -1,7 +1,10 @@
 // assets/js/student/profile.js
 // CONTROLADOR DE PANTALLA DE PERFIL Y VITRINA DE LOGROS
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
+    if (window.CurrentUserService) {
+        await CurrentUserService.init();
+    }
     loadProfileData();
 
     // Auto-ocultar preloader
@@ -24,24 +27,21 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function loadProfileData() {
-    const session = Storage.getSession();
-    if (!session) return;
-
-    const user = UserManager.getUserById(session.userId);
+    const user = window.CurrentUserService ? CurrentUserService.getProfile() : null;
     if (!user) return;
 
     // 1. Rellenar Información del Encabezado
-    document.getElementById("profile-current-avatar").innerText = user.profile?.avatar || "🚀";
-    document.getElementById("profile-full-name").innerText = user.name || "Estudiante";
-    document.getElementById("profile-email").innerText = user.email || "";
+    document.getElementById("profile-current-avatar").innerText = CurrentUserService.getAvatar();
+    document.getElementById("profile-full-name").innerText = CurrentUserService.getName();
+    document.getElementById("profile-email").innerText = CurrentUserService.getEmail();
     
-    const targetUni = user.profile?.target || "UNI";
+    const targetUni = CurrentUserService.getStat('target') || "UNI";
     document.getElementById("profile-uni-target").innerText = `Meta: ${targetUni}`;
-    document.getElementById("profile-career").innerText = user.profile?.career || "Por elegir";
+    document.getElementById("profile-career").innerText = CurrentUserService.getStat('career') || "Por elegir";
 
     // 2. Rellenar Estadísticas Rápidas
-    const xp = user.stats?.totalXp || 0;
-    const streak = user.stats?.streakDays || 0;
+    const xp = CurrentUserService.getStat('totalXp') || 0;
+    const streak = CurrentUserService.getStat('streakDays') || 0;
     document.getElementById("profile-xp-value").innerText = Number(xp).toLocaleString() + " XP";
     document.getElementById("profile-streak-value").innerText = `🔥 ${streak}`;
 
@@ -49,12 +49,12 @@ function loadProfileData() {
     document.getElementById("stats-total-xp").innerText = Number(xp).toLocaleString();
     document.getElementById("stats-streak-days").innerText = `${streak} ${streak === 1 ? 'día' : 'días'}`;
     
-    // Contar simulacros resueltos basados en completedTopics
-    const completedQuizzesCount = user.learningProgress?.completedTopics?.length || 0;
+    // Contar simulacros resueltos (ahora guardado localmente temporalmente)
+    const completedQuizzesCount = parseInt(localStorage.getItem('completedTopicsCount') || '0', 10);
     document.getElementById("stats-completed-quizzes").innerText = completedQuizzesCount;
 
     // Retos Diarios Cumplidos
-    const completedChallengesCount = user.stats?.completedChallengesCount || 0;
+    const completedChallengesCount = parseInt(localStorage.getItem('completedChallengesCount') || '0', 10);
     document.getElementById("stats-completed-challenges").innerText = completedChallengesCount;
 
     // 4. Renderizar Rejilla de Insignias (Vitrina)
@@ -67,7 +67,7 @@ function renderBadgesShowcase(user) {
 
     container.innerHTML = "";
     
-    const unlockedBadges = user.profile?.badges || [];
+    const unlockedBadges = user.badges || [];
     let unlockedCount = 0;
 
     // AVAILABLE_BADGES viene declarado globalmente en gamification.js
@@ -102,11 +102,14 @@ function toggleAvatarDropdown() {
 
 // Cambiar el avatar del usuario interactivo y guardarlo
 function changeUserAvatar(emoji) {
-    const session = Storage.getSession();
-    if (!session) return;
+    const user = window.CurrentUserService ? CurrentUserService.getProfile() : null;
+    if (!user) return;
 
-    // Actualizar base de datos local
-    UserManager.updateProfile(session.userId, { avatar: emoji });
+    // Asumimos que avatar_url lo guardamos en la DB
+    user.avatar_url = emoji;
+    if (window.UserManager) {
+        UserManager.updateProfile(user.id, { avatar_url: emoji });
+    }
 
     // Actualizar interfaz del perfil
     document.getElementById("profile-current-avatar").innerText = emoji;

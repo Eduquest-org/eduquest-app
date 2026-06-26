@@ -1,6 +1,13 @@
 // assets/js/student/roadmap.js
+import { supabase } from '../config/supabase.js';
 
-document.addEventListener("DOMContentLoaded", () => {
+// Función principal de inicio
+async function initRoadmap() {
+    // Esperar a que el usuario cargue desde Supabase antes de pintar la UI
+    if (window.CurrentUserService) {
+        await CurrentUserService.init();
+    }
+    
     buildStudentProfileBanner();
     buildCourseSelectionGrid();
 
@@ -8,7 +15,13 @@ document.addEventListener("DOMContentLoaded", () => {
         const preloader = document.getElementById("app-preloader");
         if (preloader) preloader.classList.add("fade-out-loader");
     }, 350);
-});
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener("DOMContentLoaded", initRoadmap);
+} else {
+    initRoadmap();
+}
 
 function buildStudentProfileBanner() {
     const bannerContainer = document.getElementById("student-profile-summary");
@@ -42,21 +55,33 @@ function buildStudentProfileBanner() {
 }
 
 async function fetchDynamicRoadmap() {
-    const session = Storage.getSession();
+    const { data: { session } } = await supabase.auth.getSession();
 
-    // Obtener temas completados del usuario para calcular progreso
+    // Obtener temas completados del usuario desde Supabase
     let completedTopics = [];
-    if (session && window.UserManager) {
-        const user = UserManager.getUserById(session.userId);
-        if (user && user.learningProgress) {
-            completedTopics = user.learningProgress.completedTopics || [];
+    if (session) {
+        const { data: progressData } = await supabase
+            .from('user_topic_progress')
+            .select('topic_id')
+            .eq('user_id', session.user.id)
+            .eq('status', 'completed');
+            
+        if (progressData) {
+            completedTopics = progressData.map(p => p.topic_id);
         }
     }
 
     // Si existe una ruta IA personalizada, mostrar SOLO esa ruta
-    if (session && window.UserManager) {
-        const aiRoutes = UserManager.getCustomRoadmap(session.userId);
-        if (aiRoutes.length > 0) {
+    if (window.CurrentUserService) {
+        const userProfile = CurrentUserService.getProfile();
+        let aiRoutes = userProfile?.ai_roadmap || [];
+        
+        // Compatibilidad: si era string JSON
+        if (typeof aiRoutes === 'string') {
+            try { aiRoutes = JSON.parse(aiRoutes); } catch(e) { aiRoutes = []; }
+        }
+
+        if (aiRoutes && aiRoutes.length > 0) {
             // Recalcular progreso basado en completedTopics
             return aiRoutes.map(route => {
                 const safeNodes = route.nodes || [];
@@ -69,12 +94,12 @@ async function fetchDynamicRoadmap() {
                     completedLevels,
                     progressPct,
                     xpEarned: completedLevels * 50,
-                    nodes: safeNodes.map((n, idx) => {
+                    nodes: safeNodes.map(n => {
                         const title = n.data ? n.data.title : n.title;
                         if (completedTopics.includes(n.id)) {
                             return { ...n, title, status: 'completed' };
                         }
-                        // Todos los niveles no completados están desbloqueados por defecto (modo exploración)
+                        // Todos los niveles no completados están desbloqueados por defecto
                         return { ...n, title, status: 'unlocked' };
                     })
                 };
@@ -84,11 +109,11 @@ async function fetchDynamicRoadmap() {
 
     // Fallback: si no hay ruta IA (usuario sin diagnóstico), mostrar catálogo genérico
     const [coursesRes, topicsRes] = await Promise.all([
-        fetch("../../mock/courses.json"),
-        fetch("../../mock/topics.json")
+        supabase.from('courses').select('id, name, icon, color'),
+        supabase.from('topics').select('id, name, course_id')
     ]);
-    const courses = await coursesRes.json();
-    const topics = await topicsRes.json();
+    const courses = coursesRes.data || [];
+    const topics = (topicsRes.data || []).map(t => ({ id: t.id, name: t.name, courseId: t.course_id }));
 
     let userTarget = "UNI";
     if (window.CurrentUserService) {
@@ -127,10 +152,30 @@ async function buildCourseSelectionGrid() {
     if (!grid) return;
 
     const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('generate') === 'true') {
-        // Convertimos el param en estado persistente
-        localStorage.setItem('pendingAIGeneration', 'true');
-        window.history.replaceState({}, document.title, window.location.pathname);
+    
+    // Autodisparar si no hay ruta generada pero hay diagnóstico
+    const { data: { session } } = await supabase.auth.getSession();
+    let hasValidRoadmap = false;
+    let hasDiagnostic = false;
+    
+    if (window.CurrentUserService) {
+        const user = CurrentUserService.getProfile();
+        hasDiagnostic = !!(user && user.diagnostic_results);
+        if (user && user.ai_roadmap) {
+            hasValidRoadmap = Array.isArray(user.ai_roadmap) && user.ai_roadmap.length > 0;
+            if (hasValidRoadmap && user.ai_roadmap[0].id === 'course_fallback') hasValidRoadmap = false;
+        }
+    }
+
+    const isPhase1Active = localStorage.getItem('aiPhase1') === 'true';
+    const isPhase2Active = (localStorage.getItem('aiQueue') || '[]') !== '[]';
+
+    if (!isPhase1Active && !isPhase2Active) {
+        if (urlParams.get('generate') === 'true' || (hasDiagnostic && !hasValidRoadmap)) {
+            // Convertimos el param en estado persistente
+            localStorage.setItem('pendingAIGeneration', 'true');
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
     }
 
     if (localStorage.getItem('pendingAIGeneration') === 'true') {
@@ -141,10 +186,10 @@ async function buildCourseSelectionGrid() {
         if (preloader) preloader.classList.add("fade-out-loader");
 
         // Generate Roadmap (Solo Fase 1 y encolar)
-        const session = Storage.getSession();
-        if (session && window.UserManager && window.AIEngine) {
-            const user = UserManager.getUserById(session.userId);
-            if (user && user.learningProgress && user.learningProgress.diagnosticResults) {
+        const { data: { session: currentSession } } = await supabase.auth.getSession();
+        if (currentSession && window.CurrentUserService && window.AIEngine) {
+            const user = CurrentUserService.getProfile();
+            if (user && user.diagnostic_results) {
                 // Ejecutar asíncronamente sin bloquear el flujo principal
                 (async () => {
                     try {
@@ -152,7 +197,7 @@ async function buildCourseSelectionGrid() {
                         // Forzar re-render inmediato para mostrar el banner de Fase 1
                         buildCourseSelectionGrid();
                         
-                        await AIEngine.generatePersonalizedRoadmap(user.learningProgress.diagnosticResults);
+                        await AIEngine.generatePersonalizedRoadmap(user.diagnostic_results);
                         
                         localStorage.removeItem('aiPhase1');
                         // Re-render para cambiar al banner de Fase 2 (cola)
@@ -508,4 +553,5 @@ function handleRagItemClick(event, id, type, status) {
     } else {
         alert(`Abrir visor de recurso para el ID: ${id} (Próximamente modal integrado)`);
     }
-}
+}window.openSpecificCourseMap = openSpecificCourseMap;
+window.switchBackToSelection = switchBackToSelection;

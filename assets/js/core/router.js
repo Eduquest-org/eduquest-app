@@ -1,11 +1,14 @@
 const Router = {
-    init() {
+    async init() {
         const path = window.location.pathname;
         
         if (path.includes('/auth/')) {
-            if (Auth.checkSession(false)) {
+            const hasSession = await Auth.checkSession(false);
+            if (hasSession && !path.includes('onboarding.html')) {
                 const session = Auth.getCurrentUser();
-                window.location.href = session.role === 'student' ? '../student/dashboard.html' : '../teacher/dashboard.html';
+                if (session) {
+                    window.location.href = session.role === 'student' ? '../student/dashboard.html' : '../teacher/dashboard.html';
+                }
             }
             return;
         }
@@ -14,7 +17,7 @@ const Router = {
             return;
         }
 
-        Auth.requireAuth();
+        await Auth.requireAuth();
 
         if (path.includes('/student/')) {
             Auth.requireRole('student');
