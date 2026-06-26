@@ -1,10 +1,9 @@
-// ==========================================================================
-// assets/js/core/current-user.js
-// SERVICIO DE LECTURA DEL USUARIO ACTIVO (sesión actual)
-// ==========================================================================
-// Lee datos del usuario logueado usando UserManager.
-// Provee acceso rápido a nombre, email, avatar, stats, profile, etc.
-// ==========================================================================
+/**
+ * @fileoverview Servicio de persistencia y acceso al estado del usuario activo.
+ * Actúa como una capa de caché en memoria sobre el UserManager, proveyendo métodos
+ * síncronos para extraer propiedades del perfil y estadísticas del usuario autenticado.
+ * También incluye un gestor para vincular (binding) estos datos directamente al DOM.
+ */
 
 let currentUserCache = null;
 
@@ -45,41 +44,45 @@ const CurrentUserService = {
     },
 
     /**
-     * Obtiene un valor del subobjeto `profile` del usuario.
-     * Ej: getProfileField('target') → "UNI"
+     * Extraer un valor específico del subobjeto profile.
+     * @param {string} key - Clave del perfil a consultar.
+     * @returns {any} Valor correspondiente a la clave o string vacío.
      */
     getProfileField(key) {
         return this.getProfile()?.profile?.[key] || '';
     },
 
     /**
-     * Obtiene un valor del subobjeto `stats` del usuario.
-     * Ej: getStatField('totalXp') → 1150
+     * Extraer un valor específico del subobjeto stats.
+     * @param {string} key - Clave de estadística a consultar.
+     * @returns {any} Valor de la estadística o string vacío.
      */
     getStatField(key) {
         return this.getProfile()?.stats?.[key] || '';
     },
 
     /**
-     * Retrocompatible con el uso anterior de getStat(key).
-     * Busca primero en `stats`, luego en `profile`, luego en raíz.
+     * Consultar métricas o propiedades asegurando retrocompatibilidad estructural.
+     * Explora jerárquicamente: stats > mapeos estáticos > profile > raíz.
+     * @param {string} key - Clave de la propiedad requerida.
+     * @returns {any} Valor resuelto de la propiedad.
      */
     getStat(key) {
         const user = this.getProfile();
         if (!user) return '';
 
-        // Buscar en stats (o directamente en properties que vienen de Supabase como total_xp)
+        // Buscar prioridad en objeto de estadísticas o propiedades directas de base de datos
         if (user.stats && user.stats[key] !== undefined) return user.stats[key];
         
-        // Mapeos comunes de Supabase a los nombres antiguos
+        // Aplicar mapeos de compatibilidad entre el esquema actual y la estructura legada
         if (key === 'totalXp' && user.total_xp !== undefined) return user.total_xp;
         if (key === 'streakDays' && user.streak_days !== undefined) return user.streak_days;
         if (key === 'target' && user.target_university_id !== undefined) return user.target_university_id;
 
-        // Buscar en profile
+        // Buscar en subobjeto de perfil anidado
         if (user.profile && user.profile[key] !== undefined) return user.profile[key];
 
-        // Buscar en raíz (retrocompatibilidad para datos no migrados)
+        // Fallback a propiedades en la raíz del documento para preservar retrocompatibilidad
         if (user[key] !== undefined) return user[key];
 
         return '';

@@ -13,13 +13,11 @@
 
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
-// ⚠️ REEMPLAZA estos valores con los de tu proyecto en Supabase Dashboard
-// Settings > API > Project URL y Project API Keys (anon public)
 const SUPABASE_URL = 'https://gjxtbrouqekdvogisequ.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdqeHRicm91cWVrZHZvZ2lzZXF1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzNDM3MzUsImV4cCI6MjA5NzkxOTczNX0.b8jhrTOXu2tyR-UHNDrj4lWBce1vuvmH4bLRRPxVyqM';
 
 export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-window.supabase = supabase; // Exponer para la consola del navegador
+window.supabase = supabase;
 
 // ─── Helpers de Storage ──────────────────────────────────────
 
