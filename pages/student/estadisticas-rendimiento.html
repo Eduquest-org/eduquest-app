@@ -31,27 +31,26 @@
                 <p> </p>
             </div>
             <div class="stats-grid">
-
                 <div class="stat-card">
                     <h4>Promedio General</h4>
-                    <h2>78%</h2>
+                    <h2 id="stat-promedio">0%</h2>
                 </div>
 
                 <div class="stat-card">
                     <h4>Mejor Materia</h4>
-                    <h2>Álgebra</h2>
-                    <span>90%</span>
+                    <h2 id="stat-mejor-materia">-</h2>
+                    <span id="stat-mejor-pct">0%</span>
                 </div>
 
                 <div class="stat-card">
                     <h4>Materia a Reforzar</h4>
-                    <h2>Física</h2>
-                    <span>65%</span>
+                    <h2 id="stat-peor-materia">-</h2>
+                    <span id="stat-peor-pct">0%</span>
                 </div>
 
                 <div class="stat-card">
                     <h4>Simulacros</h4>
-                    <h2>12</h2>
+                    <h2 id="stat-simulacros">0</h2>
                 </div>
 
             </div>
@@ -85,63 +84,8 @@
                         </tr>
                     </thead>
 
-                    <tbody>
-
-                        <tr>
-                            <td>Álgebra</td>
-                            <td>90%</td>
-                            <td>10%</td>
-                            <td>
-                                <span class="badge excelente">
-                                    Excelente
-                                </span>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td>Aritmética</td>
-                            <td>78%</td>
-                            <td>22%</td>
-                            <td>
-                                <span class="badge bueno">
-                                    Bueno
-                                </span>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td>Geometría</td>
-                            <td>72%</td>
-                            <td>28%</td>
-                            <td>
-                                <span class="badge bueno">
-                                    Bueno
-                                </span>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td>Física</td>
-                            <td>65%</td>
-                            <td>35%</td>
-                            <td>
-                                <span class="badge reforzar">
-                                    Reforzar
-                                </span>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td>Química</td>
-                            <td>83%</td>
-                            <td>17%</td>
-                            <td>
-                                <span class="badge excelente">
-                                    Excelente
-                                </span>
-                            </td>
-                        </tr>
-
+                    <tbody id="table-body-materias">
+                        <!-- Dynamic content -->
                     </tbody>
 
                 </table>
@@ -151,19 +95,8 @@
             <div class="card recommendation">
 
                 <h3>Recomendaciones Automáticas</h3>
-
-                <ul>
-                    <li>
-                        Física: reforzar cinemática y dinámica.
-                    </li>
-
-                    <li>
-                        Geometría: practicar áreas y volúmenes.
-                    </li>
-
-                    <li>
-                        Álgebra: desbloquear ejercicios avanzados.
-                    </li>
+                <ul id="list-recomendaciones">
+                    <!-- Dynamic content -->
                 </ul>
 
             </div>
