@@ -13,6 +13,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // Renderizar la misión diaria
   renderDailyChallengeWidget();
+  
+  // Renderizar widget de rendimiento
+  await renderDashboardRendimientoWidget();
 });
 
 function renderDailyChallengeWidget() {
@@ -92,6 +95,61 @@ function renderDailyChallengeWidget() {
     }
   }
 }
+
+async function renderDashboardRendimientoWidget() {
+  const chartEl = document.getElementById("dashboard-rendimiento-chart");
+  const pctEl = document.getElementById("dashboard-chart-pct");
+  if (!chartEl || !pctEl) return;
+
+  const user = window.CurrentUserService ? CurrentUserService.getProfile() : null;
+  if (!user) return;
+
+  let statsData = [];
+  if (window.UserManager) {
+      statsData = await UserManager.getAllUserTopicStats(user.id);
+  }
+
+  let totalCorrect = 0;
+  let totalQuestions = 0;
+
+  statsData.forEach(stat => {
+      const correct = stat.correct_answers || 0;
+      const incorrect = stat.incorrect_answers || 0;
+      totalCorrect += correct;
+      totalQuestions += (correct + incorrect);
+  });
+
+  if (totalQuestions === 0) {
+      chartEl.style.background = "conic-gradient(#cbd5e1 0deg 360deg)";
+      pctEl.innerText = "-";
+      return;
+  }
+
+  const correctPct = Math.round((totalCorrect / totalQuestions) * 100);
+  pctEl.innerText = correctPct + "%";
+
+  const correctDeg = (totalCorrect / totalQuestions) * 360;
+  
+  if (totalCorrect === 0) {
+      chartEl.style.background = "conic-gradient(#ef4444 0deg 360deg)";
+  } else if (totalCorrect === totalQuestions) {
+      chartEl.style.background = "conic-gradient(#22c55e 0deg 360deg)";
+  } else {
+      const gap = 4;
+      const cEnd = correctDeg - gap / 2;
+      const iStart = correctDeg + gap / 2;
+      const iEnd = 360 - gap / 2;
+      
+      chartEl.style.background = `conic-gradient(
+          #ffffff 0deg ${gap/2}deg,
+          #22c55e ${gap/2}deg ${cEnd}deg, 
+          #ffffff ${cEnd}deg ${iStart}deg,
+          #ef4444 ${iStart}deg ${iEnd}deg,
+          #ffffff ${iEnd}deg 360deg
+      )`;
+  }
+}
+
 
 
 

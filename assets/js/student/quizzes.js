@@ -126,7 +126,7 @@ async function startQuizFromParam(topicId, type) {
     try {
         const topicsRes = await fetch("../../mock/topics.json");
         const topics = await topicsRes.json();
-        
+
         const topic = topics.find(t => t.id === topicId);
         if (topic) {
             startSpecificQuiz(topic.id, topic.name, topic.courseId, type === 'examen' ? 200 : 100);
@@ -231,7 +231,7 @@ function launchQuizRunner() {
 
     // Reinicializar interfaz de usuario
     document.getElementById("quiz-run-title").innerText = activeQuizState.title;
-    
+
     // Inicializar temporizador de ejecución
     if (activeQuizState.timerInterval) clearInterval(activeQuizState.timerInterval);
     activeQuizState.startTime = Date.now();
@@ -264,14 +264,14 @@ function renderCurrentQuestion() {
     // Generar bloque de alternativas
     const optionsContainer = document.getElementById("quiz-options-container");
     optionsContainer.innerHTML = "";
-    
+
     const letters = ["A", "B", "C", "D"];
     const previousAnswer = activeQuizState.answers[idx];
 
     q.options.forEach((opt, oIdx) => {
         const optionCard = document.createElement("div");
         optionCard.className = "quiz-option-card";
-        
+
         // Restaurar estado visual de opciones respondidas
         if (previousAnswer !== null) {
             optionCard.classList.add("disabled");
@@ -291,11 +291,11 @@ function renderCurrentQuestion() {
 
         optionCard.onclick = () => {
             if (activeQuizState.answers[idx] !== null) return; // Prevenir selección múltiple en pregunta validada
-            
+
             document.querySelectorAll(".quiz-option-card").forEach(c => c.classList.remove("selected"));
             optionCard.classList.add("selected");
             activeQuizState.selectedOption = oIdx;
-            
+
             document.getElementById("quiz-btn-submit").disabled = false;
         };
 
@@ -312,7 +312,7 @@ function renderCurrentQuestion() {
         submitBtn.style.display = "none";
         nextBtn.style.display = "block";
         nextBtn.innerText = (idx === total - 1) ? "Finalizar Evaluación" : "Siguiente Pregunta";
-        
+
         feedbackPanel.style.display = "block";
         feedbackPanel.className = `quiz-feedback-box ${previousAnswer === q.correctOption ? 'correct' : 'incorrect'}`;
         feedbackPanel.querySelector(".feedback-indicator-icon").innerText = previousAnswer === q.correctOption ? "✅" : "❌";
@@ -334,12 +334,13 @@ function submitAnswer() {
     const sel = activeQuizState.selectedOption;
 
     if (sel === null) return;
-
-    // Persistir opción seleccionada
     activeQuizState.answers[idx] = sel;
     activeQuizState.selectedOption = null;
 
-    // Forzar actualización para renderizar corrección visual
+    const user = window.CurrentUserService ? CurrentUserService.getProfile() : null;
+    if (user && window.UserManager) {
+        UserManager.updateStreak(user.id).catch(err => console.error("Error updating streak:", err));
+    }
     renderCurrentQuestion();
 }
 
@@ -364,7 +365,7 @@ function finishQuiz() {
 
     const user = window.CurrentUserService ? CurrentUserService.getProfile() : null;
     if (!user) return;
-    
+
     let correctCount = 0;
     activeQuizState.problems.forEach((q, idx) => {
         if (activeQuizState.answers[idx] === q.correctOption) {
@@ -380,7 +381,7 @@ function finishQuiz() {
     const timeStr = `${mins}:${secs}`;
 
     // Calcular distribución de experiencia adquirida
-    let xpEarned = correctCount * 20; 
+    let xpEarned = correctCount * 20;
     if (pct === 100) xpEarned += activeQuizState.xpReward; // Asignar bonificación por puntuación perfecta
     else if (pct >= 60) xpEarned += Math.round(activeQuizState.xpReward * 0.6); // Asignar bonificación parcial por aprobación
 
@@ -389,9 +390,9 @@ function finishQuiz() {
         // Registrar superación de tema sujeta a umbral de aprobación
         if (pct >= 60) {
             UserManager.completeTopicProgress(
-                user.id, 
-                activeQuizState.topicId, 
-                activeQuizState.courseId, 
+                user.id,
+                activeQuizState.topicId,
+                activeQuizState.courseId,
                 xpEarned
             );
         } else {
@@ -401,6 +402,46 @@ function finishQuiz() {
     } else {
         // Asignar experiencia obtenida en evaluación general
         UserManager.addXp(user.id, xpEarned);
+    }
+
+    // Guardar estadísticas en el backend (Supabase) agrupadas por tópico real
+    if (window.UserManager) {
+        const statsByTopic = {};
+        
+        activeQuizState.problems.forEach((q, idx) => {
+            const tId = q.topicId;
+            if (!tId) return; // Prevenir guardado si no hay topicId
+            
+            if (!statsByTopic[tId]) {
+                statsByTopic[tId] = { correct: 0, incorrect: 0 };
+            }
+            if (activeQuizState.answers[idx] === q.correctOption) {
+                statsByTopic[tId].correct++;
+            } else {
+                statsByTopic[tId].incorrect++;
+            }
+        });
+
+        for (const [tId, counts] of Object.entries(statsByTopic)) {
+            UserManager.saveUserTopicStats(user.id, tId, counts.correct, counts.incorrect);
+        }
+    }
+
+    // Guardar estadísticas de rendimiento en localStorage (historial de simulacros fallback)
+    try {
+        const perfKey = `eduquest_performance_${user.id}`;
+        const perfData = JSON.parse(localStorage.getItem(perfKey) || '{"history":[]}');
+        perfData.history.push({
+            courseId: activeQuizState.courseId || 'general',
+            isGeneral: activeQuizState.isGeneral,
+            correct: correctCount,
+            incorrect: total - correctCount,
+            total: total,
+            timestamp: Date.now()
+        });
+        localStorage.setItem(perfKey, JSON.stringify(perfData));
+    } catch (e) {
+        console.error("Error guardando estadísticas de rendimiento:", e);
     }
 
     // Disparar ganchos de gamificación para retos diarios
@@ -432,7 +473,7 @@ function finishQuiz() {
     // Asignar titular de evaluación según rendimiento
     const headlineEl = document.getElementById("results-headline");
     const subEl = document.getElementById("results-subheadline");
-    
+
     if (pct === 100) {
         headlineEl.innerText = "Desempeño Óptimo Registrado";
         subEl.innerText = "La totalidad de las respuestas han sido validadas como correctas.";
@@ -456,10 +497,10 @@ function confirmExitQuiz() {
 function exitToSelection() {
     document.querySelectorAll(".quiz-view-section").forEach(v => v.classList.remove("active"));
     document.getElementById("quizzes-selection-view").classList.add("active");
-    
+
     // Restablecer parámetros de URL
     window.history.replaceState({}, document.title, window.location.pathname);
-    
+
     // Actualizar indicadores visuales de progreso
     loadQuizzesSelection();
 }
@@ -487,7 +528,7 @@ window.filterCourses = filterCourses;
 window.startSpecificQuiz = startSpecificQuiz;
 window.startGeneralMockExam = startGeneralMockExam;
 window.submitAnswer = submitAnswer;
-window.prevQuestion = () => {};
+window.prevQuestion = () => { };
 window.nextQuestion = nextQuestion;
 window.confirmExitQuiz = confirmExitQuiz;
 window.exitToSelection = exitToSelection;

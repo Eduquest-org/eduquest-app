@@ -164,11 +164,14 @@
               Errores
             </span>
           </div>
-          <div
-            style="position: relative; width: 200px; height: 200px; margin: 0 auto 28px; border-radius: 50%; background: conic-gradient(#22c55e 0deg 277deg, #ffffff 277deg 281deg, #ef4444 281deg 356deg, #ffffff 356deg 360deg); display: flex; align-items: center; justify-content: center;">
-            <div style="width: 110px; height: 110px; background: #ffffff; border-radius: 50%;"></div>
+          <div id="dashboard-rendimiento-chart"
+            style="position: relative; width: 200px; height: 200px; margin: 0 auto 28px; border-radius: 50%; background: conic-gradient(#cbd5e1 0deg 360deg); display: flex; align-items: center; justify-content: center; transition: background 0.5s ease;">
+            <div style="width: 110px; height: 110px; background: #ffffff; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+              <span id="dashboard-chart-pct" style="font-size: 24px; font-weight: 800; color: #111827;">-</span>
+              <span style="font-size: 11px; color: #6b7280; font-weight: 600;">Promedio</span>
+            </div>
             <div
-              style="position: absolute; width: 100%; height: 100%; border-radius: 50%; box-shadow: inset 0 0 0 4px #ffffff;">
+              style="position: absolute; width: 100%; height: 100%; border-radius: 50%; box-shadow: inset 0 0 0 4px #ffffff; pointer-events: none;">
             </div>
           </div>
           <button class="btn outline sm full" onclick="window.location.href='estadisticas-rendimiento.html'"
