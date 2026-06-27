@@ -1,0 +1,1 @@
+const fs = require('fs'); const file = process.argv[2]; const lines = fs.readFileSync(file, 'utf8').split('\n'); let inConflict = false; lines.forEach((line, i) => { if (line.startsWith('<<<<<<<')) inConflict = true; if (inConflict) console.log(i+1 + ': ' + line); if (line.startsWith('>>>>>>>')) { inConflict = false; console.log('---'); } });

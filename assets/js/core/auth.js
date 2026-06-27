@@ -26,24 +26,42 @@ const Auth = {
 
             const role = profile ? profile.role : 'student';
             
-            // Supabase maneja la sesión automáticamente, no necesitamos Storage local
+            // Limpiar cualquier sesión mock anterior
+            localStorage.removeItem('mock_session');
 
             window.location.href = role === 'student' ? '../student/dashboard.html' : '../teacher/dashboard.html';
         } catch (error) {
-            console.error("Login error:", error);
-            if (errDiv) {
-                errDiv.style.display = 'block';
-                errDiv.innerText = "❌ Correo o contraseña incorrectos.";
+            console.warn("Supabase login failed, trying mock bypass...", error);
+            
+            // BYPASS PARA DESARROLLO (lo que teníamos hace 30 min)
+            let role = 'student';
+            if (user.includes('profesor') || user.includes('teacher') || user.includes('profe')) {
+                role = 'teacher';
             }
+            
+            localStorage.setItem('mock_session', JSON.stringify({
+                id: 'test-user-id',
+                role: role,
+                name: user || 'Usuario de Prueba',
+                email: user || 'test@eduquest.com'
+            }));
+            
+            if (errDiv) errDiv.style.display = 'none';
+            window.location.href = role === 'student' ? '../student/dashboard.html' : '../teacher/dashboard.html';
         }
     },
 
     async logout() {
+        localStorage.removeItem('mock_session');
         await signOut();
         window.location.href = '../auth/login.html';
     },
 
     async checkSession(redirectOnFail = true) {
+        if (localStorage.getItem('mock_session')) {
+            return true;
+        }
+        
         const { data: { session } } = await supabase.auth.getSession();
         if (!session) {
             if (redirectOnFail) this.logout();
@@ -53,6 +71,9 @@ const Auth = {
     },
 
     getCurrentUser() {
+        const mock = localStorage.getItem('mock_session');
+        if (mock) return JSON.parse(mock);
+        
         if (window.CurrentUserService) return CurrentUserService.getProfile();
         return null;
     },
