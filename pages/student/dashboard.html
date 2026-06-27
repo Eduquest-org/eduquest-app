@@ -1,115 +1,39 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>EduQuest — Dashboard</title>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Inter:wght@400;500;600;700;900&family=Sora:wght@700;800&display=swap"
-    rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Inter:wght@400;500;600;700;900&family=Sora:wght@700;800&display=swap" rel="stylesheet">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Sora:wght@700;800&display=swap"
-    rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Sora:wght@700;800&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="../../assets/css/global/reset.css">
   <link rel="stylesheet" href="../../assets/css/global/variables.css">
-  <link rel="stylesheet" href="../../assets/css/components/buttons.css">
   <link rel="stylesheet" href="../../assets/css/pages/student-dashboard.css">
   <link rel="stylesheet" href="../../assets/css/components/feed-card.css">
   <link rel="stylesheet" href="../../assets/css/components/loader.css">
-  <link rel="stylesheet" href="../../assets/css/components/modals.css">
-
-  <link rel="icon" type="image/x-icon" href="../../assets/img/logos/eduquest-logo.ico">
 </head>
-
 <body>
 
   <div id="topbar-container" data-path="../../components/topbar-students.html"></div>
   <div class="app-shell" id="student-shell">
-
+    
     <div id="sidebar-container" data-path="../../components/sidebar.html"></div>
 
     <main class="dashboard-content">
-
+      
       <div class="feed-column">
-
-        <!-- === TARJETA DE PUBLICAR DUDA === -->
+        
         <div class="create-post-card">
-          <!-- Fila del avatar + campo de texto -->
           <div class="create-post-header">
-            <div class="user-avatar-mini" data-user-avatar>U</div>
-            <input type="text" id="post-input" class="form-input"
-              placeholder="¿Qué duda académica tienes hoy? (Ej: Integral de sustitución...)" autocomplete="off">
+            <div class="user-avatar-mini">U</div>
+            <input type="text" id="post-input" placeholder="¿Qué duda académica tienes hoy? (Ej: Geometría UNI...)">
           </div>
-
-          <!-- Panel de Publicaciones Similares (escenario alternativo) -->
-          <div class="similar-posts-panel" id="similar-posts-panel">
-            <div class="similar-panel-header">
-              <div class="similar-panel-title">
-                💡 ¿Alguien ya preguntó esto?
-              </div>
-              <button class="similar-panel-close"
-                onclick="document.getElementById('similar-posts-panel').classList.remove('visible')"
-                title="Cerrar">✕</button>
-            </div>
-            <div id="similar-posts-list"></div>
-          </div>
-
-          <!-- Zona de subida de imagen (toggle) -->
-          <div class="image-upload-zone" id="image-upload-zone"
-            onclick="document.getElementById('post-image-input').click()"
-            ondragover="event.preventDefault(); this.classList.add('dragover')"
-            ondragleave="this.classList.remove('dragover')" ondrop="handleImageDrop(event)">
-            <span class="upload-icon">📷</span>
-            <div class="upload-text"><strong>Haz clic o arrastra</strong> tu imagen aquí</div>
-            <div class="upload-hint">PNG, JPG, JPEG, GIF, WEBP · Máx. 5 MB</div>
-          </div>
-
-          <!-- Preview de imagen seleccionada -->
-          <div class="image-preview-container" id="image-preview-container">
-            <img src="" alt="Vista previa" id="image-preview-img">
-            <button class="image-preview-remove" onclick="removeSelectedImage()" title="Eliminar imagen">✕</button>
-          </div>
-
-          <!-- Banner de error de imagen (escenario de error) -->
-          <div class="image-error-banner" id="image-error-banner">
-            <span class="image-error-icon">🚫</span>
-            <span id="image-error-text">Sube un formato de imagen válido (PNG, JPG)</span>
-          </div>
-
-          <!-- Input oculto de archivo -->
-          <input type="file" id="post-image-input" accept="image/png,image/jpeg,image/jpg,image/gif,image/webp"
-            style="display:none" onchange="handleImageSelect(this)">
-
-          <!-- Barra de acciones -->
           <div class="create-post-actions">
-            <div class="post-toolbar">
-              <!-- Botón adjuntar imagen -->
-              <button class="toolbar-btn" id="btn-attach-image" onclick="toggleImageUpload()"
-                title="Adjuntar imagen de tu duda">
-                📷 Adjuntar imagen
-              </button>
-              <!-- Selector de etiqueta -->
-              <div class="tag-selector-wrapper">
-                <button class="toolbar-btn" id="btn-tag-selector" onclick="toggleTagDropdown()"
-                  title="Seleccionar etiqueta">
-                  🏷️ <span id="selected-tag-label">Agregar etiqueta</span>
-                </button>
-                <div class="tag-selector-dropdown" id="tag-dropdown">
-                  <div class="tag-option" onclick="selectTag('Matemáticas', '📐')">📐 Matemáticas</div>
-                  <div class="tag-option" onclick="selectTag('Física', '⚡')">⚡ Física</div>
-                  <div class="tag-option" onclick="selectTag('Álgebra', '🔢')">🔢 Álgebra</div>
-                  <div class="tag-option" onclick="selectTag('Geometría', '📏')">📏 Geometría</div>
-                  <div class="tag-option" onclick="selectTag('Comprensión Lectora', '📖')">📖 Comprensión Lectora</div>
-                  <div class="tag-option" onclick="selectTag('Química', '🧪')">🧪 Química</div>
-                  <div class="tag-option" onclick="selectTag('Biología', '🧬')">🧬 Biología</div>
-                  <div class="tag-option" onclick="selectTag('#Duda', '❓')">❓ #Duda (general)</div>
-                </div>
-              </div>
-            </div>
+            <span class="post-tag-selector"><i class="icon">🏷️</i> Agregar Curso</span>
             <button class="btn green btn-publish" onclick="addNewPost()">Publicar Duda</button>
           </div>
         </div>
@@ -117,70 +41,37 @@
         <div id="feed-container"></div>
       </div>
 
-
       <aside class="widgets-column">
 
-        <div class="widget-card summary-card card card-md">
+        <div class="widget-card summary-card">
           <h3>📊 Tu Resumen de Hoy</h3>
           <p>Gana 850 XP más para subir de liga.</p>
-
+          
           <div class="xp-stats">
-            <span class="xp-current" data-user-xp>Cargando...</span>
+            <span class="xp-current">1,150 XP</span>
             <span class="xp-goal">/ 2,000 XP</span>
           </div>
-
+          
           <div class="progress-bar-container">
             <div class="progress-bar" style="width: 65%;"></div>
           </div>
-          <span class="widget-meta">🔥 Racha de <span data-user-streak></span> consecutivos</span>
+          <span class="widget-meta">🔥 Racha de 3 días consecutivos</span>
         </div>
 
-        <div class="widget-card challenge-card card card-md" id="daily-challenge-widget">
-          <h3>🎯 Misión Diaria</h3>
-          <p id="challenge-desc">Cargando reto del día...</p>
-          <div class="progress-bar-container" style="margin-top: 10px; margin-bottom: 6px;">
-            <div class="progress-bar" id="challenge-pbar" style="width: 0%;"></div>
-          </div>
-          <span class="widget-meta" id="challenge-progress-text">Progreso: -- / --</span>
-          <button class="btn outline sm full" id="challenge-action-btn" onclick="window.location.href='quizzes.html'"
-            style="margin-top: 12px; width: 100%;">Ir al Simulacro</button>
+
+
+        <div class="widget-card challenge-card">
+          <h3>Misión Diaria</h3>
+          <p>Completa un simulacro de Álgebra Nivel UNI sin usar la calculadora.</p>
+          <button class="btn outline sm full" onclick="window.location.href='quizzes.html'" style="margin-top: 12px; width: 100%;">Ir al Simulacro</button>
         </div>
 
-        <div class="widget-card challenge-card card card-md"
-          style="margin-bottom: 24px; padding: 24px; text-align: center;">
-          <h3
-            style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 16px; font-size: 20px; color: #111827; font-weight: 700;">
-            📊 Dasboard Rendimiento
-          </h3>
-          <div style="display: flex; justify-content: center; gap: 24px; margin-bottom: 24px;">
-            <span style="font-size: 14px; color: #6b7280; display: flex; align-items: center; gap: 8px;">
-              <span
-                style="display: inline-block; width: 36px; height: 10px; background: #22c55e; border-radius: 2px;"></span>
-              Aciertos
-            </span>
-            <span style="font-size: 14px; color: #6b7280; display: flex; align-items: center; gap: 8px;">
-              <span
-                style="display: inline-block; width: 36px; height: 10px; background: #ef4444; border-radius: 2px;"></span>
-              Errores
-            </span>
-          </div>
-          <div
-            style="position: relative; width: 200px; height: 200px; margin: 0 auto 28px; border-radius: 50%; background: conic-gradient(#22c55e 0deg 277deg, #ffffff 277deg 281deg, #ef4444 281deg 356deg, #ffffff 356deg 360deg); display: flex; align-items: center; justify-content: center;">
-            <div style="width: 110px; height: 110px; background: #ffffff; border-radius: 50%;"></div>
-            <div
-              style="position: absolute; width: 100%; height: 100%; border-radius: 50%; box-shadow: inset 0 0 0 4px #ffffff;">
-            </div>
-          </div>
-          <button class="btn outline sm full" onclick="window.location.href='estadisticas-rendimiento.html'"
-            style="width: 100%; font-size: 15px; padding: 12px; border-radius: 8px;">Ver Rendimiento</button>
-        </div>
-
-        <div class="widget-card ranking-card card card-md">
-          <h3>🏆 Top 3 de tu Aula</h3>
+        <div class="widget-card ranking-card">
+          <h3>Top 3 de tu Aula</h3>
           <ul class="mini-ranking-list">
             <li>
               <div class="rank-user">
-                <span class="rank-num">1</span>
+                <span class="rank-num">1</span> 
                 <span class="user-avatar-mini" style="width: 28px; height: 28px; font-size: 14px;">🎓</span>
                 Matias J.
               </div>
@@ -188,7 +79,7 @@
             </li>
             <li>
               <div class="rank-user">
-                <span class="rank-num">2</span>
+                <span class="rank-num">2</span> 
                 <span class="user-avatar-mini" style="width: 28px; height: 28px; font-size: 14px;">🧠</span>
                 Vanessa B.
               </div>
@@ -196,16 +87,14 @@
             </li>
             <li style="background: rgba(29, 158, 117, 0.1); border-radius: 8px; padding: 6px 8px;">
               <div class="rank-user">
-                <span class="rank-num" style="color: var(--green);">3</span>
-                <span class="user-avatar-mini" style="width: 28px; height: 28px; font-size: 14px;"
-                  data-user-avatar>✨</span>
-                <strong>Tú (<span data-user-firstname></span>)</strong>
+                <span class="rank-num" style="color: var(--green);">3</span> 
+                <span class="user-avatar-mini" style="width: 28px; height: 28px; font-size: 14px;">✨</span>
+                <strong>Tú</strong>
               </div>
-              <span class="rank-pts" data-user-xp></span>
+              <span class="rank-pts">1,150 XP</span>
             </li>
           </ul>
-          <a href="rankings.html" class="widget-link" style="display: block; text-align: center; margin-top: 8px;">Ver
-            tabla completa →</a>
+          <a href="rankings.html" class="widget-link" style="display: block; text-align: center; margin-top: 8px;">Ver tabla completa →</a>
         </div>
 
       </aside>
@@ -215,22 +104,8 @@
   </div>
   <script src="../../assets/js/components/global-loader.js"></script>
   <script src="../../assets/js/utils/component-loader.js"></script>
-  <script src="../../assets/js/core/storage.js"></script>
-  <script type="module" src="../../assets/js/core/user-manager.js"></script>
-  <script type="module" src="../../assets/js/core/auth.js"></script>
-  <script src="../../assets/js/core/router.js"></script>
-  <script src="../../assets/js/core/current-user.js"></script>
-  <script src="../../assets/js/core/app.js"></script>
-
   <script src="../../assets/js/student/dashboard.js"></script>
   <script src="../../assets/js/student/feed.js"></script>
-  <script src="../../assets/js/student/gamification.js"></script>
-  <!-- Lightbox de imagen -->
-  <div class="image-lightbox-overlay" id="image-lightbox" onclick="closeImageLightbox()">
-    <button class="lightbox-close" onclick="closeImageLightbox()">✕</button>
-    <img src="" alt="Imagen del ejercicio" id="lightbox-img">
-  </div>
 
 </body>
-
 </html>
