@@ -169,3 +169,6 @@ function triggerCreateCircleMock() {
     alert(`🚀 ¡Círculo "${input.value}" Maquetado con Éxito! Al conectar tu Base de Datos en la siguiente entrega, esta acción disparará un método POST asíncrono para guardarlo en la nube.`);
     input.value = "";
 }
+function currentCirclesUserIsIn(){
+    const holder =
+}
