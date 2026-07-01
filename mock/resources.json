@@ -4,18 +4,18 @@
     "courseId": "course_algebra",
     "topicId": "topic_leyes_exp",
     "type": "leccion",
-    "title": "Video Tutorial: Introducción a los Exponentes",
-    "url": "https://www.youtube.com/watch?v=FjIuCqD-uM8",
-    "description": "Clase detallada en video sobre este tema. Conceptos básicos de exponentes. Enseña qué es una base y una potencia, ideal para alumnos que confunden la suma con la multiplicación iterada."
+    "title": "Introducción a los Exponentes",
+    "url": "/lecciones/exp-1",
+    "description": "Conceptos básicos de exponentes. Enseña qué es una base y una potencia, ideal para alumnos que confunden la suma con la multiplicación iterada."
   },
   {
     "id": "res_lec_02",
     "courseId": "course_algebra",
     "topicId": "topic_leyes_exp",
     "type": "leccion",
-    "title": "Video Tutorial: Propiedades Radicativas",
-    "url": "https://www.youtube.com/watch?v=FjIuCqD-uM8",
-    "description": "Clase detallada en video sobre este tema. Lección avanzada sobre raíces y exponentes fraccionarios. Explica cómo transformar un radical en potencia, útil para resolver ecuaciones con raíces complejas."
+    "title": "Propiedades Radicativas",
+    "url": "/lecciones/exp-2",
+    "description": "Lección avanzada sobre raíces y exponentes fraccionarios. Explica cómo transformar un radical en potencia, útil para resolver ecuaciones con raíces complejas."
   },
   {
     "id": "res_pdf_01",
@@ -23,8 +23,8 @@
     "topicId": "topic_leyes_exp",
     "type": "recurso",
     "title": "Ejercicios Resueltos Exponentes PDF",
-    "url": "https://gjxtbrouqekdvogisequ.supabase.co/storage/v1/object/public/eduquest-docs/algebra/leyes_exp.pdf",
-    "description": "Documento PDF descargable de Supabase. Documento PDF con 50 ejercicios paso a paso aplicando leyes de exponentes como producto de bases iguales y potencia de potencia."
+    "url": "/docs/exp-ejercicios.pdf",
+    "description": "Documento PDF con 50 ejercicios paso a paso aplicando leyes de exponentes como producto de bases iguales y potencia de potencia."
   },
   {
     "id": "res_qz_01",
@@ -58,9 +58,9 @@
     "courseId": "course_algebra",
     "topicId": "topic_polinomios",
     "type": "leccion",
-    "title": "Video Tutorial: Concepto de Polinomio y Grados",
-    "url": "https://www.youtube.com/watch?v=5V9X_q0E71A",
-    "description": "Clase detallada en video sobre este tema. Lección teórica sobre qué es un polinomio, diferencia entre monomio y binomio, y cálculo de Grado Relativo y Grado Absoluto."
+    "title": "Concepto de Polinomio y Grados",
+    "url": "/lecciones/pol-1",
+    "description": "Lección teórica sobre qué es un polinomio, diferencia entre monomio y binomio, y cálculo de Grado Relativo y Grado Absoluto."
   },
   {
     "id": "res_pdf_02",
@@ -68,8 +68,8 @@
     "topicId": "topic_polinomios",
     "type": "recurso",
     "title": "Guía de Polinomios y Valor Numérico",
-    "url": "https://gjxtbrouqekdvogisequ.supabase.co/storage/v1/object/public/eduquest-docs/algebra/polinomios.pdf",
-    "description": "Documento PDF descargable de Supabase. Guía teórica y práctica en PDF enfocada exclusivamente en evaluar polinomios mediante el cálculo del valor numérico P(x)."
+    "url": "/docs/pol-guia.pdf",
+    "description": "Guía teórica y práctica en PDF enfocada exclusivamente en evaluar polinomios mediante el cálculo del valor numérico P(x)."
   },
   {
     "id": "res_qz_02",
@@ -103,18 +103,18 @@
     "courseId": "course_fisica",
     "topicId": "topic_mru",
     "type": "leccion",
-    "title": "Video Tutorial: ¿Qué es el MRU?",
-    "url": "https://www.youtube.com/watch?v=Xh0YyU4h-5o",
-    "description": "Clase detallada en YouTube. Introducción a la cinemática básica. Explica el Movimiento Rectilíneo Uniforme (MRU), concepto de velocidad constante y fórmula d=v*t."
+    "title": "¿Qué es el MRU?",
+    "url": "/lecciones/mru-1",
+    "description": "Introducción a la cinemática básica. Explica el Movimiento Rectilíneo Uniforme (MRU), concepto de velocidad constante y fórmula d=v*t."
   },
   {
     "id": "res_pdf_03",
     "courseId": "course_fisica",
     "topicId": "topic_mru",
     "type": "recurso",
-    "title": "Video Complementario: Formulario y Ejercicios MRU",
-    "url": "https://www.youtube.com/watch?v=Xh0YyU4h-5o",
-    "description": "Recurso en video de YouTube para profundizar. Hoja de fórmulas esenciales para MRU y MRUV, acompañada de 20 problemas de tiempo de encuentro y alcance."
+    "title": "Formulario y Ejercicios MRU",
+    "url": "/docs/mru-form.pdf",
+    "description": "Hoja de fórmulas esenciales para MRU y MRUV, acompañada de 20 problemas de tiempo de encuentro y alcance."
   },
   {
     "id": "res_qz_03",
@@ -148,18 +148,18 @@
     "courseId": "course_rv",
     "topicId": "topic_rv_sinonimos",
     "type": "leccion",
-    "title": "Video Tutorial: Lección Fundamental: Sinónimos y Antónimos",
-    "url": "https://www.youtube.com/watch?v=QkE41T10S0c",
-    "description": "Clase detallada en YouTube. Aprende los conceptos clave y la teoría fundamental sobre Sinónimos y Antónimos. Ideal para iniciar el estudio."
+    "title": "Lección Fundamental: Sinónimos y Antónimos",
+    "url": "/lecciones/rv_sinonimos-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Sinónimos y Antónimos. Ideal para iniciar el estudio."
   },
   {
     "id": "res_pdf_101",
     "courseId": "course_rv",
     "topicId": "topic_rv_sinonimos",
     "type": "recurso",
-    "title": "Video Complementario: Guía en PDF de Sinónimos y Antónimos",
-    "url": "https://www.youtube.com/watch?v=QkE41T10S0c",
-    "description": "Recurso en video de YouTube para profundizar. Material de lectura descargable con ejemplos resueltos paso a paso sobre Sinónimos y Antónimos."
+    "title": "Guía en PDF de Sinónimos y Antónimos",
+    "url": "/docs/rv_sinonimos-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Sinónimos y Antónimos."
   },
   {
     "id": "res_qz_102",
@@ -193,18 +193,18 @@
     "courseId": "course_rv",
     "topicId": "topic_rv_analogias",
     "type": "leccion",
-    "title": "Video Tutorial: Lección Fundamental: Analogías Verbales",
-    "url": "https://www.youtube.com/watch?v=QkE41T10S0c",
-    "description": "Clase detallada en YouTube. Aprende los conceptos clave y la teoría fundamental sobre Analogías Verbales. Ideal para iniciar el estudio."
+    "title": "Lección Fundamental: Analogías Verbales",
+    "url": "/lecciones/rv_analogias-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Analogías Verbales. Ideal para iniciar el estudio."
   },
   {
     "id": "res_pdf_106",
     "courseId": "course_rv",
     "topicId": "topic_rv_analogias",
     "type": "recurso",
-    "title": "Video Complementario: Guía en PDF de Analogías Verbales",
-    "url": "https://www.youtube.com/watch?v=QkE41T10S0c",
-    "description": "Recurso en video de YouTube para profundizar. Material de lectura descargable con ejemplos resueltos paso a paso sobre Analogías Verbales."
+    "title": "Guía en PDF de Analogías Verbales",
+    "url": "/docs/rv_analogias-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Analogías Verbales."
   },
   {
     "id": "res_qz_107",
@@ -238,18 +238,18 @@
     "courseId": "course_rv",
     "topicId": "topic_rv_oraciones",
     "type": "leccion",
-    "title": "Video Tutorial: Lección Fundamental: Oraciones Incompletas",
-    "url": "https://www.youtube.com/watch?v=QkE41T10S0c",
-    "description": "Clase detallada en YouTube. Aprende los conceptos clave y la teoría fundamental sobre Oraciones Incompletas. Ideal para iniciar el estudio."
+    "title": "Lección Fundamental: Oraciones Incompletas",
+    "url": "/lecciones/rv_oraciones-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Oraciones Incompletas. Ideal para iniciar el estudio."
   },
   {
     "id": "res_pdf_111",
     "courseId": "course_rv",
     "topicId": "topic_rv_oraciones",
     "type": "recurso",
-    "title": "Video Complementario: Guía en PDF de Oraciones Incompletas",
-    "url": "https://www.youtube.com/watch?v=QkE41T10S0c",
-    "description": "Recurso en video de YouTube para profundizar. Material de lectura descargable con ejemplos resueltos paso a paso sobre Oraciones Incompletas."
+    "title": "Guía en PDF de Oraciones Incompletas",
+    "url": "/docs/rv_oraciones-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Oraciones Incompletas."
   },
   {
     "id": "res_qz_112",
@@ -283,18 +283,18 @@
     "courseId": "course_rv",
     "topicId": "topic_rv_eliminadas",
     "type": "leccion",
-    "title": "Video Tutorial: Lección Fundamental: Oraciones Eliminadas",
-    "url": "https://www.youtube.com/watch?v=QkE41T10S0c",
-    "description": "Clase detallada en YouTube. Aprende los conceptos clave y la teoría fundamental sobre Oraciones Eliminadas. Ideal para iniciar el estudio."
+    "title": "Lección Fundamental: Oraciones Eliminadas",
+    "url": "/lecciones/rv_eliminadas-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Oraciones Eliminadas. Ideal para iniciar el estudio."
   },
   {
     "id": "res_pdf_116",
     "courseId": "course_rv",
     "topicId": "topic_rv_eliminadas",
     "type": "recurso",
-    "title": "Video Complementario: Guía en PDF de Oraciones Eliminadas",
-    "url": "https://www.youtube.com/watch?v=QkE41T10S0c",
-    "description": "Recurso en video de YouTube para profundizar. Material de lectura descargable con ejemplos resueltos paso a paso sobre Oraciones Eliminadas."
+    "title": "Guía en PDF de Oraciones Eliminadas",
+    "url": "/docs/rv_eliminadas-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Oraciones Eliminadas."
   },
   {
     "id": "res_qz_117",
@@ -328,18 +328,18 @@
     "courseId": "course_lectora",
     "topicId": "topic_comprension_inferencial",
     "type": "leccion",
-    "title": "Video Tutorial: Lección Fundamental: Comprensión Inferencial de Textos",
-    "url": "https://www.youtube.com/watch?v=J8n5rJvS_Y0",
-    "description": "Clase detallada en YouTube. Aprende los conceptos clave y la teoría fundamental sobre Comprensión Inferencial de Textos. Ideal para iniciar el estudio."
+    "title": "Lección Fundamental: Comprensión Inferencial de Textos",
+    "url": "/lecciones/comprension_inferencial-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Comprensión Inferencial de Textos. Ideal para iniciar el estudio."
   },
   {
     "id": "res_pdf_121",
     "courseId": "course_lectora",
     "topicId": "topic_comprension_inferencial",
     "type": "recurso",
-    "title": "Video Complementario: Guía en PDF de Comprensión Inferencial de Textos",
-    "url": "https://www.youtube.com/watch?v=J8n5rJvS_Y0",
-    "description": "Recurso en video de YouTube para profundizar. Material de lectura descargable con ejemplos resueltos paso a paso sobre Comprensión Inferencial de Textos."
+    "title": "Guía en PDF de Comprensión Inferencial de Textos",
+    "url": "/docs/comprension_inferencial-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Comprensión Inferencial de Textos."
   },
   {
     "id": "res_qz_122",
@@ -373,18 +373,18 @@
     "courseId": "course_lectora",
     "topicId": "topic_idea_principal",
     "type": "leccion",
-    "title": "Video Tutorial: Lección Fundamental: Identificación de Idea Principal",
-    "url": "https://www.youtube.com/watch?v=J8n5rJvS_Y0",
-    "description": "Clase detallada en YouTube. Aprende los conceptos clave y la teoría fundamental sobre Identificación de Idea Principal. Ideal para iniciar el estudio."
+    "title": "Lección Fundamental: Identificación de Idea Principal",
+    "url": "/lecciones/idea_principal-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Identificación de Idea Principal. Ideal para iniciar el estudio."
   },
   {
     "id": "res_pdf_126",
     "courseId": "course_lectora",
     "topicId": "topic_idea_principal",
     "type": "recurso",
-    "title": "Video Complementario: Guía en PDF de Identificación de Idea Principal",
-    "url": "https://www.youtube.com/watch?v=J8n5rJvS_Y0",
-    "description": "Recurso en video de YouTube para profundizar. Material de lectura descargable con ejemplos resueltos paso a paso sobre Identificación de Idea Principal."
+    "title": "Guía en PDF de Identificación de Idea Principal",
+    "url": "/docs/idea_principal-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Identificación de Idea Principal."
   },
   {
     "id": "res_qz_127",
@@ -418,18 +418,18 @@
     "courseId": "course_lectora",
     "topicId": "topic_cohesion_coherencia",
     "type": "leccion",
-    "title": "Video Tutorial: Lección Fundamental: Cohesión y Coherencia Textual",
-    "url": "https://www.youtube.com/watch?v=J8n5rJvS_Y0",
-    "description": "Clase detallada en YouTube. Aprende los conceptos clave y la teoría fundamental sobre Cohesión y Coherencia Textual. Ideal para iniciar el estudio."
+    "title": "Lección Fundamental: Cohesión y Coherencia Textual",
+    "url": "/lecciones/cohesion_coherencia-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Cohesión y Coherencia Textual. Ideal para iniciar el estudio."
   },
   {
     "id": "res_pdf_131",
     "courseId": "course_lectora",
     "topicId": "topic_cohesion_coherencia",
     "type": "recurso",
-    "title": "Video Complementario: Guía en PDF de Cohesión y Coherencia Textual",
-    "url": "https://www.youtube.com/watch?v=J8n5rJvS_Y0",
-    "description": "Recurso en video de YouTube para profundizar. Material de lectura descargable con ejemplos resueltos paso a paso sobre Cohesión y Coherencia Textual."
+    "title": "Guía en PDF de Cohesión y Coherencia Textual",
+    "url": "/docs/cohesion_coherencia-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Cohesión y Coherencia Textual."
   },
   {
     "id": "res_qz_132",
@@ -463,18 +463,18 @@
     "courseId": "course_lectora",
     "topicId": "topic_tipos_texto",
     "type": "leccion",
-    "title": "Video Tutorial: Lección Fundamental: Tipos de Texto y Propósito Comunicativo",
-    "url": "https://www.youtube.com/watch?v=J8n5rJvS_Y0",
-    "description": "Clase detallada en YouTube. Aprende los conceptos clave y la teoría fundamental sobre Tipos de Texto y Propósito Comunicativo. Ideal para iniciar el estudio."
+    "title": "Lección Fundamental: Tipos de Texto y Propósito Comunicativo",
+    "url": "/lecciones/tipos_texto-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Tipos de Texto y Propósito Comunicativo. Ideal para iniciar el estudio."
   },
   {
     "id": "res_pdf_136",
     "courseId": "course_lectora",
     "topicId": "topic_tipos_texto",
     "type": "recurso",
-    "title": "Video Complementario: Guía en PDF de Tipos de Texto y Propósito Comunicativo",
-    "url": "https://www.youtube.com/watch?v=J8n5rJvS_Y0",
-    "description": "Recurso en video de YouTube para profundizar. Material de lectura descargable con ejemplos resueltos paso a paso sobre Tipos de Texto y Propósito Comunicativo."
+    "title": "Guía en PDF de Tipos de Texto y Propósito Comunicativo",
+    "url": "/docs/tipos_texto-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Tipos de Texto y Propósito Comunicativo."
   },
   {
     "id": "res_qz_137",
@@ -508,9 +508,9 @@
     "courseId": "course_rm",
     "topicId": "topic_rm_fracciones",
     "type": "leccion",
-    "title": "Video Tutorial: Lección Fundamental: Planteo de Fracciones",
-    "url": "https://www.youtube.com/watch?v=4C98jU0_pD4",
-    "description": "Clase detallada en video sobre este tema. Aprende los conceptos clave y la teoría fundamental sobre Planteo de Fracciones. Ideal para iniciar el estudio."
+    "title": "Lección Fundamental: Planteo de Fracciones",
+    "url": "/lecciones/rm_fracciones-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Planteo de Fracciones. Ideal para iniciar el estudio."
   },
   {
     "id": "res_pdf_141",
@@ -518,8 +518,8 @@
     "topicId": "topic_rm_fracciones",
     "type": "recurso",
     "title": "Guía en PDF de Planteo de Fracciones",
-    "url": "https://gjxtbrouqekdvogisequ.supabase.co/storage/v1/object/public/eduquest-docs/rm/rm_fracciones.pdf",
-    "description": "Documento PDF descargable de Supabase. Material de lectura descargable con ejemplos resueltos paso a paso sobre Planteo de Fracciones."
+    "url": "/docs/rm_fracciones-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Planteo de Fracciones."
   },
   {
     "id": "res_qz_142",
@@ -553,9 +553,9 @@
     "courseId": "course_rm",
     "topicId": "topic_rm_edades",
     "type": "leccion",
-    "title": "Video Tutorial: Lección Fundamental: Problemas sobre Edades",
-    "url": "https://www.youtube.com/watch?v=UqQ_j-M_8Z0",
-    "description": "Clase detallada en video sobre este tema. Aprende los conceptos clave y la teoría fundamental sobre Problemas sobre Edades. Ideal para iniciar el estudio."
+    "title": "Lección Fundamental: Problemas sobre Edades",
+    "url": "/lecciones/rm_edades-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Problemas sobre Edades. Ideal para iniciar el estudio."
   },
   {
     "id": "res_pdf_146",
@@ -563,8 +563,8 @@
     "topicId": "topic_rm_edades",
     "type": "recurso",
     "title": "Guía en PDF de Problemas sobre Edades",
-    "url": "https://gjxtbrouqekdvogisequ.supabase.co/storage/v1/object/public/eduquest-docs/rm/rm_edades.pdf",
-    "description": "Documento PDF descargable de Supabase. Material de lectura descargable con ejemplos resueltos paso a paso sobre Problemas sobre Edades."
+    "url": "/docs/rm_edades-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Problemas sobre Edades."
   },
   {
     "id": "res_qz_147",
@@ -598,9 +598,9 @@
     "courseId": "course_rm",
     "topicId": "topic_rm_operadores",
     "type": "leccion",
-    "title": "Video Tutorial: Lección Fundamental: Operadores Matemáticos",
-    "url": "https://www.youtube.com/watch?v=H7B-4R4T0Zc",
-    "description": "Clase detallada en video sobre este tema. Aprende los conceptos clave y la teoría fundamental sobre Operadores Matemáticos. Ideal para iniciar el estudio."
+    "title": "Lección Fundamental: Operadores Matemáticos",
+    "url": "/lecciones/rm_operadores-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Operadores Matemáticos. Ideal para iniciar el estudio."
   },
   {
     "id": "res_pdf_151",
@@ -608,8 +608,8 @@
     "topicId": "topic_rm_operadores",
     "type": "recurso",
     "title": "Guía en PDF de Operadores Matemáticos",
-    "url": "https://gjxtbrouqekdvogisequ.supabase.co/storage/v1/object/public/eduquest-docs/rm/rm_operadores.pdf",
-    "description": "Documento PDF descargable de Supabase. Material de lectura descargable con ejemplos resueltos paso a paso sobre Operadores Matemáticos."
+    "url": "/docs/rm_operadores-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Operadores Matemáticos."
   },
   {
     "id": "res_qz_152",
@@ -643,9 +643,9 @@
     "courseId": "course_rm",
     "topicId": "topic_rm_sucesiones",
     "type": "leccion",
-    "title": "Video Tutorial: Lección Fundamental: Sucesiones y Series",
-    "url": "https://www.youtube.com/watch?v=l9a-w5JpW2o",
-    "description": "Clase detallada en video sobre este tema. Aprende los conceptos clave y la teoría fundamental sobre Sucesiones y Series. Ideal para iniciar el estudio."
+    "title": "Lección Fundamental: Sucesiones y Series",
+    "url": "/lecciones/rm_sucesiones-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Sucesiones y Series. Ideal para iniciar el estudio."
   },
   {
     "id": "res_pdf_156",
@@ -653,8 +653,8 @@
     "topicId": "topic_rm_sucesiones",
     "type": "recurso",
     "title": "Guía en PDF de Sucesiones y Series",
-    "url": "https://gjxtbrouqekdvogisequ.supabase.co/storage/v1/object/public/eduquest-docs/rm/rm_sucesiones.pdf",
-    "description": "Documento PDF descargable de Supabase. Material de lectura descargable con ejemplos resueltos paso a paso sobre Sucesiones y Series."
+    "url": "/docs/rm_sucesiones-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Sucesiones y Series."
   },
   {
     "id": "res_qz_157",
@@ -688,9 +688,9 @@
     "courseId": "course_aritmetica",
     "topicId": "topic_aritmetica_razones",
     "type": "leccion",
-    "title": "Video Tutorial: Lección Fundamental: Razones y Proporciones",
-    "url": "https://www.youtube.com/watch?v=pGWF7tbSxA0",
-    "description": "Clase detallada en video sobre este tema. Aprende los conceptos clave y la teoría fundamental sobre Razones y Proporciones. Ideal para iniciar el estudio."
+    "title": "Lección Fundamental: Razones y Proporciones",
+    "url": "/lecciones/aritmetica_razones-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Razones y Proporciones. Ideal para iniciar el estudio."
   },
   {
     "id": "res_pdf_161",
@@ -698,8 +698,8 @@
     "topicId": "topic_aritmetica_razones",
     "type": "recurso",
     "title": "Guía en PDF de Razones y Proporciones",
-    "url": "https://gjxtbrouqekdvogisequ.supabase.co/storage/v1/object/public/eduquest-docs/aritmetica/aritmetica_razones.pdf",
-    "description": "Documento PDF descargable de Supabase. Material de lectura descargable con ejemplos resueltos paso a paso sobre Razones y Proporciones."
+    "url": "/docs/aritmetica_razones-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Razones y Proporciones."
   },
   {
     "id": "res_qz_162",
@@ -733,9 +733,9 @@
     "courseId": "course_aritmetica",
     "topicId": "topic_aritmetica_magnitudes",
     "type": "leccion",
-    "title": "Video Tutorial: Lección Fundamental: Magnitudes Proporcionales",
-    "url": "https://www.youtube.com/watch?v=sI9_H_m-0_Q",
-    "description": "Clase detallada en video sobre este tema. Aprende los conceptos clave y la teoría fundamental sobre Magnitudes Proporcionales. Ideal para iniciar el estudio."
+    "title": "Lección Fundamental: Magnitudes Proporcionales",
+    "url": "/lecciones/aritmetica_magnitudes-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Magnitudes Proporcionales. Ideal para iniciar el estudio."
   },
   {
     "id": "res_pdf_166",
@@ -743,8 +743,8 @@
     "topicId": "topic_aritmetica_magnitudes",
     "type": "recurso",
     "title": "Guía en PDF de Magnitudes Proporcionales",
-    "url": "https://gjxtbrouqekdvogisequ.supabase.co/storage/v1/object/public/eduquest-docs/aritmetica/aritmetica_magnitudes.pdf",
-    "description": "Documento PDF descargable de Supabase. Material de lectura descargable con ejemplos resueltos paso a paso sobre Magnitudes Proporcionales."
+    "url": "/docs/aritmetica_magnitudes-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Magnitudes Proporcionales."
   },
   {
     "id": "res_qz_167",
@@ -778,9 +778,9 @@
     "courseId": "course_aritmetica",
     "topicId": "topic_aritmetica_tantoporciento",
     "type": "leccion",
-    "title": "Video Tutorial: Lección Fundamental: Tanto por Cuanto y Porcentajes",
-    "url": "https://www.youtube.com/watch?v=Vz2XJ5N3YQ8",
-    "description": "Clase detallada en video sobre este tema. Aprende los conceptos clave y la teoría fundamental sobre Tanto por Cuanto y Porcentajes. Ideal para iniciar el estudio."
+    "title": "Lección Fundamental: Tanto por Cuanto y Porcentajes",
+    "url": "/lecciones/aritmetica_tantoporciento-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Tanto por Cuanto y Porcentajes. Ideal para iniciar el estudio."
   },
   {
     "id": "res_pdf_171",
@@ -788,8 +788,8 @@
     "topicId": "topic_aritmetica_tantoporciento",
     "type": "recurso",
     "title": "Guía en PDF de Tanto por Cuanto y Porcentajes",
-    "url": "https://gjxtbrouqekdvogisequ.supabase.co/storage/v1/object/public/eduquest-docs/aritmetica/aritmetica_tantoporciento.pdf",
-    "description": "Documento PDF descargable de Supabase. Material de lectura descargable con ejemplos resueltos paso a paso sobre Tanto por Cuanto y Porcentajes."
+    "url": "/docs/aritmetica_tantoporciento-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Tanto por Cuanto y Porcentajes."
   },
   {
     "id": "res_qz_172",
@@ -823,9 +823,9 @@
     "courseId": "course_aritmetica",
     "topicId": "topic_aritmetica_estadistica",
     "type": "leccion",
-    "title": "Video Tutorial: Lección Fundamental: Estadística Básica",
-    "url": "https://www.youtube.com/watch?v=o04KjH0j658",
-    "description": "Clase detallada en video sobre este tema. Aprende los conceptos clave y la teoría fundamental sobre Estadística Básica. Ideal para iniciar el estudio."
+    "title": "Lección Fundamental: Estadística Básica",
+    "url": "/lecciones/aritmetica_estadistica-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Estadística Básica. Ideal para iniciar el estudio."
   },
   {
     "id": "res_pdf_176",
@@ -833,8 +833,8 @@
     "topicId": "topic_aritmetica_estadistica",
     "type": "recurso",
     "title": "Guía en PDF de Estadística Básica",
-    "url": "https://gjxtbrouqekdvogisequ.supabase.co/storage/v1/object/public/eduquest-docs/aritmetica/aritmetica_estadistica.pdf",
-    "description": "Documento PDF descargable de Supabase. Material de lectura descargable con ejemplos resueltos paso a paso sobre Estadística Básica."
+    "url": "/docs/aritmetica_estadistica-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Estadística Básica."
   },
   {
     "id": "res_qz_177",
@@ -868,9 +868,9 @@
     "courseId": "course_algebra",
     "topicId": "topic_prod_notables",
     "type": "leccion",
-    "title": "Video Tutorial: Lección Fundamental: Productos Notables Avanzados",
-    "url": "https://www.youtube.com/watch?v=T1wG2c2BpsA",
-    "description": "Clase detallada en video sobre este tema. Aprende los conceptos clave y la teoría fundamental sobre Productos Notables Avanzados. Ideal para iniciar el estudio."
+    "title": "Lección Fundamental: Productos Notables Avanzados",
+    "url": "/lecciones/prod_notables-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Productos Notables Avanzados. Ideal para iniciar el estudio."
   },
   {
     "id": "res_pdf_181",
@@ -878,8 +878,8 @@
     "topicId": "topic_prod_notables",
     "type": "recurso",
     "title": "Guía en PDF de Productos Notables Avanzados",
-    "url": "https://gjxtbrouqekdvogisequ.supabase.co/storage/v1/object/public/eduquest-docs/algebra/prod_notables.pdf",
-    "description": "Documento PDF descargable de Supabase. Material de lectura descargable con ejemplos resueltos paso a paso sobre Productos Notables Avanzados."
+    "url": "/docs/prod_notables-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Productos Notables Avanzados."
   },
   {
     "id": "res_qz_182",
@@ -913,9 +913,9 @@
     "courseId": "course_algebra",
     "topicId": "topic_div_polinomial",
     "type": "leccion",
-    "title": "Video Tutorial: Lección Fundamental: División Polinomial y Ruffini",
-    "url": "https://www.youtube.com/watch?v=5d9tQ_gXkXQ",
-    "description": "Clase detallada en video sobre este tema. Aprende los conceptos clave y la teoría fundamental sobre División Polinomial y Ruffini. Ideal para iniciar el estudio."
+    "title": "Lección Fundamental: División Polinomial y Ruffini",
+    "url": "/lecciones/div_polinomial-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre División Polinomial y Ruffini. Ideal para iniciar el estudio."
   },
   {
     "id": "res_pdf_186",
@@ -923,8 +923,8 @@
     "topicId": "topic_div_polinomial",
     "type": "recurso",
     "title": "Guía en PDF de División Polinomial y Ruffini",
-    "url": "https://gjxtbrouqekdvogisequ.supabase.co/storage/v1/object/public/eduquest-docs/algebra/div_polinomial.pdf",
-    "description": "Documento PDF descargable de Supabase. Material de lectura descargable con ejemplos resueltos paso a paso sobre División Polinomial y Ruffini."
+    "url": "/docs/div_polinomial-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre División Polinomial y Ruffini."
   },
   {
     "id": "res_qz_187",
@@ -958,9 +958,9 @@
     "courseId": "course_algebra",
     "topicId": "topic_ecuaciones_lineales",
     "type": "leccion",
-    "title": "Video Tutorial: Lección Fundamental: Ecuaciones Lineales y Problemas de Planteo",
-    "url": "https://www.youtube.com/watch?v=4h2-OpONZcg",
-    "description": "Clase detallada en video sobre este tema. Aprende los conceptos clave y la teoría fundamental sobre Ecuaciones Lineales y Problemas de Planteo. Ideal para iniciar el estudio."
+    "title": "Lección Fundamental: Ecuaciones Lineales y Problemas de Planteo",
+    "url": "/lecciones/ecuaciones_lineales-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Ecuaciones Lineales y Problemas de Planteo. Ideal para iniciar el estudio."
   },
   {
     "id": "res_pdf_191",
@@ -968,8 +968,8 @@
     "topicId": "topic_ecuaciones_lineales",
     "type": "recurso",
     "title": "Guía en PDF de Ecuaciones Lineales y Problemas de Planteo",
-    "url": "https://gjxtbrouqekdvogisequ.supabase.co/storage/v1/object/public/eduquest-docs/algebra/ecuaciones_lineales.pdf",
-    "description": "Documento PDF descargable de Supabase. Material de lectura descargable con ejemplos resueltos paso a paso sobre Ecuaciones Lineales y Problemas de Planteo."
+    "url": "/docs/ecuaciones_lineales-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Ecuaciones Lineales y Problemas de Planteo."
   },
   {
     "id": "res_qz_192",
@@ -1003,9 +1003,9 @@
     "courseId": "course_algebra",
     "topicId": "topic_sistemas_ecuaciones",
     "type": "leccion",
-    "title": "Video Tutorial: Lección Fundamental: Sistemas de Ecuaciones (2x2 y 3x3)",
-    "url": "https://www.youtube.com/watch?v=lTRANn-GZX4",
-    "description": "Clase detallada en video sobre este tema. Aprende los conceptos clave y la teoría fundamental sobre Sistemas de Ecuaciones (2x2 y 3x3). Ideal para iniciar el estudio."
+    "title": "Lección Fundamental: Sistemas de Ecuaciones (2x2 y 3x3)",
+    "url": "/lecciones/sistemas_ecuaciones-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Sistemas de Ecuaciones (2x2 y 3x3). Ideal para iniciar el estudio."
   },
   {
     "id": "res_pdf_196",
@@ -1013,8 +1013,8 @@
     "topicId": "topic_sistemas_ecuaciones",
     "type": "recurso",
     "title": "Guía en PDF de Sistemas de Ecuaciones (2x2 y 3x3)",
-    "url": "https://gjxtbrouqekdvogisequ.supabase.co/storage/v1/object/public/eduquest-docs/algebra/sistemas_ecuaciones.pdf",
-    "description": "Documento PDF descargable de Supabase. Material de lectura descargable con ejemplos resueltos paso a paso sobre Sistemas de Ecuaciones (2x2 y 3x3)."
+    "url": "/docs/sistemas_ecuaciones-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Sistemas de Ecuaciones (2x2 y 3x3)."
   },
   {
     "id": "res_qz_197",
@@ -1048,9 +1048,9 @@
     "courseId": "course_algebra",
     "topicId": "topic_inecuaciones",
     "type": "leccion",
-    "title": "Video Tutorial: Lección Fundamental: Inecuaciones y Valor Absoluto",
-    "url": "https://www.youtube.com/watch?v=CqHMBF4X0Ww",
-    "description": "Clase detallada en video sobre este tema. Aprende los conceptos clave y la teoría fundamental sobre Inecuaciones y Valor Absoluto. Ideal para iniciar el estudio."
+    "title": "Lección Fundamental: Inecuaciones y Valor Absoluto",
+    "url": "/lecciones/inecuaciones-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Inecuaciones y Valor Absoluto. Ideal para iniciar el estudio."
   },
   {
     "id": "res_pdf_201",
@@ -1058,8 +1058,8 @@
     "topicId": "topic_inecuaciones",
     "type": "recurso",
     "title": "Guía en PDF de Inecuaciones y Valor Absoluto",
-    "url": "https://gjxtbrouqekdvogisequ.supabase.co/storage/v1/object/public/eduquest-docs/algebra/inecuaciones.pdf",
-    "description": "Documento PDF descargable de Supabase. Material de lectura descargable con ejemplos resueltos paso a paso sobre Inecuaciones y Valor Absoluto."
+    "url": "/docs/inecuaciones-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Inecuaciones y Valor Absoluto."
   },
   {
     "id": "res_qz_202",
@@ -1093,9 +1093,9 @@
     "courseId": "course_algebra",
     "topicId": "topic_factorizacion",
     "type": "leccion",
-    "title": "Video Tutorial: Lección Fundamental: Factorización Avanzada",
-    "url": "https://www.youtube.com/watch?v=sTJ-nFzO1l8",
-    "description": "Clase detallada en video sobre este tema. Aprende los conceptos clave y la teoría fundamental sobre Factorización Avanzada. Ideal para iniciar el estudio."
+    "title": "Lección Fundamental: Factorización Avanzada",
+    "url": "/lecciones/factorizacion-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Factorización Avanzada. Ideal para iniciar el estudio."
   },
   {
     "id": "res_pdf_206",
@@ -1103,8 +1103,8 @@
     "topicId": "topic_factorizacion",
     "type": "recurso",
     "title": "Guía en PDF de Factorización Avanzada",
-    "url": "https://gjxtbrouqekdvogisequ.supabase.co/storage/v1/object/public/eduquest-docs/algebra/factorizacion.pdf",
-    "description": "Documento PDF descargable de Supabase. Material de lectura descargable con ejemplos resueltos paso a paso sobre Factorización Avanzada."
+    "url": "/docs/factorizacion-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Factorización Avanzada."
   },
   {
     "id": "res_qz_207",
@@ -1138,9 +1138,9 @@
     "courseId": "course_geometria",
     "topicId": "topic_geometria_plana",
     "type": "leccion",
-    "title": "Video Tutorial: Lección Fundamental: Geometría Plana (Triángulos y Circunferencia)",
-    "url": "https://www.youtube.com/watch?v=0k3P5g6nQ1g",
-    "description": "Clase detallada en video sobre este tema. Aprende los conceptos clave y la teoría fundamental sobre Geometría Plana (Triángulos y Circunferencia). Ideal para iniciar el estudio."
+    "title": "Lección Fundamental: Geometría Plana (Triángulos y Circunferencia)",
+    "url": "/lecciones/geometria_plana-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Geometría Plana (Triángulos y Circunferencia). Ideal para iniciar el estudio."
   },
   {
     "id": "res_pdf_211",
@@ -1148,8 +1148,8 @@
     "topicId": "topic_geometria_plana",
     "type": "recurso",
     "title": "Guía en PDF de Geometría Plana (Triángulos y Circunferencia)",
-    "url": "https://gjxtbrouqekdvogisequ.supabase.co/storage/v1/object/public/eduquest-docs/geometria/geometria_plana.pdf",
-    "description": "Documento PDF descargable de Supabase. Material de lectura descargable con ejemplos resueltos paso a paso sobre Geometría Plana (Triángulos y Circunferencia)."
+    "url": "/docs/geometria_plana-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Geometría Plana (Triángulos y Circunferencia)."
   },
   {
     "id": "res_qz_212",
@@ -1183,9 +1183,9 @@
     "courseId": "course_geometria",
     "topicId": "topic_geometria_espacial",
     "type": "leccion",
-    "title": "Video Tutorial: Lección Fundamental: Geometría del Espacio (Cuerpos Geométricos)",
-    "url": "https://www.youtube.com/watch?v=I8ZJqN3E16M",
-    "description": "Clase detallada en video sobre este tema. Aprende los conceptos clave y la teoría fundamental sobre Geometría del Espacio (Cuerpos Geométricos). Ideal para iniciar el estudio."
+    "title": "Lección Fundamental: Geometría del Espacio (Cuerpos Geométricos)",
+    "url": "/lecciones/geometria_espacial-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Geometría del Espacio (Cuerpos Geométricos). Ideal para iniciar el estudio."
   },
   {
     "id": "res_pdf_216",
@@ -1193,8 +1193,8 @@
     "topicId": "topic_geometria_espacial",
     "type": "recurso",
     "title": "Guía en PDF de Geometría del Espacio (Cuerpos Geométricos)",
-    "url": "https://gjxtbrouqekdvogisequ.supabase.co/storage/v1/object/public/eduquest-docs/geometria/geometria_espacial.pdf",
-    "description": "Documento PDF descargable de Supabase. Material de lectura descargable con ejemplos resueltos paso a paso sobre Geometría del Espacio (Cuerpos Geométricos)."
+    "url": "/docs/geometria_espacial-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Geometría del Espacio (Cuerpos Geométricos)."
   },
   {
     "id": "res_qz_217",
@@ -1228,9 +1228,9 @@
     "courseId": "course_geometria",
     "topicId": "topic_trigonometria_basica",
     "type": "leccion",
-    "title": "Video Tutorial: Lección Fundamental: Trigonometría Básica",
-    "url": "https://www.youtube.com/watch?v=nGS1gxnWZKI",
-    "description": "Clase detallada en video sobre este tema. Aprende los conceptos clave y la teoría fundamental sobre Trigonometría Básica. Ideal para iniciar el estudio."
+    "title": "Lección Fundamental: Trigonometría Básica",
+    "url": "/lecciones/trigonometria_basica-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Trigonometría Básica. Ideal para iniciar el estudio."
   },
   {
     "id": "res_pdf_221",
@@ -1238,8 +1238,8 @@
     "topicId": "topic_trigonometria_basica",
     "type": "recurso",
     "title": "Guía en PDF de Trigonometría Básica",
-    "url": "https://gjxtbrouqekdvogisequ.supabase.co/storage/v1/object/public/eduquest-docs/geometria/trigonometria_basica.pdf",
-    "description": "Documento PDF descargable de Supabase. Material de lectura descargable con ejemplos resueltos paso a paso sobre Trigonometría Básica."
+    "url": "/docs/trigonometria_basica-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Trigonometría Básica."
   },
   {
     "id": "res_qz_222",
@@ -1273,9 +1273,9 @@
     "courseId": "course_geometria",
     "topicId": "topic_trigonometria_avanzada",
     "type": "leccion",
-    "title": "Video Tutorial: Lección Fundamental: Trigonometría Avanzada y Identidades",
-    "url": "https://www.youtube.com/watch?v=34dOqJMBqN8",
-    "description": "Clase detallada en video sobre este tema. Aprende los conceptos clave y la teoría fundamental sobre Trigonometría Avanzada y Identidades. Ideal para iniciar el estudio."
+    "title": "Lección Fundamental: Trigonometría Avanzada y Identidades",
+    "url": "/lecciones/trigonometria_avanzada-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Trigonometría Avanzada y Identidades. Ideal para iniciar el estudio."
   },
   {
     "id": "res_pdf_226",
@@ -1283,8 +1283,8 @@
     "topicId": "topic_trigonometria_avanzada",
     "type": "recurso",
     "title": "Guía en PDF de Trigonometría Avanzada y Identidades",
-    "url": "https://gjxtbrouqekdvogisequ.supabase.co/storage/v1/object/public/eduquest-docs/geometria/trigonometria_avanzada.pdf",
-    "description": "Documento PDF descargable de Supabase. Material de lectura descargable con ejemplos resueltos paso a paso sobre Trigonometría Avanzada y Identidades."
+    "url": "/docs/trigonometria_avanzada-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Trigonometría Avanzada y Identidades."
   },
   {
     "id": "res_qz_227",
@@ -1318,9 +1318,9 @@
     "courseId": "course_trigonometria",
     "topicId": "topic_trigonometria_angulo",
     "type": "leccion",
-    "title": "Video Tutorial: Lección Fundamental: Ángulo Trigonométrico",
-    "url": "https://www.youtube.com/watch?v=525jP2c_gP0",
-    "description": "Clase detallada en video sobre este tema. Aprende los conceptos clave y la teoría fundamental sobre Ángulo Trigonométrico. Ideal para iniciar el estudio."
+    "title": "Lección Fundamental: Ángulo Trigonométrico",
+    "url": "/lecciones/trigonometria_angulo-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Ángulo Trigonométrico. Ideal para iniciar el estudio."
   },
   {
     "id": "res_pdf_231",
@@ -1328,8 +1328,8 @@
     "topicId": "topic_trigonometria_angulo",
     "type": "recurso",
     "title": "Guía en PDF de Ángulo Trigonométrico",
-    "url": "https://gjxtbrouqekdvogisequ.supabase.co/storage/v1/object/public/eduquest-docs/trigonometria/trigonometria_angulo.pdf",
-    "description": "Documento PDF descargable de Supabase. Material de lectura descargable con ejemplos resueltos paso a paso sobre Ángulo Trigonométrico."
+    "url": "/docs/trigonometria_angulo-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Ángulo Trigonométrico."
   },
   {
     "id": "res_qz_232",
@@ -1363,9 +1363,9 @@
     "courseId": "course_trigonometria",
     "topicId": "topic_trigonometria_razones_agudos",
     "type": "leccion",
-    "title": "Video Tutorial: Lección Fundamental: Razones Trigonométricas de Ángulos Agudos",
-    "url": "https://www.youtube.com/watch?v=hB9Xg5O4B-g",
-    "description": "Clase detallada en video sobre este tema. Aprende los conceptos clave y la teoría fundamental sobre Razones Trigonométricas de Ángulos Agudos. Ideal para iniciar el estudio."
+    "title": "Lección Fundamental: Razones Trigonométricas de Ángulos Agudos",
+    "url": "/lecciones/trigonometria_razones_agudos-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Razones Trigonométricas de Ángulos Agudos. Ideal para iniciar el estudio."
   },
   {
     "id": "res_pdf_236",
@@ -1373,8 +1373,8 @@
     "topicId": "topic_trigonometria_razones_agudos",
     "type": "recurso",
     "title": "Guía en PDF de Razones Trigonométricas de Ángulos Agudos",
-    "url": "https://gjxtbrouqekdvogisequ.supabase.co/storage/v1/object/public/eduquest-docs/trigonometria/trigonometria_razones_agudos.pdf",
-    "description": "Documento PDF descargable de Supabase. Material de lectura descargable con ejemplos resueltos paso a paso sobre Razones Trigonométricas de Ángulos Agudos."
+    "url": "/docs/trigonometria_razones_agudos-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Razones Trigonométricas de Ángulos Agudos."
   },
   {
     "id": "res_qz_237",
@@ -1408,9 +1408,9 @@
     "courseId": "course_trigonometria",
     "topicId": "topic_trigonometria_identidades",
     "type": "leccion",
-    "title": "Video Tutorial: Lección Fundamental: Identidades Trigonométricas",
-    "url": "https://www.youtube.com/watch?v=lH8bK-Q5B2s",
-    "description": "Clase detallada en video sobre este tema. Aprende los conceptos clave y la teoría fundamental sobre Identidades Trigonométricas. Ideal para iniciar el estudio."
+    "title": "Lección Fundamental: Identidades Trigonométricas",
+    "url": "/lecciones/trigonometria_identidades-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Identidades Trigonométricas. Ideal para iniciar el estudio."
   },
   {
     "id": "res_pdf_241",
@@ -1418,8 +1418,8 @@
     "topicId": "topic_trigonometria_identidades",
     "type": "recurso",
     "title": "Guía en PDF de Identidades Trigonométricas",
-    "url": "https://gjxtbrouqekdvogisequ.supabase.co/storage/v1/object/public/eduquest-docs/trigonometria/trigonometria_identidades.pdf",
-    "description": "Documento PDF descargable de Supabase. Material de lectura descargable con ejemplos resueltos paso a paso sobre Identidades Trigonométricas."
+    "url": "/docs/trigonometria_identidades-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Identidades Trigonométricas."
   },
   {
     "id": "res_qz_242",
@@ -1453,18 +1453,18 @@
     "courseId": "course_probabilidad",
     "topicId": "topic_intro_probabilidad",
     "type": "leccion",
-    "title": "Video Tutorial: Lección Fundamental: Introducción a Probabilidad",
-    "url": "https://www.youtube.com/watch?v=FjIuCqD-uM8",
-    "description": "Clase detallada en YouTube. Aprende los conceptos clave y la teoría fundamental sobre Introducción a Probabilidad. Ideal para iniciar el estudio."
+    "title": "Lección Fundamental: Introducción a Probabilidad",
+    "url": "/lecciones/intro_probabilidad-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Introducción a Probabilidad. Ideal para iniciar el estudio."
   },
   {
     "id": "res_pdf_246",
     "courseId": "course_probabilidad",
     "topicId": "topic_intro_probabilidad",
     "type": "recurso",
-    "title": "Video Complementario: Guía en PDF de Introducción a Probabilidad",
-    "url": "https://www.youtube.com/watch?v=FjIuCqD-uM8",
-    "description": "Recurso en video de YouTube para profundizar. Material de lectura descargable con ejemplos resueltos paso a paso sobre Introducción a Probabilidad."
+    "title": "Guía en PDF de Introducción a Probabilidad",
+    "url": "/docs/intro_probabilidad-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Introducción a Probabilidad."
   },
   {
     "id": "res_qz_247",
@@ -1498,18 +1498,18 @@
     "courseId": "course_lenguaje",
     "topicId": "topic_intro_lenguaje",
     "type": "leccion",
-    "title": "Video Tutorial: Lección Fundamental: Introducción a Lenguaje",
-    "url": "https://www.youtube.com/watch?v=hB9Xg5O4B-g",
-    "description": "Clase detallada en YouTube. Aprende los conceptos clave y la teoría fundamental sobre Introducción a Lenguaje. Ideal para iniciar el estudio."
+    "title": "Lección Fundamental: Introducción a Lenguaje",
+    "url": "/lecciones/intro_lenguaje-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Introducción a Lenguaje. Ideal para iniciar el estudio."
   },
   {
     "id": "res_pdf_251",
     "courseId": "course_lenguaje",
     "topicId": "topic_intro_lenguaje",
     "type": "recurso",
-    "title": "Video Complementario: Guía en PDF de Introducción a Lenguaje",
-    "url": "https://www.youtube.com/watch?v=hB9Xg5O4B-g",
-    "description": "Recurso en video de YouTube para profundizar. Material de lectura descargable con ejemplos resueltos paso a paso sobre Introducción a Lenguaje."
+    "title": "Guía en PDF de Introducción a Lenguaje",
+    "url": "/docs/intro_lenguaje-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Introducción a Lenguaje."
   },
   {
     "id": "res_qz_252",
@@ -1543,18 +1543,18 @@
     "courseId": "course_literatura",
     "topicId": "topic_intro_literatura",
     "type": "leccion",
-    "title": "Video Tutorial: Lección Fundamental: Introducción a Literatura",
-    "url": "https://www.youtube.com/watch?v=7u28s5Z8f1w",
-    "description": "Clase detallada en YouTube. Aprende los conceptos clave y la teoría fundamental sobre Introducción a Literatura. Ideal para iniciar el estudio."
+    "title": "Lección Fundamental: Introducción a Literatura",
+    "url": "/lecciones/intro_literatura-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Introducción a Literatura. Ideal para iniciar el estudio."
   },
   {
     "id": "res_pdf_256",
     "courseId": "course_literatura",
     "topicId": "topic_intro_literatura",
     "type": "recurso",
-    "title": "Video Complementario: Guía en PDF de Introducción a Literatura",
-    "url": "https://www.youtube.com/watch?v=7u28s5Z8f1w",
-    "description": "Recurso en video de YouTube para profundizar. Material de lectura descargable con ejemplos resueltos paso a paso sobre Introducción a Literatura."
+    "title": "Guía en PDF de Introducción a Literatura",
+    "url": "/docs/intro_literatura-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Introducción a Literatura."
   },
   {
     "id": "res_qz_257",
@@ -1588,18 +1588,18 @@
     "courseId": "course_psicologia",
     "topicId": "topic_intro_psicologia",
     "type": "leccion",
-    "title": "Video Tutorial: Lección Fundamental: Introducción a Psicología",
-    "url": "https://www.youtube.com/watch?v=R9K4vLhZfL8",
-    "description": "Clase detallada en YouTube. Aprende los conceptos clave y la teoría fundamental sobre Introducción a Psicología. Ideal para iniciar el estudio."
+    "title": "Lección Fundamental: Introducción a Psicología",
+    "url": "/lecciones/intro_psicologia-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Introducción a Psicología. Ideal para iniciar el estudio."
   },
   {
     "id": "res_pdf_261",
     "courseId": "course_psicologia",
     "topicId": "topic_intro_psicologia",
     "type": "recurso",
-    "title": "Video Complementario: Guía en PDF de Introducción a Psicología",
-    "url": "https://www.youtube.com/watch?v=R9K4vLhZfL8",
-    "description": "Recurso en video de YouTube para profundizar. Material de lectura descargable con ejemplos resueltos paso a paso sobre Introducción a Psicología."
+    "title": "Guía en PDF de Introducción a Psicología",
+    "url": "/docs/intro_psicologia-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Introducción a Psicología."
   },
   {
     "id": "res_qz_262",
@@ -1633,18 +1633,18 @@
     "courseId": "course_civica",
     "topicId": "topic_intro_civica",
     "type": "leccion",
-    "title": "Video Tutorial: Lección Fundamental: Introducción a Educación Cívica",
-    "url": "https://www.youtube.com/watch?v=525jP2c_gP0",
-    "description": "Clase detallada en YouTube. Aprende los conceptos clave y la teoría fundamental sobre Introducción a Educación Cívica. Ideal para iniciar el estudio."
+    "title": "Lección Fundamental: Introducción a Educación Cívica",
+    "url": "/lecciones/intro_civica-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Introducción a Educación Cívica. Ideal para iniciar el estudio."
   },
   {
     "id": "res_pdf_266",
     "courseId": "course_civica",
     "topicId": "topic_intro_civica",
     "type": "recurso",
-    "title": "Video Complementario: Guía en PDF de Introducción a Educación Cívica",
-    "url": "https://www.youtube.com/watch?v=525jP2c_gP0",
-    "description": "Recurso en video de YouTube para profundizar. Material de lectura descargable con ejemplos resueltos paso a paso sobre Introducción a Educación Cívica."
+    "title": "Guía en PDF de Introducción a Educación Cívica",
+    "url": "/docs/intro_civica-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Introducción a Educación Cívica."
   },
   {
     "id": "res_qz_267",
@@ -1678,18 +1678,18 @@
     "courseId": "course_historia_peru",
     "topicId": "topic_intro_historia_peru",
     "type": "leccion",
-    "title": "Video Tutorial: Lección Fundamental: Introducción a Historia del Perú",
-    "url": "https://www.youtube.com/watch?v=5C-JzG8fH8M",
-    "description": "Clase detallada en YouTube. Aprende los conceptos clave y la teoría fundamental sobre Introducción a Historia del Perú. Ideal para iniciar el estudio."
+    "title": "Lección Fundamental: Introducción a Historia del Perú",
+    "url": "/lecciones/intro_historia_peru-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Introducción a Historia del Perú. Ideal para iniciar el estudio."
   },
   {
     "id": "res_pdf_271",
     "courseId": "course_historia_peru",
     "topicId": "topic_intro_historia_peru",
     "type": "recurso",
-    "title": "Video Complementario: Guía en PDF de Introducción a Historia del Perú",
-    "url": "https://www.youtube.com/watch?v=5C-JzG8fH8M",
-    "description": "Recurso en video de YouTube para profundizar. Material de lectura descargable con ejemplos resueltos paso a paso sobre Introducción a Historia del Perú."
+    "title": "Guía en PDF de Introducción a Historia del Perú",
+    "url": "/docs/intro_historia_peru-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Introducción a Historia del Perú."
   },
   {
     "id": "res_qz_272",
@@ -1723,18 +1723,18 @@
     "courseId": "course_historia_universal",
     "topicId": "topic_intro_historia_universal",
     "type": "leccion",
-    "title": "Video Tutorial: Lección Fundamental: Introducción a Historia Universal",
-    "url": "https://www.youtube.com/watch?v=b0O68sE4P_s",
-    "description": "Clase detallada en YouTube. Aprende los conceptos clave y la teoría fundamental sobre Introducción a Historia Universal. Ideal para iniciar el estudio."
+    "title": "Lección Fundamental: Introducción a Historia Universal",
+    "url": "/lecciones/intro_historia_universal-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Introducción a Historia Universal. Ideal para iniciar el estudio."
   },
   {
     "id": "res_pdf_276",
     "courseId": "course_historia_universal",
     "topicId": "topic_intro_historia_universal",
     "type": "recurso",
-    "title": "Video Complementario: Guía en PDF de Introducción a Historia Universal",
-    "url": "https://www.youtube.com/watch?v=b0O68sE4P_s",
-    "description": "Recurso en video de YouTube para profundizar. Material de lectura descargable con ejemplos resueltos paso a paso sobre Introducción a Historia Universal."
+    "title": "Guía en PDF de Introducción a Historia Universal",
+    "url": "/docs/intro_historia_universal-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Introducción a Historia Universal."
   },
   {
     "id": "res_qz_277",
@@ -1768,18 +1768,18 @@
     "courseId": "course_geografia",
     "topicId": "topic_intro_geografia",
     "type": "leccion",
-    "title": "Video Tutorial: Lección Fundamental: Introducción a Geografía",
-    "url": "https://www.youtube.com/watch?v=bO68sE4P_s",
-    "description": "Clase detallada en YouTube. Aprende los conceptos clave y la teoría fundamental sobre Introducción a Geografía. Ideal para iniciar el estudio."
+    "title": "Lección Fundamental: Introducción a Geografía",
+    "url": "/lecciones/intro_geografia-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Introducción a Geografía. Ideal para iniciar el estudio."
   },
   {
     "id": "res_pdf_281",
     "courseId": "course_geografia",
     "topicId": "topic_intro_geografia",
     "type": "recurso",
-    "title": "Video Complementario: Guía en PDF de Introducción a Geografía",
-    "url": "https://www.youtube.com/watch?v=bO68sE4P_s",
-    "description": "Recurso en video de YouTube para profundizar. Material de lectura descargable con ejemplos resueltos paso a paso sobre Introducción a Geografía."
+    "title": "Guía en PDF de Introducción a Geografía",
+    "url": "/docs/intro_geografia-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Introducción a Geografía."
   },
   {
     "id": "res_qz_282",
@@ -1813,18 +1813,18 @@
     "courseId": "course_economia",
     "topicId": "topic_intro_economia",
     "type": "leccion",
-    "title": "Video Tutorial: Lección Fundamental: Introducción a Economía",
-    "url": "https://www.youtube.com/watch?v=CqHMBF4X0Ww",
-    "description": "Clase detallada en YouTube. Aprende los conceptos clave y la teoría fundamental sobre Introducción a Economía. Ideal para iniciar el estudio."
+    "title": "Lección Fundamental: Introducción a Economía",
+    "url": "/lecciones/intro_economia-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Introducción a Economía. Ideal para iniciar el estudio."
   },
   {
     "id": "res_pdf_286",
     "courseId": "course_economia",
     "topicId": "topic_intro_economia",
     "type": "recurso",
-    "title": "Video Complementario: Guía en PDF de Introducción a Economía",
-    "url": "https://www.youtube.com/watch?v=CqHMBF4X0Ww",
-    "description": "Recurso en video de YouTube para profundizar. Material de lectura descargable con ejemplos resueltos paso a paso sobre Introducción a Economía."
+    "title": "Guía en PDF de Introducción a Economía",
+    "url": "/docs/intro_economia-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Introducción a Economía."
   },
   {
     "id": "res_qz_287",
@@ -1858,18 +1858,18 @@
     "courseId": "course_filosofia",
     "topicId": "topic_intro_filosofia",
     "type": "leccion",
-    "title": "Video Tutorial: Lección Fundamental: Introducción a Filosofía",
-    "url": "https://www.youtube.com/watch?v=0k3P5g6nQ1g",
-    "description": "Clase detallada en YouTube. Aprende los conceptos clave y la teoría fundamental sobre Introducción a Filosofía. Ideal para iniciar el estudio."
+    "title": "Lección Fundamental: Introducción a Filosofía",
+    "url": "/lecciones/intro_filosofia-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Introducción a Filosofía. Ideal para iniciar el estudio."
   },
   {
     "id": "res_pdf_291",
     "courseId": "course_filosofia",
     "topicId": "topic_intro_filosofia",
     "type": "recurso",
-    "title": "Video Complementario: Guía en PDF de Introducción a Filosofía",
-    "url": "https://www.youtube.com/watch?v=0k3P5g6nQ1g",
-    "description": "Recurso en video de YouTube para profundizar. Material de lectura descargable con ejemplos resueltos paso a paso sobre Introducción a Filosofía."
+    "title": "Guía en PDF de Introducción a Filosofía",
+    "url": "/docs/intro_filosofia-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Introducción a Filosofía."
   },
   {
     "id": "res_qz_292",
@@ -1903,18 +1903,18 @@
     "courseId": "course_logica",
     "topicId": "topic_intro_logica",
     "type": "leccion",
-    "title": "Video Tutorial: Lección Fundamental: Introducción a Lógica",
-    "url": "https://www.youtube.com/watch?v=T1wG2c2BpsA",
-    "description": "Clase detallada en YouTube. Aprende los conceptos clave y la teoría fundamental sobre Introducción a Lógica. Ideal para iniciar el estudio."
+    "title": "Lección Fundamental: Introducción a Lógica",
+    "url": "/lecciones/intro_logica-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Introducción a Lógica. Ideal para iniciar el estudio."
   },
   {
     "id": "res_pdf_296",
     "courseId": "course_logica",
     "topicId": "topic_intro_logica",
     "type": "recurso",
-    "title": "Video Complementario: Guía en PDF de Introducción a Lógica",
-    "url": "https://www.youtube.com/watch?v=T1wG2c2BpsA",
-    "description": "Recurso en video de YouTube para profundizar. Material de lectura descargable con ejemplos resueltos paso a paso sobre Introducción a Lógica."
+    "title": "Guía en PDF de Introducción a Lógica",
+    "url": "/docs/intro_logica-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Introducción a Lógica."
   },
   {
     "id": "res_qz_297",
@@ -1948,18 +1948,18 @@
     "courseId": "course_ingles",
     "topicId": "topic_intro_ingles",
     "type": "leccion",
-    "title": "Video Tutorial: Lección Fundamental: Introducción a Inglés",
-    "url": "https://www.youtube.com/watch?v=sTJ-nFzO1l8",
-    "description": "Clase detallada en YouTube. Aprende los conceptos clave y la teoría fundamental sobre Introducción a Inglés. Ideal para iniciar el estudio."
+    "title": "Lección Fundamental: Introducción a Inglés",
+    "url": "/lecciones/intro_ingles-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Introducción a Inglés. Ideal para iniciar el estudio."
   },
   {
     "id": "res_pdf_301",
     "courseId": "course_ingles",
     "topicId": "topic_intro_ingles",
     "type": "recurso",
-    "title": "Video Complementario: Guía en PDF de Introducción a Inglés",
-    "url": "https://www.youtube.com/watch?v=sTJ-nFzO1l8",
-    "description": "Recurso en video de YouTube para profundizar. Material de lectura descargable con ejemplos resueltos paso a paso sobre Introducción a Inglés."
+    "title": "Guía en PDF de Introducción a Inglés",
+    "url": "/docs/intro_ingles-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Introducción a Inglés."
   },
   {
     "id": "res_qz_302",
@@ -1993,18 +1993,18 @@
     "courseId": "course_fisica",
     "topicId": "topic_mruv",
     "type": "leccion",
-    "title": "Video Tutorial: Lección Fundamental: Movimiento Rectilíneo Uniformemente Variado (MRUV)",
-    "url": "https://www.youtube.com/watch?v=Xh0YyU4h-5o",
-    "description": "Clase detallada en YouTube. Aprende los conceptos clave y la teoría fundamental sobre Movimiento Rectilíneo Uniformemente Variado (MRUV). Ideal para iniciar el estudio."
+    "title": "Lección Fundamental: Movimiento Rectilíneo Uniformemente Variado (MRUV)",
+    "url": "/lecciones/mruv-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Movimiento Rectilíneo Uniformemente Variado (MRUV). Ideal para iniciar el estudio."
   },
   {
     "id": "res_pdf_306",
     "courseId": "course_fisica",
     "topicId": "topic_mruv",
     "type": "recurso",
-    "title": "Video Complementario: Guía en PDF de Movimiento Rectilíneo Uniformemente Variado (MRUV)",
-    "url": "https://www.youtube.com/watch?v=Xh0YyU4h-5o",
-    "description": "Recurso en video de YouTube para profundizar. Material de lectura descargable con ejemplos resueltos paso a paso sobre Movimiento Rectilíneo Uniformemente Variado (MRUV)."
+    "title": "Guía en PDF de Movimiento Rectilíneo Uniformemente Variado (MRUV)",
+    "url": "/docs/mruv-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Movimiento Rectilíneo Uniformemente Variado (MRUV)."
   },
   {
     "id": "res_qz_307",
@@ -2038,18 +2038,18 @@
     "courseId": "course_fisica",
     "topicId": "topic_caida_libre",
     "type": "leccion",
-    "title": "Video Tutorial: Lección Fundamental: Caída Libre y Movimiento Vertical",
-    "url": "https://www.youtube.com/watch?v=Xh0YyU4h-5o",
-    "description": "Clase detallada en YouTube. Aprende los conceptos clave y la teoría fundamental sobre Caída Libre y Movimiento Vertical. Ideal para iniciar el estudio."
+    "title": "Lección Fundamental: Caída Libre y Movimiento Vertical",
+    "url": "/lecciones/caida_libre-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Caída Libre y Movimiento Vertical. Ideal para iniciar el estudio."
   },
   {
     "id": "res_pdf_311",
     "courseId": "course_fisica",
     "topicId": "topic_caida_libre",
     "type": "recurso",
-    "title": "Video Complementario: Guía en PDF de Caída Libre y Movimiento Vertical",
-    "url": "https://www.youtube.com/watch?v=Xh0YyU4h-5o",
-    "description": "Recurso en video de YouTube para profundizar. Material de lectura descargable con ejemplos resueltos paso a paso sobre Caída Libre y Movimiento Vertical."
+    "title": "Guía en PDF de Caída Libre y Movimiento Vertical",
+    "url": "/docs/caida_libre-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Caída Libre y Movimiento Vertical."
   },
   {
     "id": "res_qz_312",
@@ -2083,18 +2083,18 @@
     "courseId": "course_fisica",
     "topicId": "topic_dinamica",
     "type": "leccion",
-    "title": "Video Tutorial: Lección Fundamental: Leyes de Newton y Dinámica",
-    "url": "https://www.youtube.com/watch?v=Xh0YyU4h-5o",
-    "description": "Clase detallada en YouTube. Aprende los conceptos clave y la teoría fundamental sobre Leyes de Newton y Dinámica. Ideal para iniciar el estudio."
+    "title": "Lección Fundamental: Leyes de Newton y Dinámica",
+    "url": "/lecciones/dinamica-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Leyes de Newton y Dinámica. Ideal para iniciar el estudio."
   },
   {
     "id": "res_pdf_316",
     "courseId": "course_fisica",
     "topicId": "topic_dinamica",
     "type": "recurso",
-    "title": "Video Complementario: Guía en PDF de Leyes de Newton y Dinámica",
-    "url": "https://www.youtube.com/watch?v=Xh0YyU4h-5o",
-    "description": "Recurso en video de YouTube para profundizar. Material de lectura descargable con ejemplos resueltos paso a paso sobre Leyes de Newton y Dinámica."
+    "title": "Guía en PDF de Leyes de Newton y Dinámica",
+    "url": "/docs/dinamica-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Leyes de Newton y Dinámica."
   },
   {
     "id": "res_qz_317",
@@ -2128,18 +2128,18 @@
     "courseId": "course_quimica",
     "topicId": "topic_quimica_materia",
     "type": "leccion",
-    "title": "Video Tutorial: Lección Fundamental: Materia y sus Propiedades",
-    "url": "https://www.youtube.com/watch?v=D0L-OEN2_Uo",
-    "description": "Clase detallada en YouTube. Aprende los conceptos clave y la teoría fundamental sobre Materia y sus Propiedades. Ideal para iniciar el estudio."
+    "title": "Lección Fundamental: Materia y sus Propiedades",
+    "url": "/lecciones/quimica_materia-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Materia y sus Propiedades. Ideal para iniciar el estudio."
   },
   {
     "id": "res_pdf_321",
     "courseId": "course_quimica",
     "topicId": "topic_quimica_materia",
     "type": "recurso",
-    "title": "Video Complementario: Guía en PDF de Materia y sus Propiedades",
-    "url": "https://www.youtube.com/watch?v=D0L-OEN2_Uo",
-    "description": "Recurso en video de YouTube para profundizar. Material de lectura descargable con ejemplos resueltos paso a paso sobre Materia y sus Propiedades."
+    "title": "Guía en PDF de Materia y sus Propiedades",
+    "url": "/docs/quimica_materia-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Materia y sus Propiedades."
   },
   {
     "id": "res_qz_322",
@@ -2173,18 +2173,18 @@
     "courseId": "course_quimica",
     "topicId": "topic_quimica_atomo",
     "type": "leccion",
-    "title": "Video Tutorial: Lección Fundamental: Modelo Atómico Actual",
-    "url": "https://www.youtube.com/watch?v=D0L-OEN2_Uo",
-    "description": "Clase detallada en YouTube. Aprende los conceptos clave y la teoría fundamental sobre Modelo Atómico Actual. Ideal para iniciar el estudio."
+    "title": "Lección Fundamental: Modelo Atómico Actual",
+    "url": "/lecciones/quimica_atomo-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Modelo Atómico Actual. Ideal para iniciar el estudio."
   },
   {
     "id": "res_pdf_326",
     "courseId": "course_quimica",
     "topicId": "topic_quimica_atomo",
     "type": "recurso",
-    "title": "Video Complementario: Guía en PDF de Modelo Atómico Actual",
-    "url": "https://www.youtube.com/watch?v=D0L-OEN2_Uo",
-    "description": "Recurso en video de YouTube para profundizar. Material de lectura descargable con ejemplos resueltos paso a paso sobre Modelo Atómico Actual."
+    "title": "Guía en PDF de Modelo Atómico Actual",
+    "url": "/docs/quimica_atomo-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Modelo Atómico Actual."
   },
   {
     "id": "res_qz_327",
@@ -2218,18 +2218,18 @@
     "courseId": "course_quimica",
     "topicId": "topic_quimica_configuracion",
     "type": "leccion",
-    "title": "Video Tutorial: Lección Fundamental: Configuración Electrónica",
-    "url": "https://www.youtube.com/watch?v=D0L-OEN2_Uo",
-    "description": "Clase detallada en YouTube. Aprende los conceptos clave y la teoría fundamental sobre Configuración Electrónica. Ideal para iniciar el estudio."
+    "title": "Lección Fundamental: Configuración Electrónica",
+    "url": "/lecciones/quimica_configuracion-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Configuración Electrónica. Ideal para iniciar el estudio."
   },
   {
     "id": "res_pdf_331",
     "courseId": "course_quimica",
     "topicId": "topic_quimica_configuracion",
     "type": "recurso",
-    "title": "Video Complementario: Guía en PDF de Configuración Electrónica",
-    "url": "https://www.youtube.com/watch?v=D0L-OEN2_Uo",
-    "description": "Recurso en video de YouTube para profundizar. Material de lectura descargable con ejemplos resueltos paso a paso sobre Configuración Electrónica."
+    "title": "Guía en PDF de Configuración Electrónica",
+    "url": "/docs/quimica_configuracion-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Configuración Electrónica."
   },
   {
     "id": "res_qz_332",
@@ -2263,18 +2263,18 @@
     "courseId": "course_quimica",
     "topicId": "topic_quimica_tabla",
     "type": "leccion",
-    "title": "Video Tutorial: Lección Fundamental: Tabla Periódica",
-    "url": "https://www.youtube.com/watch?v=D0L-OEN2_Uo",
-    "description": "Clase detallada en YouTube. Aprende los conceptos clave y la teoría fundamental sobre Tabla Periódica. Ideal para iniciar el estudio."
+    "title": "Lección Fundamental: Tabla Periódica",
+    "url": "/lecciones/quimica_tabla-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Tabla Periódica. Ideal para iniciar el estudio."
   },
   {
     "id": "res_pdf_336",
     "courseId": "course_quimica",
     "topicId": "topic_quimica_tabla",
     "type": "recurso",
-    "title": "Video Complementario: Guía en PDF de Tabla Periódica",
-    "url": "https://www.youtube.com/watch?v=D0L-OEN2_Uo",
-    "description": "Recurso en video de YouTube para profundizar. Material de lectura descargable con ejemplos resueltos paso a paso sobre Tabla Periódica."
+    "title": "Guía en PDF de Tabla Periódica",
+    "url": "/docs/quimica_tabla-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Tabla Periódica."
   },
   {
     "id": "res_qz_337",
@@ -2308,18 +2308,18 @@
     "courseId": "course_biologia",
     "topicId": "topic_intro_biologia",
     "type": "leccion",
-    "title": "Video Tutorial: Lección Fundamental: Introducción a Biología",
-    "url": "https://www.youtube.com/watch?v=yAqXQ0B2o9k",
-    "description": "Clase detallada en YouTube. Aprende los conceptos clave y la teoría fundamental sobre Introducción a Biología. Ideal para iniciar el estudio."
+    "title": "Lección Fundamental: Introducción a Biología",
+    "url": "/lecciones/intro_biologia-1",
+    "description": "Aprende los conceptos clave y la teoría fundamental sobre Introducción a Biología. Ideal para iniciar el estudio."
   },
   {
     "id": "res_pdf_341",
     "courseId": "course_biologia",
     "topicId": "topic_intro_biologia",
     "type": "recurso",
-    "title": "Video Complementario: Guía en PDF de Introducción a Biología",
-    "url": "https://www.youtube.com/watch?v=yAqXQ0B2o9k",
-    "description": "Recurso en video de YouTube para profundizar. Material de lectura descargable con ejemplos resueltos paso a paso sobre Introducción a Biología."
+    "title": "Guía en PDF de Introducción a Biología",
+    "url": "/docs/intro_biologia-guia.pdf",
+    "description": "Material de lectura descargable con ejemplos resueltos paso a paso sobre Introducción a Biología."
   },
   {
     "id": "res_qz_342",

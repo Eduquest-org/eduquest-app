@@ -43,44 +43,48 @@ async function loadFeedPosts() {
     if (!container) return;
 
     try {
-        // Obtenemos los posts desde nuestra nueva función RPC
-        const { data: enrichedPosts, error } = await supabase.rpc('get_forum_feed', { limit_val: 50, offset_val: 0 });
-        
-        if (error) {
-            console.error("Error cargando feed desde Supabase:", error);
-            return;
-        }
+        const [postsRes, usersRes, commentsRes] = await Promise.all([
+            fetch('../../mock/posts.json'),
+            fetch('../../mock/users.json'),
+            fetch('../../mock/comments.json')
+        ]);
+
+        const mockPosts = await postsRes.json();
+        const usersData = await usersRes.json();
+        const users = usersData.users || usersData;
+        _allComments = await commentsRes.json();
+
+        // Cargar posts personalizados de localStorage (van primero)
+        const customPosts = JSON.parse(localStorage.getItem('eduquest_custom_posts')) || [];
+        _allPosts = [...customPosts, ...mockPosts];
 
         container.innerHTML = '';
 
         // Guardar userId del usuario en sesión ANTES de renderizar
-        const user = window.CurrentUserService ? CurrentUserService.getProfile() : null;
-        _currentUserId = user?.id || null;
+        const session = (typeof Storage !== 'undefined') ? Storage.getSession() : null;
+        _currentUserId = session?.userId || null;
 
-        if (!enrichedPosts || enrichedPosts.length === 0) {
-            container.innerHTML = '<div style="text-align:center; padding:40px; color:var(--sub);"><p>Aún no hay publicaciones en el foro. ¡Sé el primero en preguntar algo!</p></div>';
-            return;
-        }
+        const enrichedPosts = _allPosts.map(post => {
+            const timeStr = post.createdAt ? formatTime(post.createdAt) : (post.timeText || 'Reciente');
 
-        // Renderizar usando los datos de Supabase y renderPostCard
-        enrichedPosts.forEach(post => {
-            // Mapeamos de Supabase snake_case a camelCase para renderPostCard
-            const mappedPost = {
-                id: post.id,
-                authorId: post.author_id,
-                authorAvatar: post.author_avatar,
-                authorName: post.author_name,
-                authorTarget: post.author_target,
-                tag: post.tag,
-                content: post.content,
-                imageUrl: post.image_url,
-                upvotes: post.upvotes,
-                timeText: post.created_at ? formatTime(post.created_at) : 'Reciente',
-                commentsCount: parseInt(post.comments_count) || 0,
-                isLikedByMe: post.is_liked_by_me || false
+            if (post.id && post.id.toString().startsWith('post_custom_')) {
+                return { ...post, timeText: timeStr };
+            }
+
+            const author = (users || []).find(u => u.id === post.authorId) || {};
+            const postComments = _allComments.filter(c => c.postId === post.id);
+
+            return {
+                ...post,
+                authorName: post.authorName || author.name || 'Usuario',
+                authorAvatar: post.authorAvatar || (author.profile?.avatar) || author.avatar || '👤',
+                authorTarget: post.authorTarget || (author.profile?.target ? `Meta: ${author.profile.target}` : ''),
+                commentsCount: post.commentsCount ?? postComments.length,
+                timeText: timeStr
             };
-            renderPostCard(mappedPost, container);
         });
+
+        enrichedPosts.forEach(post => renderPostCard(post, container));
 
     } catch (error) {
         console.error('Error cargando el feed:', error);
@@ -105,8 +109,11 @@ function renderPostCard(post, container) {
             <img src="${post.imageUrl}" alt="Imagen del ejercicio" loading="lazy">
         </div>` : '';
 
-    // Ahora recibimos la cantidad de comentarios desde Supabase directamente
-    const commentCount = post.commentsCount || 0;
+    // Recuperar comentarios de localStorage si es post custom
+    const storedComments = JSON.parse(localStorage.getItem(`eduquest_comments_${post.id}`)) || [];
+    const feedComments = _allComments.filter(c => c.postId === post.id);
+    const allPostComments = [...feedComments, ...storedComments];
+    const commentCount = allPostComments.length;
     const pinnedId = post.pinnedCommentId || null;
 
     // Indicador de respuesta fijada
@@ -115,9 +122,6 @@ function renderPostCard(post, container) {
     // Botón de eliminar post (solo si es su post)
     const canDeletePost = _currentUserId && post.authorId === _currentUserId;
     const deletePostBtn = canDeletePost ? `<button class="delete-post-btn" onclick="deletePost('${post.id}')" title="Eliminar publicación">🗑️</button>` : '';
-
-    const upvoteActive = post.isLikedByMe ? 'active' : '';
-    const upvoteText = post.isLikedByMe ? `🔥 ¡Apoyado! (${post.upvotes || 0})` : `🔼 Útil (${post.upvotes || 0})`;
 
     postCard.innerHTML = `
         <div class="card-header">
@@ -137,8 +141,8 @@ function renderPostCard(post, container) {
             ${imageHtml}
         </div>
         <div class="card-footer">
-            <button class="action-btn upvote-btn ${upvoteActive}" id="upvote-btn-${post.id}" onclick="toggleUpvote(this, ${post.upvotes || 0})">
-                ${upvoteText}
+            <button class="action-btn upvote-btn" id="upvote-btn-${post.id}" onclick="toggleUpvote(this, ${post.upvotes || 0})">
+                🔼 Útil (${post.upvotes || 0})
             </button>
             <button class="action-btn comment-toggle-btn" onclick="toggleComments('${post.id}')">
                 💬 Comentar (${commentCount})
@@ -167,45 +171,37 @@ function toggleComments(postId) {
     }
 }
 
-async function renderComments(postId, pinnedId) {
+function renderComments(postId, pinnedId) {
     const section = document.getElementById(`comments-${postId}`);
     if (!section) return;
 
-    // Obtener comentarios de Supabase
-    const { data: allComments, error } = await supabase
-        .from('forum_comments')
-        .select('*, profiles(name, avatar_url)')
-        .eq('post_id', postId)
-        .order('created_at', { ascending: true });
+    const feedComments = _allComments.filter(c => c.postId === postId);
+    const storedComments = JSON.parse(localStorage.getItem(`eduquest_comments_${postId}`)) || [];
+    const allComments = [...feedComments, ...storedComments];
 
-    if (error) {
-        console.error("Error cargando comentarios:", error);
-        return;
-    }
-
-    // Determinar pin guardado localmente (o desde la DB si se agregara lógica más avanzada)
+    // Determinar pin guardado en localStorage
     const savedPinnedId = localStorage.getItem(`eduquest_pinned_${postId}`) || pinnedId;
 
     section.innerHTML = '';
 
-    if (!allComments || allComments.length === 0) {
+    if (allComments.length === 0) {
         section.innerHTML = '<p style="font-size:13px;color:#9ca3af;text-align:center;padding:8px 0 16px;">Sé el primero en responder esta duda 👇</p>';
     } else {
         // Ordenar: pinned primero
         const sorted = [...allComments].sort((a, b) => {
-            if (a.id === savedPinnedId || a.is_pinned) return -1;
-            if (b.id === savedPinnedId || b.is_pinned) return 1;
+            if (a.id === savedPinnedId) return -1;
+            if (b.id === savedPinnedId) return 1;
             return 0;
         });
 
         sorted.forEach(comment => {
-            const isPinned = comment.id === savedPinnedId || comment.is_pinned;
+            const isPinned = comment.id === savedPinnedId;
             const commentEl = document.createElement('div');
             commentEl.className = `comment-item${isPinned ? ' pinned-comment' : ''}`;
             commentEl.id = `comment-item-${comment.id}`;
 
             // Acciones: fijar y eliminar
-            const isCommentAuthor = _currentUserId && comment.author_id === _currentUserId;
+            const isCommentAuthor = _currentUserId && comment.authorId === _currentUserId;
             const canPin = _currentUserId != null;
 
             let actionsHtml = '';
@@ -221,18 +217,15 @@ async function renderComments(postId, pinnedId) {
             if (actionButtons.length > 0) {
                 actionsHtml = `<div class="comment-actions-group">${actionButtons.join('')}</div>`;
             }
-            
-            const authorName = comment.profiles?.name || 'Usuario';
-            const authorAvatar = comment.profiles?.avatar_url || '👤';
 
             commentEl.innerHTML = `
                 ${actionsHtml}
-                <div class="comment-avatar">${authorAvatar}</div>
+                <div class="comment-avatar">${comment.authorAvatar || '👤'}</div>
                 <div class="comment-body">
                     <div class="comment-author-row">
-                        <span class="comment-author">${authorName}</span>
+                        <span class="comment-author">${comment.authorName || 'Usuario'}</span>
                         ${isPinned ? '<span class="pin-badge">📌 Respuesta más útil</span>' : ''}
-                        <span class="comment-time">${comment.created_at ? formatTime(comment.created_at) : 'Reciente'}</span>
+                        <span class="comment-time">${comment.createdAt ? formatTime(comment.createdAt) : 'Reciente'}</span>
                     </div>
                     <p class="comment-text">${comment.content}</p>
                 </div>
@@ -256,94 +249,87 @@ async function renderComments(postId, pinnedId) {
     section.appendChild(inputRow);
 }
 
-async function submitComment(postId) {
+function submitComment(postId) {
     const input = document.getElementById(`comment-input-${postId}`);
     if (!input) return;
 
     const content = input.value.trim();
     if (!content) return;
 
-    const user = window.CurrentUserService ? CurrentUserService.getProfile() : null;
-    if (!user) {
-        if (window.app?.showToast) window.app.showToast('⚠️ Debes iniciar sesión para comentar', 'warning');
-        return;
+    const session = (typeof Storage !== 'undefined') ? Storage.getSession() : null;
+    const userName = 'Tú';
+    const userAvatar = '🚀';
+
+    if (session && typeof UserManager !== 'undefined') {
+        try {
+            const user = UserManager.getUserById(session.userId);
+            if (user) {
+                // userName = user.name;
+                // userAvatar = user.profile?.avatar || '🚀';
+            }
+        } catch (e) { }
     }
 
-    // Insertar en Supabase
-    const { error } = await supabase.from('forum_comments').insert({
-        post_id: postId,
-        author_id: user.id,
+    const newComment = {
+        id: `comment_${Date.now()}`,
+        postId: postId,
+        authorId: session?.userId || 'anonymous',
+        authorName: 'Tú',
+        authorAvatar: '🚀',
         content: content,
-        is_pinned: false
-    });
+        isPinned: false,
+        createdAt: new Date().toISOString()
+    };
 
-    if (error) {
-        console.error("Error al publicar comentario:", error);
-        if (window.app?.showToast) window.app.showToast('❌ Ocurrió un error al comentar.', 'error');
-        return;
-    }
-
+    // Guardar en localStorage
+    const storedComments = JSON.parse(localStorage.getItem(`eduquest_comments_${postId}`)) || [];
+    storedComments.push(newComment);
+    localStorage.setItem(`eduquest_comments_${postId}`, JSON.stringify(storedComments));
     // Limpiar input y volver a renderizar
     input.value = '';
     input.style.height = 'auto';
-    await renderComments(postId);
+    renderComments(postId);
 
     // Actualizar contador en el botón
     const toggleBtn = document.querySelector(`#post-card-${postId} .comment-toggle-btn`);
     if (toggleBtn) {
-        // Consultar la nueva cantidad total
-        const { count } = await supabase.from('forum_comments').select('*', { count: 'exact', head: true }).eq('post_id', postId);
-        toggleBtn.innerHTML = `💬 Comentar (${count || 0})`;
+        const feedC = _allComments.filter(c => c.postId === postId).length;
+        const storedC = JSON.parse(localStorage.getItem(`eduquest_comments_${postId}`))?.length || 0;
+        toggleBtn.innerHTML = `💬 Comentar (${feedC + storedC})`;
     }
 }
 
-async function togglePinComment(postId, commentId) {
-    // 1. Obtener el comentario actual para saber su estado
-    const { data: comment, error: fetchErr } = await supabase
-        .from('forum_comments')
-        .select('is_pinned')
-        .eq('id', commentId)
-        .single();
+function togglePinComment(postId, commentId) {
+    const currentPinned = localStorage.getItem(`eduquest_pinned_${postId}`);
 
-    if (fetchErr) return;
+    if (currentPinned === commentId) {
+        // Desfijar
+        localStorage.removeItem(`eduquest_pinned_${postId}`);
+        updatePostPinInStorage(postId, null);
+    } else {
+        // Fijar este comentario
+        localStorage.setItem(`eduquest_pinned_${postId}`, commentId);
+        updatePostPinInStorage(postId, commentId);
 
-    const newPinnedStatus = !comment.is_pinned;
-
-    // 2. Si vamos a fijar, primero desfijamos cualquier otro comentario de este post
-    if (newPinnedStatus) {
-        await supabase
-            .from('forum_comments')
-            .update({ is_pinned: false })
-            .eq('post_id', postId);
-    }
-
-    // 3. Actualizamos el estado del comentario clickeado
-    const { error: updateErr } = await supabase
-        .from('forum_comments')
-        .update({ is_pinned: newPinnedStatus })
-        .eq('id', commentId);
-
-    if (updateErr) {
-        if (window.app?.showToast) window.app.showToast('❌ Error al fijar la respuesta', 'error');
-        return;
-    }
-
-    if (window.app?.showToast) {
-        window.app.showToast(newPinnedStatus ? '📌 ¡Respuesta fijada como la más útil!' : 'Respuesta desfijada', 'success');
+        // Toast de confirmación
+        if (window.app?.showToast) {
+            window.app.showToast('📌 ¡Respuesta fijada como la más útil!', 'success');
+        }
     }
 
     // Actualizar indicador en la cabecera del post
     const header = document.querySelector(`#post-card-${postId} .author-info h4`);
     if (header) {
         const existing = header.querySelector('.pin-badge');
-        if (newPinnedStatus && !existing) {
+        const newPinnedId = localStorage.getItem(`eduquest_pinned_${postId}`);
+        if (newPinnedId && !existing) {
             header.insertAdjacentHTML('beforeend', '<span class="pin-badge">📌 Respuesta fijada</span>');
-        } else if (!newPinnedStatus && existing) {
+        } else if (!newPinnedId && existing) {
             existing.remove();
         }
     }
 
-    await renderComments(postId);
+    renderComments(postId);
 }
 
 function updatePostPinInStorage(postId, pinnedCommentId) {
@@ -363,7 +349,7 @@ function autoResizeTextarea(el) {
 /* ========================================================
    PUBLICAR NUEVA DUDA
    ======================================================== */
-async function addNewPost() {
+function addNewPost() {
     const input = document.getElementById('post-input');
     if (!input) return;
 
@@ -376,26 +362,45 @@ async function addNewPost() {
         return;
     }
 
-    const user = window.CurrentUserService ? CurrentUserService.getProfile() : null;
-    if (!user) return;
+    const session = (typeof Storage !== 'undefined') ? Storage.getSession() : null;
+    if (!session) return;
+
+    let userName = 'Yo';
+    let userAvatar = '🚀';
+    let userTarget = 'UNI';
+
+    if (typeof UserManager !== 'undefined') {
+        const user = UserManager.getUserById(session.userId);
+        if (user) {
+            userName = user.name;
+            userAvatar = user.profile?.avatar || '🚀';
+            userTarget = user.profile?.target || 'UNI';
+        }
+    }
 
     // Determinar etiqueta
+    // Se respeta la etiqueta seleccionada por el usuario. Si no eligió ninguna, por defecto '#Duda'
     const tag = _selectedTag || '#Duda';
 
-    // Insertar en Supabase
-    const { error } = await supabase.from('forum_posts').insert({
-        author_id: user.id,
+    const newPost = {
+        id: 'post_custom_' + Date.now(),
+        authorId: session.userId,
+        authorName: userName,
+        authorAvatar: userAvatar,
+        authorTarget: `Meta: ${userTarget}`,
         tag: tag,
         content: content,
-        image_url: _selectedImageData || null,
-        upvotes: 0
-    });
+        imageUrl: _selectedImageData || null,
+        upvotes: 0,
+        commentsCount: 0,
+        pinnedCommentId: null,
+        createdAt: new Date().toISOString()
+    };
 
-    if (error) {
-        console.error("Error al publicar la duda:", error);
-        if (window.app?.showToast) window.app.showToast('❌ Ocurrió un error al publicar tu duda.', 'error');
-        return;
-    }
+    // Guardar en localStorage
+    const customPosts = JSON.parse(localStorage.getItem('eduquest_custom_posts')) || [];
+    customPosts.unshift(newPost);
+    localStorage.setItem('eduquest_custom_posts', JSON.stringify(customPosts));
 
     // Resetear estado del módulo
     input.value = '';
@@ -425,14 +430,13 @@ async function addNewPost() {
 
     // Gamification
     if (typeof UserManager !== 'undefined') {
-        const user = CurrentUserService.getProfile();
+        const user = UserManager.getUserById(session.userId);
         if (user) UserManager.addXp(user.id, 50);
     }
 
     if (window.GamificationManager) {
         GamificationManager.updateDailyChallengeProgress('create_post', 1);
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session?.user?.id) GamificationManager.checkAndAwardBadge(session.user.id, 'badge_curious');
+        if (session?.userId) GamificationManager.checkAndAwardBadge(session.userId, 'badge_curious');
     }
 
     if (window.UserBindingManager) UserBindingManager.bindAll();
@@ -443,19 +447,26 @@ async function addNewPost() {
 /* ========================================================
    ELIMINAR POST / COMENTARIO
    ======================================================== */
-async function deletePost(postId) {
+function deletePost(postId) {
     if (!confirm('¿Estás seguro de que deseas eliminar esta publicación?')) return;
 
-    // Eliminar de Supabase
-    const { error } = await supabase.from('forum_posts').delete().eq('id', postId);
+    // Remover de _allPosts en memoria
+    _allPosts = _allPosts.filter(p => p.id !== postId);
 
-    if (error) {
-        console.error("Error al eliminar el post:", error);
-        if (window.app?.showToast) window.app.showToast('❌ Ocurrió un error al eliminar.', 'error');
-        return;
+    // Remover de localStorage si es custom
+    let customPosts = JSON.parse(localStorage.getItem('eduquest_custom_posts')) || [];
+    const initialLen = customPosts.length;
+    customPosts = customPosts.filter(p => p.id !== postId);
+
+    if (customPosts.length < initialLen) {
+        localStorage.setItem('eduquest_custom_posts', JSON.stringify(customPosts));
     }
 
-    // Quitar del DOM con animación
+    // Limpiar localStorage relacionado
+    localStorage.removeItem(`eduquest_comments_${postId}`);
+    localStorage.removeItem(`eduquest_pinned_${postId}`);
+
+    // Quitar del DOM
     const card = document.getElementById(`post-card-${postId}`);
     if (card) {
         card.style.opacity = '0';
@@ -465,25 +476,32 @@ async function deletePost(postId) {
     if (window.app?.showToast) window.app.showToast('🗑️ Publicación eliminada', 'success');
 }
 
-async function deleteComment(postId, commentId) {
+function deleteComment(postId, commentId) {
     if (!confirm('¿Seguro que deseas eliminar esta respuesta?')) return;
 
-    // Remover de Supabase
-    const { error } = await supabase.from('forum_comments').delete().eq('id', commentId);
-    
-    if (error) {
-        if (window.app?.showToast) window.app.showToast('❌ Error al eliminar', 'error');
-        return;
+    // Remover de memoria
+    _allComments = _allComments.filter(c => c.id !== commentId);
+
+    // Remover de localStorage
+    let storedComments = JSON.parse(localStorage.getItem(`eduquest_comments_${postId}`)) || [];
+    storedComments = storedComments.filter(c => c.id !== commentId);
+    localStorage.setItem(`eduquest_comments_${postId}`, JSON.stringify(storedComments));
+
+    // Si estaba fijado, desfijar
+    if (localStorage.getItem(`eduquest_pinned_${postId}`) === commentId) {
+        localStorage.removeItem(`eduquest_pinned_${postId}`);
+        updatePostPinInStorage(postId, null);
     }
 
     // Volver a renderizar
-    await renderComments(postId);
+    renderComments(postId);
 
     // Actualizar contador
     const toggleBtn = document.querySelector(`#post-card-${postId} .comment-toggle-btn`);
     if (toggleBtn) {
-        const { count } = await supabase.from('forum_comments').select('*', { count: 'exact', head: true }).eq('post_id', postId);
-        toggleBtn.innerHTML = `💬 Comentar (${count || 0})`;
+        const feedC = _allComments.filter(c => c.postId === postId).length;
+        const storedC = JSON.parse(localStorage.getItem(`eduquest_comments_${postId}`))?.length || 0;
+        toggleBtn.innerHTML = `💬 Comentar (${feedC + storedC})`;
     }
 }
 
@@ -730,43 +748,13 @@ function scrollToPost(postId) {
 /* ========================================================
    UPVOTE
    ======================================================== */
-async function toggleUpvote(button, currentUpvotes) {
-    const postId = button.id.replace('upvote-btn-', '');
-    const isCurrentlyActive = button.classList.contains('active');
-    
-    // UI Update optimista
-    if (isCurrentlyActive) {
+function toggleUpvote(button, currentUpvotes) {
+    if (button.classList.contains('active')) {
         button.classList.remove('active');
-        button.innerHTML = `🔼 Útil (${Math.max(0, currentUpvotes - 1)})`;
+        button.innerHTML = `🔼 Útil (${currentUpvotes})`;
     } else {
         button.classList.add('active');
         button.innerHTML = `🔥 ¡Apoyado! (${currentUpvotes + 1})`;
-    }
-
-    // Llamar a la función RPC que maneja la lógica atómica y salta el RLS
-    const { data: newUpvotes, error } = await supabase.rpc('toggle_forum_upvote', { p_post_id: postId });
-
-    if (error) {
-        console.error("Error al actualizar upvotes:", error);
-        // Si hay error revertimos la UI optimista
-        if (isCurrentlyActive) {
-            button.classList.add('active');
-            button.innerHTML = `🔥 ¡Apoyado! (${currentUpvotes})`;
-        } else {
-            button.classList.remove('active');
-            button.innerHTML = `🔼 Útil (${currentUpvotes})`;
-        }
-        if (window.app?.showToast) window.app.showToast('❌ Error al registrar tu voto', 'error');
-    } else if (newUpvotes !== null) {
-        // Asegurar que el botón muestre el valor real devuelto por la base de datos
-        if (button.classList.contains('active')) {
-            button.innerHTML = `🔥 ¡Apoyado! (${newUpvotes})`;
-        } else {
-            button.innerHTML = `🔼 Útil (${newUpvotes})`;
-        }
-        
-        // Actualizamos el onclick para que reciba el número correcto la próxima vez
-        button.setAttribute('onclick', `toggleUpvote(this, ${newUpvotes})`);
     }
 }
 

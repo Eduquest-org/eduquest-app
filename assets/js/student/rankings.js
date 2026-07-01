@@ -1,5 +1,4 @@
 // ==========================================================================
-import { supabase } from '../config/supabase.js';
 // assets/js/student/rankings.js
 // CONTROLADOR LOGICO DEL LEADERBOARD ACADÉMICO
 // ==========================================================================
@@ -53,13 +52,14 @@ async function renderLeaderboardTable() {
     tbody.innerHTML = "";
 
     try {
-        const { data: users, error } = await supabase
-            .from('profiles')
-            .select('*')
-            .order('total_xp', { ascending: false })
-            .limit(50);
-            
-        if (error) throw error;
+        const [rankRes, usersRes] = await Promise.all([
+            fetch("../../mock/rankings.json"),
+            fetch("../../mock/users.json")
+        ]);
+        
+        const rankings = await rankRes.json();
+        const usersData = await usersRes.json();
+        const users = usersData.users;
 
         let activeUserId = null;
         if (window.CurrentUserService) {
@@ -67,20 +67,20 @@ async function renderLeaderboardTable() {
             if (profile) activeUserId = profile.id;
         }
 
-        const combinedRanking = users.map(u => {
+        const combinedRanking = rankings.map(r => {
+            const u = users.find(user => user.id === r.userId) || {};
             return {
                 id: u.id,
                 name: u.name || "Usuario Desconocido",
-                career: u.career || "Preuniversitario",
-                streak: (u.streak_days || 0) + " días",
-                xp: u.total_xp || 0,
-                avatar: u.avatar_url || "👤",
+                career: u.career || u.target || "Preuniversitario",
+                streak: r.streakDays + " días",
+                xp: r.xp,
+                avatar: u.avatar || "👤",
                 isCurrent: activeUserId === u.id
             };
         });
 
-        // Ya vienen ordenados por XP de Supabase
-
+        combinedRanking.sort((a, b) => b.xp - a.xp);
 
         combinedRanking.forEach((student, index) => {
             const row = document.createElement("tr");

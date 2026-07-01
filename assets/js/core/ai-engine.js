@@ -1,11 +1,10 @@
 /**
- * @fileoverview Motor de Planificación Académica basado en Inteligencia Artificial.
- * Implementa una arquitectura de Cascade Prompting y Generación Aumentada por Recuperación (RAG).
- * 
- * Flujo de ejecución:
- * 1. Solicitud de prioridades de cursos al backend (/api/plan-priorities).
- * 2. Generación iterativa de estructuras de grafos (nodos y aristas) por curso mediante (/api/generate-route).
- * 3. Procesamiento asíncrono en segundo plano mediante un sistema de colas.
+ * AIEngine — Motor de Planificación Académica.
+ *
+ * Arquitectura (Cascade Prompting & RAG):
+ * - FASE 1: Se envía un JSON al backend (/api/plan-priorities) para obtener la PRIORIDAD de los cursos.
+ * - FASE 2: Por cada curso relevante, se envía un JSON al backend (/api/generate-route) 
+ *           para generar una estructura de Nodos y Aristas por Tema inyectando RAG.
  */
 
 const BACKEND_URL = 'https://eduquest-backend-delta.vercel.app';
@@ -83,7 +82,7 @@ const AIEngine = {
         return { strengths, weaknesses };
     },
 
-    /** Fase 2: RAG y Generación de Nodos por Curso */
+    // ─── FASE 2: RAG y Generación de Nodos por Curso ───────────────
     async _generateCourseNodes(course, priority, strengths, weaknesses, courseTopics) {
         const strengthsText = strengths.filter(s => s.courseId === course.id)
             .map(s => s.topicName).join(', ') || '';
@@ -93,19 +92,14 @@ const AIEngine = {
 
         const topicsText = courseTopics.map(t => `- ${t.id}: ${t.name}`).join('\n');
 
-        // Construir la consulta estructurada para el motor vectorial
+        // Construir el query textual para buscar en la base de datos vectorial
         const queryText = `Curso: ${course.name}. Temas clave: ${courseTopics.map(t => t.name).join(', ')}. Debilidades del alumno: ${weaknessesText}. Fortalezas: ${strengthsText}.`;
 
         try {
             console.log(`[AIEngine] Solicitando nodos al backend (FASE 2) para curso: ${course.id}`);
 
-            const session = await window.supabase?.auth?.getSession();
-            const userId = session?.data?.session?.user?.id;
-
-            // Enviar un payload estructurado en formato JSON al backend
+            // Enviamos un payload limpio (JSON estructurado) al backend en vez del gran Prompt
             const payload = {
-                userId: userId,
-                courseId: course.id,
                 courseName: course.name,
                 strengthsText: strengthsText,
                 weaknessesText: weaknessesText,
@@ -122,7 +116,7 @@ const AIEngine = {
             const data = await response.json();
             if (!response.ok) throw new Error(data.error || 'Error del servidor en Fase 2');
 
-            // Analizar la respuesta serializada del backend
+            // El backend ya devuelve el texto en crudo del JSON generado
             const routeData = JSON.parse(data.text);
 
             return {
@@ -134,39 +128,30 @@ const AIEngine = {
 
         } catch (err) {
             console.error(`[AIEngine] Error generando nodos para ${course.id}:`, err);
-            return null; // Retorno de contingencia
+            return null; // Fallback: se omitirá o se generará localmente
         }
     },
 
-    /** Punto de entrada principal */
+    // ─── Punto de entrada ───────────────────────────────────────────
     async generatePersonalizedRoadmap(diagnosticResults) {
         try {
             console.log('[AIEngine] Iniciando generación de rutas con Cascade Prompting Seguro (Backend)...');
 
             const [coursesRes, topicsRes, weightsRes] = await Promise.all([
-                window.supabase.from('courses').select('*'),
-                window.supabase.from('topics').select('*'),
-                window.supabase.from('university_course_weights').select('*')
+                fetch('../../mock/courses.json'),
+                fetch('../../mock/topics.json'),
+                fetch('../../mock/university-weights.json')
             ]);
 
-            const allCourses = coursesRes.data || [];
-            // Mapear identificadores para preservar la compatibilidad del motor
-            const allTopics = (topicsRes.data || []).map(t => ({ ...t, courseId: t.course_id }));
-            
-            // Transformar el arreglo unidimensional de pesos al formato jerárquico esperado
-            const allWeights = {};
-            if (weightsRes.data) {
-                weightsRes.data.forEach(w => {
-                    if (!allWeights[w.university_id]) allWeights[w.university_id] = {};
-                    allWeights[w.university_id][w.course_id] = w.weight;
-                });
-            }
+            const allCourses = await coursesRes.json();
+            const allTopics = await topicsRes.json();
+            const allWeights = await weightsRes.json();
 
-            const userProfile = window.CurrentUserService ? window.CurrentUserService.getProfile() : {};
-            const userId = userProfile?.id;
-            const targetUniv = userProfile?.target_university_id || 'UNI';
-            const career = userProfile?.career || 'Ingeniería';
-            const userName = userProfile?.name || 'Alumno';
+            const session = Storage.getSession();
+            const user = UserManager.getCurrentUserDoc() || {};
+            const targetUniv = (user.profile && user.profile.target) || 'UNI';
+            const career = (user.profile && user.profile.career) || 'Ingeniería';
+            const userName = user.name || 'Alumno';
 
             const univWeights = allWeights[targetUniv] || allWeights['UNI'] || {};
 
@@ -179,7 +164,7 @@ const AIEngine = {
                 diagnosticResults, allTopics, allCourses
             );
 
-            // Fase 1: Solicitar prioridades mediante el endpoint de enrutamiento
+            // FASE 1: PROMPT ENRUTADOR (Prioridad) - Ahora llamando al nuevo endpoint
             const courseCatalogText = relevantCourses.map(c => {
                 const weight = univWeights[c.id] || 0;
                 return `- ${c.id}: "${c.name}" (Peso de admisión: ${weight}/100)`;
@@ -215,7 +200,7 @@ const AIEngine = {
             const coursePriorities = aiPlan.coursePriorities || [];
             const returnedPriorities = new Map(coursePriorities.map(p => [p.courseId, p.priority]));
 
-            // Fase 2: Iniciar la generación asíncrona de nodos
+            // FASE 2: GENERACIÓN DE NODOS 
             console.log('[AIEngine] Fase 1 completada. Iniciando Fase 2: RAG paralelo por curso...');
 
             const sortedRelevantCourses = relevantCourses.map(c => ({
@@ -226,7 +211,7 @@ const AIEngine = {
             const topCourses = sortedRelevantCourses.slice(0, 3);
             const restCourses = sortedRelevantCourses.slice(3);
 
-            // Preparar el estado inicial para el procesamiento asíncrono
+            // Preparar el estado inicial para la generación en background (solo Top 3)
             const aiQueue = topCourses.map(entry => {
                 const cTopics = allTopics.filter(t => t.courseId === entry.course.id);
                 return {
@@ -238,7 +223,8 @@ const AIEngine = {
                 };
             });
 
-            // Generar una estructura temporal de respaldo para preservar la visibilidad de los cursos en la interfaz de usuario
+            // Generar estructura local simplificada (Fallback) para TODOS los cursos
+            // Así no desaparecen de la interfaz mientras están en la cola
             const initialRoutes = sortedRelevantCourses.map(entry => {
                 const cTopics = allTopics.filter(t => t.courseId === entry.course.id);
                 const sortedTopics = this._topologicalSort(cTopics);
@@ -265,20 +251,15 @@ const AIEngine = {
                 };
             });
 
-            // Transformar la estructura al formato de presentación y persistir los cambios
+            // Transformar al formato del frontend y guardar inmediatamente para que el grid los muestre
             const roadmapCards = this._transformToFrontendFormat(initialRoutes, allCourses, targetUniv);
-            if (userId) {
-                UserManager.updateProfile(userId, { ai_roadmap: roadmapCards });
-                if (window.CurrentUserService && window.CurrentUserService.getProfile()) {
-                    window.CurrentUserService.getProfile().ai_roadmap = roadmapCards;
-                }
-            }
+            UserManager.saveCustomRoadmap(session.userId, roadmapCards);
 
-            // Persistir el estado de la cola en el almacenamiento local
+            // Guardar el estado inicial en localStorage
             localStorage.setItem('aiQueue', JSON.stringify(aiQueue));
             localStorage.setItem('aiResults', JSON.stringify(initialRoutes));
 
-            // Iniciar el procesamiento asíncrono de la cola
+            // Iniciar el procesamiento en background sin esperar a que termine
             console.log('[AIEngine] Cola preparada con', aiQueue.length, 'cursos. Iniciando processQueue() en segundo plano...');
             this.processQueue();
 
@@ -286,48 +267,50 @@ const AIEngine = {
 
         } catch (error) {
             console.error("[AIEngine] Error crítico en la generación de rutas:", error);
-            alert("Hubo un error al generar las rutas mediante la IA. Aplicando el plan de respaldo.");
+            alert("Hubo un error al generar tus rutas mediante IA. Usando plan de respaldo.");
             return this._generateFallback();
         }
     },
 
-    /** Procesamiento asíncrono en segundo plano */
+    // ─── Proceso asíncrono en segundo plano ─────────────────────────────
     async processQueue() {
-        // Establecer un mecanismo de bloqueo mutuo para evitar ejecuciones concurrentes de la cola
+        // Bloqueo global para prevenir que se ejecuten múltiples processQueue a la vez
         if (window._isProcessingAIQueue) return;
         window._isProcessingAIQueue = true;
 
         try {
-            // Validar la existencia de procesos pendientes
+            // Verificar si hay procesos pendientes
             const queueStr = localStorage.getItem('aiQueue');
             if (!queueStr) return;
 
             const queue = JSON.parse(queueStr);
             if (queue.length === 0) {
-                // Finalizar el ciclo al confirmar que la cola está vacía
+                // Cola vacía, el trabajo ha terminado
                 localStorage.removeItem('aiQueue');
                 console.log('[AIEngine] Cola de generación finalizada exitosamente.');
 
-                // Renderizar notificación global de finalización
+                // Mostrar Toast global
                 if (window.app && window.app.showToast) {
-                    window.app.showToast('El procesamiento de la ruta inteligente ha finalizado de forma satisfactoria.', 'success');
+                    window.app.showToast('¡Tu ruta ha sido completamente generada por la IA!', 'success');
                 } else {
-                    alert('El procesamiento de la ruta inteligente ha finalizado de forma satisfactoria.');
+                    alert('¡Tu ruta ha sido completamente generada por la IA!');
                 }
 
-                // Actualizar la interfaz de usuario si la vista de rutas está activa
-                if (window.location.pathname.includes('roadmap.html') && window.refreshRoadmapUI) {
-                    window.refreshRoadmapUI();
+                // Refrescar Mis Rutas si estamos en esa vista
+                if (window.location.pathname.includes('roadmap.html') && typeof buildCourseSelectionGrid === 'function') {
+                    const grid = document.getElementById("courses-grid");
+                    if (grid) grid.innerHTML = '';
+                    buildCourseSelectionGrid();
                 }
                 return;
             }
 
-            // Extraer el elemento prioritario de la cola
+            // Extraer el primer elemento de la cola
             const currentTask = queue[0];
             console.log(`[AIEngine] Procesando curso en background: ${currentTask.course.name}...`);
 
             try {
-                // Procesar la ruta correspondiente al curso seleccionado
+                // Generar ruta para este curso
                 const route = await this._generateCourseNodes(
                     currentTask.course,
                     currentTask.priority,
@@ -336,15 +319,16 @@ const AIEngine = {
                     currentTask.topics
                 );
 
-                // Invocar una excepción intencional ante un fallo del servicio para inducir un reintento
+                // Si la IA falla (ej: por rate limit), forzamos un error para que vaya al catch
+                // y REINTENTE sin eliminar el curso de la cola.
                 if (!route) {
-                    throw new Error("Generación fallida o rate limit excedido. Ejecutando protocolo de reintento.");
+                    throw new Error("Generación fallida o rate limit excedido. Forzando reintento.");
                 }
 
-                // Recuperar el listado de resultados generados previamente
+                // Leer resultados actuales
                 let aiResults = JSON.parse(localStorage.getItem('aiResults') || '[]');
 
-                // Anexar o actualizar la ruta procesada en el registro de resultados
+                // Añadir o reemplazar la ruta exitosa en los resultados
                 const existingIdx = aiResults.findIndex(r => r.courseId === route.courseId);
                 if (existingIdx !== -1) {
                     aiResults[existingIdx] = route;
@@ -352,54 +336,50 @@ const AIEngine = {
                     aiResults.push(route);
                 }
 
-                // Extraer inmediatamente el curso procesado para garantizar el progreso de la cola
-                queue.shift();
-                localStorage.setItem('aiQueue', JSON.stringify(queue));
-
-                // Aplicar formato de presentación y registrar el avance del usuario
-                const userProfile = window.CurrentUserService ? window.CurrentUserService.getProfile() : null;
-                if (userProfile && window.UserManager) {
-                    const coursesRes = await window.supabase.from('courses').select('*');
-                    const allCourses = coursesRes.data || [];
+                // Transformar todo y guardar en el progreso del usuario
+                const session = Storage.getSession();
+                if (session && window.UserManager) {
+                    const allCoursesRes = await fetch("../../mock/courses.json");
+                    const allCourses = await allCoursesRes.json();
 
                     let targetUniv = "UNI";
                     if (window.CurrentUserService) {
-                        targetUniv = window.CurrentUserService.getStat('target') || "UNI";
+                        targetUniv = CurrentUserService.getStat('target') || "UNI";
                     }
 
                     const roadmapCards = this._transformToFrontendFormat(aiResults, allCourses, targetUniv);
-                    window.UserManager.updateProfile(userProfile.id, { ai_roadmap: roadmapCards });
-                    if (window.CurrentUserService && window.CurrentUserService.getProfile()) {
-                        window.CurrentUserService.getProfile().ai_roadmap = roadmapCards;
-                    }
+                    UserManager.saveCustomRoadmap(session.userId, roadmapCards);
 
-                    // Actualizar el estado de resultados para el siguiente ciclo
+                    // Actualizar aiResults para la siguiente iteración
                     localStorage.setItem('aiResults', JSON.stringify(aiResults));
 
-                    // Recargar la vista de rutas para reflejar el estado actual del procesamiento
-                    if (window.location.pathname.includes('roadmap.html') && window.refreshRoadmapUI) {
-                        window.refreshRoadmapUI();
+                    // Remover el curso procesado de la cola y continuar con el siguiente
+                    queue.shift();
+                    localStorage.setItem('aiQueue', JSON.stringify(queue));
+
+                    // Refrescar Mis Rutas si estamos en esa vista para que se vea el progreso
+                    if (window.location.pathname.includes('roadmap.html') && typeof buildCourseSelectionGrid === 'function') {
+                        const grid = document.getElementById("courses-grid");
+                        if (grid) grid.innerHTML = '';
+                        buildCourseSelectionGrid();
                     }
 
-                    // Invocar el siguiente ciclo de la cola tras un retraso preventivo por límites de peticiones
+                    // Llamada recursiva al siguiente en la cola (después de 10 segundos para máxima seguridad de Rate Limit)
                     setTimeout(() => this.processQueue(), 10000);
-                } else {
-                    // Continuar el procesamiento independientemente del estado del perfil
-                    setTimeout(() => this.processQueue(), 2000);
                 }
 
             } catch (error) {
                 console.error(`[AIEngine] Error procesando ${currentTask.course.name} en background:`, error);
-                // Programar un reintento diferido tras un error de ejecución
+                // Reintentar en 20 segundos si hubo error (ej: rate limit)
                 setTimeout(() => this.processQueue(), 20000);
             }
         } finally {
-            // Liberar el bloqueo de ejecución
+            // Liberamos el candado sea cual sea el resultado
             window._isProcessingAIQueue = false;
         }
     },
 
-    /** Transformar a formato de presentación */
+    // ─── Transformación al formato del frontend ─────────────────────
     _transformToFrontendFormat(routes, allCourses, targetUniv) {
         return routes
             .sort((a, b) => a.priority - b.priority)
@@ -424,12 +404,12 @@ const AIEngine = {
             .filter(Boolean);
     },
 
-    /** Generador de rutas de respaldo (Fallback) */
+    // ─── Fallback ───────────────────────────────────────────────────
     _generateFallback() {
         const fallbackMap = [{
             id: "course_fallback",
             name: "Ruta de Nivelación General",
-            icon: "📚", // Placeholder estandar
+            icon: "🛡️",
             color: "#E24B4A",
             meta: "Ruta Básica",
             progressPct: 0,
@@ -446,12 +426,9 @@ const AIEngine = {
             }],
             edges: []
         }];
-        const userProfile = window.CurrentUserService ? window.CurrentUserService.getProfile() : null;
-        if (userProfile) {
-            UserManager.updateProfile(userProfile.id, { ai_roadmap: fallbackMap });
-            if (window.CurrentUserService && window.CurrentUserService.getProfile()) {
-                window.CurrentUserService.getProfile().ai_roadmap = fallbackMap;
-            }
+        const session = Storage.getSession();
+        if (session) {
+            UserManager.saveCustomRoadmap(session.userId, fallbackMap);
         }
         return fallbackMap;
     }

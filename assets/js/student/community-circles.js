@@ -47,10 +47,7 @@ const mockCirclesData = [
 
 let activeCourseFilter = "ALL";
 
-document.addEventListener("DOMContentLoaded", async () => {
-    if (window.CurrentUserService) {
-        await CurrentUserService.init();
-    }
+document.addEventListener("DOMContentLoaded", () => {
     buildCommunityProfileBanner();
     renderCirclesStream();
 
