@@ -11,38 +11,35 @@ let qIdx = 0;
 let ans = [];
 const diagnosticResults = [];
 
-async function loadMockData() {
+import { supabase } from '../config/supabase.js';
+
+async function loadData() {
     try {
-        const [uniRes, coursesRes, problemsRes] = await Promise.all([
-            fetch('../../mock/universities.json').then(r => r.ok ? r : Promise.reject('universities')),
-            fetch('../../mock/courses.json').then(r => r.ok ? r : Promise.reject('courses')),
-            fetch('../../mock/problems.json').then(r => r.ok ? r : Promise.reject('problems'))
+        const [uniRes, careersRes, coursesRes, rmRes, rvRes] = await Promise.all([
+            supabase.from('universities').select('id, name'),
+            supabase.from('careers').select('name, admission_areas(university_id)'),
+            supabase.from('courses').select('id, name'),
+            supabase.from('problems').select('id, topic_id, statement, options, correct_option').like('id', 'prob_rm_%').limit(10),
+            supabase.from('problems').select('id, topic_id, statement, options, correct_option').or('id.like.prob_rv_%,id.like.prob_lect_%').limit(10)
         ]);
 
-        const universities = await uniRes.json();
-        const allCourses = await coursesRes.json();
-        const allProblems = await problemsRes.json();
+        const universities = uniRes.data || [];
+        const allCareers = careersRes.data || [];
+        const allCourses = coursesRes.data || [];
+        const rmProblems = rmRes.data || [];
+        const rvProblems = rvRes.data || [];
 
-        // 1. Careers
+        // 1. Careers mapping
         universities.forEach(u => {
-            let uCareers = [];
-            if (u.admissionAreas) {
-                u.admissionAreas.forEach(area => {
-                    if (area.careers) {
-                        uCareers = uCareers.concat(area.careers);
-                    }
-                });
-            }
-            CAREERS[u.id] = uCareers;
+            CAREERS[u.id] = allCareers
+                .filter(c => c.admission_areas && c.admission_areas.university_id === u.id)
+                .map(c => c.name);
         });
 
         // 2. Courses
         COURSES = allCourses.map(c => c.name);
 
         // 3. Random Problems (4 RM, 4 RV)
-        const rmProblems = allProblems.filter(p => p.id && p.id.includes('prob_rm_'));
-        const rvProblems = allProblems.filter(p => p.id && (p.id.includes('prob_rv_') || p.id.includes('prob_lect_')));
-        
         const shuffle = array => array.sort(() => 0.5 - Math.random());
         const selectedRM = shuffle([...rmProblems]).slice(0, 4);
         const selectedRV = shuffle([...rvProblems]).slice(0, 4);
@@ -51,21 +48,21 @@ async function loadMockData() {
             const isRM = p.id.includes('prob_rm_');
             return {
                 cat: isRM ? 'RM' : 'RV',
-                topicId: p.topicId,
+                topicId: p.topic_id,
                 q: p.statement,
                 o: p.options,
-                a: p.correctOption
+                a: p.correct_option
             };
         });
         
         ans = new Array(QS.length).fill(null);
     } catch (err) {
-        console.error("Error al cargar mock data:", err);
+        console.error("Error al cargar datos:", err);
     }
 }
 
 // Cargar datos al iniciar
-loadMockData();
+loadData();
 
 /* ── Progress helpers ── */
 function setPills(n) {
@@ -183,40 +180,34 @@ function qNav(dir) {
     renderQ();
 }
 
-/* ── Finish ── */
-function finish() {
+async function finish() {
     QS.forEach((q, i) => {
         diagnosticResults.push({ topicId: q.topicId, isCorrect: ans[i] === q.a });
     });
 
-    const session = Storage.getSession();
-    if (session && window.UserManager) {
-        UserManager.updateProfile(session.userId, { target: D.uni, career: D.career });
-        
-        const users = UserManager.getAllUsers();
-        const userIdx = users.findIndex(u => u.id === session.userId);
-        if (userIdx !== -1) {
-            if (!users[userIdx].learningProgress) {
-                users[userIdx].learningProgress = {
-                    lastAccessedCourse: null,
-                    lastAccessedTopic: null,
-                    completedTopics: [],
-                    diagnosticResults: [],
-                    hardestCourse: null,
-                    customRoadmap: []
-                };
-            }
-            users[userIdx].learningProgress.hardestCourse = D.hard;
-            // Limpiar el roadmap para forzar regeneración
-            users[userIdx].learningProgress.customRoadmap = [];
-            UserManager.saveAllUsers(users);
-        }
-
-        UserManager.saveDiagnosticResults(session.userId, diagnosticResults);
+    const { data: { session } } = await supabase.auth.getSession();
+    
+    if (session) {
+        const userId = session.user.id;
+        // Guardar target_university_id y career
+        await supabase
+            .from('profiles')
+            .update({ 
+                target_university_id: D.uni, 
+                career: D.career,
+                diagnostic_results: diagnosticResults,
+                ai_roadmap: [] // Resetear la ruta para forzar regeneración
+            })
+            .eq('id', userId);
     }
 
     console.log('Diagnóstico completado:', { perfil: D, resultados: diagnosticResults });
-    
-    // Pasamos un parámetro por URL en lugar de storage para ser a prueba de balas contra la caché
     window.location.href = '../student/roadmap.html?generate=true';
 }
+
+// Exportar funciones globalmente para que funcionen los onclick del HTML
+window.pickUni = pickUni;
+window.go = go;
+window.startQuiz = startQuiz;
+window.qNav = qNav;
+window.D = D;

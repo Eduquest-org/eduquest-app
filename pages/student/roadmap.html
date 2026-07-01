@@ -1,12 +1,15 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>EduQuest — Mis Rutas IA</title>
-  
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=Sora:wght@700;800&display=swap" rel="stylesheet">
-  
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=Sora:wght@700;800&display=swap"
+    rel="stylesheet">
+
   <link rel="stylesheet" href="../../assets/css/global/reset.css">
   <link rel="stylesheet" href="../../assets/css/global/variables.css">
   <link rel="stylesheet" href="../../assets/css/components/buttons.css">
@@ -14,8 +17,9 @@
   <link rel="stylesheet" href="../../assets/css/pages/student-dashboard.css">
   <link rel="stylesheet" href="../../assets/css/pages/roadmap.css">
 
-    <link rel="icon" type="image/x-icon" href="../../assets/img/logos/eduquest-logo.ico">
+  <link rel="icon" type="image/x-icon" href="../../assets/img/logos/eduquest-logo.ico">
 </head>
+
 <body>
 
   <div id="app-preloader">
@@ -29,18 +33,18 @@
     <div id="sidebar-container" data-path="../../components/sidebar.html"></div>
 
     <main class="dashboard-content">
-      
+
       <div class="main-column">
         <section id="course-selection-view" class="view-section active">
-          
+
           <div id="student-profile-summary" class="student-summary-banner">
-            </div>
+          </div>
 
           <div class="view-header">
             <h2>🗺️ Mis Rutas de Aprendizaje</h2>
             <p>Selecciona una isla académica mapeada por IA para continuar tu camino al examen de admisión.</p>
           </div>
-          
+
           <div id="courses-grid" class="courses-grid"></div>
         </section>
 
@@ -48,7 +52,7 @@
           <div class="back-btn-container">
             <a class="back-link" onclick="switchBackToSelection()">← Volver a mis rutas</a>
           </div>
-          
+
           <div class="view-header">
             <h2 id="current-map-title">Mundo: Cargando...</h2>
             <p>Haz clic en un nivel del mapa para ver su contenido.</p>
@@ -85,14 +89,17 @@
     </main>
   </div>
 
+  <script src="../../assets/js/components/global-loader.js"></script>
   <script src="../../assets/js/utils/component-loader.js"></script>
-  <script src="../../assets/js/student/roadmap.js"></script>
   <script src="../../assets/js/core/storage.js"></script>
-  <script src="../../assets/js/core/user-manager.js"></script>
-  <script src="../../assets/js/core/ai-engine.js"></script>
-  <script src="../../assets/js/core/auth.js"></script>
+  <script type="module" src="../../assets/js/core/user-manager.js"></script>
+  <script type="module" src="../../assets/js/core/auth.js"></script>
   <script src="../../assets/js/core/router.js"></script>
   <script src="../../assets/js/core/current-user.js"></script>
   <script src="../../assets/js/core/app.js"></script>
+
+  <script src="../../assets/js/core/ai-engine.js"></script>
+  <script type="module" src="../../assets/js/student/roadmap.js"></script>
 </body>
+
 </html>

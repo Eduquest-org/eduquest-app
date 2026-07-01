@@ -1,314 +1,228 @@
-// ==========================================================================
-// assets/js/core/user-manager.js
-// SERVICIO CENTRALIZADO DE GESTIÓN DE USUARIOS (localStorage)
-// ==========================================================================
-// Toda lectura/escritura sobre "eduquest_db_users" debe pasar por aquí.
-// La sesión (eduquest_session) se gestiona aparte en Storage/Auth.
-// ==========================================================================
+/**
+ * @fileoverview Servicio principal de gestión de usuarios y estado en Supabase.
+ * Proporciona métodos para interactuar con la tabla de perfiles, actualizar estadísticas,
+ * gestionar el progreso académico y manipular el mapa de aprendizaje generado por la IA.
+ * 
+ * Este módulo actúa como una capa de abstracción sobre el cliente de Supabase,
+ * unificando las operaciones de lectura y escritura de perfiles de usuario.
+ */
+
+import { supabase } from '../config/supabase.js';
 
 const UserManager = {
-
-    // ─── Lectura / Escritura Base ────────────────────────────────────
-
-    /**
-     * Lee el array completo de usuarios del localStorage.
-     * @returns {Array} Lista de objetos de usuario.
-     */
-    getAllUsers() {
-        return JSON.parse(localStorage.getItem('eduquest_db_users')) || [];
+    async getUserById(userId) {
+        const { data, error } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', userId)
+            .single();
+        if (error) {
+            console.error('Error fetching user:', error);
+            return null;
+        }
+        return data;
     },
 
-    /**
-     * Guarda el array completo de usuarios en el localStorage.
-     * @param {Array} usersArray - Lista de objetos de usuario.
-     */
-    saveAllUsers(usersArray) {
-        localStorage.setItem('eduquest_db_users', JSON.stringify(usersArray));
-    },
-
-    // ─── Búsqueda ───────────────────────────────────────────────────
-
-    /**
-     * Busca un usuario por su ID.
-     * @param {string} userId
-     * @returns {Object|null} El documento del usuario o null.
-     */
-    getUserById(userId) {
-        const users = this.getAllUsers();
-        return users.find(u => u.id === userId) || null;
-    },
-
-    /**
-     * Devuelve el documento completo del usuario que tiene la sesión activa.
-     * Requiere que Storage esté disponible globalmente.
-     * @returns {Object|null} El documento del usuario logueado o null.
-     */
-    getCurrentUserDoc() {
-        const session = Storage.getSession();
+    async getCurrentUserDoc() {
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         if (!session) return null;
-        return this.getUserById(session.userId);
+        const profile = await this.getUserById(session.user.id);
+        return profile;
     },
 
-    // ─── Actualizaciones Parciales ──────────────────────────────────
-
-    /**
-     * Actualiza campos dentro de `profile` del usuario.
-     * @param {string} userId
-     * @param {Object} partialProfile - Ej: { target: "SAN_MARCOS", career: "Medicina" }
-     */
-    updateProfile(userId, partialProfile) {
-        const users = this.getAllUsers();
-        const idx = users.findIndex(u => u.id === userId);
-        if (idx === -1) return;
-
-        if (!users[idx].profile) users[idx].profile = {};
-        Object.assign(users[idx].profile, partialProfile);
-        this.saveAllUsers(users);
+    async updateProfile(userId, partialProfile) {
+        const { error } = await supabase
+            .from('profiles')
+            .update(partialProfile) // Actualizar campos específicos del perfil
+            .eq('id', userId);
+        if (error) console.error('Error updating profile:', error);
     },
 
-    /**
-     * Actualiza campos dentro de `stats` del usuario.
-     * @param {string} userId
-     * @param {Object} partialStats - Ej: { streakDays: 4 }
-     */
-    updateStats(userId, partialStats) {
-        const users = this.getAllUsers();
-        const idx = users.findIndex(u => u.id === userId);
-        if (idx === -1) return;
-
-        if (!users[idx].stats) users[idx].stats = {};
-        Object.assign(users[idx].stats, partialStats);
-        this.saveAllUsers(users);
+    async updateStats(userId, partialStats) {
+        const { error } = await supabase
+            .from('profiles')
+            .update(partialStats) // Actualizar métricas de progreso
+            .eq('id', userId);
+        if (error) console.error('Error updating stats:', error);
     },
 
-    /**
-     * Suma XP al total del usuario.
-     * @param {string} userId
-     * @param {number} amount - Cantidad de XP a sumar.
-     * @returns {number} Nuevo total de XP.
-     */
-    addXp(userId, amount) {
-        const users = this.getAllUsers();
-        const idx = users.findIndex(u => u.id === userId);
-        if (idx === -1) return 0;
+    async addXp(userId, amount) {
+        const user = await this.getUserById(userId);
+        if (!user) return 0;
 
-        if (!users[idx].stats) users[idx].stats = {};
-        const currentXp = users[idx].stats.totalXp || 0;
-        users[idx].stats.totalXp = currentXp + amount;
-        this.saveAllUsers(users);
-        return users[idx].stats.totalXp;
-    },
+        const newXp = (user.total_xp || 0) + amount;
+        await this.updateStats(userId, { total_xp: newXp });
 
-    // ─── Progreso de Aprendizaje ────────────────────────────────────
-
-    /**
-     * Marca un tema (topic) como completado y suma XP.
-     * Actualiza `lastAccessedTopic` y `lastAccessedCourse`.
-     * @param {string} userId
-     * @param {string} topicId - ID del tema completado.
-     * @param {string} courseId - ID del curso al que pertenece el tema.
-     * @param {number} xpEarned - XP ganados por completar el tema.
-     * @returns {Object|null} El usuario actualizado o null.
-     */
-    completeTopicProgress(userId, topicId, courseId, xpEarned) {
-        const users = this.getAllUsers();
-        const idx = users.findIndex(u => u.id === userId);
-        if (idx === -1) return null;
-
-        if (!users[idx].learningProgress) {
-            users[idx].learningProgress = {
-                lastAccessedCourse: null,
-                lastAccessedTopic: null,
-                completedTopics: [],
-                diagnosticResults: [],
-                hardestCourse: null,
-                customRoadmap: []
-            };
+        // Sincronizar el estado local y actualizar la interfaz de usuario
+        if (window.CurrentUserService) {
+            const profile = window.CurrentUserService.getProfile();
+            if (profile && profile.id === userId) {
+                profile.total_xp = newXp;
+                if (window.UserBindingManager) window.UserBindingManager.bindAll();
+            }
         }
 
-        const progress = users[idx].learningProgress;
-
-        // Marcar tema como completado (sin duplicados)
-        if (!progress.completedTopics.includes(topicId)) {
-            progress.completedTopics.push(topicId);
-        }
-
-        // Actualizar última ubicación
-        progress.lastAccessedTopic = topicId;
-        progress.lastAccessedCourse = courseId || progress.lastAccessedCourse;
-
-        // Sumar XP
-        if (!users[idx].stats) users[idx].stats = {};
-        users[idx].stats.totalXp = (users[idx].stats.totalXp || 0) + xpEarned;
-
-        this.saveAllUsers(users);
-        return users[idx];
+        return newXp;
     },
 
-    // ─── Ruta IA Personalizada ──────────────────────────────────────
+    async updateStreak(userId) {
+        const user = await this.getUserById(userId);
+        if (!user) return;
 
-    /**
-     * Guarda la ruta IA generada dentro del documento del usuario.
-     * Reemplaza la antigua clave suelta `eduquest_roadmap_{userId}`.
-     * @param {string} userId
-     * @param {Array} roadmapData - Array de objetos de ruta generados por AIEngine.
-     */
-    saveCustomRoadmap(userId, roadmapData) {
-        const users = this.getAllUsers();
-        const idx = users.findIndex(u => u.id === userId);
-        if (idx === -1) return;
+        const now = new Date();
+        const lastSolvedStr = user.last_problem_solved_at;
 
-        if (!users[idx].learningProgress) {
-            users[idx].learningProgress = {
-                lastAccessedCourse: null,
-                lastAccessedTopic: null,
-                completedTopics: [],
-                diagnosticResults: [],
-                hardestCourse: null,
-                customRoadmap: []
-            };
+        let newStreak = user.streak_days || 0;
+
+        if (lastSolvedStr) {
+            const lastSolved = new Date(lastSolvedStr);
+            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            const lastDate = new Date(lastSolved.getFullYear(), lastSolved.getMonth(), lastSolved.getDate());
+
+            const diffTime = today - lastDate;
+            const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+
+            if (diffDays === 1) {
+                newStreak += 1;
+            } else if (diffDays > 1) {
+                newStreak = 1;
+            }
+        } else {
+            newStreak = 1;
         }
 
-        users[idx].learningProgress.customRoadmap = roadmapData;
+        const updates = {
+            streak_days: newStreak,
+            last_problem_solved_at: now.toISOString()
+        };
 
-        // Limpiar la clave suelta antigua si existe
-        localStorage.removeItem(`eduquest_roadmap_${userId}`);
+        await this.updateStats(userId, updates);
 
-        this.saveAllUsers(users);
+        if (window.CurrentUserService) {
+            const profile = window.CurrentUserService.getProfile();
+            if (profile && profile.id === userId) {
+                profile.streak_days = newStreak;
+                profile.last_problem_solved_at = updates.last_problem_solved_at;
+                if (window.UserBindingManager) window.UserBindingManager.bindAll();
+            }
+        }
     },
 
-    /**
-     * Lee la ruta IA personalizada del usuario.
-     * Incluye fallback para migrar datos de la clave suelta antigua.
-     * @param {string} userId
-     * @returns {Array} Ruta IA del usuario o array vacío.
-     */
-    getCustomRoadmap(userId) {
-        const user = this.getUserById(userId);
+    async completeTopicProgress(userId, topicId, courseId, xpEarned) {
+        const { error: progressError } = await supabase
+            .from('user_topic_progress')
+            .upsert({
+                user_id: userId,
+                topic_id: topicId,
+                status: 'completed',
+                last_accessed: new Date().toISOString()
+            }, { onConflict: 'user_id, topic_id' });
+
+        if (progressError) {
+            console.error('Error saving topic progress:', progressError);
+        }
+
+        await this.addXp(userId, xpEarned);
+    },
+
+    async saveCustomRoadmap(userId, roadmapData) {
+        const { error } = await supabase
+            .from('profiles')
+            .update({ ai_roadmap: roadmapData })
+            .eq('id', userId);
+        if (error) console.error('Error saving custom roadmap:', error);
+    },
+
+    async getCustomRoadmap(userId) {
+        const user = await this.getUserById(userId);
         if (!user) return [];
+        return user.ai_roadmap || [];
+    },
 
-        // Primero verificar si ya hay ruta dentro del documento del usuario
-        if (user.learningProgress &&
-            user.learningProgress.customRoadmap &&
-            user.learningProgress.customRoadmap.length > 0) {
-            return user.learningProgress.customRoadmap;
+    async saveUserTopicStats(userId, topicId, correctCount, incorrectCount) {
+        if (!userId || !topicId) {
+            console.error('[UserManager] saveUserTopicStats ignorado por falta de parámetros:', { userId, topicId });
+            return;
         }
+        
+        try {
+            console.log(`[UserManager] Iniciando guardado de stats para usuario=${userId}, topic=${topicId}`);
+            
+            // First, fetch existing stats for this topic
+            const { data: existingStats, error: fetchError } = await supabase
+                .from('user_topic_stats')
+                .select('*')
+                .eq('user_id', userId)
+                .eq('topic_id', topicId)
+                .single();
 
-        // Fallback: migrar desde la clave suelta antigua
-        const legacyKey = `eduquest_roadmap_${userId}`;
-        const legacyData = localStorage.getItem(legacyKey);
-        if (legacyData) {
-            try {
-                const parsed = JSON.parse(legacyData);
-                if (parsed.length > 0) {
-                    // Migrar al nuevo formato
-                    this.saveCustomRoadmap(userId, parsed);
-                    return parsed;
-                }
-            } catch (e) {
-                console.error('[UserManager] Error migrando roadmap legacy:', e);
+            if (fetchError && fetchError.code !== 'PGRST116') { // PGRST116 is "No rows found"
+                console.error('[UserManager] Error fetching user_topic_stats:', fetchError);
             }
-        }
 
-        return [];
+            const now = new Date().toISOString();
+
+            let newAttempts = 1;
+            let newCorrect = correctCount;
+            let newIncorrect = incorrectCount;
+
+            if (existingStats) {
+                console.log(`[UserManager] Datos previos encontrados para topic=${topicId}. Sumando valores...`);
+                newAttempts = (existingStats.total_attempts || 0) + 1;
+                newCorrect = (existingStats.correct_answers || 0) + correctCount;
+                newIncorrect = (existingStats.incorrect_answers || 0) + incorrectCount;
+            } else {
+                console.log(`[UserManager] No hay datos previos para topic=${topicId}. Creando nuevo registro...`);
+            }
+
+            // Realizamos upsert aprovechando el constraint unique_user_topic
+            const { error: upsertError } = await supabase
+                .from('user_topic_stats')
+                .upsert({
+                    user_id: userId,
+                    topic_id: topicId,
+                    total_attempts: newAttempts,
+                    correct_answers: newCorrect,
+                    incorrect_answers: newIncorrect,
+                    last_practiced_at: now
+                }, {
+                    onConflict: 'user_id, topic_id'
+                });
+
+            if (upsertError) {
+                console.error('[UserManager] Error guardando user_topic_stats (Upsert):', upsertError);
+            } else {
+                console.log(`[UserManager] Guardado (Upsert) exitoso para topic=${topicId}`);
+            }
+        } catch (error) {
+            console.error('[UserManager] Unexpected error in saveUserTopicStats:', error);
+        }
     },
 
-    // ─── Diagnóstico ────────────────────────────────────────────────
-
-    /**
-     * Guarda los resultados del examen diagnóstico.
-     * @param {string} userId
-     * @param {Array} results - Array de { topicId, isCorrect }.
-     */
-    saveDiagnosticResults(userId, results) {
-        const users = this.getAllUsers();
-        const idx = users.findIndex(u => u.id === userId);
-        if (idx === -1) return;
-
-        if (!users[idx].learningProgress) {
-            users[idx].learningProgress = {
-                lastAccessedCourse: null,
-                lastAccessedTopic: null,
-                completedTopics: [],
-                diagnosticResults: [],
-                hardestCourse: null,
-                customRoadmap: []
-            };
+    async getAllUserTopicStats(userId) {
+        const { data, error } = await supabase
+            .from('user_topic_stats')
+            .select('*')
+            .eq('user_id', userId);
+        
+        if (error) {
+            console.error('Error fetching all user_topic_stats:', error);
+            return [];
         }
-
-        users[idx].learningProgress.diagnosticResults = results;
-        this.saveAllUsers(users);
+        return data || [];
     },
 
-    // ─── Migración de Esquema ───────────────────────────────────────
+    async saveDiagnosticResults(userId, results) {
+        const { error } = await supabase
+            .from('profiles')
+            .update({ diagnostic_results: results })
+            .eq('id', userId);
+        if (error) console.error('Error saving diagnostic results:', error);
+    },
 
-    /**
-     * Migra usuarios con estructura plana (v1) a la nueva estructura anidada (v2).
-     * Se ejecuta automáticamente al iniciar la app.
-     * Es idempotente: si el usuario ya tiene `profile`, no se re-migra.
-     */
+    /** @deprecated Método preservado temporalmente para asegurar retrocompatibilidad. */
     migrateUsersToNewSchema() {
-        const users = this.getAllUsers();
-        let migrated = false;
-
-        users.forEach(user => {
-            // Si ya tiene `profile`, asumimos que ya está migrado
-            if (user.profile) return;
-
-            migrated = true;
-            console.log(`[UserManager] Migrando usuario ${user.id} al nuevo esquema...`);
-
-            // Construir profile
-            user.profile = {
-                avatar: user.avatar || '👤',
-                target: user.target || null,
-                career: user.career || null
-            };
-
-            // Construir stats (solo para estudiantes)
-            if (user.role === 'student') {
-                user.stats = {
-                    totalXp: user.totalXp || 0,
-                    streakDays: user.streakDays || 0,
-                    rankingPos: user.rankingPos || 'Nuevo Alumno'
-                };
-
-                user.learningProgress = {
-                    lastAccessedCourse: null,
-                    lastAccessedTopic: null,
-                    completedTopics: [],
-                    diagnosticResults: user.diagnosticResults || [],
-                    hardestCourse: user.hardestCourse || null,
-                    customRoadmap: []
-                };
-
-                // Intentar migrar roadmap desde la clave suelta
-                const legacyRoadmap = localStorage.getItem(`eduquest_roadmap_${user.id}`);
-                if (legacyRoadmap) {
-                    try {
-                        user.learningProgress.customRoadmap = JSON.parse(legacyRoadmap);
-                        localStorage.removeItem(`eduquest_roadmap_${user.id}`);
-                    } catch (e) {
-                        console.error(`[UserManager] Error migrando roadmap de ${user.id}:`, e);
-                    }
-                }
-            }
-
-            // Limpiar campos viejos del nivel raíz
-            delete user.avatar;
-            delete user.target;
-            delete user.career;
-            delete user.totalXp;
-            delete user.streakDays;
-            delete user.rankingPos;
-            delete user.diagnosticResults;
-            delete user.hardestCourse;
-        });
-
-        if (migrated) {
-            this.saveAllUsers(users);
-            console.log('[UserManager] Migración completada.');
-        }
+        console.log('[UserManager] Supabase migration replaces local schema logic.');
     }
 };
 

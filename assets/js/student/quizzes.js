@@ -1,10 +1,13 @@
-// assets/js/student/quizzes.js
-// CONTROLADOR LOGICO DE PRÁCTICAS Y SIMULACROS INTERACTIVOS
+/**
+ * @fileoverview Controlador principal de evaluación y simulacros.
+ * Gestiona el ciclo de vida de los cuestionarios, temporización, calificación,
+ * asignación de puntos de experiencia (XP) y persistencia del progreso académico.
+ */
 
 let activeQuizState = {
     problems: [],
     currentIdx: 0,
-    answers: [], // Guarda la opción elegida en cada índice
+    answers: [], // Almacenar selección de respuesta por índice
     startTime: null,
     timerInterval: null,
     topicId: null,
@@ -15,18 +18,18 @@ let activeQuizState = {
 };
 
 document.addEventListener("DOMContentLoaded", async () => {
-    // 1. Cargar catálogo de quizzes
+    // Inicializar catálogo de evaluaciones
     await loadQuizzesSelection();
 
-    // 2. Revisar si viene de la ruta con parámetros de inicio inmediato
+    // Evaluar parámetros de inicialización automática desde URL
     const params = new URLSearchParams(window.location.search);
     const topicParam = params.get("level");
-    const typeParam = params.get("type"); // quiz, examen, desafio_final
+    const typeParam = params.get("type");
 
     if (topicParam) {
         startQuizFromParam(topicParam, typeParam);
     } else {
-        // Apagar loader si no hay auto-inicio
+        // Ocultar preloader en ausencia de inicio automático
         const loader = document.getElementById("app-preloader");
         if (loader) {
             loader.style.opacity = "0";
@@ -35,7 +38,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 });
 
-// Carga y renderiza el catálogo de cursos y sus temas para practicar
+/** Renderizar catálogo de cursos y temas disponibles para evaluación */
 async function loadQuizzesSelection() {
     const grid = document.getElementById("courses-quizzes-grid");
     if (!grid) return;
@@ -49,21 +52,18 @@ async function loadQuizzesSelection() {
         const courses = await coursesRes.json();
         const topics = await topicsRes.json();
 
-        // Obtener temas completados por el usuario
-        const session = Storage.getSession();
+        // Consultar registro de temas completados
         let completedTopics = [];
-        if (session) {
-            const user = UserManager.getUserById(session.userId);
-            if (user && user.learningProgress) {
-                completedTopics = user.learningProgress.completedTopics || [];
-            }
+        const user = window.CurrentUserService ? CurrentUserService.getProfile() : null;
+        if (user && user.learningProgress) {
+            completedTopics = user.learningProgress.completedTopics || [];
         }
 
         grid.innerHTML = "";
 
         courses.forEach(course => {
             const courseTopics = topics.filter(t => t.courseId === course.id);
-            if (courseTopics.length === 0) return; // Omitir cursos sin temas
+            if (courseTopics.length === 0) return; // Excluir cursos carentes de temario
 
             const card = document.createElement("div");
             card.className = "course-quiz-card";
@@ -104,9 +104,9 @@ async function loadQuizzesSelection() {
     }
 }
 
-// Filtro de categorías del catálogo
+/** Filtrar catálogo por categoría académica */
 function filterCourses(category, buttonEl) {
-    // Alternar chip activo
+    // Actualizar estado visual del filtro
     document.querySelectorAll(".filter-chip").forEach(chip => chip.classList.remove("active"));
     buttonEl.classList.add("active");
 
@@ -121,18 +121,18 @@ function filterCourses(category, buttonEl) {
     });
 }
 
-// Auto-inicio de un quiz según parámetros de URL (RAG del roadmap)
+/** Inicializar evaluación paramétrica basada en ruta de aprendizaje */
 async function startQuizFromParam(topicId, type) {
     try {
         const topicsRes = await fetch("../../mock/topics.json");
         const topics = await topicsRes.json();
-        
+
         const topic = topics.find(t => t.id === topicId);
         if (topic) {
             startSpecificQuiz(topic.id, topic.name, topic.courseId, type === 'examen' ? 200 : 100);
         } else {
-            // Fallback si no encuentra id del tema
-            alert("No se encontró el tema solicitado. Iniciando examen general.");
+            // Ejecutar evaluación general como respaldo ante falla de identificación
+            alert("No se encontró el tema solicitado. Iniciando evaluación general.");
             startGeneralMockExam();
         }
     } catch (e) {
@@ -140,29 +140,29 @@ async function startQuizFromParam(topicId, type) {
     }
 }
 
-// Iniciar un simulacro específico de un tema
+/** Iniciar evaluación específica por tema */
 async function startSpecificQuiz(topicId, topicName, courseId, xpReward) {
-    showPreloader("Generando cuestionario enfocado...");
+    showPreloader("Generando banco de preguntas específico...");
 
     try {
         const problemsRes = await fetch("../../mock/problems.json");
         const allProblems = await problemsRes.json();
 
-        // Filtrar problemas de este tema
+        // Filtrar banco de preguntas por identificador temático
         let filtered = allProblems.filter(p => p.topicId === topicId);
 
         if (filtered.length === 0) {
-            // Si no hay problemas con ese topicId exacto, buscar por curso similar en el ID
-            const coursePrefix = topicId.split("_")[1]; // ej: topic_leyes_exp -> leyes
+            // Ejecutar búsqueda difusa por prefijo de curso
+            const coursePrefix = topicId.split("_")[1];
             filtered = allProblems.filter(p => p.id && p.id.includes(`_${coursePrefix}_`));
         }
 
         if (filtered.length === 0) {
-            // Fallback definitivo
+            // Selección de contingencia de preguntas
             filtered = allProblems.slice(0, 5);
         }
 
-        // Seleccionar máximo 5 preguntas al azar
+        // Extraer subconjunto aleatorio de preguntas
         const shuffle = arr => arr.sort(() => 0.5 - Math.random());
         const selectedProblems = shuffle([...filtered]).slice(0, 5);
 
@@ -173,7 +173,7 @@ async function startSpecificQuiz(topicId, topicName, courseId, xpReward) {
             startTime: Date.now(),
             topicId: topicId,
             courseId: courseId,
-            title: `Práctica: ${topicName}`,
+            title: `Evaluación: ${topicName}`,
             xpReward: xpReward || 100,
             isGeneral: false
         };
@@ -182,21 +182,21 @@ async function startSpecificQuiz(topicId, topicName, courseId, xpReward) {
         launchQuizRunner();
 
     } catch (error) {
-        console.error("Error iniciando simulacro de tema:", error);
+        console.error("Error iniciando evaluación de tema:", error);
         hidePreloader();
-        alert("Ocurrió un error cargando las preguntas.");
+        alert("Ocurrió un error inicializando el banco de preguntas.");
     }
 }
 
-// Iniciar Simulacro General de Admisión (10 preguntas mezcladas)
+/** Iniciar evaluación general combinada */
 async function startGeneralMockExam() {
-    showPreloader("Mezclando preguntas de Admisión...");
+    showPreloader("Compilando evaluación general estructurada...");
 
     try {
         const problemsRes = await fetch("../../mock/problems.json");
         const allProblems = await problemsRes.json();
 
-        // Filtrar de RM y RV
+        // Segmentar preguntas por aptitud académica
         const rm = allProblems.filter(p => p.id && p.id.includes("prob_rm_"));
         const rv = allProblems.filter(p => p.id && (p.id.includes("prob_rv_") || p.id.includes("prob_lect_")));
 
@@ -210,7 +210,7 @@ async function startGeneralMockExam() {
             startTime: Date.now(),
             topicId: null,
             courseId: null,
-            title: "Simulacro General de Admisión",
+            title: "Simulacro General Integral",
             xpReward: 300,
             isGeneral: true
         };
@@ -224,15 +224,15 @@ async function startGeneralMockExam() {
     }
 }
 
-// Cambiar vistas a la pantalla del reproductor de exámenes
+/** Transicionar a vista de ejecución de evaluación */
 function launchQuizRunner() {
     document.querySelectorAll(".quiz-view-section").forEach(v => v.classList.remove("active"));
     document.getElementById("quiz-runner-view").classList.add("active");
 
-    // Reiniciar UI
+    // Reinicializar interfaz de usuario
     document.getElementById("quiz-run-title").innerText = activeQuizState.title;
-    
-    // Iniciar timer
+
+    // Inicializar temporizador de ejecución
     if (activeQuizState.timerInterval) clearInterval(activeQuizState.timerInterval);
     activeQuizState.startTime = Date.now();
     updateTimerText();
@@ -248,31 +248,31 @@ function updateTimerText() {
     document.getElementById("quiz-timer").innerText = `⏱️ ${mins}:${secs}`;
 }
 
-// Renderizar la pregunta actual
+/** Renderizar la pregunta activa en la interfaz */
 function renderCurrentQuestion() {
     const idx = activeQuizState.currentIdx;
     const total = activeQuizState.problems.length;
     const q = activeQuizState.problems[idx];
 
-    // Actualizar progreso
+    // Refrescar indicadores de progreso
     document.getElementById("quiz-run-progress").innerText = `Pregunta ${idx + 1} de ${total}`;
     document.getElementById("quiz-run-pbar").style.width = ((idx + 1) / total * 100) + "%";
 
-    // Enunciado
+    // Renderizar enunciado base
     document.getElementById("quiz-question-text").innerText = q.statement;
 
-    // Opciones
+    // Generar bloque de alternativas
     const optionsContainer = document.getElementById("quiz-options-container");
     optionsContainer.innerHTML = "";
-    
+
     const letters = ["A", "B", "C", "D"];
     const previousAnswer = activeQuizState.answers[idx];
 
     q.options.forEach((opt, oIdx) => {
         const optionCard = document.createElement("div");
         optionCard.className = "quiz-option-card";
-        
-        // Restaurar estado si ya se respondió
+
+        // Restaurar estado visual de opciones respondidas
         if (previousAnswer !== null) {
             optionCard.classList.add("disabled");
             if (oIdx === q.correctOption) {
@@ -290,36 +290,36 @@ function renderCurrentQuestion() {
         `;
 
         optionCard.onclick = () => {
-            if (activeQuizState.answers[idx] !== null) return; // Ya se validó
-            
+            if (activeQuizState.answers[idx] !== null) return; // Prevenir selección múltiple en pregunta validada
+
             document.querySelectorAll(".quiz-option-card").forEach(c => c.classList.remove("selected"));
             optionCard.classList.add("selected");
             activeQuizState.selectedOption = oIdx;
-            
+
             document.getElementById("quiz-btn-submit").disabled = false;
         };
 
         optionsContainer.appendChild(optionCard);
     });
 
-    // Controlar botones de pie
+    // Administrar visibilidad de controles de navegación
     const submitBtn = document.getElementById("quiz-btn-submit");
     const nextBtn = document.getElementById("quiz-btn-next");
     const feedbackPanel = document.getElementById("quiz-feedback-panel");
 
     if (previousAnswer !== null) {
-        // Pregunta ya calificada
+        // Configurar vista para pregunta evaluada
         submitBtn.style.display = "none";
         nextBtn.style.display = "block";
-        nextBtn.innerText = (idx === total - 1) ? "Finalizar Simulacro" : "Siguiente Pregunta";
-        
+        nextBtn.innerText = (idx === total - 1) ? "Finalizar Evaluación" : "Siguiente Pregunta";
+
         feedbackPanel.style.display = "block";
         feedbackPanel.className = `quiz-feedback-box ${previousAnswer === q.correctOption ? 'correct' : 'incorrect'}`;
         feedbackPanel.querySelector(".feedback-indicator-icon").innerText = previousAnswer === q.correctOption ? "✅" : "❌";
-        feedbackPanel.querySelector(".feedback-indicator-title").innerText = previousAnswer === q.correctOption ? "¡Respuesta Correcta!" : "Respuesta Incorrecta";
-        document.getElementById("quiz-explanation-text").innerText = q.explanation || "No hay explicación disponible.";
+        feedbackPanel.querySelector(".feedback-indicator-title").innerText = previousAnswer === q.correctOption ? "Verificación Exitosa" : "Respuesta Incorrecta";
+        document.getElementById("quiz-explanation-text").innerText = q.explanation || "No se dispone de retroalimentación adicional.";
     } else {
-        // Pregunta por responder
+        // Configurar vista para pregunta pendiente
         submitBtn.style.display = "block";
         submitBtn.disabled = activeQuizState.selectedOption === null;
         nextBtn.style.display = "none";
@@ -327,23 +327,24 @@ function renderCurrentQuestion() {
     }
 }
 
-// Validar respuesta del estudiante (Calificación interactiva)
+/** Registrar y evaluar respuesta del usuario */
 function submitAnswer() {
     const idx = activeQuizState.currentIdx;
     const q = activeQuizState.problems[idx];
     const sel = activeQuizState.selectedOption;
 
     if (sel === null) return;
-
-    // Guardar respuesta calificada
     activeQuizState.answers[idx] = sel;
     activeQuizState.selectedOption = null;
 
-    // Renderizar para mostrar la corrección visual inmediata
+    const user = window.CurrentUserService ? CurrentUserService.getProfile() : null;
+    if (user && window.UserManager) {
+        UserManager.updateStreak(user.id).catch(err => console.error("Error updating streak:", err));
+    }
     renderCurrentQuestion();
 }
 
-// Pasar a la siguiente pregunta o finalizar
+/** Transicionar a la siguiente pregunta o concluir evaluación */
 function nextQuestion() {
     const idx = activeQuizState.currentIdx;
     const total = activeQuizState.problems.length;
@@ -357,15 +358,14 @@ function nextQuestion() {
     }
 }
 
-// Finaliza el simulacro y guarda estadísticas y XP
+/** Concluir evaluación, calcular rendimiento y otorgar recompensas */
 function finishQuiz() {
     clearInterval(activeQuizState.timerInterval);
-    showPreloader("Compilando tus resultados y sumando XP...");
+    showPreloader("Compilando resultados y procesando métricas...");
 
-    const session = Storage.getSession();
-    if (!session) return;
+    const user = window.CurrentUserService ? CurrentUserService.getProfile() : null;
+    if (!user) return;
 
-    // Calcular estadísticas
     let correctCount = 0;
     activeQuizState.problems.forEach((q, idx) => {
         if (activeQuizState.answers[idx] === q.correctOption) {
@@ -380,75 +380,115 @@ function finishQuiz() {
     const secs = (elapsedSecs % 60).toString().padStart(2, "0");
     const timeStr = `${mins}:${secs}`;
 
-    // Calcular XP ganado (ej: 30 XP por correcta, más bono por porcentaje)
-    let xpEarned = correctCount * 20; 
-    if (pct === 100) xpEarned += activeQuizState.xpReward; // Bono completo si es perfecto
-    else if (pct >= 60) xpEarned += Math.round(activeQuizState.xpReward * 0.6); // Bono parcial
+    // Calcular distribución de experiencia adquirida
+    let xpEarned = correctCount * 20;
+    if (pct === 100) xpEarned += activeQuizState.xpReward; // Asignar bonificación por puntuación perfecta
+    else if (pct >= 60) xpEarned += Math.round(activeQuizState.xpReward * 0.6); // Asignar bonificación parcial por aprobación
 
-    // Guardar progreso en el Roadmap del usuario
+    // Registrar avance en el mapa de aprendizaje
     if (!activeQuizState.isGeneral && activeQuizState.topicId) {
-        // Solo marcar tema superado si aprobó con >= 60%
+        // Registrar superación de tema sujeta a umbral de aprobación
         if (pct >= 60) {
             UserManager.completeTopicProgress(
-                session.userId, 
-                activeQuizState.topicId, 
-                activeQuizState.courseId, 
+                user.id,
+                activeQuizState.topicId,
+                activeQuizState.courseId,
                 xpEarned
             );
         } else {
-            // Si desaprobó, igual darle su XP menor, pero sin marcar tema
-            UserManager.addXp(session.userId, xpEarned);
+            // Asignar experiencia residual sin registrar superación
+            UserManager.addXp(user.id, xpEarned);
         }
     } else {
-        // Simulacro general, solo sumar XP
-        UserManager.addXp(session.userId, xpEarned);
+        // Asignar experiencia obtenida en evaluación general
+        UserManager.addXp(user.id, xpEarned);
     }
 
-    // AUMENTAR RETO DIARIO (Hooks)
-    if (window.GamificationManager) {
-        // Sumar total_xp
-        GamificationManager.updateDailyChallengeProgress("total_xp", xpEarned);
-        // Sumar quiz_questions (correctas)
-        GamificationManager.updateDailyChallengeProgress("quiz_questions", correctCount);
-        // Sumar complete_quiz
-        GamificationManager.updateDailyChallengeProgress("complete_quiz", 1);
+    // Guardar estadísticas en el backend (Supabase) agrupadas por tópico real
+    if (window.UserManager) {
+        const statsByTopic = {};
+        
+        activeQuizState.problems.forEach((q, idx) => {
+            const tId = q.topicId;
+            if (!tId) return; // Prevenir guardado si no hay topicId
+            
+            if (!statsByTopic[tId]) {
+                statsByTopic[tId] = { correct: 0, incorrect: 0 };
+            }
+            if (activeQuizState.answers[idx] === q.correctOption) {
+                statsByTopic[tId].correct++;
+            } else {
+                statsByTopic[tId].incorrect++;
+            }
+        });
 
-        // EVALUAR INSIGNIA: Perfección absoluta (100% de aciertos)
-        if (pct === 100) {
-            GamificationManager.checkAndAwardBadge(session.userId, "badge_perfect_score");
+        for (const [tId, counts] of Object.entries(statsByTopic)) {
+            UserManager.saveUserTopicStats(user.id, tId, counts.correct, counts.incorrect);
         }
     }
 
-    // RENDERIZAR VISTA DE RESULTADOS
+    // Guardar estadísticas de rendimiento en localStorage (historial de simulacros fallback)
+    try {
+        const perfKey = `eduquest_performance_${user.id}`;
+        const perfData = JSON.parse(localStorage.getItem(perfKey) || '{"history":[]}');
+        perfData.history.push({
+            courseId: activeQuizState.courseId || 'general',
+            isGeneral: activeQuizState.isGeneral,
+            correct: correctCount,
+            incorrect: total - correctCount,
+            total: total,
+            timestamp: Date.now()
+        });
+        localStorage.setItem(perfKey, JSON.stringify(perfData));
+    } catch (e) {
+        console.error("Error guardando estadísticas de rendimiento:", e);
+    }
+
+    // Disparar ganchos de gamificación para retos diarios
+    if (window.GamificationManager) {
+        // Acumular experiencia obtenida
+        GamificationManager.updateDailyChallengeProgress("total_xp", xpEarned);
+        // Acumular métrica de respuestas correctas
+        GamificationManager.updateDailyChallengeProgress("quiz_questions", correctCount);
+        // Acumular métrica de evaluaciones completadas
+        GamificationManager.updateDailyChallengeProgress("complete_quiz", 1);
+
+        // Evaluar criterios para otorgamiento de insignias
+        if (pct === 100) {
+            GamificationManager.checkAndAwardBadge(user.id, "badge_perfect_score");
+        }
+    }
+
+    // Renderizar interfaz de resultados consolidados
     hidePreloader();
     document.querySelectorAll(".quiz-view-section").forEach(v => v.classList.remove("active"));
     document.getElementById("quiz-results-view").classList.add("active");
 
-    // Rellenar valores finales
+    // Poblar métricas de rendimiento
     document.getElementById("results-score").innerText = `${correctCount} / ${total}`;
     document.getElementById("results-accuracy").innerText = `${pct}%`;
     document.getElementById("results-xp-gained").innerText = `+${xpEarned} XP`;
     document.getElementById("results-time").innerText = timeStr;
 
-    // Encabezado según nota
+    // Asignar titular de evaluación según rendimiento
     const headlineEl = document.getElementById("results-headline");
     const subEl = document.getElementById("results-subheadline");
-    
+
     if (pct === 100) {
-        headlineEl.innerText = "¡Perfección Absoluta! 💯🏆";
-        subEl.innerText = "Has respondido todas las preguntas de manera correcta. ¡Qué nivel!";
+        headlineEl.innerText = "Desempeño Óptimo Registrado";
+        subEl.innerText = "La totalidad de las respuestas han sido validadas como correctas.";
     } else if (pct >= 60) {
-        headlineEl.innerText = "¡Felicidades, aprobado! 🎉";
-        subEl.innerText = "Superaste la práctica exitosamente y asimilaste nuevos conceptos.";
+        headlineEl.innerText = "Evaluación Superada";
+        subEl.innerText = "El rendimiento supera el umbral de aprobación requerido.";
     } else {
-        headlineEl.innerText = "¡Buen intento! 💪";
-        subEl.innerText = "Te sugerimos repasar el material educativo y volver a intentarlo.";
+        headlineEl.innerText = "Rendimiento Deficiente";
+        subEl.innerText = "Se recomienda revisar el material didáctico antes de un nuevo intento.";
     }
 }
 
-// Salir del cuestionario en ejecución (Confirmación de seguridad)
+/** Interrumpir evaluación en curso previa confirmación */
 function confirmExitQuiz() {
-    if (confirm("⚠️ ¿Estás seguro que deseas salir del simulacro? Perderás todo tu progreso actual de este examen.")) {
+    if (confirm("Advertencia: Al interrumpir la evaluación se descartará el progreso actual. ¿Confirmar salida?")) {
         clearInterval(activeQuizState.timerInterval);
         exitToSelection();
     }
@@ -457,15 +497,15 @@ function confirmExitQuiz() {
 function exitToSelection() {
     document.querySelectorAll(".quiz-view-section").forEach(v => v.classList.remove("active"));
     document.getElementById("quizzes-selection-view").classList.add("active");
-    
-    // Limpiar url
+
+    // Restablecer parámetros de URL
     window.history.replaceState({}, document.title, window.location.pathname);
-    
-    // Recargar checkmarks
+
+    // Actualizar indicadores visuales de progreso
     loadQuizzesSelection();
 }
 
-/* CARGADORES DE PANTALLA */
+/** Utilidades de carga visual */
 function showPreloader(msg) {
     const loader = document.getElementById("app-preloader");
     if (loader) {
@@ -483,12 +523,12 @@ function hidePreloader() {
     }
 }
 
-// Exportar funciones globales
+// Exponer métodos de interfaz al contexto global
 window.filterCourses = filterCourses;
 window.startSpecificQuiz = startSpecificQuiz;
 window.startGeneralMockExam = startGeneralMockExam;
 window.submitAnswer = submitAnswer;
-window.prevQuestion = () => {}; // Dejado vacío
+window.prevQuestion = () => { };
 window.nextQuestion = nextQuestion;
 window.confirmExitQuiz = confirmExitQuiz;
 window.exitToSelection = exitToSelection;
