@@ -1,11 +1,6 @@
 const SessionManager = {
     async init() {
         await Auth.initDB();
-        
-        if (window.CurrentUserService) {
-            await CurrentUserService.init();
-        }
-
         Router.init();
         
         if (window.UserBindingManager) {
@@ -38,20 +33,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 window.AIEngine.processQueue();
             }
         }
-    }
-
-    // Inyectar Sistema de Notificaciones en páginas autenticadas
-    const path = window.location.pathname;
-    if (!path.includes('/auth/') && !path.includes('/public/') && path !== '/' && !path.endsWith('index.html')) {
-        const notifStyle = document.createElement('link');
-        notifStyle.rel = 'stylesheet';
-        notifStyle.href = '../../assets/css/components/notifications.css';
-        document.head.appendChild(notifStyle);
-
-        const notifScript = document.createElement('script');
-        notifScript.type = 'module';
-        notifScript.src = '../../assets/js/core/notifications.js';
-        document.body.appendChild(notifScript);
     }
 });
 
@@ -100,5 +81,9 @@ window.app.showToast = function(message, type = 'success') {
 };
 
 document.addEventListener('click', () => {
-    // Session refresh handled by Supabase automatically
+    const session = Storage.getSession();
+    if (session) {
+        session.expiresAt = Date.now() + (60 * 60 * 1000);
+        Storage.saveSession(session);
+    }
 });

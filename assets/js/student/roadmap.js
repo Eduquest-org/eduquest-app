@@ -1,18 +1,6 @@
-/**
- * @fileoverview Controlador de la interfaz gráfica del Mapa de Aprendizaje (Roadmap).
- * Responsable de orquestar el renderizado dinámico de la ruta generada por la IA,
- * dibujar el grafo SVG interactivo de niveles y manejar la navegación a los recursos.
- */
+// assets/js/student/roadmap.js
 
-import { supabase } from '../config/supabase.js';
-
-/** Secuencia de inicialización principal */
-async function initRoadmap() {
-    // Sincronizar el estado de sesión antes de renderizar la interfaz
-    if (window.CurrentUserService) {
-        await CurrentUserService.init();
-    }
-    
+document.addEventListener("DOMContentLoaded", () => {
     buildStudentProfileBanner();
     buildCourseSelectionGrid();
 
@@ -20,13 +8,7 @@ async function initRoadmap() {
         const preloader = document.getElementById("app-preloader");
         if (preloader) preloader.classList.add("fade-out-loader");
     }, 350);
-}
-
-if (document.readyState === 'loading') {
-    document.addEventListener("DOMContentLoaded", initRoadmap);
-} else {
-    initRoadmap();
-}
+});
 
 function buildStudentProfileBanner() {
     const bannerContainer = document.getElementById("student-profile-summary");
@@ -60,34 +42,22 @@ function buildStudentProfileBanner() {
 }
 
 async function fetchDynamicRoadmap() {
-    const { data: { session } } = await supabase.auth.getSession();
+    const session = Storage.getSession();
 
-    // Recuperar el registro de tópicos completados desde la base de datos
+    // Obtener temas completados del usuario para calcular progreso
     let completedTopics = [];
-    if (session) {
-        const { data: progressData } = await supabase
-            .from('user_topic_progress')
-            .select('topic_id')
-            .eq('user_id', session.user.id)
-            .eq('status', 'completed');
-            
-        if (progressData) {
-            completedTopics = progressData.map(p => p.topic_id);
+    if (session && window.UserManager) {
+        const user = UserManager.getUserById(session.userId);
+        if (user && user.learningProgress) {
+            completedTopics = user.learningProgress.completedTopics || [];
         }
     }
 
-    // Priorizar el renderizado de la ruta personalizada si se encuentra disponible
-    if (window.CurrentUserService) {
-        const userProfile = CurrentUserService.getProfile();
-        let aiRoutes = userProfile?.ai_roadmap || [];
-        
-        // Manejar deserialización por compatibilidad de tipos
-        if (typeof aiRoutes === 'string') {
-            try { aiRoutes = JSON.parse(aiRoutes); } catch(e) { aiRoutes = []; }
-        }
-
-        if (aiRoutes && aiRoutes.length > 0) {
-            // Recalcular métricas de progreso utilizando tópicos completados reales
+    // Si existe una ruta IA personalizada, mostrar SOLO esa ruta
+    if (session && window.UserManager) {
+        const aiRoutes = UserManager.getCustomRoadmap(session.userId);
+        if (aiRoutes.length > 0) {
+            // Recalcular progreso basado en completedTopics
             return aiRoutes.map(route => {
                 const safeNodes = route.nodes || [];
                 const completedLevels = safeNodes.filter(n => completedTopics.includes(n.id)).length;
@@ -99,12 +69,12 @@ async function fetchDynamicRoadmap() {
                     completedLevels,
                     progressPct,
                     xpEarned: completedLevels * 50,
-                    nodes: safeNodes.map(n => {
+                    nodes: safeNodes.map((n, idx) => {
                         const title = n.data ? n.data.title : n.title;
                         if (completedTopics.includes(n.id)) {
                             return { ...n, title, status: 'completed' };
                         }
-                        // Configurar el estado de niveles pendientes a desbloqueados por defecto
+                        // Todos los niveles no completados están desbloqueados por defecto (modo exploración)
                         return { ...n, title, status: 'unlocked' };
                     })
                 };
@@ -112,13 +82,13 @@ async function fetchDynamicRoadmap() {
         }
     }
 
-    // Emplear catálogo genérico en caso de no existir ruta personalizada
+    // Fallback: si no hay ruta IA (usuario sin diagnóstico), mostrar catálogo genérico
     const [coursesRes, topicsRes] = await Promise.all([
-        supabase.from('courses').select('id, name, icon, color'),
-        supabase.from('topics').select('id, name, course_id')
+        fetch("../../mock/courses.json"),
+        fetch("../../mock/topics.json")
     ]);
-    const courses = coursesRes.data || [];
-    const topics = (topicsRes.data || []).map(t => ({ id: t.id, name: t.name, courseId: t.course_id }));
+    const courses = await coursesRes.json();
+    const topics = await topicsRes.json();
 
     let userTarget = "UNI";
     if (window.CurrentUserService) {
@@ -145,7 +115,7 @@ async function fetchDynamicRoadmap() {
                 if (completedTopics.includes(t.id)) {
                     return { id: t.id, title: t.name, status: 'completed' };
                 }
-                // Configurar el estado de niveles pendientes a desbloqueados por defecto
+                // Todos los niveles no completados están desbloqueados por defecto
                 return { id: t.id, title: t.name, status: 'unlocked' };
             })
         };
@@ -157,55 +127,35 @@ async function buildCourseSelectionGrid() {
     if (!grid) return;
 
     const urlParams = new URLSearchParams(window.location.search);
-    
-    // Invocar la generación automática al detectar diagnóstico previo sin ruta
-    const { data: { session } } = await supabase.auth.getSession();
-    let hasValidRoadmap = false;
-    let hasDiagnostic = false;
-    
-    if (window.CurrentUserService) {
-        const user = CurrentUserService.getProfile();
-        hasDiagnostic = !!(user && user.diagnostic_results);
-        if (user && user.ai_roadmap) {
-            hasValidRoadmap = Array.isArray(user.ai_roadmap) && user.ai_roadmap.length > 0;
-            if (hasValidRoadmap && user.ai_roadmap[0].id === 'course_fallback') hasValidRoadmap = false;
-        }
-    }
-
-    const isPhase1Active = localStorage.getItem('aiPhase1') === 'true';
-    const isPhase2Active = (localStorage.getItem('aiQueue') || '[]') !== '[]';
-
-    if (!isPhase1Active && !isPhase2Active) {
-        if (urlParams.get('generate') === 'true' || (hasDiagnostic && !hasValidRoadmap)) {
-            // Persistir parámetro de generación en almacenamiento local
-            localStorage.setItem('pendingAIGeneration', 'true');
-            window.history.replaceState({}, document.title, window.location.pathname);
-        }
+    if (urlParams.get('generate') === 'true') {
+        // Convertimos el param en estado persistente
+        localStorage.setItem('pendingAIGeneration', 'true');
+        window.history.replaceState({}, document.title, window.location.pathname);
     }
 
     if (localStorage.getItem('pendingAIGeneration') === 'true') {
-        // Eliminar el indicador de estado transitorio inmediatamente
+        // Remover la bandera inicial inmediatamente
         localStorage.removeItem('pendingAIGeneration');
         
         const preloader = document.getElementById("app-preloader");
         if (preloader) preloader.classList.add("fade-out-loader");
 
-        // Inicializar generación de ruta delegando la fase extendida a segundo plano
-        const { data: { session: currentSession } } = await supabase.auth.getSession();
-        if (currentSession && window.CurrentUserService && window.AIEngine) {
-            const user = CurrentUserService.getProfile();
-            if (user && user.diagnostic_results) {
-                // Ejecutar proceso asíncrono manteniendo el hilo principal libre
+        // Generate Roadmap (Solo Fase 1 y encolar)
+        const session = Storage.getSession();
+        if (session && window.UserManager && window.AIEngine) {
+            const user = UserManager.getUserById(session.userId);
+            if (user && user.learningProgress && user.learningProgress.diagnosticResults) {
+                // Ejecutar asíncronamente sin bloquear el flujo principal
                 (async () => {
                     try {
                         localStorage.setItem('aiPhase1', 'true');
-                        // Forzar actualización de interfaz para presentar el indicador de análisis preliminar
+                        // Forzar re-render inmediato para mostrar el banner de Fase 1
                         buildCourseSelectionGrid();
                         
-                        await AIEngine.generatePersonalizedRoadmap(user.diagnostic_results);
+                        await AIEngine.generatePersonalizedRoadmap(user.learningProgress.diagnosticResults);
                         
                         localStorage.removeItem('aiPhase1');
-                        // Forzar actualización de interfaz para presentar el indicador de procesamiento asíncrono
+                        // Re-render para cambiar al banner de Fase 2 (cola)
                         buildCourseSelectionGrid();
                     } catch (e) {
                         console.error("Generación interrumpida o fallida:", e);
@@ -213,7 +163,7 @@ async function buildCourseSelectionGrid() {
                         buildCourseSelectionGrid();
                     }
                 })();
-                return; // Interrumpir flujo sincrónico delegando renderizado a la subrutina asíncrona
+                return; // Cortar aquí la primera ejecución, el IIFE se encargará del render
             }
         }
     }
@@ -224,7 +174,7 @@ async function buildCourseSelectionGrid() {
     const aiQueueStr = localStorage.getItem('aiQueue');
     const isPhase2 = aiQueueStr && aiQueueStr !== '[]';
 
-    // Renderizar componentes de notificación de estado
+    // Mostrar banners de estado
     if (isPhase1 || isPhase2) {
         const banner = document.createElement("div");
         banner.style.gridColumn = "1 / -1";
@@ -239,8 +189,8 @@ async function buildCourseSelectionGrid() {
         
         let title = isPhase1 ? "Analizando resultados..." : "Generando rutas personalizadas...";
         let desc = isPhase1 
-            ? "El tutor IA está calibrando las prioridades de estudio." 
-            : `Quedan ${JSON.parse(aiQueueStr).length} cursos por procesar. Navegación libre habilitada mientras culmina el proceso.`;
+            ? "Tu tutor IA está calibrando las prioridades de estudio." 
+            : `Quedan ${JSON.parse(aiQueueStr).length} cursos por procesar. Puedes navegar por otras páginas, te avisaremos al terminar.`;
 
         banner.innerHTML = `
             <div class="spinner" style="width: 24px; height: 24px; border: 3px solid rgba(29,158,117,0.3); border-top-color: var(--green); border-radius: 50%; animation: spin 0.85s linear infinite; flex-shrink: 0;"></div>
@@ -300,7 +250,7 @@ function openSpecificCourseMap(courseId) {
     const nodes = cursoSeleccionado.nodes;
     const nodeCount = nodes.length;
 
-    // Definir constantes geométricas del grafo visual
+    // Dimensiones del layout
     const isMobile = window.innerWidth <= 600;
     const svgWidth = isMobile ? 380 : 560;
     const nodeSpacingY = 190;
@@ -309,20 +259,20 @@ function openSpecificCourseMap(courseId) {
     const rightX = isMobile ? 300 : 460;
     const svgHeight = 120 + nodeCount * nodeSpacingY;
 
-    // Computar coordenadas nodales iterando en patrón serpenteante
+    // Calcular posiciones de cada nodo (serpiente: izq, medio, der, medio, izq...)
     const positions = nodes.map((_, idx) => {
         let x;
         const cycle = idx % 4;
         if (cycle === 0) x = leftX;
         else if (cycle === 1) x = midX;
         else if (cycle === 2) x = rightX;
-        else x = midX; 
+        else x = midX; // cycle === 3
 
         const y = 80 + idx * nodeSpacingY;
         return { x, y };
     });
 
-    // Construir trazado poligonal alternando vectores rectilíneos
+    // Construir la ruta (segmentos verticales y horizontales alternados)
     let pathSegments = [];
     let cornerPoints = [];
     for (let i = 0; i < positions.length - 1; i++) {
@@ -332,12 +282,12 @@ function openSpecificCourseMap(courseId) {
         pathSegments.push(`M ${from.x} ${from.y}`);
         
         if (i % 4 === 1 || i % 4 === 3) {
-            // Articular segmento en eje transversal seguido del eje longitudinal
+            // Nodo Medio: Sale horizontal (der/izq) hacia to.x, luego baja a to.y
             pathSegments.push(`L ${to.x} ${from.y}`);
             pathSegments.push(`L ${to.x} ${to.y}`);
             cornerPoints.push({ x: to.x, y: from.y });
         } else {
-            // Articular segmento en eje longitudinal seguido del eje transversal
+            // Nodo Extremo (Izq/Der): Baja verticalmente a to.y, luego dobla horizontal a to.x
             pathSegments.push(`L ${from.x} ${to.y}`);
             pathSegments.push(`L ${to.x} ${to.y}`);
             cornerPoints.push({ x: from.x, y: to.y });
@@ -345,7 +295,7 @@ function openSpecificCourseMap(courseId) {
     }
     const pathD = pathSegments.join(' ');
 
-    // Definir matriz de paletas de color según estado
+    // Colores por estado
     const stateColors = {
         completed: { shadow: '#0A5C2C', body: '#16A34A', face: '#22C55E', highlight: '#4ADE80', textColor: '#fff', labelColor: '#0A5C2C', badgeBg: '#BBF7D0', badgeText: '#0A5C2C' },
         unlocked:  { shadow: '#7A3E00', body: '#CC5E00', face: '#FF8C1A', highlight: '#FFAA44', textColor: '#fff', labelColor: '#6B3A00', badgeBg: '#FFAA44', badgeText: '#7A3E00' },
@@ -353,44 +303,44 @@ function openSpecificCourseMap(courseId) {
     };
 
     const stateLabels = {
-        completed: 'SUPERADO',
-        unlocked: 'DISPONIBLE',
+        completed: '¡SUPERADO! ✨',
+        unlocked: '¡DISPONIBLE! 🔥',
         locked: 'BLOQUEADO'
     };
 
-    // Proceder con la composición del lienzo vectorial
+    // Construir SVG
     let svgContent = '';
 
-    // Capa base de trazado
+    // 1. Capa de sombra de la ruta
     svgContent += `<path d="${pathD}" fill="none" stroke="#D4A070" stroke-width="10" opacity="0.4" stroke-linecap="round" stroke-linejoin="round"/>`;
 
-    // Capa de animación dinámica del trazado
+    // 2. Capa animada de la ruta
     svgContent += `<path d="${pathD}" fill="none" stroke="#FF8C00" stroke-width="4.5" stroke-dasharray="14 8" stroke-linecap="round" stroke-linejoin="round" style="animation: brilliantDash 1s linear infinite;"/>`;
 
-    // Elementos de intersección
+    // 3. Círculos en las esquinas
     cornerPoints.forEach(pt => {
         svgContent += `<circle cx="${pt.x}" cy="${pt.y}" r="5" fill="#FF8C00"/>`;
     });
 
-    // Nodos interactivos
+    // 4. Nodos (bloques 3D)
     nodes.forEach((lvl, idx) => {
         const pos = positions[idx];
         const status = lvl.status || 'unlocked';
         const colors = stateColors[status] || stateColors.unlocked;
-        const label = stateLabels[status] || 'DISPONIBLE';
+        const label = stateLabels[status] || '¡DISPONIBLE! 🔥';
         const title = lvl.title || `Nivel ${idx + 1}`;
         const isFirst = idx === 0;
         const isLocked = status === 'locked';
         const groupOpacity = status === 'locked' ? 0.38 : (status === 'completed' ? 1 : 1);
         const lockedClass = isLocked ? ' is-locked' : '';
 
-        // Inyectar anillo de pulso indicador exclusivo para el nodo actual de trabajo
+        // Pulse ring solo para el primer nodo no completado (activo)
         let pulseRing = '';
         if (isFirst && status === 'unlocked') {
             pulseRing = `<circle cx="${pos.x}" cy="${pos.y}" fill="#FF8C00" style="animation: brilliantPulse 2s ease-in-out infinite;"><animate attributeName="r" values="36;44;36" dur="2s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.22;0.55;0.22" dur="2s" repeatCount="indefinite"/></circle>`;
         }
 
-        // Dimensiones paramétricas del nodo
+        // Block dimensions
         const bw = 58, bh = 54, br = 9;
         const bx = pos.x - bw / 2;
         const by = pos.y - bh / 2;
@@ -401,22 +351,22 @@ function openSpecificCourseMap(courseId) {
         const nodeBlock = `
             ${pulseRing}
             <g class="brilliant-node-group${lockedClass}" data-node-idx="${idx}" opacity="${groupOpacity}">
-                <!-- Base oscura -->
+                <!-- Sombra base -->
                 <rect x="${bx}" y="${by + 3}" width="${bw}" height="${bh}" rx="${br}" fill="${colors.shadow}" opacity="0.45"/>
-                <!-- Volumen principal -->
+                <!-- Cuerpo -->
                 <rect x="${bx}" y="${by}" width="${bw}" height="${bh}" rx="${br}" fill="${colors.body}"/>
-                <!-- Superficie superior -->
+                <!-- Cara superior -->
                 <rect class="node-face-top" x="${bx}" y="${by}" width="${bw}" height="${bh - 8}" rx="${br}" fill="${colors.face}"/>
                 <!-- Highlight -->
                 <rect x="${bx}" y="${by}" width="${bw}" height="${Math.floor(bh / 2.4)}" rx="${br}" fill="${colors.highlight}" opacity="0.6"/>
-                <!-- Etiqueta representativa -->
+                <!-- Número/Ícono -->
                 <text x="${pos.x}" y="${pos.y + 2}" text-anchor="middle" dominant-baseline="central" fill="${colors.textColor}" font-family="'Sora', sans-serif" font-size="${fontSize}" font-weight="800">${nodeContent}</text>
             </g>
         `;
 
         svgContent += nodeBlock;
 
-        // Texto de estado subordinado al nodo
+        // Label (nombre + badge) debajo del nodo
         const labelY = pos.y + bh / 2 + 18;
         svgContent += `
             <text x="${pos.x}" y="${labelY}" text-anchor="middle" fill="${colors.labelColor}" font-family="'Inter', sans-serif" font-size="13" font-weight="700">${title}</text>
@@ -428,12 +378,12 @@ function openSpecificCourseMap(courseId) {
     const svg = `<svg id="brilliant-map-svg" viewBox="0 0 ${svgWidth} ${svgHeight}" xmlns="http://www.w3.org/2000/svg">${svgContent}</svg>`;
     mapContainer.innerHTML = svg;
 
-    // Asignar controladores de eventos interactivos en la capa vectorial
+    // Event listeners en nodos SVG — poblamos el panel lateral
     mapContainer.querySelectorAll('.brilliant-node-group').forEach(g => {
         g.addEventListener('click', () => {
             const idx = parseInt(g.getAttribute('data-node-idx'));
             showLevelDetail(cursoSeleccionado, idx);
-            // Aplicar enfoque visual al elemento interactuado
+            // Resaltar nodo activo
             mapContainer.querySelectorAll('.brilliant-node-group').forEach(n => n.style.opacity = n === g ? '1' : '');
         });
     });
@@ -441,7 +391,7 @@ function openSpecificCourseMap(courseId) {
     document.getElementById("course-selection-view").classList.remove("active");
     document.getElementById("course-map-view").classList.add("active");
 
-    // Presentar e inicializar el panel de contenido contextual
+    // Mostrar panel lateral y resetearlo
     const detailPanel = document.getElementById("level-detail-panel");
     if (detailPanel) detailPanel.style.display = "block";
     
@@ -449,7 +399,7 @@ function openSpecificCourseMap(courseId) {
     document.getElementById("detail-content").style.display = "none";
 }
 
-/** Renderizar la información detallada de nivel en el panel contextual */
+// Muestra los detalles de un nivel en el panel lateral derecho
 function showLevelDetail(curso, idx) {
     const lvl = curso.nodes[idx];
     if (!lvl) return;
@@ -457,15 +407,15 @@ function showLevelDetail(curso, idx) {
     const status = lvl.status || 'unlocked';
     const title = lvl.title || lvl.data?.title || `Nivel ${idx + 1}`;
 
-    // Conmutar la visibilidad hacia la capa de contenido
+    // Ocultar estado vacío, mostrar contenido
     document.getElementById("detail-empty").style.display = "none";
     document.getElementById("detail-content").style.display = "block";
 
-    // Refrescar cabecera
+    // Actualizar header
     const badge = document.getElementById("detail-badge");
     badge.textContent = idx + 1;
 
-    // Seleccionar esquema de color acorde a la bandera de estado
+    // Colores del badge según estado
     const badgeColors = {
         completed: { bg: '#22C55E', shadow: '#16A34A' },
         unlocked:  { bg: '#FF8C1A', shadow: '#CC5E00' },
@@ -479,10 +429,10 @@ function showLevelDetail(curso, idx) {
 
     const statusPill = document.getElementById("detail-status");
     statusPill.className = `detail-status-pill status-${status}`;
-    const statusTexts = { completed: 'Superado', unlocked: 'Disponible', locked: 'Bloqueado 🔒' };
+    const statusTexts = { completed: '¡Superado! ✨', unlocked: '¡Disponible! 🔥', locked: 'Bloqueado 🔒' };
     statusPill.textContent = statusTexts[status] || 'Disponible';
 
-    // Generar elementos de contenido interactivo inyectados
+    // Generar items RAG
     const itemsList = document.getElementById("detail-items-list");
     itemsList.innerHTML = '';
     const content = lvl.data ? lvl.data.content : null;
@@ -533,7 +483,7 @@ function showLevelDetail(curso, idx) {
         itemsList.appendChild(div);
     }
 
-    // Invocar desplazamiento animado hacia la sección activa en dispositivos de menor resolución
+    // Scroll suave al panel en móvil
     if (window.innerWidth <= 900) {
         document.getElementById("level-detail-panel").scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
@@ -543,7 +493,7 @@ function switchBackToSelection() {
     document.getElementById("course-map-view").classList.remove("active");
     document.getElementById("course-selection-view").classList.add("active");
     
-    // Deshabilitar la visibilidad del panel de información contextual
+    // Ocultar panel lateral
     const detailPanel = document.getElementById("level-detail-panel");
     if (detailPanel) detailPanel.style.display = "none";
 }
@@ -556,67 +506,6 @@ function handleRagItemClick(event, id, type, status) {
     if (type === 'quiz' || type === 'examen' || type === 'desafio_final') {
         window.location.href = `quizzes.html?level=${id}&type=${type}`;
     } else {
-        // Consultar el registro directamente en la base de datos delegando la carga estática
-        supabase.from('resources').select('url').eq('id', id).single()
-            .then(({ data, error }) => {
-                if (error || !data) {
-                    console.error("Error al cargar recurso desde Supabase:", error);
-                    alert(`No se encontró el recurso con ID: ${id} en la base de datos.`);
-                } else if (data.url) {
-                    openResourceModal(data.url);
-                } else {
-                    alert(`El recurso ${id} no tiene una URL válida.`);
-                }
-            })
-            .catch(err => {
-                console.error("Error de red:", err);
-                alert(`Error conectando a la base de datos para abrir el ID: ${id}`);
-            });
+        alert(`Abrir visor de recurso para el ID: ${id} (Próximamente modal integrado)`);
     }
 }
-
-function openResourceModal(url) {
-    let finalUrl = url;
-    // Adaptar URLs de YouTube para poder ser insertadas en iframes
-    if (url.includes("youtube.com/watch?v=")) {
-        const videoId = url.split("v=")[1].split("&")[0];
-        finalUrl = `https://www.youtube.com/embed/${videoId}`;
-    } else if (url.includes("youtu.be/")) {
-        const videoId = url.split("youtu.be/")[1].split("?")[0];
-        finalUrl = `https://www.youtube.com/embed/${videoId}`;
-    }
-
-    let modal = document.getElementById("resource-modal-overlay");
-    if (!modal) {
-        modal = document.createElement("div");
-        modal.id = "resource-modal-overlay";
-        modal.className = "resource-modal-overlay";
-
-        modal.innerHTML = `
-            <div class="resource-modal-content">
-                <div class="resource-modal-header">
-                    <h3>Recurso de Aprendizaje</h3>
-                    <button class="resource-modal-close" onclick="document.getElementById('resource-modal-overlay').style.display='none'; document.getElementById('resource-iframe').src='';">&times;</button>
-                </div>
-                <div class="resource-modal-body">
-                    <iframe id="resource-iframe" class="resource-modal-iframe" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                </div>
-            </div>
-        `;
-        document.body.appendChild(modal);
-
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                modal.style.display = 'none';
-                document.getElementById('resource-iframe').src = '';
-            }
-        });
-    }
-
-    document.getElementById("resource-iframe").src = finalUrl;
-    modal.style.display = "flex";
-}
-
-window.openSpecificCourseMap = openSpecificCourseMap;
-window.switchBackToSelection = switchBackToSelection;
-window.refreshRoadmapUI = buildCourseSelectionGrid;

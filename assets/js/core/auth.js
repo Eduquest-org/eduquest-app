@@ -1,81 +1,84 @@
-import { supabase, signIn, signUp, signOut } from '../config/supabase.js';
-
 let currentRole = 'student';
 
 const Auth = {
     async initDB() {
-        // Nada que hacer aquí, Supabase maneja la DB remota
+        if (!localStorage.getItem("eduquest_db_users")) {
+            try {
+                const response = await fetch("../../mock/users.json");
+                if (response.ok) {
+                    const data = await response.json();
+                    localStorage.setItem("eduquest_db_users", JSON.stringify(data.users));
+                }
+            } catch (error) {
+                console.error("Error loading users.json:", error);
+            }
+        }
+
+        // Migrar usuarios con estructura plana (v1) al nuevo esquema (v2)
+        if (window.UserManager) {
+            UserManager.migrateUsersToNewSchema();
+        }
     },
 
-    async login() {
+    generateMockToken() {
+        return 'eq_tok_' + Math.random().toString(36).substr(2, 9) + Date.now().toString(36);
+    },
+
+    login() {
         const user = document.getElementById('login-user').value.trim().toLowerCase();
         const pass = document.getElementById('login-pass').value.trim();
         const errDiv = document.getElementById('login-error');
 
-        try {
-            const data = await signIn({ email: user, password: pass });
-            
+        const users = UserManager.getAllUsers();
+        const matchedUser = users.find(u => u.email === user && u.password === pass);
+
+        if (matchedUser) {
             if (errDiv) errDiv.style.display = 'none';
 
-            // Obtener el perfil para saber si es estudiante o profesor
-            const { data: profile } = await supabase
-                .from('profiles')
-                .select('role')
-                .eq('id', data.user.id)
-                .single();
+            const issuedAt = Date.now();
+            const expiresAt = issuedAt + (60 * 60 * 1000); 
 
-            const role = profile ? profile.role : 'student';
-            
-            // Limpiar cualquier sesión mock anterior
-            localStorage.removeItem('mock_session');
+            const session = {
+                accessToken: this.generateMockToken(),
+                userId: matchedUser.id,
+                role: matchedUser.role,
+                issuedAt: issuedAt,
+                expiresAt: expiresAt
+            };
 
-            window.location.href = role === 'student' ? '../student/dashboard.html' : '../teacher/dashboard.html';
-        } catch (error) {
-            console.warn("Supabase login failed, trying mock bypass...", error);
+            Storage.saveSession(session);
             
-            // BYPASS PARA DESARROLLO (lo que teníamos hace 30 min)
-            let role = 'student';
-            if (user.includes('profesor') || user.includes('teacher') || user.includes('profe')) {
-                role = 'teacher';
+            window.location.href = matchedUser.role === 'student' ? '../student/dashboard.html' : '../teacher/dashboard.html';
+        } else {
+            if (errDiv) {
+                errDiv.style.display = 'block';
+                errDiv.innerText = "❌ Correo o contraseña incorrectos.";
             }
-            
-            localStorage.setItem('mock_session', JSON.stringify({
-                id: 'test-user-id',
-                role: role,
-                name: user || 'Usuario de Prueba',
-                email: user || 'test@eduquest.com'
-            }));
-            
-            if (errDiv) errDiv.style.display = 'none';
-            window.location.href = role === 'student' ? '../student/dashboard.html' : '../teacher/dashboard.html';
         }
     },
 
-    async logout() {
-        localStorage.removeItem('mock_session');
-        await signOut();
+    logout() {
+        Storage.removeSession();
         window.location.href = '../auth/login.html';
     },
 
-    async checkSession(redirectOnFail = true) {
-        if (localStorage.getItem('mock_session')) {
-            return true;
-        }
-        
-        const { data: { session } } = await supabase.auth.getSession();
+    checkSession(redirectOnFail = true) {
+        const session = Storage.getSession();
         if (!session) {
             if (redirectOnFail) this.logout();
             return false;
         }
+
+        if (Date.now() > session.expiresAt) {
+            if (redirectOnFail) this.logout();
+            return false;
+        }
+
         return true;
     },
 
     getCurrentUser() {
-        const mock = localStorage.getItem('mock_session');
-        if (mock) return JSON.parse(mock);
-        
-        if (window.CurrentUserService) return CurrentUserService.getProfile();
-        return null;
+        return Storage.getSession();
     },
 
     hasRole(role) {
@@ -83,9 +86,8 @@ const Auth = {
         return session && session.role === role;
     },
 
-    async requireAuth() {
-        const hasSession = await this.checkSession(false);
-        if (!hasSession) {
+    requireAuth() {
+        if (!this.checkSession(false)) {
             this.logout();
         }
     },
@@ -101,10 +103,12 @@ const Auth = {
         }
     },
 
-    async register() {
+    register() {
         const nameInput = document.getElementById('reg-name');
         const emailInput = document.getElementById('reg-email');
         const passInput = document.getElementById('reg-password');
+        const birthdateInput = document.getElementById('reg-birthdate');
+        const gradYearInput = document.getElementById('reg-grad-year');
         const termsCheckbox = document.getElementById('reg-terms');
         const termsErrorEl = document.getElementById('reg-terms-error');
 
@@ -119,42 +123,93 @@ const Auth = {
             return;
         }
 
+        // Validar checkbox de términos y condiciones
         if (termsCheckbox && !termsCheckbox.checked) {
             if (termsErrorEl) {
                 termsErrorEl.style.display = 'flex';
                 termsErrorEl.style.animation = 'none';
-                void termsErrorEl.offsetWidth;
+                void termsErrorEl.offsetWidth; // reflow para reiniciar animación
                 termsErrorEl.style.animation = '';
             }
+            // Destacar el label del checkbox
+            const termsLabel = termsCheckbox.closest('label');
+            if (termsLabel) {
+                termsLabel.style.color = '#E24B4A';
+                setTimeout(() => { termsLabel.style.color = ''; }, 3000);
+            }
+            termsCheckbox.focus();
             return;
         }
+        // Ocultar error de términos si ya estaba marcado
         if (termsErrorEl) termsErrorEl.style.display = 'none';
 
-        try {
-            const data = await signUp({ email, password: pass, name, role: currentRole });
+        const users = UserManager.getAllUsers();
 
-            // Supabase maneja la sesión automáticamente
+        if (users.some(u => u.email === email)) {
+            Auth._showRegError('reg-fields-error', '⚠️ Este correo electrónico ya está registrado.');
+            if (emailInput) { emailInput.style.borderColor = '#E24B4A'; emailInput.focus(); setTimeout(() => { emailInput.style.borderColor = ''; }, 3000); }
+            return;
+        }
 
-            nameInput.value = ""; emailInput.value = ""; passInput.value = "";
-
-            if (currentRole === 'student') {
-                window.location.href = '../auth/onboarding.html';
-            } else {
-                window.location.href = '../teacher/dashboard.html';
+        const newUser = {
+            id: "U_" + Math.random().toString(36).substr(2, 9).toUpperCase(),
+            name: name,
+            email: email,
+            password: pass,
+            role: currentRole,
+            profile: {
+                avatar: currentRole === 'student' ? "🚀" : "👨‍🏫"
             }
-        } catch (error) {
-            let errorMsg = error.message;
-            if (errorMsg.includes('security purposes') && errorMsg.includes('seconds')) {
-                const seconds = errorMsg.match(/\d+/) ? errorMsg.match(/\d+/)[0] : 'unos';
-                errorMsg = `Por seguridad, espera ${seconds} segundos antes de intentarlo de nuevo.`;
-            } else if (errorMsg.includes('email rate limit exceeded')) {
-                errorMsg = 'Límite de correos excedido. Intenta con otro correo o espera 1 hora.';
-            } else if (errorMsg.includes('User already registered')) {
-                errorMsg = 'Este correo electrónico ya está registrado.';
-            } else if (errorMsg.includes('Password should be at least')) {
-                errorMsg = 'La contraseña debe tener al menos 6 caracteres.';
-            }
-            Auth._showRegError('reg-fields-error', '⚠️ ' + errorMsg);
+        };
+
+        if (currentRole === 'student') {
+            newUser.profile.birthdate = birthdateInput?.value || null;
+            newUser.profile.gradYear = gradYearInput?.value || null;
+            newUser.profile.target = null; // To be set during onboarding
+            newUser.profile.career = null; // To be set during onboarding
+            newUser.stats = {
+                totalXp: 0,
+                streakDays: 1,
+                rankingPos: "Nuevo Alumno"
+            };
+            newUser.learningProgress = {
+                lastAccessedCourse: null,
+                lastAccessedTopic: null,
+                completedTopics: [],
+                diagnosticResults: [],
+                hardestCourse: null,
+                customRoadmap: []
+            };
+        } else {
+            newUser.classrooms = ["Aula Pro - Sin Asignar"];
+        }
+
+        users.push(newUser);
+        UserManager.saveAllUsers(users);
+
+        // Auto login after registration
+        const issuedAt = Date.now();
+        const expiresAt = issuedAt + (60 * 60 * 1000); 
+
+        const session = {
+            accessToken: this.generateMockToken(),
+            userId: newUser.id,
+            role: newUser.role,
+            issuedAt: issuedAt,
+            expiresAt: expiresAt
+        };
+
+        Storage.saveSession(session);
+
+        nameInput.value = ""; emailInput.value = ""; passInput.value = "";
+        if (birthdateInput) birthdateInput.value = "";
+        if (gradYearInput) gradYearInput.value = "";
+
+        // Redirect to diagnostic exam (onboarding) if student, else to teacher dashboard
+        if (newUser.role === 'student') {
+            window.location.href = '../auth/onboarding.html';
+        } else {
+            window.location.href = '../teacher/dashboard.html';
         }
     },
 
@@ -177,9 +232,11 @@ const Auth = {
     _showRegError(elementId, message) {
         const el = document.getElementById(elementId);
         if (el) {
+            // Si tiene un span hijo para el texto, usarlo; si no, usar el propio elemento
             const textSpan = el.querySelector('span:last-child') || el;
             textSpan.textContent = message;
             el.style.display = 'flex';
+            // Reiniciar animación si la tiene
             el.style.animation = 'none';
             void el.offsetWidth;
             el.style.animation = '';

@@ -1,16 +1,10 @@
-/**
- * @fileoverview Controlador de la vista de perfil de usuario.
- * Gestiona el renderizado de la información personal, estadísticas agregadas,
- * estado de gamificación (insignias) y personalización del avatar de usuario.
- */
+// assets/js/student/profile.js
+// CONTROLADOR DE PANTALLA DE PERFIL Y VITRINA DE LOGROS
 
-document.addEventListener("DOMContentLoaded", async () => {
-    if (window.CurrentUserService) {
-        await CurrentUserService.init();
-    }
+document.addEventListener("DOMContentLoaded", () => {
     loadProfileData();
 
-    // Retirar componente de pre-carga de la vista
+    // Auto-ocultar preloader
     setTimeout(() => {
         const preloader = document.getElementById("app-preloader");
         if (preloader) {
@@ -19,7 +13,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     }, 350);
 
-    // Ocultar menú contextual de avatar al perder el foco
+    // Cerrar dropdown de avatar si se hace click en otro lado
     document.addEventListener("click", (e) => {
         const btn = document.getElementById("profile-avatar-btn");
         const dropdown = document.getElementById("avatar-dropdown");
@@ -30,37 +24,40 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 function loadProfileData() {
-    const user = window.CurrentUserService ? CurrentUserService.getProfile() : null;
+    const session = Storage.getSession();
+    if (!session) return;
+
+    const user = UserManager.getUserById(session.userId);
     if (!user) return;
 
-    // Poblar atributos primarios del encabezado de perfil
-    document.getElementById("profile-current-avatar").innerText = CurrentUserService.getAvatar();
-    document.getElementById("profile-full-name").innerText = CurrentUserService.getName();
-    document.getElementById("profile-email").innerText = CurrentUserService.getEmail();
+    // 1. Rellenar Información del Encabezado
+    document.getElementById("profile-current-avatar").innerText = user.profile?.avatar || "🚀";
+    document.getElementById("profile-full-name").innerText = user.name || "Estudiante";
+    document.getElementById("profile-email").innerText = user.email || "";
     
-    const targetUni = CurrentUserService.getStat('target') || "UNI";
+    const targetUni = user.profile?.target || "UNI";
     document.getElementById("profile-uni-target").innerText = `Meta: ${targetUni}`;
-    document.getElementById("profile-career").innerText = CurrentUserService.getStat('career') || "Por elegir";
+    document.getElementById("profile-career").innerText = user.profile?.career || "Por elegir";
 
-    // Inyectar indicadores estadísticos de alto nivel
-    const xp = CurrentUserService.getStat('totalXp') || 0;
-    const streak = CurrentUserService.getStat('streakDays') || 0;
+    // 2. Rellenar Estadísticas Rápidas
+    const xp = user.stats?.totalXp || 0;
+    const streak = user.stats?.streakDays || 0;
     document.getElementById("profile-xp-value").innerText = Number(xp).toLocaleString() + " XP";
     document.getElementById("profile-streak-value").innerText = `🔥 ${streak}`;
 
-    // Poblar panel detallado de métricas
+    // 3. Rellenar Panel de Estadísticas del Cuerpo
     document.getElementById("stats-total-xp").innerText = Number(xp).toLocaleString();
     document.getElementById("stats-streak-days").innerText = `${streak} ${streak === 1 ? 'día' : 'días'}`;
     
-    // Extraer conteo de evaluaciones resueltas desde almacenamiento temporal
-    const completedQuizzesCount = parseInt(localStorage.getItem('completedTopicsCount') || '0', 10);
+    // Contar simulacros resueltos basados en completedTopics
+    const completedQuizzesCount = user.learningProgress?.completedTopics?.length || 0;
     document.getElementById("stats-completed-quizzes").innerText = completedQuizzesCount;
 
-    // Extraer métrica de retos diarios completados
-    const completedChallengesCount = parseInt(localStorage.getItem('completedChallengesCount') || '0', 10);
+    // Retos Diarios Cumplidos
+    const completedChallengesCount = user.stats?.completedChallengesCount || 0;
     document.getElementById("stats-completed-challenges").innerText = completedChallengesCount;
 
-    // Inicializar renderizado de catálogo de insignias
+    // 4. Renderizar Rejilla de Insignias (Vitrina)
     renderBadgesShowcase(user);
 }
 
@@ -70,10 +67,10 @@ function renderBadgesShowcase(user) {
 
     container.innerHTML = "";
     
-    const unlockedBadges = user.badges || [];
+    const unlockedBadges = user.profile?.badges || [];
     let unlockedCount = 0;
 
-    // Recuperar registro global de insignias disponibles
+    // AVAILABLE_BADGES viene declarado globalmente en gamification.js
     const badgesList = window.AVAILABLE_BADGES || [];
 
     badgesList.forEach(badge => {
@@ -93,38 +90,35 @@ function renderBadgesShowcase(user) {
         container.appendChild(badgeCard);
     });
 
-    // Actualizar relación cuantitativa de logros desbloqueados
+    // Actualizar indicador de fracción desbloqueada
     document.getElementById("badges-unlocked-ratio").innerText = `${unlockedCount} / ${badgesList.length} Desbloqueadas`;
 }
 
-/** Conmutar estado de visibilidad del menú de selección de avatar */
+// Activar o desactivar menú de selección de avatar
 function toggleAvatarDropdown() {
     const dropdown = document.getElementById("avatar-dropdown");
     if (dropdown) dropdown.classList.toggle("active");
 }
 
-/** Procesar selección de avatar, persistir y actualizar interfaces */
+// Cambiar el avatar del usuario interactivo y guardarlo
 function changeUserAvatar(emoji) {
-    const user = window.CurrentUserService ? CurrentUserService.getProfile() : null;
-    if (!user) return;
+    const session = Storage.getSession();
+    if (!session) return;
 
-    // Persistir atributo de avatar en base de datos
-    user.avatar_url = emoji;
-    if (window.UserManager) {
-        UserManager.updateProfile(user.id, { avatar_url: emoji });
-    }
+    // Actualizar base de datos local
+    UserManager.updateProfile(session.userId, { avatar: emoji });
 
-    // Refrescar componente visual del perfil
+    // Actualizar interfaz del perfil
     document.getElementById("profile-current-avatar").innerText = emoji;
 
-    // Ocultar menú contextual
+    // Ocultar dropdown
     const dropdown = document.getElementById("avatar-dropdown");
     if (dropdown) dropdown.classList.remove("active");
 
-    // Disparar sincronización global de propiedades de usuario
+    // Sincronizar stats en todo el sistema (incluido Topbar)
     if (window.UserBindingManager) UserBindingManager.bindAll();
 }
 
-// Exponer métodos de control de interfaz al contexto global
+// Registrar funciones globales
 window.toggleAvatarDropdown = toggleAvatarDropdown;
 window.changeUserAvatar = changeUserAvatar;
