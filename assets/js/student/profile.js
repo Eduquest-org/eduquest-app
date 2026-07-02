@@ -128,3 +128,85 @@ function changeUserAvatar(emoji) {
 // Exponer métodos de control de interfaz al contexto global
 window.toggleAvatarDropdown = toggleAvatarDropdown;
 window.changeUserAvatar = changeUserAvatar;
+
+/* ====================================================================
+   FUNCIONALIDADES DE EDICIÓN DE PERFIL
+   ==================================================================== */
+function openEditProfileModal() {
+    const modal = document.getElementById("edit-profile-modal");
+    if (!modal) return;
+
+    // Poblar campos con los datos actuales
+    const currentName = CurrentUserService.getName();
+    const currentTarget = CurrentUserService.getStat('target') || "UNI";
+    const currentCareer = CurrentUserService.getStat('career') || "Ingeniería de Sistemas";
+
+    document.getElementById("edit-name").value = currentName;
+    document.getElementById("edit-target").value = currentTarget;
+    document.getElementById("edit-career").value = currentCareer;
+
+    modal.style.display = "flex";
+}
+
+function closeEditProfileModal() {
+    const modal = document.getElementById("edit-profile-modal");
+    if (modal) modal.style.display = "none";
+}
+
+async function saveUserProfile(event) {
+    event.preventDefault();
+    const user = window.CurrentUserService ? CurrentUserService.getProfile() : null;
+    if (!user) return;
+
+    const newName = document.getElementById("edit-name").value.trim();
+    const newTarget = document.getElementById("edit-target").value;
+    const newCareer = document.getElementById("edit-career").value;
+
+    if (!newName) {
+        if (window.app?.showToast) window.app.showToast("⚠️ El nombre no puede estar vacío", "error");
+        return;
+    }
+
+    // Mostrar loader de carga interactivo
+    GlobalLoader.show();
+
+    try {
+        // Estructura de actualización que coincide con profiles schema
+        const updates = {
+            name: newName,
+            target_university_id: newTarget,
+            career: newCareer
+        };
+
+        if (window.UserManager) {
+            await UserManager.updateProfile(user.id, updates);
+        }
+
+        // Actualizar caché local
+        user.name = newName;
+        user.target_university_id = newTarget;
+        user.career = newCareer;
+
+        // Recargar datos en la UI
+        loadProfileData();
+
+        // Disparar sincronización global de propiedades de usuario (topbar, etc.)
+        if (window.UserBindingManager) UserBindingManager.bindAll();
+
+        closeEditProfileModal();
+
+        if (window.app?.showToast) {
+            window.app.showToast("✨ ¡Perfil actualizado con éxito!", "success");
+        }
+    } catch (err) {
+        console.error("Error al actualizar perfil:", err);
+        if (window.app?.showToast) window.app.showToast("❌ Error al guardar los cambios", "error");
+    } finally {
+        GlobalLoader.hide();
+    }
+}
+
+window.openEditProfileModal = openEditProfileModal;
+window.closeEditProfileModal = closeEditProfileModal;
+window.saveUserProfile = saveUserProfile;
+

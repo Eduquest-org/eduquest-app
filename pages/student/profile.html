@@ -30,48 +30,56 @@
 
     <main class="dashboard-content profile-main-layout">
       
-      <!-- CABECERA DE PERFIL PERSONALIZADA -->
-      <div class="profile-header-banner">
-        <div class="profile-avatar-wrapper">
-          <div class="profile-avatar-display" id="profile-avatar-btn" onclick="toggleAvatarDropdown()">
-            <span id="profile-current-avatar">🚀</span>
-            <div class="avatar-edit-overlay">Editar</div>
+      <!-- CONTENEDOR DE PERFIL CON PORTADA -->
+      <div class="profile-card-container">
+        <div class="profile-cover-photo"></div>
+        
+        <div class="profile-header-banner">
+          <div class="profile-avatar-wrapper">
+            <div class="profile-avatar-display" id="profile-avatar-btn" onclick="toggleAvatarDropdown()">
+              <span id="profile-current-avatar">🚀</span>
+              <div class="avatar-edit-overlay">Editar</div>
+            </div>
+            
+            <!-- Selector de Emojis desplegable -->
+            <div class="avatar-selection-dropdown" id="avatar-dropdown">
+              <span onclick="changeUserAvatar('🚀')">🚀</span>
+              <span onclick="changeUserAvatar('🧠')">🧠</span>
+              <span onclick="changeUserAvatar('🎓')">🎓</span>
+              <span onclick="changeUserAvatar('🌟')">🌟</span>
+              <span onclick="changeUserAvatar('🦁')">🦁</span>
+              <span onclick="changeUserAvatar('🦉')">🦉</span>
+              <span onclick="changeUserAvatar('🦖')">🦖</span>
+              <span onclick="changeUserAvatar('🔥')">🔥</span>
+              <span onclick="changeUserAvatar('⚡')">⚡</span>
+              <span onclick="changeUserAvatar('🎨')">🎨</span>
+              <span onclick="changeUserAvatar('🏆')">🏆</span>
+              <span onclick="changeUserAvatar('🧪')">🧪</span>
+            </div>
           </div>
-          
-          <!-- Selector de Emojis desplegable -->
-          <div class="avatar-selection-dropdown" id="avatar-dropdown">
-            <span onclick="changeUserAvatar('🚀')">🚀</span>
-            <span onclick="changeUserAvatar('🧠')">🧠</span>
-            <span onclick="changeUserAvatar('🎓')">🎓</span>
-            <span onclick="changeUserAvatar('🌟')">🌟</span>
-            <span onclick="changeUserAvatar('🦁')">🦁</span>
-            <span onclick="changeUserAvatar('🦉')">🦉</span>
-            <span onclick="changeUserAvatar('🦖')">🦖</span>
-            <span onclick="changeUserAvatar('🔥')">🔥</span>
-            <span onclick="changeUserAvatar('⚡')">⚡</span>
-            <span onclick="changeUserAvatar('🎨')">🎨</span>
-            <span onclick="changeUserAvatar('🏆')">🏆</span>
-            <span onclick="changeUserAvatar('🧪')">🧪</span>
-          </div>
-        </div>
 
-        <div class="profile-details-column">
-          <h2 id="profile-full-name">Cargando Nombre...</h2>
-          <p class="profile-meta-subtitle" id="profile-email">email@eduquest.pe</p>
-          <div class="profile-badges-row">
-            <span class="target-tag-badge" id="profile-uni-target">Meta: UNI</span>
-            <span class="career-tag-badge" id="profile-career">Ingeniería</span>
+          <div class="profile-details-column">
+            <h2 id="profile-full-name">Cargando Nombre...</h2>
+            <p class="profile-meta-subtitle" id="profile-email">email@eduquest.pe</p>
+            <div class="profile-badges-row">
+              <span class="target-tag-badge" id="profile-uni-target">Meta: UNI</span>
+              <span class="career-tag-badge" id="profile-career">Ingeniería</span>
+            </div>
           </div>
-        </div>
 
-        <div class="profile-quick-stats">
-          <div class="quick-stat-pill">
-            <span class="pill-number" id="profile-xp-value" style="color: var(--green);">0</span>
-            <span class="pill-label">XP Acumulado</span>
+          <div class="profile-actions-wrapper">
+            <button class="btn green sm" onclick="openEditProfileModal()">✏️ Editar Perfil</button>
           </div>
-          <div class="quick-stat-pill">
-            <span class="pill-number" id="profile-streak-value" style="color: var(--amber);">🔥 0</span>
-            <span class="pill-label">Racha Activa</span>
+
+          <div class="profile-quick-stats">
+            <div class="quick-stat-pill">
+              <span class="pill-number" id="profile-xp-value" style="color: var(--green);">0</span>
+              <span class="pill-label">XP Acumulado</span>
+            </div>
+            <div class="quick-stat-pill">
+              <span class="pill-number" id="profile-streak-value" style="color: var(--amber);">🔥 0</span>
+              <span class="pill-label">Racha Activa</span>
+            </div>
           </div>
         </div>
       </div>
@@ -79,56 +87,177 @@
       <!-- ESTADÍSTICAS Y VITRINA DE INSIGNIAS -->
       <div class="profile-body-grid">
         
-        <!-- COLUMNA IZQUIERDA: METRICAS ACADÉMICAS -->
-        <div class="profile-stats-panel">
-          <h3>📊 Estadísticas de Aprendizaje</h3>
-          <div class="stats-cards-grid">
-            <div class="stat-metric-card">
-              <div class="stat-metric-icon">🏆</div>
-              <div class="stat-metric-info">
-                <span class="stat-val" id="stats-total-xp">1,150</span>
-                <span class="stat-lbl">XP Totales</span>
+        <!-- COLUMNA IZQUIERDA: METRICAS ACADÉMICAS Y ACTIVIDAD RECIENTE -->
+        <div class="profile-left-column">
+          
+          <!-- Estadísticas de Aprendizaje -->
+          <div class="profile-stats-panel mb24">
+            <h3>📊 Estadísticas de Aprendizaje</h3>
+            <div class="stats-cards-grid">
+              <div class="stat-metric-card">
+                <div class="stat-metric-icon">🏆</div>
+                <div class="stat-metric-info">
+                  <span class="stat-val" id="stats-total-xp">1,150</span>
+                  <span class="stat-lbl">XP Totales</span>
+                </div>
+              </div>
+              <div class="stat-metric-card">
+                <div class="stat-metric-icon">🔥</div>
+                <div class="stat-metric-info">
+                  <span class="stat-val" id="stats-streak-days">3 días</span>
+                  <span class="stat-lbl">Racha Actual</span>
+                </div>
+              </div>
+              <div class="stat-metric-card">
+                <div class="stat-metric-icon">📝</div>
+                <div class="stat-metric-info">
+                  <span class="stat-val" id="stats-completed-quizzes">0</span>
+                  <span class="stat-lbl">Simulacros Resueltos</span>
+                </div>
+              </div>
+              <div class="stat-metric-card">
+                <div class="stat-metric-icon">🎯</div>
+                <div class="stat-metric-info">
+                  <span class="stat-val" id="stats-completed-challenges">0</span>
+                  <span class="stat-lbl">Retos Diarios Cumplidos</span>
+                </div>
               </div>
             </div>
-            <div class="stat-metric-card">
-              <div class="stat-metric-icon">🔥</div>
-              <div class="stat-metric-info">
-                <span class="stat-val" id="stats-streak-days">3 días</span>
-                <span class="stat-lbl">Racha Actual</span>
+          </div>
+
+          <!-- Actividad Reciente -->
+          <div class="profile-activity-panel">
+            <h3>🕒 Actividad Reciente</h3>
+            <div class="activity-timeline" id="profile-activity-list">
+              <div class="activity-item">
+                <div class="activity-icon green">✓</div>
+                <div class="activity-detail">
+                  <p class="activity-text">Completó simulacro de <strong>Álgebra</strong></p>
+                  <span class="activity-time">Hace 2 horas</span>
+                </div>
               </div>
-            </div>
-            <div class="stat-metric-card">
-              <div class="stat-metric-icon">📝</div>
-              <div class="stat-metric-info">
-                <span class="stat-val" id="stats-completed-quizzes">0</span>
-                <span class="stat-lbl">Simulacros Resueltos</span>
+              <div class="activity-item">
+                <div class="activity-icon indigo">💬</div>
+                <div class="activity-detail">
+                  <p class="activity-text">Publicó una duda en el foro: <em>"¿Cómo se resuelve..."</em></p>
+                  <span class="activity-time">Ayer</span>
+                </div>
               </div>
-            </div>
-            <div class="stat-metric-card">
-              <div class="stat-metric-icon">🎯</div>
-              <div class="stat-metric-info">
-                <span class="stat-val" id="stats-completed-challenges">0</span>
-                <span class="stat-lbl">Retos Diarios Cumplidos</span>
+              <div class="activity-item">
+                <div class="activity-icon amber">🔥</div>
+                <div class="activity-detail">
+                  <p class="activity-text">Inició una racha de estudio de 3 días</p>
+                  <span class="activity-time">Hace 3 días</span>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- COLUMNA DERECHA: VITRINA DE LOGROS (INSIGNIAS) -->
-        <div class="profile-badges-panel">
-          <div class="panel-header-badges">
-            <h3>🏅 Mis Insignias Digitales</h3>
-            <span id="badges-unlocked-ratio">0 / 6 Desbloqueadas</span>
+        <!-- COLUMNA DERECHA: VITRINA DE LOGROS (INSIGNIAS) Y GRÁFICO SEMANAL -->
+        <div class="profile-right-column">
+          
+          <!-- Progreso de Estudio Semanal -->
+          <div class="profile-weekly-progress card mb24">
+            <h3>📅 Tu Progreso Semanal</h3>
+            <p class="weekly-sub">Sigue tu ritmo diario de estudio y XP ganados</p>
+            <div class="weekly-chart-bars">
+              <div class="weekly-bar-col">
+                <div class="weekly-bar-fill" style="height: 40%"></div>
+                <span class="weekly-day">Lun</span>
+              </div>
+              <div class="weekly-bar-col">
+                <div class="weekly-bar-fill" style="height: 75%"></div>
+                <span class="weekly-day">Mar</span>
+              </div>
+              <div class="weekly-bar-col">
+                <div class="weekly-bar-fill" style="height: 90%"></div>
+                <span class="weekly-day">Mié</span>
+              </div>
+              <div class="weekly-bar-col">
+                <div class="weekly-bar-fill active" style="height: 60%"></div>
+                <span class="weekly-day active">Jue</span>
+              </div>
+              <div class="weekly-bar-col">
+                <div class="weekly-bar-fill" style="height: 0%"></div>
+                <span class="weekly-day">Vie</span>
+              </div>
+              <div class="weekly-bar-col">
+                <div class="weekly-bar-fill" style="height: 0%"></div>
+                <span class="weekly-day">Sáb</span>
+              </div>
+              <div class="weekly-bar-col">
+                <div class="weekly-bar-fill" style="height: 0%"></div>
+                <span class="weekly-day">Dom</span>
+              </div>
+            </div>
+            <div class="weekly-footer-stats">
+              <span>🎯 Meta diaria: <strong>500 XP</strong></span>
+              <span>⚡ Hoy ganaste: <strong>320 XP</strong></span>
+            </div>
           </div>
 
-          <div class="badges-showcase-grid" id="badges-gallery-container">
-            <!-- Insignias generadas dinámicamente por JS -->
+          <!-- Mis Insignias -->
+          <div class="profile-badges-panel">
+            <div class="panel-header-badges">
+              <h3>🏅 Mis Insignias Digitales</h3>
+              <span id="badges-unlocked-ratio">0 / 6 Desbloqueadas</span>
+            </div>
+
+            <div class="badges-showcase-grid" id="badges-gallery-container">
+              <!-- Insignias generadas dinámicamente por JS -->
+            </div>
           </div>
         </div>
 
       </div>
 
+      <!-- MODAL DE EDICIÓN DE PERFIL -->
+      <div class="game-modal-overlay" id="edit-profile-modal" style="display: none;">
+        <div class="game-modal-card" style="text-align: left; width: 480px;">
+          <span class="game-modal-close" onclick="closeEditProfileModal()">✕</span>
+          <h2 class="game-modal-title" style="margin-bottom: 20px;">✏️ Editar Perfil</h2>
+          
+          <form id="edit-profile-form" onsubmit="saveUserProfile(event)">
+            <div class="form-group mb16">
+              <label class="form-label" style="font-weight: 600; margin-bottom: 6px; display: block; font-size: 13.5px; color: var(--text);">Nombre Completo</label>
+              <input type="text" id="edit-name" class="form-input" required style="width: 100%; padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border);" placeholder="Tu nombre...">
+            </div>
+
+            <div class="form-group mb16">
+              <label class="form-label" style="font-weight: 600; margin-bottom: 6px; display: block; font-size: 13.5px; color: var(--text);">Universidad Objetivo</label>
+              <select id="edit-target" class="form-input" style="width: 100%; padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border);">
+                <option value="UNI">UNI (Universidad Nacional de Ingeniería)</option>
+                <option value="UNMSM">UNMSM (Universidad Nacional Mayor de San Marcos)</option>
+                <option value="PUCP">PUCP (Pontificia Universidad Católica del Perú)</option>
+                <option value="UNSA">UNSA (Universidad Nacional de San Agustín)</option>
+                <option value="UNFV">UNFV (Universidad Nacional Federico Villarreal)</option>
+              </select>
+            </div>
+
+            <div class="form-group mb24">
+              <label class="form-label" style="font-weight: 600; margin-bottom: 6px; display: block; font-size: 13.5px; color: var(--text);">Carrera Profesional</label>
+              <select id="edit-career" class="form-input" style="width: 100%; padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border);">
+                <option value="Ingeniería de Sistemas">Ingeniería de Sistemas</option>
+                <option value="Ingeniería Civil">Ingeniería Civil</option>
+                <option value="Ingeniería Industrial">Ingeniería Industrial</option>
+                <option value="Medicina Humana">Medicina Humana</option>
+                <option value="Derecho">Derecho</option>
+                <option value="Administración de Empresas">Administración de Empresas</option>
+                <option value="Ciencia de la Computación">Ciencia de la Computación</option>
+              </select>
+            </div>
+
+            <div style="display: flex; gap: 12px; justify-content: flex-end;">
+              <button type="button" class="btn outline" onclick="closeEditProfileModal()" style="border-radius: 8px;">Cancelar</button>
+              <button type="submit" class="btn green" style="border-radius: 8px;">Guardar Cambios</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
     </main>
+
 
   </div>
 

@@ -595,3 +595,143 @@
     justify-content: center;
     gap: 16px;
 }
+
+/* =========================================================
+   ESTILOS RESPONSIVOS PARA MOCK EXAMS / QUIZZES
+   ========================================================= */
+@media (max-width: 768px) {
+    .quizzes-welcome-card {
+        padding: 24px;
+        gap: 20px;
+    }
+    
+    .quizzes-welcome-card h2 {
+        font-size: 22px;
+    }
+
+    .quizzes-filter-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+        margin-top: 8px;
+    }
+
+    .filters-container {
+        width: 100%;
+        display: flex;
+        overflow-x: auto;
+        padding-bottom: 8px;
+        flex-wrap: nowrap;
+        -webkit-overflow-scrolling: touch;
+        gap: 8px;
+        scrollbar-width: none;
+    }
+
+    .filters-container::-webkit-scrollbar {
+        display: none;
+    }
+
+    .filter-chip {
+        padding: 6px 12px;
+        font-size: 12px;
+        flex-shrink: 0;
+    }
+
+    .courses-quizzes-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .course-quiz-card {
+        padding: 16px;
+    }
+
+    /* Quiz Runner */
+    .quiz-runner-container {
+        border-radius: 12px;
+    }
+
+    .quiz-runner-header {
+        padding: 16px;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .quiz-header-center {
+        order: 1;
+        width: 100%;
+        text-align: left;
+    }
+
+    .quiz-progress-text {
+        font-size: 12px;
+    }
+
+    .quiz-question-card {
+        padding: 20px 16px 16px !important;
+    }
+
+    .quiz-question-statement {
+        font-size: 15.5px;
+        margin-bottom: 18px;
+    }
+
+    .quiz-option-card {
+        padding: 12px 14px;
+        font-size: 13px;
+        gap: 10px;
+    }
+
+    .option-badge-letter {
+        width: 22px;
+        height: 22px;
+        font-size: 11px;
+    }
+
+    .quiz-runner-footer {
+        padding: 16px;
+        justify-content: space-between;
+    }
+
+    .quiz-runner-footer .btn {
+        flex: 1;
+        font-size: 12px;
+        padding: 10px;
+        text-align: center;
+    }
+
+    /* Pantalla de Resultados */
+    .results-card {
+        padding: 32px 20px !important;
+        margin: 20px 0;
+    }
+
+    .results-card h2 {
+        font-size: 24px;
+    }
+
+    .results-metrics-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .metric-box {
+        padding: 14px;
+        flex-direction: row;
+        justify-content: space-between;
+    }
+
+    .metric-value {
+        font-size: 20px;
+    }
+
+    .results-action-row {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .results-action-row .btn {
+        width: 100%;
+    }
+}
+

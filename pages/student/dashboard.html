@@ -114,6 +114,76 @@
           </div>
         </div>
 
+        <!-- === FILTROS DEL FORO COMUNITARIO === -->
+        <div class="feed-filters-panel" id="feed-filters-panel">
+          <div class="feed-filters-top">
+            <div class="feed-filter-search">
+              <span class="filter-search-icon">🔍</span>
+              <input type="text" id="feed-search-input" class="feed-search-input"
+                placeholder="Buscar por tema (ej: integrales, vectores...)" oninput="debounceFeedFilter()">
+            </div>
+            <button class="feed-filters-toggle-btn" id="feed-filters-toggle" onclick="toggleFeedFiltersExpanded()">
+              <span>⚙️ Filtros</span>
+              <span class="filters-active-count" id="filters-active-count" style="display:none"></span>
+            </button>
+          </div>
+
+          <!-- Filtros expandibles -->
+          <div class="feed-filters-expanded" id="feed-filters-expanded">
+            <div class="feed-filter-group">
+              <span class="feed-filter-group-label">📚 Curso</span>
+              <div class="feed-filter-chips" id="filter-chips-course">
+                <button class="feed-filter-chip active" data-filter="course" data-val="todos"
+                  onclick="setFeedFilter('course', 'todos', this)">Todos</button>
+                <button class="feed-filter-chip" data-filter="course" data-val="Matemáticas"
+                  onclick="setFeedFilter('course', 'Matemáticas', this)">📐 Matemáticas</button>
+                <button class="feed-filter-chip" data-filter="course" data-val="Física"
+                  onclick="setFeedFilter('course', 'Física', this)">⚡ Física</button>
+                <button class="feed-filter-chip" data-filter="course" data-val="Álgebra"
+                  onclick="setFeedFilter('course', 'Álgebra', this)">🔢 Álgebra</button>
+                <button class="feed-filter-chip" data-filter="course" data-val="Geometría"
+                  onclick="setFeedFilter('course', 'Geometría', this)">📏 Geometría</button>
+                <button class="feed-filter-chip" data-filter="course" data-val="Comprensión Lectora"
+                  onclick="setFeedFilter('course', 'Comprensión Lectora', this)">📖 Comprensión</button>
+                <button class="feed-filter-chip" data-filter="course" data-val="Química"
+                  onclick="setFeedFilter('course', 'Química', this)">🧪 Química</button>
+                <button class="feed-filter-chip" data-filter="course" data-val="Biología"
+                  onclick="setFeedFilter('course', 'Biología', this)">🧬 Biología</button>
+              </div>
+            </div>
+
+            <div class="feed-filter-group">
+              <span class="feed-filter-group-label">🏷️ Tipo de publicación</span>
+              <div class="feed-filter-chips" id="filter-chips-type">
+                <button class="feed-filter-chip active" data-filter="type" data-val="todos"
+                  onclick="setFeedFilter('type', 'todos', this)">Todos</button>
+                <button class="feed-filter-chip" data-filter="type" data-val="Duda"
+                  onclick="setFeedFilter('type', 'Duda', this)">❓ Duda</button>
+                <button class="feed-filter-chip" data-filter="type" data-val="Ejercicio"
+                  onclick="setFeedFilter('type', 'Ejercicio', this)">✏️ Ejercicio</button>
+                <button class="feed-filter-chip" data-filter="type" data-val="Recomendación"
+                  onclick="setFeedFilter('type', 'Recomendación', this)">💡 Recomendación</button>
+                <button class="feed-filter-chip" data-filter="type" data-val="Recurso"
+                  onclick="setFeedFilter('type', 'Recurso', this)">📎 Recurso</button>
+              </div>
+            </div>
+
+            <div class="feed-filter-group">
+              <span class="feed-filter-group-label">👤 Tipo de autor</span>
+              <div class="feed-filter-chips" id="filter-chips-author">
+                <button class="feed-filter-chip active" data-filter="author" data-val="todos"
+                  onclick="setFeedFilter('author', 'todos', this)">Todos</button>
+                <button class="feed-filter-chip" data-filter="author" data-val="estudiante"
+                  onclick="setFeedFilter('author', 'estudiante', this)">🎓 Estudiante</button>
+                <button class="feed-filter-chip" data-filter="author" data-val="profesor"
+                  onclick="setFeedFilter('author', 'profesor', this)">👩‍🏫 Profesor</button>
+              </div>
+            </div>
+
+            <button class="feed-filters-reset-btn" onclick="resetFeedFilters()">✕ Limpiar filtros</button>
+          </div>
+        </div>
+
         <div id="feed-container"></div>
       </div>
 
@@ -166,7 +236,8 @@
           </div>
           <div id="dashboard-rendimiento-chart"
             style="position: relative; width: 200px; height: 200px; margin: 0 auto 28px; border-radius: 50%; background: conic-gradient(#cbd5e1 0deg 360deg); display: flex; align-items: center; justify-content: center; transition: background 0.5s ease;">
-            <div style="width: 110px; height: 110px; background: #ffffff; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+            <div
+              style="width: 110px; height: 110px; background: #ffffff; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
               <span id="dashboard-chart-pct" style="font-size: 24px; font-weight: 800; color: #111827;">-</span>
               <span style="font-size: 11px; color: #6b7280; font-weight: 600;">Promedio</span>
             </div>

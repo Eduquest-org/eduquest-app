@@ -10,9 +10,19 @@ let _selectedImageData = null; // base64 de la imagen seleccionada
 let _selectedImageMime = null; // mime type
 let _selectedTag = null; // etiqueta seleccionada por el usuario
 let _allPosts = [];   // caché de todos los posts (para búsqueda de similares)
+let _cachedPosts = []; // caché de posts mapeados para filtrado
 let _allComments = [];   // caché de todos los comentarios
 let _similarSearchTimer = null; // debounce para búsqueda de similares
 let _currentUserId = null; // id del usuario en sesión
+let _feedFilterDebounce = null; // debounce para filtro de texto
+
+// Filtros activos del foro
+let _activeFilters = {
+    course: 'todos',
+    type: 'todos',
+    author: 'todos',
+    search: ''
+};
 
 // Formatos de imagen válidos
 const VALID_IMAGE_TYPES = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/webp'];
@@ -43,15 +53,12 @@ async function loadFeedPosts() {
     if (!container) return;
 
     try {
-        // Obtenemos los posts desde nuestra nueva función RPC
         const { data: enrichedPosts, error } = await supabase.rpc('get_forum_feed', { limit_val: 50, offset_val: 0 });
         
         if (error) {
             console.error("Error cargando feed desde Supabase:", error);
             return;
         }
-
-        container.innerHTML = '';
 
         // Guardar userId del usuario en sesión ANTES de renderizar
         const user = window.CurrentUserService ? CurrentUserService.getProfile() : null;
@@ -62,25 +69,25 @@ async function loadFeedPosts() {
             return;
         }
 
-        // Renderizar usando los datos de Supabase y renderPostCard
-        enrichedPosts.forEach(post => {
-            // Mapeamos de Supabase snake_case a camelCase para renderPostCard
-            const mappedPost = {
-                id: post.id,
-                authorId: post.author_id,
-                authorAvatar: post.author_avatar,
-                authorName: post.author_name,
-                authorTarget: post.author_target,
-                tag: post.tag,
-                content: post.content,
-                imageUrl: post.image_url,
-                upvotes: post.upvotes,
-                timeText: post.created_at ? formatTime(post.created_at) : 'Reciente',
-                commentsCount: parseInt(post.comments_count) || 0,
-                isLikedByMe: post.is_liked_by_me || false
-            };
-            renderPostCard(mappedPost, container);
-        });
+        // Mapear y guardar en caché para filtros
+        _cachedPosts = enrichedPosts.map(post => ({
+            id: post.id,
+            authorId: post.author_id,
+            authorAvatar: post.author_avatar,
+            authorName: post.author_name,
+            authorTarget: post.author_target,
+            authorRole: post.author_role || 'student', // 'student' | 'teacher'
+            tag: post.tag,
+            content: post.content,
+            imageUrl: post.image_url,
+            upvotes: post.upvotes,
+            timeText: post.created_at ? formatTime(post.created_at) : 'Reciente',
+            commentsCount: parseInt(post.comments_count) || 0,
+            isLikedByMe: post.is_liked_by_me || false
+        }));
+
+        // Renderizar con filtros actuales
+        renderFilteredPosts();
 
     } catch (error) {
         console.error('Error cargando el feed:', error);
@@ -204,9 +211,12 @@ async function renderComments(postId, pinnedId) {
             commentEl.className = `comment-item${isPinned ? ' pinned-comment' : ''}`;
             commentEl.id = `comment-item-${comment.id}`;
 
-            // Acciones: fijar y eliminar
+                    // Acciones: fijar y eliminar
+            // ✔ FIX: Solo el autor del POST puede fijar respuestas en sus publicaciones
             const isCommentAuthor = _currentUserId && comment.author_id === _currentUserId;
-            const canPin = _currentUserId != null;
+            const isPostAuthor = _currentUserId && _cachedPosts.some(p => p.id === postId && p.authorId === _currentUserId);
+            const canPin = isPostAuthor; // Solo el dueño del post puede fijar
+            const canDeleteComment = isCommentAuthor; // Solo el autor del comentario puede borrarlo
 
             let actionsHtml = '';
             const actionButtons = [];
@@ -812,3 +822,158 @@ window.scrollToPost = scrollToPost;
 window.openImageLightbox = openImageLightbox;
 window.closeImageLightbox = closeImageLightbox;
 window.autoResizeTextarea = autoResizeTextarea;
+
+/* ========================================================
+   FILTROS DEL FORO COMUNITARIO
+   ======================================================== */
+
+/**
+ * Renderiza solo los posts que coinciden con los filtros activos.
+ */
+function renderFilteredPosts() {
+    const container = document.getElementById('feed-container');
+    if (!container) return;
+
+    container.innerHTML = '';
+
+    const { course, type, author, search } = _activeFilters;
+    const searchLower = search.toLowerCase().trim();
+
+    const filtered = _cachedPosts.filter(post => {
+        // Filtro por curso (tag)
+        if (course !== 'todos') {
+            const tagLower = (post.tag || '').toLowerCase();
+            if (!tagLower.includes(course.toLowerCase())) return false;
+        }
+
+        // Filtro por tipo de publicación
+        if (type !== 'todos') {
+            const tagLower = (post.tag || '').toLowerCase();
+            if (!tagLower.includes(type.toLowerCase())) return false;
+        }
+
+        // Filtro por tipo de autor
+        if (author !== 'todos') {
+            const role = post.authorRole || 'student';
+            if (author === 'profesor' && role !== 'teacher') return false;
+            if (author === 'estudiante' && role === 'teacher') return false;
+        }
+
+        // Búsqueda de texto libre (contenido + tag)
+        if (searchLower) {
+            const contentLower = (post.content || '').toLowerCase();
+            const tagLower = (post.tag || '').toLowerCase();
+            const nameLower = (post.authorName || '').toLowerCase();
+            if (!contentLower.includes(searchLower) && !tagLower.includes(searchLower) && !nameLower.includes(searchLower)) {
+                return false;
+            }
+        }
+
+        return true;
+    });
+
+    if (filtered.length === 0) {
+        container.innerHTML = `
+            <div style="text-align:center; padding:48px 24px; color:var(--sub);">
+                <div style="font-size:40px; margin-bottom:12px;">🔍</div>
+                <p style="font-size:16px; font-weight:600; color:var(--text); margin-bottom:6px;">No se encontraron publicaciones</p>
+                <p style="font-size:14px;">Intenta con otros filtros o términos de búsqueda.</p>
+                <button onclick="resetFeedFilters()" style="margin-top:16px; padding:8px 20px; border:1px solid var(--border); border-radius:20px; background:#fff; font-size:13px; cursor:pointer; font-weight:600;">Limpiar filtros</button>
+            </div>`;
+        return;
+    }
+
+    filtered.forEach(post => renderPostCard(post, container));
+
+    // Actualizar contador de filtros activos
+    updateFiltersActiveCount();
+}
+
+/**
+ * Establece un filtro específico y re-renderiza.
+ */
+window.setFeedFilter = function(filterType, value, btnEl) {
+    _activeFilters[filterType] = value;
+
+    // Actualizar estado visual de los chips del grupo
+    if (btnEl) {
+        const group = btnEl.closest('.feed-filter-chips');
+        if (group) {
+            group.querySelectorAll('.feed-filter-chip').forEach(chip => chip.classList.remove('active'));
+            btnEl.classList.add('active');
+        }
+    }
+
+    renderFilteredPosts();
+};
+
+/**
+ * Debounce para el input de búsqueda de texto.
+ */
+window.debounceFeedFilter = function() {
+    clearTimeout(_feedFilterDebounce);
+    _feedFilterDebounce = setTimeout(() => {
+        const input = document.getElementById('feed-search-input');
+        _activeFilters.search = input ? input.value : '';
+        renderFilteredPosts();
+    }, 350);
+};
+
+/**
+ * Alterna la visibilidad del panel de filtros expandidos.
+ */
+window.toggleFeedFiltersExpanded = function() {
+    const panel = document.getElementById('feed-filters-expanded');
+    const btn = document.getElementById('feed-filters-toggle');
+    if (!panel) return;
+    const isOpen = panel.classList.contains('open');
+    panel.classList.toggle('open', !isOpen);
+    if (btn) btn.classList.toggle('active', !isOpen);
+};
+
+/**
+ * Resetea todos los filtros a "todos".
+ */
+window.resetFeedFilters = function() {
+    _activeFilters = { course: 'todos', type: 'todos', author: 'todos', search: '' };
+
+    // Reset chips visuales
+    document.querySelectorAll('.feed-filter-chip').forEach(chip => {
+        chip.classList.toggle('active', chip.dataset.val === 'todos');
+    });
+
+    // Reset búsqueda
+    const searchInput = document.getElementById('feed-search-input');
+    if (searchInput) searchInput.value = '';
+
+    // Actualizar count
+    const countEl = document.getElementById('filters-active-count');
+    if (countEl) countEl.style.display = 'none';
+
+    renderFilteredPosts();
+};
+
+/**
+ * Muestra el conteo de filtros activos en el botón.
+ */
+function updateFiltersActiveCount() {
+    const countEl = document.getElementById('filters-active-count');
+    if (!countEl) return;
+
+    let count = 0;
+    if (_activeFilters.course !== 'todos') count++;
+    if (_activeFilters.type !== 'todos') count++;
+    if (_activeFilters.author !== 'todos') count++;
+    if (_activeFilters.search) count++;
+
+    if (count > 0) {
+        countEl.textContent = count;
+        countEl.style.display = 'inline-flex';
+    } else {
+        countEl.style.display = 'none';
+    }
+}
+window.setFeedFilter = setFeedFilter;
+window.debounceFeedFilter = debounceFeedFilter;
+window.toggleFeedFiltersExpanded = toggleFeedFiltersExpanded;
+window.resetFeedFilters = resetFeedFilters;
