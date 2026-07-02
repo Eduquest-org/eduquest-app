@@ -1,3 +1,42 @@
+import { UserCirclesManager } from '../core/circles-manager.js';
+import { CirclesManager } from '../core/circles-manager.js';
+
+//function for getting the colors
+function getCourseColor(courseId) {
+    const courseColors = {
+    'course_algebra': 'var(--algebra)',
+    'course_aritmetica': 'var(--aritmetica)',
+    'course_biologia': 'var(--biologia)',
+    'course_civica': 'var(--EducaciónCivica)',
+    'course_economia': 'var(--Economía)',
+    'course_filosofia': 'var(--Filosofía)',
+    'course_fisica': 'var(--Física)',
+    'course_geografia': 'var(--Geografía)',
+    'course_geometria': 'var(--Geometría)',
+    'course_historia_peru': 'var(--HistoriaPeru)',
+    'course_historia_universal': 'var(--HistoriaUniver)',
+    'course_ingles': 'var(--Ingles)',
+    'course_lectura': 'var(--ComprensionLectora)',
+    'course_lenguaje': 'var(--Lenguaje)',
+    'course_literatura': 'var(--Literatura)',
+    'course_logica': 'var(--Logica)',
+    'course_probabilidad': 'var(--Probabilidad)',
+    'course_psicologia': 'var(--Psicologia)',
+    'course_quimica': 'var(--Quimica)',
+    'course_rm': 'var(--RazonaMatematico)',
+    'course_rv': 'var(--RazonamientoVerbal)',
+    'course_trigonometrica': 'var(--Trigonometria)'
+};
+    return courseColors[courseId] || 'var(--muted)';
+}
+//for getting the background color for the titlecards
+function getCourseBackground(courseId, opacity = 0.1) {
+    const color = getCourseColor(courseId);
+    // Return as rgba with opacity using CSS
+    return `color-mix(in srgb, ${color} ${opacity * 100}%, transparent)`;
+}
+
+
 const mockCirclesData = [
     {
         id: "C_01",
@@ -94,32 +133,33 @@ function buildCommunityProfileBanner() {
     document.getElementById("banner-joined-count").innerText = `${totalJoined} ${totalJoined === 1 ? 'Sala' : 'Salas'}`;
 }
 
-function renderCirclesStream() {
+async function renderCirclesStream() {
     const container = document.getElementById("active-circles-container");
     if (!container) return;
     container.innerHTML = "";
 
-    const filteredCircles = mockCirclesData.filter(c => {
-        return activeCourseFilter === "ALL" || c.courseCode === activeCourseFilter;
-    });
+    const Circles = await CirclesManager.getAllCircles()
 
-    if (filteredCircles.length === 0) {
+    if (!Circles||Circles.length === 0) {
         container.innerHTML = `<p style="grid-column:1/-1; text-align:center; padding:40px; color:var(--sub); font-size:14px;">🔒 No hay círculos activos para esta materia. ¡Sé el primero en crear uno!</p>`;
         return;
     }
 
-    filteredCircles.forEach(circle => {
+    const UsersCircles = await UserCirclesManager.getCirclesByUserId(window.CurrentUserService.getId())
+
+    Circles.forEach(circle => {
+        const partOfCircle = UsersCircles?.some(c => c.id_circle === circle.id) || false;
         const card = document.createElement("div");
-        card.className = `circle-item-card ${circle.isJoined ? 'joined-active' : ''}`;
+        card.className = `circle-item-card ${partOfCircle? 'joined-active' : ''}`;
         
-        const buttonText = circle.isJoined ? "🟢 Dentro del Círculo" : "Unirse al Círculo";
+        const buttonText = partOfCircle ? "🟢 Dentro del Círculo" : "Unirse al Círculo";
 
         card.innerHTML = `
             <div class="circle-card-header">
-                <span class="circle-course-badge" style="background: ${circle.bgTheme}; color: ${circle.colorTheme}">${circle.courseName}</span>
-                <span class="circle-meta-members">👥 ${circle.membersCount} alumnos</span>
+                <span class="circle-course-badge" style="background: ${getCourseBackground(circle.id_theme)}; color: ${getCourseColor(circle.id_theme)}">${circle.id_theme}</span>
+                <span class="circle-meta-members">👥 ${circle.number_students} alumnos</span>
             </div>
-            <h3>${circle.title}</h3>
+            <h3>${circle.name}</h3>
             <p>${circle.description}</p>
             <button class="btn-join-circle" onclick="toggleCircleMembership('${circle.id}')">${buttonText}</button>
         `;
@@ -169,6 +209,30 @@ function triggerCreateCircleMock() {
     alert(`🚀 ¡Círculo "${input.value}" Maquetado con Éxito! Al conectar tu Base de Datos en la siguiente entrega, esta acción disparará un método POST asíncrono para guardarlo en la nube.`);
     input.value = "";
 }
-function currentCirclesUserIsIn(){
-    const holder =
+async function updateCirclesCurrentUser(){
+  try {
+        const userId = window.CurrentUserService?.getId();
+        if (!userId) {
+            console.log('No user ID found');
+            return;
+        }
+        console.log(`this is the ucrrent user id ${userId}`)
+        const currentCircles = await CirclesManager.getAllCircles();
+        const size = currentCircles ? currentCircles.length : 0;
+        console.log(`there are ${size} circles:`, currentCircles);
+
+    } catch (error) {
+        console.error('Error fetching user circles:', error);
+    }
 }
+
+//listeners
+
+document.addEventListener('DOMContentLoaded',() => {
+    let btnCirclesTest = document.getElementById("circles-test-size");
+        if(btnCirclesTest){
+            btnCirclesTest.addEventListener('click',async () =>{
+                await updateCirclesCurrentUser();
+            });
+        }
+});

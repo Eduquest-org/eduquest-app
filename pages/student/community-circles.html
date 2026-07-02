@@ -51,8 +51,9 @@
         <div class="create-circle-card card">
           <div class="create-circle-trigger">
             <span class="user-avatar-placeholder" data-user-avatar>🎓</span>
-            <input type="text" id="new-circle-input" class="form-input" placeholder="¿Quieres buscar un circulo por nombre? Ponle un nombre aquí...">
+            <input type="text" id="new-circle-input" class="form-input" placeholder="Buscar circulo por nombre...">
             <button class="tab-btn" onclick="triggerCreateCircleMock()">Crear Círculo</button>
+            <!--Cambiar el boton por un boton de busqueda^^^-->
           </div>
         </div>
 
@@ -94,6 +95,9 @@
           <h3>Tus grupos</h3>
           <p>Aqui puedes revisar los circulos de estudio de los que eres parte</p>
           <p>¡Tambien puedes crear circulos nuevos!</p>
+          <ul class="circles-list">
+            <button class="tab-btn" id="circles-test-size"> Test </button>
+          </ul>
         </div>
       </aside>
 
@@ -104,11 +108,12 @@
   <script src="../../assets/js/utils/component-loader.js"></script>
   <script src="../../assets/js/core/storage.js"></script>
   <script type="module" src="../../assets/js/core/user-manager.js"></script>
+  <script type="module" src="../../assets/js/core/circles-manager.js"></script>
   <script type="module" src="../../assets/js/core/auth.js"></script>
   <script src="../../assets/js/core/router.js"></script>
   <script src="../../assets/js/core/current-user.js"></script>
   <script src="../../assets/js/core/app.js"></script>
 
-  <script src="../../assets/js/student/community-circles.js"></script>
+  <script type="module" src="../../assets/js/student/community-circles.js"></script>
 </body>
 </html>

@@ -7,9 +7,9 @@
  * unificando las operaciones de lectura y escritura de perfiles de usuario.
  */
 
-import { supabase } from '../config/supabase.js';
+const supabase = window.supabase;
 
-const circlesManager = {
+const CirclesManager = {
     async getCircleById(circleId){
         const{data,error} = await supabase
             .from('circles_table')
@@ -35,13 +35,22 @@ const circlesManager = {
         return data;
     },
     async getAllCircles(){
+        console.log('Starting getAllCircles...');
         const{data,error} = await supabase
             .from('circles_table')
             .select('*');
+
+        console.log('Data:', data);
+        console.log('Error:', error);
+        console.log('Data type:', typeof data);
+        console.log('Is array?', Array.isArray(data));
+        console.log('Length:', data ? data.length : 'null/undefined');
+    
         if(error){
             console.error('Error fetching circle data (none found)',error)
             return null;
         }
+        console.log('getting circles was succesful!')
         return data;
     },
     async createCircle(circleName,circleTheme,circleClassroom,circleOwner){
@@ -61,7 +70,7 @@ const circlesManager = {
         return data;
     },
 }
-const userCriclesManager = {
+const UserCirclesManager = {
     async getCirclesByUserId(userId){
         const {data,error} = await supabase
             .from('circles_table_student')
@@ -74,7 +83,7 @@ const userCriclesManager = {
         return data;
     },
     async createConectionCircleStudent(circleRole,circleId,studentId){
-        const{data, error} =await supabase
+        const{data, error} = await supabase
             .from('circles_table_student')
             .insert([{
                 id_circle: circleId,
@@ -102,3 +111,5 @@ const userCriclesManager = {
         return data;
     }
 }
+
+export { CirclesManager, UserCirclesManager };

@@ -18,13 +18,13 @@
    2. TABS DE FILTRADO Y BOTONES
    ======================================================= */
 .filter-tabs-bar { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 4px; }
-.tab-btn { padding: 10px 18px; background: #ffffff; border: 1px solid var(--border); border-radius: 20px; font-size: 13px; font-weight: 600; color: var(--sub); cursor: pointer; white-space: nowrap; transition: 0.2s; }
+.tab-btn { padding: 10px 18px; background: #ffffff; border: 1px solid var(--border); border-radius: 20px; font-size: 13px; font-weight: 600; color: var(--sub); cursor: pointer; white-space: nowrap; transition: 0.2s; flex: 0 0 auto; white-space: nowrap; }
 .tab-btn:hover { background: var(--fill); color: var(--dark); }
 .tab-btn.active { background: var(--dark); color: #ffffff; border-color: var(--dark); }
 
 /* CAJA CREAR GRUPO */
 .create-circle-card { background: #ffffff; border: 1px solid var(--border); border-radius: 16px; padding: 20px 24px; box-shadow: 0 4px 15px rgba(0,0,0,0.01); }
-.create-circle-trigger { display: flex; align-items: center; gap: 14px; }
+.create-circle-trigger { display: flex; align-items: center; gap: 12px; min-width: 0;}
 .user-avatar-placeholder { width: 40px; height: 40px; border-radius: 50%; background: var(--fill); display: flex; align-items: center; justify-content: center; font-size: 18px; }
 .create-circle-trigger input { flex: 1; padding: 12px 18px; border: 1px solid var(--border); border-radius: 24px; background: var(--fill); outline: none; font-size: 14px; transition: 0.2s; }
 .create-circle-trigger input:focus { background: #ffffff; border-color: var(--green); }
