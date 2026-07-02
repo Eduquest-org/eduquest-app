@@ -34,7 +34,12 @@ function loadProfileData() {
     if (!user) return;
 
     // Poblar atributos primarios del encabezado de perfil
-    document.getElementById("profile-current-avatar").innerText = CurrentUserService.getAvatar();
+    const avatarRaw = CurrentUserService.getProfile()?.avatar_url || '🚀';
+    const { emoji, color } = window.parseAvatar(avatarRaw);
+    document.getElementById("profile-current-avatar").innerText = emoji;
+    const avatarBtn = document.getElementById("profile-avatar-btn");
+    if (avatarBtn) avatarBtn.style.backgroundColor = color;
+    
     document.getElementById("profile-full-name").innerText = CurrentUserService.getName();
     document.getElementById("profile-email").innerText = CurrentUserService.getEmail();
     
@@ -132,18 +137,48 @@ window.changeUserAvatar = changeUserAvatar;
 /* ====================================================================
    FUNCIONALIDADES DE EDICIÓN DE PERFIL
    ==================================================================== */
+function selectModalEmoji(emoji, btn) {
+    document.getElementById("edit-avatar-emoji").value = emoji;
+    document.querySelectorAll("#modal-emoji-grid .emoji-select-btn").forEach(b => b.classList.remove("active"));
+    if (btn) {
+        btn.classList.add("active");
+    } else {
+        document.querySelectorAll("#modal-emoji-grid .emoji-select-btn").forEach(b => {
+            if (b.innerText.trim() === emoji) b.classList.add("active");
+        });
+    }
+}
+
+function selectModalColor(color, btn) {
+    document.getElementById("edit-avatar-color").value = color;
+    document.querySelectorAll("#modal-color-grid .color-select-btn").forEach(b => b.classList.remove("active"));
+    if (btn) {
+        btn.classList.add("active");
+    } else {
+        document.querySelectorAll("#modal-color-grid .color-select-btn").forEach(b => {
+            const onclickAttr = b.getAttribute('onclick') || '';
+            if (onclickAttr.includes(color)) {
+                b.classList.add("active");
+            }
+        });
+    }
+}
+
+window.selectModalEmoji = selectModalEmoji;
+window.selectModalColor = selectModalColor;
+
 function openEditProfileModal() {
     const modal = document.getElementById("edit-profile-modal");
     if (!modal) return;
 
     // Poblar campos con los datos actuales
     const currentName = CurrentUserService.getName();
-    const currentTarget = CurrentUserService.getStat('target') || "UNI";
-    const currentCareer = CurrentUserService.getStat('career') || "Ingeniería de Sistemas";
+    const avatarRaw = CurrentUserService.getProfile()?.avatar_url || '🚀';
+    const { emoji, color } = window.parseAvatar(avatarRaw);
 
     document.getElementById("edit-name").value = currentName;
-    document.getElementById("edit-target").value = currentTarget;
-    document.getElementById("edit-career").value = currentCareer;
+    selectModalEmoji(emoji);
+    selectModalColor(color);
 
     modal.style.display = "flex";
 }
@@ -159,23 +194,23 @@ async function saveUserProfile(event) {
     if (!user) return;
 
     const newName = document.getElementById("edit-name").value.trim();
-    const newTarget = document.getElementById("edit-target").value;
-    const newCareer = document.getElementById("edit-career").value;
+    const newEmoji = document.getElementById("edit-avatar-emoji").value;
+    const newColor = document.getElementById("edit-avatar-color").value;
 
     if (!newName) {
         if (window.app?.showToast) window.app.showToast("⚠️ El nombre no puede estar vacío", "error");
         return;
     }
 
+    const compositeAvatar = `${newEmoji}|${newColor}`;
+
     // Mostrar loader de carga interactivo
     GlobalLoader.show();
 
     try {
-        // Estructura de actualización que coincide con profiles schema
         const updates = {
             name: newName,
-            target_university_id: newTarget,
-            career: newCareer
+            avatar_url: compositeAvatar
         };
 
         if (window.UserManager) {
@@ -184,8 +219,7 @@ async function saveUserProfile(event) {
 
         // Actualizar caché local
         user.name = newName;
-        user.target_university_id = newTarget;
-        user.career = newCareer;
+        user.avatar_url = compositeAvatar;
 
         // Recargar datos en la UI
         loadProfileData();

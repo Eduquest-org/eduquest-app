@@ -97,11 +97,13 @@ async function renderLeaderboardTable() {
 
             const nameDisplay = student.isCurrent ? `<strong>${student.name} (Tú)</strong>` : student.name;
 
+            const { emoji: studentEmoji, color: studentColor } = window.parseAvatar ? window.parseAvatar(student.avatar) : { emoji: student.avatar, color: 'var(--indigo)' };
+
             row.innerHTML = `
                 <td style="text-align: center;">${puestoLabel}</td>
                 <td>
                     <div class="student-row-info">
-                        <span class="student-avatar-mini">${student.avatar}</span>
+                        <span class="student-avatar-mini" style="background-color: ${studentColor};">${studentEmoji}</span>
                         <span>${nameDisplay}</span>
                     </div>
                 </td>

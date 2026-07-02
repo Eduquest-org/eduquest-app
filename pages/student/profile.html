@@ -224,28 +224,38 @@
               <input type="text" id="edit-name" class="form-input" required style="width: 100%; padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border);" placeholder="Tu nombre...">
             </div>
 
+            <!-- Selector de Icono / Emoji -->
             <div class="form-group mb16">
-              <label class="form-label" style="font-weight: 600; margin-bottom: 6px; display: block; font-size: 13.5px; color: var(--text);">Universidad Objetivo</label>
-              <select id="edit-target" class="form-input" style="width: 100%; padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border);">
-                <option value="UNI">UNI (Universidad Nacional de Ingeniería)</option>
-                <option value="UNMSM">UNMSM (Universidad Nacional Mayor de San Marcos)</option>
-                <option value="PUCP">PUCP (Pontificia Universidad Católica del Perú)</option>
-                <option value="UNSA">UNSA (Universidad Nacional de San Agustín)</option>
-                <option value="UNFV">UNFV (Universidad Nacional Federico Villarreal)</option>
-              </select>
+              <label class="form-label" style="font-weight: 600; margin-bottom: 6px; display: block; font-size: 13.5px; color: var(--text);">Foto / Icono de Perfil</label>
+              <div class="emoji-selector-grid" id="modal-emoji-grid">
+                <button type="button" class="emoji-select-btn" onclick="selectModalEmoji('🚀', this)">🚀</button>
+                <button type="button" class="emoji-select-btn" onclick="selectModalEmoji('🧠', this)">🧠</button>
+                <button type="button" class="emoji-select-btn" onclick="selectModalEmoji('🎓', this)">🎓</button>
+                <button type="button" class="emoji-select-btn" onclick="selectModalEmoji('🌟', this)">🌟</button>
+                <button type="button" class="emoji-select-btn" onclick="selectModalEmoji('🦁', this)">🦁</button>
+                <button type="button" class="emoji-select-btn" onclick="selectModalEmoji('🦉', this)">🦉</button>
+                <button type="button" class="emoji-select-btn" onclick="selectModalEmoji('🦖', this)">🦖</button>
+                <button type="button" class="emoji-select-btn" onclick="selectModalEmoji('🔥', this)">🔥</button>
+                <button type="button" class="emoji-select-btn" onclick="selectModalEmoji('⚡', this)">⚡</button>
+                <button type="button" class="emoji-select-btn" onclick="selectModalEmoji('🎨', this)">🎨</button>
+                <button type="button" class="emoji-select-btn" onclick="selectModalEmoji('🏆', this)">🏆</button>
+                <button type="button" class="emoji-select-btn" onclick="selectModalEmoji('🧪', this)">🧪</button>
+              </div>
+              <input type="hidden" id="edit-avatar-emoji" value="🚀">
             </div>
 
+            <!-- Selector de Color de Fondo -->
             <div class="form-group mb24">
-              <label class="form-label" style="font-weight: 600; margin-bottom: 6px; display: block; font-size: 13.5px; color: var(--text);">Carrera Profesional</label>
-              <select id="edit-career" class="form-input" style="width: 100%; padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border);">
-                <option value="Ingeniería de Sistemas">Ingeniería de Sistemas</option>
-                <option value="Ingeniería Civil">Ingeniería Civil</option>
-                <option value="Ingeniería Industrial">Ingeniería Industrial</option>
-                <option value="Medicina Humana">Medicina Humana</option>
-                <option value="Derecho">Derecho</option>
-                <option value="Administración de Empresas">Administración de Empresas</option>
-                <option value="Ciencia de la Computación">Ciencia de la Computación</option>
-              </select>
+              <label class="form-label" style="font-weight: 600; margin-bottom: 6px; display: block; font-size: 13.5px; color: var(--text);">Color de Fondo del Icono</label>
+              <div class="color-selector-grid" id="modal-color-grid">
+                <button type="button" class="color-select-btn" style="background-color: var(--indigo);" onclick="selectModalColor('var(--indigo)', this)" title="Índigo"></button>
+                <button type="button" class="color-select-btn" style="background-color: var(--green);" onclick="selectModalColor('var(--green)', this)" title="Verde"></button>
+                <button type="button" class="color-select-btn" style="background-color: var(--amber);" onclick="selectModalColor('var(--amber)', this)" title="Ámbar"></button>
+                <button type="button" class="color-select-btn" style="background-color: var(--red);" onclick="selectModalColor('var(--red)', this)" title="Rojo"></button>
+                <button type="button" class="color-select-btn" style="background-color: #3b82f6;" onclick="selectModalColor('#3b82f6', this)" title="Azul"></button>
+                <button type="button" class="color-select-btn" style="background-color: #a855f7;" onclick="selectModalColor('#a855f7', this)" title="Morado"></button>
+              </div>
+              <input type="hidden" id="edit-avatar-color" value="var(--indigo)">
             </div>
 
             <div style="display: flex; gap: 12px; justify-content: flex-end;">

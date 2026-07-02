@@ -662,3 +662,56 @@
     }
 }
 
+/* Selector de emojis y colores en el modal */
+.emoji-selector-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 10px;
+    margin-bottom: 8px;
+}
+.emoji-select-btn {
+    font-size: 26px;
+    background: var(--fill);
+    border: 2px solid transparent;
+    border-radius: 10px;
+    padding: 8px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.emoji-select-btn:hover {
+    background: #f1f5f9;
+    transform: scale(1.05);
+}
+.emoji-select-btn.active {
+    border-color: var(--green);
+    background: rgba(29, 158, 117, 0.08);
+}
+
+.color-selector-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+.color-select-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 3px solid #fff;
+    box-shadow: 0 0 0 1px var(--border);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+}
+.color-select-btn:hover {
+    transform: scale(1.1);
+}
+.color-select-btn.active {
+    box-shadow: 0 0 0 2px var(--green);
+}
+
+

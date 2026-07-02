@@ -126,9 +126,11 @@ function renderPostCard(post, container) {
     const upvoteActive = post.isLikedByMe ? 'active' : '';
     const upvoteText = post.isLikedByMe ? `🔥 ¡Apoyado! (${post.upvotes || 0})` : `🔼 Útil (${post.upvotes || 0})`;
 
+    const { emoji: postEmoji, color: postColor } = window.parseAvatar ? window.parseAvatar(post.authorAvatar) : { emoji: post.authorAvatar || '👤', color: 'var(--indigo)' };
+
     postCard.innerHTML = `
         <div class="card-header">
-            <div class="author-avatar">${post.authorAvatar || '👤'}</div>
+            <div class="author-avatar" style="background-color: ${postColor};">${postEmoji}</div>
             <div class="author-info">
                 <h4>${post.authorName || post.author || 'Usuario'}
                     ${post.authorTarget ? `<span class="user-target">${post.authorTarget}</span>` : ''}
@@ -234,10 +236,11 @@ async function renderComments(postId, pinnedId) {
             
             const authorName = comment.profiles?.name || 'Usuario';
             const authorAvatar = comment.profiles?.avatar_url || '👤';
+            const { emoji: commentEmoji, color: commentColor } = window.parseAvatar ? window.parseAvatar(authorAvatar) : { emoji: authorAvatar, color: 'var(--indigo)' };
 
             commentEl.innerHTML = `
                 ${actionsHtml}
-                <div class="comment-avatar">${authorAvatar}</div>
+                <div class="comment-avatar" style="background-color: ${commentColor};">${commentEmoji}</div>
                 <div class="comment-body">
                     <div class="comment-author-row">
                         <span class="comment-author">${authorName}</span>

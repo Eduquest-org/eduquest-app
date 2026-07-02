@@ -576,19 +576,7 @@ body {
     gap: 20px;
   }
 
-  /* 6. Notificaciones: panel full-width en mobile */
-  .notifications-dropdown {
-    position: fixed;
-    top: 75px;
-    right: 0;
-    left: 0;
-    width: 100vw;
-    max-height: calc(100vh - 75px);
-    border-radius: 0 0 16px 16px;
-    border-left: none;
-    border-right: none;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
-  }
+  /* 6. Notificaciones: panel responsive se controla en notifications.css */
 }
 
 /* === PEQUEÑO MOBILE (≤ 480px) === */
@@ -606,10 +594,7 @@ body {
     display: none;
   }
 
-  /* En muy pequeño, notificaciones también full */
-  .notifications-dropdown {
-    top: 65px;
-  }
+  /* En muy pequeño, notificaciones responsive se controla en notifications.css */
 }
 
 /* =========================================================

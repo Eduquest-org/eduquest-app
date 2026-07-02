@@ -1111,6 +1111,11 @@
   .comment-input-row {
     flex-direction: column;
     gap: 8px;
+    align-items: stretch;
+  }
+
+  .comment-input {
+    width: 100%;
   }
 
   .comment-submit-btn {
