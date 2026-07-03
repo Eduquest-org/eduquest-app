@@ -3,6 +3,9 @@
  * Gestiona el ciclo de vida de los cuestionarios, temporización, calificación,
  * asignación de puntos de experiencia (XP) y persistencia del progreso académico.
  */
+import { CoursesManager } from '../core/courses-manager.js';
+import { TopicsManager } from '../core/topics-manager.js';
+import { ProblemsManager } from '../core/problems-manager.js';
 
 let activeQuizState = {
     problems: [],
@@ -10,8 +13,8 @@ let activeQuizState = {
     answers: [], // Almacenar selección de respuesta por índice
     startTime: null,
     timerInterval: null,
-    topicId: null,
-    courseId: null,
+    topic_id: null,
+    course_id: null,
     title: "",
     xpReward: 150,
     isGeneral: false
@@ -44,13 +47,10 @@ async function loadQuizzesSelection() {
     if (!grid) return;
 
     try {
-        const [coursesRes, topicsRes] = await Promise.all([
-            fetch("../../mock/courses.json"),
-            fetch("../../mock/topics.json")
+        const [courses, topics] = await Promise.all([
+            CoursesManager.getCourses(),
+            TopicsManager.getAllTopics()
         ]);
-
-        const courses = await coursesRes.json();
-        const topics = await topicsRes.json();
 
         // Consultar registro de temas completados
         let completedTopics = [];
@@ -62,7 +62,7 @@ async function loadQuizzesSelection() {
         grid.innerHTML = "";
 
         courses.forEach(course => {
-            const courseTopics = topics.filter(t => t.courseId === course.id);
+            const courseTopics = topics.filter(t => t.course_id === course.id);
             if (courseTopics.length === 0) return; // Excluir cursos carentes de temario
 
             const card = document.createElement("div");
@@ -122,14 +122,13 @@ function filterCourses(category, buttonEl) {
 }
 
 /** Inicializar evaluación paramétrica basada en ruta de aprendizaje */
-async function startQuizFromParam(topicId, type) {
+async function startQuizFromParam(topic_id, type) {
     try {
-        const topicsRes = await fetch("../../mock/topics.json");
-        const topics = await topicsRes.json();
+        const topics = await TopicsManager.getAllTopics();
 
-        const topic = topics.find(t => t.id === topicId);
+        const topic = topics.find(t => t.id === topic_id);
         if (topic) {
-            startSpecificQuiz(topic.id, topic.name, topic.courseId, type === 'examen' ? 200 : 100);
+            startSpecificQuiz(topic.id, topic.name, topic.course_id, type === 'examen' ? 200 : 100);
         } else {
             // Ejecutar evaluación general como respaldo ante falla de identificación
             alert("No se encontró el tema solicitado. Iniciando evaluación general.");
@@ -141,19 +140,18 @@ async function startQuizFromParam(topicId, type) {
 }
 
 /** Iniciar evaluación específica por tema */
-async function startSpecificQuiz(topicId, topicName, courseId, xpReward) {
+async function startSpecificQuiz(topic_id, topicName, course_id, xpReward) {
     showPreloader("Generando banco de preguntas específico...");
 
     try {
-        const problemsRes = await fetch("../../mock/problems.json");
-        const allProblems = await problemsRes.json();
+        const allProblems = await ProblemsManager.getAllProblems();
 
         // Filtrar banco de preguntas por identificador temático
-        let filtered = allProblems.filter(p => p.topicId === topicId);
+        let filtered = allProblems.filter(p => p.topic_id === topic_id);
 
         if (filtered.length === 0) {
             // Ejecutar búsqueda difusa por prefijo de curso
-            const coursePrefix = topicId.split("_")[1];
+            const coursePrefix = topic_id.split("_")[1];
             filtered = allProblems.filter(p => p.id && p.id.includes(`_${coursePrefix}_`));
         }
 
@@ -171,8 +169,8 @@ async function startSpecificQuiz(topicId, topicName, courseId, xpReward) {
             currentIdx: 0,
             answers: new Array(selectedProblems.length).fill(null),
             startTime: Date.now(),
-            topicId: topicId,
-            courseId: courseId,
+            topic_id: topic_id,
+            course_id: course_id,
             title: `Evaluación: ${topicName}`,
             xpReward: xpReward || 100,
             isGeneral: false
@@ -193,8 +191,7 @@ async function startGeneralMockExam() {
     showPreloader("Compilando evaluación general estructurada...");
 
     try {
-        const problemsRes = await fetch("../../mock/problems.json");
-        const allProblems = await problemsRes.json();
+        const allProblems = await ProblemsManager.getAllProblems();
 
         // Segmentar preguntas por aptitud académica
         const rm = allProblems.filter(p => p.id && p.id.includes("prob_rm_"));
@@ -208,8 +205,8 @@ async function startGeneralMockExam() {
             currentIdx: 0,
             answers: new Array(selected.length).fill(null),
             startTime: Date.now(),
-            topicId: null,
-            courseId: null,
+            topic_id: null,
+            course_id: null,
             title: "Simulacro General Integral",
             xpReward: 300,
             isGeneral: true
@@ -275,7 +272,7 @@ function renderCurrentQuestion() {
         // Restaurar estado visual de opciones respondidas
         if (previousAnswer !== null) {
             optionCard.classList.add("disabled");
-            if (oIdx === q.correctOption) {
+            if (oIdx === q.correct_option) {
                 optionCard.classList.add("correct");
             } else if (oIdx === previousAnswer) {
                 optionCard.classList.add("incorrect");
@@ -314,9 +311,9 @@ function renderCurrentQuestion() {
         nextBtn.innerText = (idx === total - 1) ? "Finalizar Evaluación" : "Siguiente Pregunta";
 
         feedbackPanel.style.display = "block";
-        feedbackPanel.className = `quiz-feedback-box ${previousAnswer === q.correctOption ? 'correct' : 'incorrect'}`;
-        feedbackPanel.querySelector(".feedback-indicator-icon").innerText = previousAnswer === q.correctOption ? "✅" : "❌";
-        feedbackPanel.querySelector(".feedback-indicator-title").innerText = previousAnswer === q.correctOption ? "Verificación Exitosa" : "Respuesta Incorrecta";
+        feedbackPanel.className = `quiz-feedback-box ${previousAnswer === q.correct_option ? 'correct' : 'incorrect'}`;
+        feedbackPanel.querySelector(".feedback-indicator-icon").innerText = previousAnswer === q.correct_option ? "✅" : "❌";
+        feedbackPanel.querySelector(".feedback-indicator-title").innerText = previousAnswer === q.correct_option ? "Verificación Exitosa" : "Respuesta Incorrecta";
         document.getElementById("quiz-explanation-text").innerText = q.explanation || "No se dispone de retroalimentación adicional.";
     } else {
         // Configurar vista para pregunta pendiente
@@ -368,7 +365,7 @@ function finishQuiz() {
 
     let correctCount = 0;
     activeQuizState.problems.forEach((q, idx) => {
-        if (activeQuizState.answers[idx] === q.correctOption) {
+        if (activeQuizState.answers[idx] === q.correct_option) {
             correctCount++;
         }
     });
@@ -386,13 +383,13 @@ function finishQuiz() {
     else if (pct >= 60) xpEarned += Math.round(activeQuizState.xpReward * 0.6); // Asignar bonificación parcial por aprobación
 
     // Registrar avance en el mapa de aprendizaje
-    if (!activeQuizState.isGeneral && activeQuizState.topicId) {
+    if (!activeQuizState.isGeneral && activeQuizState.topic_id) {
         // Registrar superación de tema sujeta a umbral de aprobación
         if (pct >= 60) {
             UserManager.completeTopicProgress(
                 user.id,
-                activeQuizState.topicId,
-                activeQuizState.courseId,
+                activeQuizState.topic_id,
+                activeQuizState.course_id,
                 xpEarned
             );
         } else {
@@ -409,13 +406,13 @@ function finishQuiz() {
         const statsByTopic = {};
         
         activeQuizState.problems.forEach((q, idx) => {
-            const tId = q.topicId;
-            if (!tId) return; // Prevenir guardado si no hay topicId
+            const tId = q.topic_id;
+            if (!tId) return; // Prevenir guardado si no hay topic_id
             
             if (!statsByTopic[tId]) {
                 statsByTopic[tId] = { correct: 0, incorrect: 0 };
             }
-            if (activeQuizState.answers[idx] === q.correctOption) {
+            if (activeQuizState.answers[idx] === q.correct_option) {
                 statsByTopic[tId].correct++;
             } else {
                 statsByTopic[tId].incorrect++;
@@ -432,7 +429,7 @@ function finishQuiz() {
         const perfKey = `eduquest_performance_${user.id}`;
         const perfData = JSON.parse(localStorage.getItem(perfKey) || '{"history":[]}');
         perfData.history.push({
-            courseId: activeQuizState.courseId || 'general',
+            course_id: activeQuizState.course_id || 'general',
             isGeneral: activeQuizState.isGeneral,
             correct: correctCount,
             incorrect: total - correctCount,
