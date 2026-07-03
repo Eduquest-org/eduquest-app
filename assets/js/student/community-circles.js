@@ -1,5 +1,6 @@
 import { UserCirclesManager } from '../core/circles-manager.js';
 import { CirclesManager } from '../core/circles-manager.js';
+import { SubjectManager} from '../core/circles-manager.js';
 
 //function for getting the colors
 function getCourseColor(courseId) {
@@ -134,29 +135,34 @@ function buildCommunityProfileBanner() {
 }
 
 async function renderCirclesStream() {
+
     const container = document.getElementById("active-circles-container");
     if (!container) return;
     container.innerHTML = "";
 
-    const Circles = await CirclesManager.getAllCircles()
+    const circles = await CirclesManager.getAllCircles()
+    const subjects = await SubjectManager.getAllSubjects()
 
-    if (!Circles||Circles.length === 0) {
+    if (!circles||circles.length === 0) {
         container.innerHTML = `<p style="grid-column:1/-1; text-align:center; padding:40px; color:var(--sub); font-size:14px;">🔒 No hay círculos activos para esta materia. ¡Sé el primero en crear uno!</p>`;
         return;
     }
 
     const UsersCircles = await UserCirclesManager.getCirclesByUserId(window.CurrentUserService.getId())
 
-    Circles.forEach(circle => {
+    circles.forEach(circle => {
         const partOfCircle = UsersCircles?.some(c => c.id_circle === circle.id) || false;
+        const subject = subjects.find(s => s.id === circle.id_theme);
         const card = document.createElement("div");
+        
         card.className = `circle-item-card ${partOfCircle? 'joined-active' : ''}`;
         
         const buttonText = partOfCircle ? "🟢 Dentro del Círculo" : "Unirse al Círculo";
 
+        let subjectLeterColor = getCourseColor(circle.id_theme)
         card.innerHTML = `
             <div class="circle-card-header">
-                <span class="circle-course-badge" style="background: ${getCourseBackground(circle.id_theme)}; color: ${getCourseColor(circle.id_theme)}">${circle.id_theme}</span>
+                <span class="circle-course-badge" stlye= "color: ${subjectLeterColor}">${subject.name}</span>
                 <span class="circle-meta-members">👥 ${circle.number_students} alumnos</span>
             </div>
             <h3>${circle.name}</h3>

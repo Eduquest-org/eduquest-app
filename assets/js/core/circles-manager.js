@@ -39,12 +39,6 @@ const CirclesManager = {
         const{data,error} = await supabase
             .from('circles_table')
             .select('*');
-
-        console.log('Data:', data);
-        console.log('Error:', error);
-        console.log('Data type:', typeof data);
-        console.log('Is array?', Array.isArray(data));
-        console.log('Length:', data ? data.length : 'null/undefined');
     
         if(error){
             console.error('Error fetching circle data (none found)',error)
@@ -111,5 +105,29 @@ const UserCirclesManager = {
         return data;
     }
 }
-
-export { CirclesManager, UserCirclesManager };
+const SubjectManager = {
+    async getSubjectById(subjectId){
+        const{data,error} = await supabase
+        .from('courses')
+        .eq('id', subjectId)
+        .select();
+    if(error){
+        console.error("Error while trying to get data from course");
+        return null;
+        }
+    return data
+    },
+    async getAllSubjects(){
+        const{data,error} = await supabase
+        .from('courses')
+        .select('*');
+        console.log("getting subjects succesfull")
+    if(error){
+        console.error("Error while trying to get data from all courses");
+        return null;
+        }
+    return data
+    }
+    
+}
+export { CirclesManager, UserCirclesManager, SubjectManager };
