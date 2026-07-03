@@ -1,254 +1,431 @@
-/* assets/js/teacher/classrooms.js */
+// ==========================================================================
+// assets/js/teacher/classrooms.js
+// SECCIONES DEL DOCENTE — listado, creación, detalle y actividades
+// Datos vía window.TeacherStore · helpers vía window.TeacherCommon
+// ==========================================================================
 
-/* ============== Datos de muestra ============== */
-const avatarColors = ['#6E61E0','#B45309','#0E8F86','#C2486B','#516390'];
+(function () {
+  "use strict";
 
-const ICONS = {
-  Física: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/><ellipse cx="12" cy="12" rx="9.5" ry="4.2"/><ellipse cx="12" cy="12" rx="9.5" ry="4.2" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="9.5" ry="4.2" transform="rotate(120 12 12)"/></svg>`,
-  "Álgebra": `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 18c4-14 8-14 8 0M12 18c4-14 8-14 8 0"/></svg>`,
-  Química: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6M10 3v6.5L4.6 18a2 2 0 0 0 1.7 3h11.4a2 2 0 0 0 1.7-3L14 9.5V3"/><path d="M7.5 14h9"/></svg>`,
-  "Razonamiento Matemático": `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><circle cx="8" cy="10.5" r="0.9" fill="currentColor" stroke="none"/><circle cx="12" cy="10.5" r="0.9" fill="currentColor" stroke="none"/><circle cx="16" cy="10.5" r="0.9" fill="currentColor" stroke="none"/><circle cx="8" cy="14.5" r="0.9" fill="currentColor" stroke="none"/><circle cx="12" cy="14.5" r="0.9" fill="currentColor" stroke="none"/><circle cx="16" cy="14.5" r="0.9" fill="currentColor" stroke="none"/><line x1="8" y1="18.5" x2="16" y2="18.5"/></svg>`
-};
+  const Common = window.TeacherCommon;
+  const Store = window.TeacherStore;
+  const UI = window.TeacherUI;
 
-const COURSE_THEME = {
-  Física: { color:'var(--brand)', soft:'var(--brand-soft)' },
-  "Álgebra": { color:'var(--amber-dark)', soft:'var(--amber-soft)' },
-  Química: { color:'var(--teal)', soft:'var(--teal-soft)' },
-  "Razonamiento Matemático": { color:'var(--rose)', soft:'var(--rose-soft)' }
-};
+  // Estado de la vista
+  let currentFilter = "todas";
+  let currentSectionId = null;
+  let currentRest = []; // alumnos fuera del podio (para la búsqueda)
 
-const sections = [
-  {
-    id:'fis-a', course:'Física', name:'Física · Sección A', teacher:'32 alumnos · Profesor titular: tú',
-    students:32, avgXp:2140, activity:78,
-    list:[
-      {name:'Valentina Ríos', xp:3420, activity:'Completó el simulacro de Física'},
-      {name:'Diego Salazar', xp:3180, activity:'Resolvió 6 ejercicios de dinámica'},
-      {name:'Camila Torres', xp:2950, activity:'Vio la clase de energía y trabajo'},
-      {name:'Mateo Flores', xp:2710, activity:'Subió su tarea de MRUV'},
-      {name:'Sofía Ramos', xp:2540, activity:'Comentó en una duda de vectores'},
-      {name:'Bruno Castillo', xp:2380, activity:'Resolvió 4 ejercicios de cinemática'},
-      {name:'Renata Quispe', xp:2210, activity:'Completó el quiz de fuerzas'},
-      {name:'Joaquín Vega', xp:1980, activity:'Vio la clase de movimiento circular'},
-      {name:'Luciana Paredes', xp:1720, activity:'Resolvió 2 ejercicios de cinemática'},
-      {name:'Iker Ponce', xp:1340, activity:'Se unió a la sección'}
-    ]
-  },
-  {
-    id:'alg-b', course:'Álgebra', name:'Álgebra · Sección B', teacher:'28 alumnos · Profesor titular: tú',
-    students:28, avgXp:1860, activity:65,
-    list:[
-      {name:'Ana Belén Soto', xp:3050, activity:'Completó el quiz de ecuaciones'},
-      {name:'Rodrigo Núñez', xp:2870, activity:'Resolvió 8 ejercicios de factorización'},
-      {name:'Fernanda Salas', xp:2690, activity:'Practicó sistemas de ecuaciones'},
-      {name:'Sebastián Rojas', xp:2430, activity:'Vio la clase de funciones cuadráticas'},
-      {name:'Paula Medina', xp:2260, activity:'Comentó en una duda de álgebra'},
-      {name:'Nicolás Herrera', xp:2050, activity:'Resolvió 5 ejercicios de factorización'},
-      {name:'Daniela Cruz', xp:1890, activity:'Completó el simulacro de Álgebra'},
-      {name:'Emilio Vargas', xp:1640, activity:'Vio la clase de inecuaciones'},
-      {name:'Ximena Cabrera', xp:1410, activity:'Resolvió 3 ejercicios de ecuaciones'},
-      {name:'Tomás Ibáñez', xp:1180, activity:'Se unió a la sección'}
-    ]
-  },
-  {
-    id:'qui-c', course:'Química', name:'Química · Sección C', teacher:'25 alumnos · Profesor titular: tú',
-    students:25, avgXp:1990, activity:82,
-    list:[
-      {name:'Gabriela Montes', xp:2980, activity:'Completó el laboratorio de estequiometría'},
-      {name:'Andrés Paredes', xp:2740, activity:'Resolvió ejercicios de tabla periódica'},
-      {name:'Carla Espinoza', xp:2510, activity:'Vio la clase de enlace químico'},
-      {name:'Leonardo Díaz', xp:2290, activity:'Completó el quiz de nomenclatura'},
-      {name:'Milagros Chávez', xp:2080, activity:'Comentó en una duda de química'},
-      {name:'Cristian Vela', xp:1860, activity:'Resolvió 4 ejercicios de moles'},
-      {name:'Antonella Ruiz', xp:1620, activity:'Vio la clase de gases ideales'},
-      {name:'Franco Aguilar', xp:1390, activity:'Resolvió 2 ejercicios de soluciones'},
-      {name:'Yamile Torres', xp:1150, activity:'Se unió a la sección'},
-      {name:'Said Campos', xp:980, activity:'Se unió a la sección'}
-    ]
-  },
-  {
-    id:'rm-d', course:'Razonamiento Matemático', name:'Raz. Matemático · Sección D', teacher:'30 alumnos · Profesor titular: tú',
-    students:30, avgXp:2050, activity:71,
-    list:[
-      {name:'Kevin Salazar', xp:3310, activity:'Completó el simulacro UNI'},
-      {name:'Brenda Quiroz', xp:3120, activity:'Resolvió 10 problemas de lógica'},
-      {name:'Aaron Delgado', xp:2860, activity:'Vio la clase de sucesiones'},
-      {name:'Nayeli Ortiz', xp:2600, activity:'Completó el quiz de analogías'},
-      {name:'Esteban Lara', xp:2370, activity:'Resolvió 6 problemas de edades'},
-      {name:'Ariana Ponce', xp:2150, activity:'Comentó en una duda de lógica'},
-      {name:'Gianmarco Ríos', xp:1920, activity:'Vio la clase de proporciones'},
-      {name:'Talía Reyes', xp:1680, activity:'Resolvió 3 problemas de lógica'},
-      {name:'Eduardo Sosa', xp:1430, activity:'Se unió a la sección'},
-      {name:'Camila Nuñez', xp:1190, activity:'Se unió a la sección'}
-    ]
+  // Nodos cacheados
+  const sectionGrid = document.getElementById("sectionGrid");
+  const sectionsEmpty = document.getElementById("sectionsEmpty");
+  const filterChips = document.getElementById("filterChips");
+  const screenSelect = document.getElementById("screen-select");
+  const screenDetail = document.getElementById("screen-detail");
+
+  // ─── Render: chips de filtro ────────────────────────────────────────
+  function renderFilterChips() {
+    if (!filterChips) return;
+    const courses = [...new Set(Store.getSections().map((s) => s.course))];
+    const chips = ['<button class="chip active" data-course="todas">Todas</button>'];
+    courses.forEach((course) => {
+      chips.push(
+        `<button class="chip" data-course="${Common.escapeHtml(course)}">${Common.escapeHtml(course)}</button>`
+      );
+    });
+    filterChips.innerHTML = chips.join("");
   }
-];
 
-/* ============== Helpers ============== */
-function initials(name){
-  return name.split(' ').slice(0,2).map(p=>p[0]).join('').toUpperCase();
-}
-function ligaFor(xp){
-  if(xp>=2800) return {label:'Liga Platino', cls:'plat'};
-  if(xp>=2000) return {label:'Liga Oro', cls:'oro'};
-  if(xp>=1200) return {label:'Liga Plata', cls:'plata'};
-  return {label:'Liga Bronce', cls:'bronce'};
-}
+  // ─── Render: tarjetas de sección ────────────────────────────────────
+  function renderSectionGrid() {
+    if (!sectionGrid) return;
+    const all = Store.getSections();
 
-/* ============== Render: tarjetas de sección ============== */
-const sectionGrid = document.getElementById('sectionGrid');
+    if (all.length === 0) {
+      sectionGrid.innerHTML = "";
+      filterChips.classList.add("hidden");
+      sectionsEmpty.classList.remove("hidden");
+      return;
+    }
+    filterChips.classList.remove("hidden");
+    sectionsEmpty.classList.add("hidden");
 
-function renderSectionGrid(filter){
-  if(!sectionGrid) return;
-  sectionGrid.innerHTML = '';
-  sections
-    .filter(s => filter === 'todas' || s.course === filter)
-    .forEach(s => {
-      const theme = COURSE_THEME[s.course];
-      const stack = s.list.slice(0,3).map((st,i)=>
-        `<div class="mini-avatar" style="background:${avatarColors[i % avatarColors.length]}">${initials(st.name)}</div>`
-      ).join('');
+    const visible = all.filter((s) => currentFilter === "todas" || s.course === currentFilter);
+    sectionGrid.innerHTML = "";
 
-      const card = document.createElement('div');
-      card.className = 'section-card';
+    visible.forEach((section) => {
+      const theme = Common.themeFor(section.course);
+      const stats = Store.computeStats(section);
+      const students = section.students || [];
+
+      const stack = students
+        .slice(0, 3)
+        .map(
+          (st, i) =>
+            `<div class="mini-avatar" style="background:${Common.avatarColor(i)}">${Common.initials(st.name)}</div>`
+        )
+        .join("");
+      const moreCount = Math.max(0, stats.students - 3);
+      const moreLabel =
+        stats.students === 0
+          ? '<span class="more">Sin alumnos aún</span>'
+          : moreCount > 0
+          ? `<span class="more">+${moreCount} alumnos</span>`
+          : `<span class="more">${stats.students} alumnos</span>`;
+
+      const subtitle = `${stats.students} alumnos · ${Common.escapeHtml(section.cycle || section.schedule || "Sin horario")}`;
+
+      const card = document.createElement("div");
+      card.className = "section-card";
       card.innerHTML = `
-        <div class="course-icon-chip" style="background:${theme.soft};color:${theme.color}">${ICONS[s.course]}</div>
-        <h4>${s.name}</h4>
-        <div class="course-tag">${s.teacher}</div>
+        <div class="course-icon-chip" style="background:${theme.soft};color:${theme.color}">${Common.iconFor(section.course)}</div>
+        <h4>${Common.escapeHtml(section.name)}</h4>
+        <div class="course-tag">${subtitle}</div>
         <div class="section-card-stats">
-          <div class="stat"><div class="num">${s.students}</div><div class="lbl">Alumnos</div></div>
-          <div class="stat"><div class="num">${s.avgXp.toLocaleString('es-PE')}</div><div class="lbl">XP promedio</div></div>
-          <div class="stat"><div class="num">${s.activity}%</div><div class="lbl">Actividad</div></div>
+          <div class="stat"><div class="num">${stats.students}</div><div class="lbl">Alumnos</div></div>
+          <div class="stat"><div class="num">${Common.formatNumber(stats.avgXp)}</div><div class="lbl">XP promedio</div></div>
+          <div class="stat"><div class="num">${stats.activity}%</div><div class="lbl">Actividad</div></div>
         </div>
-        <div class="avatar-stack">${stack}<span class="more">+${s.students - 3} alumnos</span></div>
+        <div class="avatar-stack">${stack}${moreLabel}</div>
         <div class="enter-row">Ver actividad
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
         </div>
       `;
-      card.addEventListener('click', () => openSection(s.id));
+      card.addEventListener("click", () => openSection(section.id));
       sectionGrid.appendChild(card);
     });
-}
-
-const filterChips = document.getElementById('filterChips');
-if(filterChips) {
-  filterChips.addEventListener('click', e=>{
-    const chip = e.target.closest('.chip');
-    if(!chip) return;
-    document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
-    chip.classList.add('active');
-    renderSectionGrid(chip.dataset.course);
-  });
-}
-
-/* ============== Render: detalle de sección ============== */
-const screenSelect = document.getElementById('screen-select');
-const screenDetail = document.getElementById('screen-detail');
-let currentRest = [];
-
-function openSection(id){
-  const s = sections.find(x => x.id === id);
-  if(!s) return;
-
-  const theme = COURSE_THEME[s.course];
-  const detailIconChip = document.getElementById('detailIconChip');
-  if(detailIconChip) {
-    detailIconChip.style.background = theme.soft;
-    detailIconChip.style.color = theme.color;
-    detailIconChip.innerHTML = ICONS[s.course];
   }
 
-  const detailTitle = document.getElementById('detailTitle');
-  if(detailTitle) detailTitle.textContent = s.name;
+  // ─── Detalle de sección ─────────────────────────────────────────────
+  function openSection(id) {
+    const section = Store.getSection(id);
+    if (!section) return;
+    currentSectionId = id;
 
-  const detailSubtitle = document.getElementById('detailSubtitle');
-  if(detailSubtitle) detailSubtitle.textContent = s.teacher;
+    const theme = Common.themeFor(section.course);
+    const stats = Store.computeStats(section);
 
-  const detailAvgXp = document.getElementById('detailAvgXp');
-  if(detailAvgXp) detailAvgXp.textContent = s.avgXp.toLocaleString('es-PE') + ' XP';
+    const iconChip = document.getElementById("detailIconChip");
+    if (iconChip) {
+      iconChip.style.background = theme.soft;
+      iconChip.style.color = theme.color;
+      iconChip.innerHTML = Common.iconFor(section.course);
+    }
 
-  const detailActivity = document.getElementById('detailActivity');
-  if(detailActivity) detailActivity.textContent = s.activity + '%';
+    setText("detailTitle", section.name);
+    setText(
+      "detailSubtitle",
+      [section.cycle, section.shift, section.schedule].filter(Boolean).join(" · ") || "Sin horario asignado"
+    );
+    setText("detailJoinValue", section.joinCode || "—");
+    setText("detailAvgXp", Common.formatNumber(stats.avgXp) + " XP");
+    setText("detailActivity", stats.activity + "%");
+    setText("detailCount", stats.students);
 
-  const detailCount = document.getElementById('detailCount');
-  if(detailCount) detailCount.textContent = s.students;
+    const dashLink = document.getElementById("detailDashboardLink");
+    if (dashLink) dashLink.href = `analytics.html?section=${encodeURIComponent(id)}`;
 
-  const sorted = [...s.list].sort((a,b)=>b.xp - a.xp);
-  const top3 = sorted.slice(0,3);
-  currentRest = sorted.slice(3);
+    renderActivities(section);
+    renderRanking(section);
 
-  const podium = document.getElementById('podium');
-  const medalCls = ['gold','silver','bronze'];
-  if(podium) {
-    podium.innerHTML = top3.map((st,i)=>{
-      const liga = ligaFor(st.xp);
-      return `
-        <div class="podium-card rank-${i+1}">
-          <div class="medal ${medalCls[i]}">${i+1}</div>
-          <div class="podium-avatar" style="background:${avatarColors[i % avatarColors.length]}">${initials(st.name)}</div>
-          <div class="podium-name">${st.name}</div>
-          <div class="podium-xp">${st.xp.toLocaleString('es-PE')} <span>XP</span></div>
+    if (screenSelect) screenSelect.classList.add("hidden");
+    if (screenDetail) screenDetail.classList.remove("hidden");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  // ─── Ranking (podio + lista) ────────────────────────────────────────
+  function renderRanking(section) {
+    const students = [...(section.students || [])].sort((a, b) => (b.xp || 0) - (a.xp || 0));
+    const podium = document.getElementById("podium");
+    const rankList = document.getElementById("rankList");
+    const search = document.getElementById("studentSearch");
+    if (search) search.value = "";
+
+    if (students.length === 0) {
+      if (podium) podium.innerHTML = "";
+      if (rankList) {
+        rankList.innerHTML =
+          '<div class="empty-row">Esta sección todavía no tiene alumnos inscritos. Comparte el código de unión para que se sumen.</div>';
+      }
+      currentRest = [];
+      return;
+    }
+
+    const top3 = students.slice(0, 3);
+    currentRest = students.slice(3);
+    const medalCls = ["gold", "silver", "bronze"];
+
+    if (podium) {
+      podium.innerHTML = top3
+        .map((st, i) => {
+          const liga = Common.ligaFor(st.xp || 0);
+          return `
+        <div class="podium-card rank-${i + 1}">
+          <div class="medal ${medalCls[i]}">${i + 1}</div>
+          <div class="podium-avatar" style="background:${Common.avatarColor(i)}">${Common.initials(st.name)}</div>
+          <div class="podium-name">${Common.escapeHtml(st.name)}</div>
+          <div class="podium-xp">${Common.formatNumber(st.xp || 0)} <span>XP</span></div>
           <div class="podium-liga rank-liga ${liga.cls}">${liga.label}</div>
         </div>`;
-    }).join('');
+        })
+        .join("");
+    }
+    renderRestList(currentRest);
   }
 
-  const studentSearch = document.getElementById('studentSearch');
-  if(studentSearch) studentSearch.value = '';
-  renderRestList(currentRest);
-
-  if(screenSelect) screenSelect.classList.add('hidden');
-  if(screenDetail) screenDetail.classList.remove('hidden');
-  window.scrollTo({top:0,behavior:'smooth'});
-}
-
-function renderRestList(list){
-  const rankList = document.getElementById('rankList');
-  if(!rankList) return;
-  if(list.length === 0){
-    rankList.innerHTML = '<div class="empty-row">No se encontraron alumnos con ese nombre.</div>';
-    return;
-  }
-  rankList.innerHTML = list.map((st,i)=>{
-    const liga = ligaFor(st.xp);
-    return `
+  function renderRestList(list) {
+    const rankList = document.getElementById("rankList");
+    if (!rankList) return;
+    if (list.length === 0) {
+      rankList.innerHTML = '<div class="empty-row">No se encontraron alumnos con ese nombre.</div>';
+      return;
+    }
+    rankList.innerHTML = list
+      .map((st, i) => {
+        const liga = Common.ligaFor(st.xp || 0);
+        return `
       <div class="rank-row">
-        <div class="rank-num">${i+4}</div>
-        <div class="rank-avatar" style="background:${avatarColors[(i+3) % avatarColors.length]}">${initials(st.name)}</div>
+        <div class="rank-num">${i + 4}</div>
+        <div class="rank-avatar" style="background:${Common.avatarColor(i + 3)}">${Common.initials(st.name)}</div>
         <div>
-          <div class="rank-name">${st.name}</div>
-          <div class="rank-activity">${st.activity}</div>
+          <div class="rank-name">${Common.escapeHtml(st.name)}</div>
+          <div class="rank-activity">${Common.escapeHtml(st.activity || "")}</div>
         </div>
         <div class="rank-liga ${liga.cls}">${liga.label}</div>
-        <div class="rank-xp">${st.xp.toLocaleString('es-PE')}<span>XP</span></div>
+        <div class="rank-xp">${Common.formatNumber(st.xp || 0)}<span>XP</span></div>
       </div>`;
-  }).join('');
-}
+      })
+      .join("");
+  }
 
-const studentSearch = document.getElementById('studentSearch');
-if(studentSearch) {
-  studentSearch.addEventListener('input', e=>{
-    const q = e.target.value.trim().toLowerCase();
-    const filtered = currentRest.filter(st => st.name.toLowerCase().includes(q));
-    renderRestList(filtered);
-  });
-}
+  // ─── Actividades (tareas / retos / quizzes) ─────────────────────────
+  function renderActivities(section) {
+    const list = document.getElementById("activitiesList");
+    const count = document.getElementById("activitiesCount");
+    const activities = section.activities || [];
+    if (count) count.textContent = activities.length ? `${activities.length}` : "";
+    if (!list) return;
 
-document.querySelectorAll('.toolbar-tab').forEach(tab=>{
-  tab.addEventListener('click', ()=>{
-    document.querySelectorAll('.toolbar-tab').forEach(t=>t.classList.remove('active'));
-    tab.classList.add('active');
-  });
-});
+    if (activities.length === 0) {
+      list.innerHTML =
+        '<div class="empty-row">Aún no has asignado actividades. Usa “Asignar tarea”, “Crear reto” o “Crear quiz”.</div>';
+      return;
+    }
 
-const backLink = document.getElementById('backLink');
-if(backLink) {
-  backLink.addEventListener('click', ()=>{
-    if(screenDetail) screenDetail.classList.add('hidden');
-    if(screenSelect) screenSelect.classList.remove('hidden');
-    window.scrollTo({top:0,behavior:'smooth'});
-  });
-}
+    list.innerHTML = activities
+      .map((act) => {
+        const meta = Common.ACTIVITY_TYPES[act.type] || { label: act.type, icon: "•" };
+        const due = act.dueDate ? `Entrega ${Common.formatDate(act.dueDate)}` : "Sin fecha límite";
+        const topic = act.topic ? ` · ${Common.escapeHtml(act.topic)}` : "";
+        return `
+      <div class="activity-row">
+        <div class="activity-ico">${meta.icon}</div>
+        <div class="activity-main">
+          <div class="activity-title">${Common.escapeHtml(act.title)}</div>
+          <div class="activity-sub">${due}${topic}</div>
+        </div>
+        <span class="badge ${act.type}">${meta.label}</span>
+        <span class="activity-points">${act.points ? `+${act.points} XP` : ""}</span>
+        <button class="activity-del" data-del-activity="${act.id}" aria-label="Eliminar actividad" title="Eliminar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2m2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>
+        </button>
+      </div>`;
+      })
+      .join("");
+  }
 
-/* ============== Init ============== */
-renderSectionGrid('todas');
+  // ─── Modal: crear sección ───────────────────────────────────────────
+  const sectionForm = document.getElementById("sectionForm");
+
+  function populateCourseSelect() {
+    const select = document.getElementById("sec-course");
+    if (!select) return;
+    Common.COURSE_LIST.forEach((course) => {
+      const opt = document.createElement("option");
+      opt.value = course;
+      opt.textContent = course;
+      select.appendChild(opt);
+    });
+  }
+
+  function openCreateSection() {
+    if (sectionForm) {
+      sectionForm.reset();
+      UI.clearFieldErrors(sectionForm);
+    }
+    UI.openModal("modal-section");
+  }
+
+  function handleCreateSection(e) {
+    e.preventDefault();
+    const data = Object.fromEntries(new FormData(sectionForm).entries());
+    const result = Store.createSection(data);
+
+    if (!result.ok) {
+      UI.showFieldErrors(sectionForm, result.errors);
+      return;
+    }
+
+    UI.closeModal("modal-section");
+    UI.toast(`Sección “${result.section.name}” creada · código ${result.section.joinCode}`);
+
+    currentFilter = "todas";
+    renderFilterChips();
+    renderSectionGrid();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  // ─── Modal: actividad ───────────────────────────────────────────────
+  const activityForm = document.getElementById("activityForm");
+  const activityTypeInput = document.getElementById("activityType");
+
+  function selectActivityType(type) {
+    if (activityTypeInput) activityTypeInput.value = type;
+    document.querySelectorAll("#activityTypePicker .type-option").forEach((opt) => {
+      opt.classList.toggle("active", opt.dataset.type === type);
+    });
+    const meta = Common.ACTIVITY_TYPES[type] || { verb: "Asignar actividad" };
+    setText("modal-activity-title", meta.verb);
+    const submit = document.getElementById("activitySubmit");
+    if (submit) submit.textContent = type === "tarea" ? "Asignar" : "Crear";
+    const icon = document.getElementById("activityIcon");
+    if (icon) icon.className = "tmodal-icon " + (type === "quiz" ? "" : "amber");
+  }
+
+  function openActivityModal(type) {
+    if (!currentSectionId) return;
+    const section = Store.getSection(currentSectionId);
+    if (!section) return;
+    if (activityForm) {
+      activityForm.reset();
+      UI.clearFieldErrors(activityForm);
+    }
+    selectActivityType(type || "tarea");
+    setText("activitySectionName", section.name);
+    UI.openModal("modal-activity");
+  }
+
+  function handleCreateActivity(e) {
+    e.preventDefault();
+    if (!currentSectionId) return;
+    const data = Object.fromEntries(new FormData(activityForm).entries());
+    const result = Store.addActivity(currentSectionId, data);
+
+    if (!result.ok) {
+      UI.showFieldErrors(activityForm, result.errors);
+      return;
+    }
+    UI.closeModal("modal-activity");
+    const meta = Common.ACTIVITY_TYPES[result.activity.type] || { label: "Actividad" };
+    UI.toast(`${meta.label} “${result.activity.title}” asignada a la sección`);
+
+    const section = Store.getSection(currentSectionId);
+    renderActivities(section);
+  }
+
+  // ─── Helpers ────────────────────────────────────────────────────────
+  function setText(id, value) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = value;
+  }
+
+  // ─── Wiring de eventos ──────────────────────────────────────────────
+  function bindEvents() {
+    // Chips de filtro (delegación)
+    if (filterChips) {
+      filterChips.addEventListener("click", (e) => {
+        const chip = e.target.closest(".chip");
+        if (!chip) return;
+        filterChips.querySelectorAll(".chip").forEach((c) => c.classList.remove("active"));
+        chip.classList.add("active");
+        currentFilter = chip.dataset.course;
+        renderSectionGrid();
+      });
+    }
+
+    // Abrir modal crear sección
+    document.getElementById("openCreateSection")?.addEventListener("click", openCreateSection);
+    document.getElementById("openCreateSectionEmpty")?.addEventListener("click", openCreateSection);
+    if (sectionForm) sectionForm.addEventListener("submit", handleCreateSection);
+
+    // Volver al listado
+    document.getElementById("backLink")?.addEventListener("click", () => {
+      if (screenDetail) screenDetail.classList.add("hidden");
+      if (screenSelect) screenSelect.classList.remove("hidden");
+      renderSectionGrid();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+
+    // Botones de nueva actividad (detalle)
+    document.querySelectorAll("[data-new-activity]").forEach((btn) => {
+      btn.addEventListener("click", () => openActivityModal(btn.dataset.newActivity));
+    });
+    if (activityForm) activityForm.addEventListener("submit", handleCreateActivity);
+    document.querySelectorAll("#activityTypePicker .type-option").forEach((opt) => {
+      opt.addEventListener("click", () => selectActivityType(opt.dataset.type));
+    });
+
+    // Eliminar actividad (delegación en la lista)
+    document.getElementById("activitiesList")?.addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-del-activity]");
+      if (!btn || !currentSectionId) return;
+      if (Store.removeActivity(currentSectionId, btn.dataset.delActivity)) {
+        renderActivities(Store.getSection(currentSectionId));
+        UI.toast("Actividad eliminada", "info");
+      }
+    });
+
+    // Copiar código de unión
+    document.getElementById("copyJoinCode")?.addEventListener("click", async () => {
+      const code = document.getElementById("detailJoinValue")?.textContent || "";
+      const ok = await UI.copy(code);
+      UI.toast(ok ? `Código ${code} copiado` : "No se pudo copiar el código", ok ? "success" : "info");
+    });
+
+    // Búsqueda de alumnos
+    document.getElementById("studentSearch")?.addEventListener("input", (e) => {
+      const q = e.target.value.trim().toLowerCase();
+      renderRestList(currentRest.filter((st) => st.name.toLowerCase().includes(q)));
+    });
+
+    // Tabs de periodo (estado visual)
+    document.querySelectorAll(".toolbar-tab").forEach((tab) => {
+      tab.addEventListener("click", () => {
+        document.querySelectorAll(".toolbar-tab").forEach((t) => t.classList.remove("active"));
+        tab.classList.add("active");
+      });
+    });
+
+    // Modales: cerrar por backdrop / botones
+    UI.wireModal("modal-section");
+    UI.wireModal("modal-activity");
+  }
+
+  // ─── Init ───────────────────────────────────────────────────────────
+  async function init() {
+    if (!Store || !Common || !UI) {
+      console.error("[classrooms] Dependencias del panel docente no cargadas.");
+      return;
+    }
+    await Store.init();
+    populateCourseSelect();
+    renderFilterChips();
+    renderSectionGrid();
+    bindEvents();
+
+    // Deep-link: ?section=ID abre el detalle; ?create=1 abre el modal.
+    const params = new URLSearchParams(window.location.search);
+    const target = params.get("section");
+    if (target && Store.getSection(target)) {
+      openSection(target);
+    } else if (params.get("create") === "1") {
+      openCreateSection();
+    }
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+})();
