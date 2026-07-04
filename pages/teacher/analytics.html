@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EduQuest · Rendimiento</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="../../assets/css/global/reset.css">
+<link rel="stylesheet" href="../../assets/css/global/variables.css">
+<link rel="stylesheet" href="../../assets/css/teacher/dashboard.css">
+<link rel="stylesheet" href="../../assets/css/teacher/classrooms.css">
+<link rel="stylesheet" href="../../assets/css/teacher/teacher-ui.css">
+<link rel="stylesheet" href="../../assets/css/teacher/analytics.css">
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+    <link rel="icon" type="image/x-icon" href="../../assets/img/logos/eduquest-logo.ico">
+</head>
+<body>
+
+<div class="app">
+
+  <div id="sidebar-container" data-path="../../components/sidebar-profesor.html"></div>
+
+  <div class="main-wrap">
+
+    <div id="topbar-container" data-path="../../components/navbar-teacher.html"></div>
+
+    <div class="content content-full">
+
+      <div class="page-head page-head-row">
+        <div>
+          <h2>Dashboard de rendimiento</h2>
+          <p>Métricas grupales del aula y rendimiento individual de cada alumno.</p>
+        </div>
+        <a class="btn btn-line btn-icon" id="goReports" href="reports.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8M16 17H8M10 9H8"/></svg>
+          Exportar reporte
+        </a>
+      </div>
+
+      <!-- Selector de sección -->
+      <div class="section-switcher">
+        <label for="sectionSelect">Sección</label>
+        <select id="sectionSelect"></select>
+        <span class="switcher-meta" id="switcherMeta"></span>
+      </div>
+
+      <!-- Estado vacío (sin secciones) -->
+      <div class="empty-state hidden" id="analyticsEmpty">
+        <div class="empty-ico">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><rect x="7" y="13" width="3" height="5"/><rect x="12" y="9" width="3" height="9"/><rect x="17" y="6" width="3" height="12"/></svg>
+        </div>
+        <h3>No hay datos de rendimiento</h3>
+        <p>Crea una sección e inscribe alumnos para visualizar sus métricas de rendimiento aquí.</p>
+        <a class="btn btn-purple" href="classrooms.html?create=1">Crear sección</a>
+      </div>
+
+      <div id="analyticsBody">
+        <!-- KPIs -->
+        <div class="kpi-grid" id="kpiGrid"></div>
+
+        <!-- Gráficos -->
+        <div class="charts-grid">
+          <div class="panel chart-panel">
+            <div class="chart-head">
+              <h3>Aciertos y errores por tema</h3>
+              <span class="chart-sub">Distribución de respuestas del aula</span>
+            </div>
+            <div class="chart-box"><canvas id="topicChart"></canvas></div>
+          </div>
+
+          <div class="panel chart-panel">
+            <div class="chart-head">
+              <h3>Distribución de rendimiento</h3>
+              <span class="chart-sub">Alumnos por banda de aciertos</span>
+            </div>
+            <div class="chart-box"><canvas id="distChart"></canvas></div>
+          </div>
+
+          <div class="panel chart-panel">
+            <div class="chart-head">
+              <h3>Actividad semanal</h3>
+              <span class="chart-sub">Alumnos activos y entregas</span>
+            </div>
+            <div class="chart-box"><canvas id="activityChart"></canvas></div>
+          </div>
+
+          <div class="panel chart-panel">
+            <div class="chart-head">
+              <h3>Comparativa entre secciones</h3>
+              <span class="chart-sub">Promedio de aciertos por aula</span>
+            </div>
+            <div class="chart-box"><canvas id="compareChart"></canvas></div>
+          </div>
+        </div>
+
+        <!-- Tabla de alumnos -->
+        <div class="panel students-panel">
+          <div class="panel-head-row">
+            <div class="panel-icon-trophy purple">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            </div>
+            <h3>Rendimiento por alumno</h3>
+            <div class="mini-search students-search">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input type="text" id="studentTableSearch" placeholder="Buscar alumno...">
+            </div>
+          </div>
+          <div class="table-scroll">
+            <table class="data-table" id="studentsTable">
+              <thead>
+                <tr>
+                  <th>Alumno</th>
+                  <th class="num">XP</th>
+                  <th>Aciertos</th>
+                  <th>Avance</th>
+                  <th class="num">Simulacros</th>
+                  <th>Estado</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="studentsTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ============ MODAL: dashboard individual del alumno ============ -->
+<div class="tmodal-overlay" id="modal-student" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="modal-student-title">
+  <div class="tmodal tmodal-student">
+    <div class="tmodal-head">
+      <div class="tmodal-icon" id="studentAvatar">··</div>
+      <div class="tmodal-titles">
+        <div class="tmodal-title" id="modal-student-title">Alumno</div>
+        <div class="tmodal-subtitle" id="studentSubtitle">—</div>
+      </div>
+      <button class="tmodal-close" data-close-modal aria-label="Cerrar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="tmodal-body">
+      <div class="student-kpis" id="studentKpis"></div>
+      <div class="student-chart-head">
+        <h4>Aciertos por tema</h4>
+        <span id="studentChartSub">—</span>
+      </div>
+      <div class="chart-box student-chart-box"><canvas id="studentTopicChart"></canvas></div>
+      <div class="student-activity" id="studentActivity"></div>
+    </div>
+    <div class="tmodal-foot">
+      <button type="button" class="btn btn-ghost" data-close-modal>Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<script src="../../assets/js/utils/component-loader.js"></script>
+<script src="../../assets/js/core/storage.js"></script>
+<script src="../../assets/js/core/user-manager.js"></script>
+<script src="../../assets/js/core/auth.js"></script>
+<script src="../../assets/js/core/router.js"></script>
+<script src="../../assets/js/core/current-user.js"></script>
+<script src="../../assets/js/core/app.js"></script>
+<script src="../../assets/js/teacher/dashboard.js"></script>
+<script src="../../assets/js/teacher/teacher-common.js"></script>
+<script src="../../assets/js/teacher/teacher-store.js"></script>
+<script src="../../assets/js/teacher/teacher-ui.js"></script>
+<script src="../../assets/js/teacher/analytics.js"></script>
+
+</body>
+</html>
