@@ -382,6 +382,11 @@ window.toggleCircleMembership = async function(circleId) {
     updateBannerCount();
     renderCirclesStream();
     renderMisCirculos();
+    
+    // Si acaba de unirse, abrir la carta automáticamente
+    if (!alreadyMember) {
+        setTimeout(() => openCircleDetailDrawer(circleId), 100);
+    }
 };
 
 // ============================================================
@@ -391,15 +396,22 @@ window.openCreateCircleModal = async function() {
     const modal = document.getElementById('create-circle-modal');
     if (!modal) return;
 
-    // Poblar el select de materias (principal y tags)
     const select = document.getElementById('modal-circle-theme');
-    const tagsSelect = document.getElementById('modal-circle-tags');
+    const tagsContainer = document.getElementById('modal-tags-container');
     if (select && allSubjects.length) {
         select.innerHTML = `<option value="">— Selecciona una materia —</option>`;
-        if (tagsSelect) tagsSelect.innerHTML = '';
+        if (tagsContainer) tagsContainer.innerHTML = '';
         allSubjects.forEach(s => {
             select.innerHTML += `<option value="${s.id}">${s.icon || ''} ${s.name}</option>`;
-            if (tagsSelect) tagsSelect.innerHTML += `<option value="${s.id}">${s.icon || ''} ${s.name}</option>`;
+            
+            if (tagsContainer) {
+                const chip = document.createElement('div');
+                chip.className = 'tag-chip';
+                chip.dataset.value = s.id;
+                chip.innerHTML = `${s.icon || ''} ${s.name}`;
+                chip.onclick = function() { this.classList.toggle('active'); };
+                tagsContainer.appendChild(chip);
+            }
         });
     }
 
@@ -410,7 +422,8 @@ window.openCreateCircleModal = async function() {
 window.closeCreateCircleModal = function() {
     const modal = document.getElementById('create-circle-modal');
     if (modal) modal.classList.remove('open');
-    document.getElementById('create-circle-form')?.reset();
+    document.getElementById('modal-circle-form')?.reset();
+    document.querySelectorAll('#modal-tags-container .tag-chip').forEach(c => c.classList.remove('active'));
     clearModalError();
 };
 
@@ -426,14 +439,12 @@ window.submitCreateCircle = async function(e) {
     const maxVal   = document.getElementById('modal-circle-max-members')?.value;
     const maxMembers = maxVal ? parseInt(maxVal, 10) : null;
     
-    // Obtener tags
-    const tagsSelect = document.getElementById('modal-circle-tags');
-    const tags = tagsSelect ? Array.from(tagsSelect.selectedOptions).map(opt => opt.value).filter(val => val !== theme) : [];
+    const activeChips = document.querySelectorAll('#modal-tags-container .tag-chip.active');
+    const tags = Array.from(activeChips).map(chip => chip.dataset.value).filter(val => val !== theme);
 
     if (!name)  return showModalError('El nombre del círculo es obligatorio.');
     if (!theme) return showModalError('Selecciona una materia para el círculo.');
 
-    // Verificar duplicado por nombre
     const dupes = await CirclesManager.getCirclesByOwnerAndName(userId, name);
     if (dupes && dupes.length) return showModalError('Ya tienes un círculo con ese nombre.');
 
@@ -450,13 +461,16 @@ window.submitCreateCircle = async function(e) {
 
     // Actualizar estado local
     allCircles.unshift(newCircle);
-    userCircles.push({ id_circle: newCircle.id, id_student: userId, role: 'admin' });
+    userCircles.push({ id_circle: newCircle.id, id_student: userId, role: 'owner', "joined on": new Date().toISOString() });
 
     closeCreateCircleModal();
     updateBannerCount();
     renderFilterTabs();
     renderCirclesStream();
     renderMisCirculos();
+    
+    // Abrir automáticamente la carta del grupo
+    setTimeout(() => openCircleDetailDrawer(newCircle.id), 100);
 };
 
 function showModalError(msg) {
@@ -615,6 +629,9 @@ window.doJoinByCode = async function() {
     renderCirclesStream();
     renderMisCirculos();
     document.getElementById('code-search-input').value = '';
+    
+    // Abrir el drawer del círculo recién unido
+    setTimeout(() => openCircleDetailDrawer(codeResultCircle.id), 100);
 };
 
 /**
