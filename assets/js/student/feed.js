@@ -10,9 +10,20 @@ let _selectedImageData = null; // base64 de la imagen seleccionada
 let _selectedImageMime = null; // mime type
 let _selectedTag = null; // etiqueta seleccionada por el usuario
 let _allPosts = [];   // caché de todos los posts (para búsqueda de similares)
+let _cachedPosts = []; // caché de posts mapeados para filtrado
 let _allComments = [];   // caché de todos los comentarios
 let _similarSearchTimer = null; // debounce para búsqueda de similares
 let _currentUserId = null; // id del usuario en sesión
+let _feedFilterDebounce = null; // debounce para filtro de texto
+
+// Filtros activos del foro
+let _activeFilters = {
+    course: 'todos',
+    type: 'todos',
+    author: 'todos',
+    otros: 'todos',
+    search: ''
+};
 
 // Formatos de imagen válidos
 const VALID_IMAGE_TYPES = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/webp'];
@@ -24,6 +35,7 @@ const MAX_IMAGE_SIZE_MB = 5;
 document.addEventListener('DOMContentLoaded', () => {
     loadFeedPosts();
     initPostInputListener();
+    loadCustomTags();
 
     // Cerrar dropdowns al hacer clic fuera
     document.addEventListener('click', (e) => {
@@ -43,15 +55,12 @@ async function loadFeedPosts() {
     if (!container) return;
 
     try {
-        // Obtenemos los posts desde nuestra nueva función RPC
         const { data: enrichedPosts, error } = await supabase.rpc('get_forum_feed', { limit_val: 50, offset_val: 0 });
         
         if (error) {
             console.error("Error cargando feed desde Supabase:", error);
             return;
         }
-
-        container.innerHTML = '';
 
         // Guardar userId del usuario en sesión ANTES de renderizar
         const user = window.CurrentUserService ? CurrentUserService.getProfile() : null;
@@ -62,25 +71,25 @@ async function loadFeedPosts() {
             return;
         }
 
-        // Renderizar usando los datos de Supabase y renderPostCard
-        enrichedPosts.forEach(post => {
-            // Mapeamos de Supabase snake_case a camelCase para renderPostCard
-            const mappedPost = {
-                id: post.id,
-                authorId: post.author_id,
-                authorAvatar: post.author_avatar,
-                authorName: post.author_name,
-                authorTarget: post.author_target,
-                tag: post.tag,
-                content: post.content,
-                imageUrl: post.image_url,
-                upvotes: post.upvotes,
-                timeText: post.created_at ? formatTime(post.created_at) : 'Reciente',
-                commentsCount: parseInt(post.comments_count) || 0,
-                isLikedByMe: post.is_liked_by_me || false
-            };
-            renderPostCard(mappedPost, container);
-        });
+        // Mapear y guardar en caché para filtros
+        _cachedPosts = enrichedPosts.map(post => ({
+            id: post.id,
+            authorId: post.author_id,
+            authorAvatar: post.author_avatar,
+            authorName: post.author_name,
+            authorTarget: post.author_target,
+            authorRole: post.author_role || 'student', // 'student' | 'teacher'
+            tag: post.tag,
+            content: post.content,
+            imageUrl: post.image_url,
+            upvotes: post.upvotes,
+            timeText: post.created_at ? formatTime(post.created_at) : 'Reciente',
+            commentsCount: parseInt(post.comments_count) || 0,
+            isLikedByMe: post.is_liked_by_me || false
+        }));
+
+        // Renderizar con filtros actuales
+        renderFilteredPosts();
 
     } catch (error) {
         console.error('Error cargando el feed:', error);
@@ -94,9 +103,13 @@ function renderPostCard(post, container) {
     postCard.className = 'feed-card';
     postCard.id = `post-card-${post.id}`;
 
-    const isDuda = (post.tag || '').toLowerCase().includes('duda');
-    const tagClass = isDuda ? 'post-tag duda-tag' : 'post-tag';
-    const tagLabel = post.tag || 'General';
+    const rawTags = post.tag || 'General';
+    const tagHtml = rawTags.split(',').map(t => {
+        const cleaned = t.trim();
+        const isDuda = cleaned.toLowerCase().includes('duda');
+        const tagClass = isDuda ? 'post-tag duda-tag' : 'post-tag';
+        return `<span class="${tagClass}">${cleaned}</span>`;
+    }).join(' ');
 
     // Imagen adjunta
     const imageHtml = post.imageUrl ? `
@@ -119,9 +132,11 @@ function renderPostCard(post, container) {
     const upvoteActive = post.isLikedByMe ? 'active' : '';
     const upvoteText = post.isLikedByMe ? `🔥 ¡Apoyado! (${post.upvotes || 0})` : `🔼 Útil (${post.upvotes || 0})`;
 
+    const { emoji: postEmoji, color: postColor } = window.parseAvatar ? window.parseAvatar(post.authorAvatar) : { emoji: post.authorAvatar || '👤', color: 'var(--indigo)' };
+
     postCard.innerHTML = `
         <div class="card-header">
-            <div class="author-avatar">${post.authorAvatar || '👤'}</div>
+            <div class="author-avatar" style="background-color: ${postColor};">${postEmoji}</div>
             <div class="author-info">
                 <h4>${post.authorName || post.author || 'Usuario'}
                     ${post.authorTarget ? `<span class="user-target">${post.authorTarget}</span>` : ''}
@@ -130,7 +145,9 @@ function renderPostCard(post, container) {
                 <span class="post-time">${post.timeText || 'Reciente'}</span>
             </div>
             ${deletePostBtn}
-            <span class="${tagClass}">${tagLabel}</span>
+            <div class="post-tags-container" style="display: flex; gap: 6px; flex-wrap: wrap; margin-left: 8px;">
+                ${tagHtml}
+            </div>
         </div>
         <div class="card-body">
             <p>${post.content}</p>
@@ -204,9 +221,12 @@ async function renderComments(postId, pinnedId) {
             commentEl.className = `comment-item${isPinned ? ' pinned-comment' : ''}`;
             commentEl.id = `comment-item-${comment.id}`;
 
-            // Acciones: fijar y eliminar
+                    // Acciones: fijar y eliminar
+            // ✔ FIX: Solo el autor del POST puede fijar respuestas en sus publicaciones
             const isCommentAuthor = _currentUserId && comment.author_id === _currentUserId;
-            const canPin = _currentUserId != null;
+            const isPostAuthor = _currentUserId && _cachedPosts.some(p => p.id === postId && p.authorId === _currentUserId);
+            const canPin = isPostAuthor; // Solo el dueño del post puede fijar
+            const canDeleteComment = isCommentAuthor; // Solo el autor del comentario puede borrarlo
 
             let actionsHtml = '';
             const actionButtons = [];
@@ -224,10 +244,11 @@ async function renderComments(postId, pinnedId) {
             
             const authorName = comment.profiles?.name || 'Usuario';
             const authorAvatar = comment.profiles?.avatar_url || '👤';
+            const { emoji: commentEmoji, color: commentColor } = window.parseAvatar ? window.parseAvatar(authorAvatar) : { emoji: authorAvatar, color: 'var(--indigo)' };
 
             commentEl.innerHTML = `
                 ${actionsHtml}
-                <div class="comment-avatar">${authorAvatar}</div>
+                <div class="comment-avatar" style="background-color: ${commentColor};">${commentEmoji}</div>
                 <div class="comment-body">
                     <div class="comment-author-row">
                         <span class="comment-author">${authorName}</span>
@@ -379,8 +400,8 @@ async function addNewPost() {
     const user = window.CurrentUserService ? CurrentUserService.getProfile() : null;
     if (!user) return;
 
-    // Determinar etiqueta
-    const tag = _selectedTag || '#Duda';
+    // Determinar etiquetas concatenadas
+    const tag = _selectedTags.length > 0 ? _selectedTags.map(t => t.name).join(', ') : '#Duda';
 
     // Insertar en Supabase
     const { error } = await supabase.from('forum_posts').insert({
@@ -401,7 +422,7 @@ async function addNewPost() {
     input.value = '';
     _selectedImageData = null;
     _selectedImageMime = null;
-    _selectedTag = null;
+    _selectedTags = [];
 
     // Cerrar panels
     const uploadZone = document.getElementById('image-upload-zone');
@@ -414,8 +435,8 @@ async function addNewPost() {
     if (attachBtn) attachBtn.classList.remove('active');
 
     // Resetear etiqueta
-    const tagLabel = document.getElementById('selected-tag-label');
-    if (tagLabel) tagLabel.textContent = 'Agregar etiqueta';
+    const container = document.getElementById('selected-tags-container');
+    if (container) container.innerHTML = '';
 
     // Ocultar error de imagen si había
     hideImageError();
@@ -635,21 +656,193 @@ document.addEventListener('keydown', (e) => {
 /* ========================================================
    SELECTOR DE ETIQUETA
    ======================================================== */
+/* ========================================================
+   SELECTOR DE ETIQUETAS MÚLTIPLES Y GESTIÓN DE PERSONALIZADAS
+   ======================================================== */
+let _selectedTags = []; // Array de objetos { name, icon }
+
 function toggleTagDropdown() {
     const dropdown = document.getElementById('tag-dropdown');
     if (dropdown) dropdown.classList.toggle('open');
 }
 
 function selectTag(tagName, tagIcon) {
-    _selectedTag = tagName;
-    const label = document.getElementById('selected-tag-label');
-    if (label) label.textContent = `${tagIcon} ${tagName}`;
+    // Si ya está seleccionada, removerla (toggle)
+    const index = _selectedTags.findIndex(t => t.name === tagName);
+    if (index !== -1) {
+        _selectedTags.splice(index, 1);
+    } else {
+        // Permitir un límite razonable de etiquetas, p. ej. 3
+        if (_selectedTags.length >= 3) {
+            if (window.app?.showToast) window.app.showToast('⚠️ Máximo 3 etiquetas por publicación', 'error');
+            return;
+        }
+        _selectedTags.push({ name: tagName, icon: tagIcon });
+    }
 
-    const dropdown = document.getElementById('tag-dropdown');
-    if (dropdown) dropdown.classList.remove('open');
+    renderSelectedTagsBadge();
+    updateActiveTagOptionsVisuals();
+}
+
+function renderSelectedTagsBadge() {
+    const container = document.getElementById('selected-tags-container');
+    if (!container) return;
+
+    container.innerHTML = '';
+
+    if (_selectedTags.length === 0) {
+        const tagBtn = document.getElementById('btn-tag-selector');
+        if (tagBtn) tagBtn.classList.remove('active');
+        return;
+    }
+
+    // Renderizar tags como pastillas ordenadas al lado del botón de selección
+    _selectedTags.forEach(t => {
+        const pill = document.createElement('span');
+        pill.className = 'selected-tag-pill';
+        pill.innerHTML = `
+            ${t.icon} ${t.name}
+            <span onclick="selectTag('${t.name.replace(/'/g, "\\'")}', '${t.icon}')" style="cursor: pointer; font-weight: bold; margin-left: 4px; color: var(--red);">✕</span>
+        `;
+        container.appendChild(pill);
+    });
 
     const tagBtn = document.getElementById('btn-tag-selector');
     if (tagBtn) tagBtn.classList.add('active');
+}
+
+function updateActiveTagOptionsVisuals() {
+    document.querySelectorAll('#tag-dropdown .tag-option').forEach(opt => {
+        // Encontrar si este option está en la lista de seleccionados
+        const optText = opt.textContent || '';
+        const isSelected = _selectedTags.some(t => optText.includes(t.name));
+        opt.classList.toggle('selected-tag-option', isSelected);
+    });
+}
+
+function loadCustomTags() {
+    const customTags = JSON.parse(localStorage.getItem('eduquest_custom_tags') || '[]');
+    customTags.forEach(tag => {
+        addTagOptionToDOM(tag.name, tag.icon);
+        addFilterChipToDOM(tag.name, tag.icon);
+    });
+}
+
+function createCustomTag() {
+    const input = document.getElementById('custom-tag-input');
+    if (!input) return;
+
+    const tagName = input.value.trim();
+    if (!tagName) {
+        if (window.app?.showToast) window.app.showToast('⚠️ Escribe el nombre de la etiqueta', 'error');
+        return;
+    }
+
+    const customTags = JSON.parse(localStorage.getItem('eduquest_custom_tags') || '[]');
+    if (customTags.some(t => t.name.toLowerCase() === tagName.toLowerCase())) {
+        if (window.app?.showToast) window.app.showToast('⚠️ Esa etiqueta ya existe', 'error');
+        return;
+    }
+
+    const tagIcon = '🏷️';
+    const newTag = { name: tagName, icon: tagIcon };
+    customTags.push(newTag);
+    localStorage.setItem('eduquest_custom_tags', JSON.stringify(customTags));
+
+    addTagOptionToDOM(tagName, tagIcon);
+    addFilterChipToDOM(tagName, tagIcon);
+
+    selectTag(tagName, tagIcon);
+    input.value = '';
+
+    if (window.app?.showToast) window.app.showToast(`✨ Etiqueta "${tagName}" creada`, 'success');
+}
+
+function deleteCustomTag(name, event) {
+    if (event) event.stopPropagation();
+
+    if (!confirm(`¿Deseas eliminar la etiqueta "${name}"? Se quitará de tu lista y tus filtros.`)) return;
+
+    // Remover de localStorage
+    let customTags = JSON.parse(localStorage.getItem('eduquest_custom_tags') || '[]');
+    customTags = customTags.filter(t => t.name !== name);
+    localStorage.setItem('eduquest_custom_tags', JSON.stringify(customTags));
+
+    // Deseleccionar si estaba seleccionada
+    const index = _selectedTags.findIndex(t => t.name === name);
+    if (index !== -1) {
+        _selectedTags.splice(index, 1);
+        renderSelectedTagsBadge();
+    }
+
+    // Remover del DOM (Selector dropdown - Categoría Otros)
+    const options = document.querySelectorAll('#tag-options-otros .tag-option');
+    options.forEach(opt => {
+        if (opt.textContent.includes(name)) opt.remove();
+    });
+
+    // Ocultar encabezado Otros si no quedan etiquetas
+    const otrosContainer = document.getElementById('tag-options-otros');
+    const otrosHeader = document.getElementById('otros-header');
+    if (otrosContainer && otrosHeader && otrosContainer.children.length === 0) {
+        otrosHeader.style.display = 'none';
+    }
+
+    // Remover del DOM (Filtros de búsqueda - Grupo Otros)
+    const chips = document.querySelectorAll('#filter-chips-otros .feed-filter-chip:not([data-val="todos"])');
+    chips.forEach(chip => {
+        if (chip.getAttribute('data-val') === name) chip.remove();
+    });
+
+    // Ocultar grupo Otros en filtros si no quedan chips custom
+    const otrosGroup = document.getElementById('filter-group-otros');
+    const otrosChipsContainer = document.getElementById('filter-chips-otros');
+    if (otrosGroup && otrosChipsContainer) {
+        const customChips = otrosChipsContainer.querySelectorAll('.feed-filter-chip:not([data-val="todos"])');
+        if (customChips.length === 0) otrosGroup.style.display = 'none';
+    }
+
+    if (window.app?.showToast) window.app.showToast(`🗑️ Etiqueta "${name}" eliminada`, 'success');
+}
+
+function addTagOptionToDOM(name, icon) {
+    const otrosContainer = document.getElementById('tag-options-otros');
+    const otrosHeader = document.getElementById('otros-header');
+    if (!otrosContainer) return;
+
+    const opt = document.createElement('div');
+    opt.className = 'tag-option';
+    opt.setAttribute('onclick', `selectTag('${name.replace(/'/g, "\\'")}', '${icon}')`);
+    
+    opt.innerHTML = `
+        <span style="flex:1;">${icon} ${name}</span>
+        <span class="delete-tag-btn" onclick="deleteCustomTag('${name.replace(/'/g, "\\'")}', event)" style="cursor:pointer; padding: 2px 6px; border-radius: 4px; background: #fee2e2; color: var(--red); font-size: 11px; margin-left: 8px;">Eliminar</span>
+    `;
+
+    otrosContainer.appendChild(opt);
+
+    // Mostrar el encabezado de la categoría
+    if (otrosHeader) otrosHeader.style.display = '';
+}
+
+function addFilterChipToDOM(name, icon) {
+    const otrosContainer = document.getElementById('filter-chips-otros');
+    const otrosGroup = document.getElementById('filter-group-otros');
+    if (!otrosContainer) return;
+
+    if (otrosContainer.querySelector(`[data-val="${name}"]`)) return;
+
+    const chip = document.createElement('button');
+    chip.className = 'feed-filter-chip';
+    chip.setAttribute('data-filter', 'otros');
+    chip.setAttribute('data-val', name);
+    chip.setAttribute('onclick', `setFeedFilter('otros', '${name.replace(/'/g, "\\'")}', this)`);
+    chip.textContent = `${icon} ${name}`;
+
+    otrosContainer.appendChild(chip);
+
+    // Mostrar el grupo de filtros Otros
+    if (otrosGroup) otrosGroup.style.display = '';
 }
 
 /* ========================================================
@@ -812,3 +1005,169 @@ window.scrollToPost = scrollToPost;
 window.openImageLightbox = openImageLightbox;
 window.closeImageLightbox = closeImageLightbox;
 window.autoResizeTextarea = autoResizeTextarea;
+
+/* ========================================================
+   FILTROS DEL FORO COMUNITARIO
+   ======================================================== */
+
+/**
+ * Renderiza solo los posts que coinciden con los filtros activos.
+ */
+function renderFilteredPosts() {
+    const container = document.getElementById('feed-container');
+    if (!container) return;
+
+    container.innerHTML = '';
+
+    const { course, type, author, search } = _activeFilters;
+    const searchLower = search.toLowerCase().trim();
+
+    const filtered = _cachedPosts.filter(post => {
+        // Filtro por curso (tag)
+        if (course !== 'todos') {
+            const tagLower = (post.tag || '').toLowerCase();
+            if (!tagLower.includes(course.toLowerCase())) return false;
+        }
+
+        // Filtro por tipo de publicación
+        if (type !== 'todos') {
+            const tagLower = (post.tag || '').toLowerCase();
+            if (!tagLower.includes(type.toLowerCase())) return false;
+        }
+
+        // Filtro por tipo de autor
+        if (author !== 'todos') {
+            const role = post.authorRole || 'student';
+            if (author === 'profesor' && role !== 'teacher') return false;
+            if (author === 'estudiante' && role === 'teacher') return false;
+        }
+
+        // Filtro por etiquetas personalizadas (categoría Otros)
+        const otros = _activeFilters.otros;
+        if (otros !== 'todos') {
+            const tagLower = (post.tag || '').toLowerCase();
+            if (!tagLower.includes(otros.toLowerCase())) return false;
+        }
+
+        // Búsqueda de texto libre (contenido + tag)
+        if (searchLower) {
+            const contentLower = (post.content || '').toLowerCase();
+            const tagLower = (post.tag || '').toLowerCase();
+            const nameLower = (post.authorName || '').toLowerCase();
+            if (!contentLower.includes(searchLower) && !tagLower.includes(searchLower) && !nameLower.includes(searchLower)) {
+                return false;
+            }
+        }
+
+        return true;
+    });
+
+    if (filtered.length === 0) {
+        container.innerHTML = `
+            <div style="text-align:center; padding:48px 24px; color:var(--sub);">
+                <div style="font-size:40px; margin-bottom:12px;">🔍</div>
+                <p style="font-size:16px; font-weight:600; color:var(--text); margin-bottom:6px;">No se encontraron publicaciones</p>
+                <p style="font-size:14px;">Intenta con otros filtros o términos de búsqueda.</p>
+                <button onclick="resetFeedFilters()" style="margin-top:16px; padding:8px 20px; border:1px solid var(--border); border-radius:20px; background:#fff; font-size:13px; cursor:pointer; font-weight:600;">Limpiar filtros</button>
+            </div>`;
+        return;
+    }
+
+    filtered.forEach(post => renderPostCard(post, container));
+
+    // Actualizar contador de filtros activos
+    updateFiltersActiveCount();
+}
+
+/**
+ * Establece un filtro específico y re-renderiza.
+ */
+window.setFeedFilter = function(filterType, value, btnEl) {
+    _activeFilters[filterType] = value;
+
+    // Actualizar estado visual de los chips del grupo
+    if (btnEl) {
+        const group = btnEl.closest('.feed-filter-chips');
+        if (group) {
+            group.querySelectorAll('.feed-filter-chip').forEach(chip => chip.classList.remove('active'));
+            btnEl.classList.add('active');
+        }
+    }
+
+    renderFilteredPosts();
+};
+
+/**
+ * Debounce para el input de búsqueda de texto.
+ */
+window.debounceFeedFilter = function() {
+    clearTimeout(_feedFilterDebounce);
+    _feedFilterDebounce = setTimeout(() => {
+        const input = document.getElementById('feed-search-input');
+        _activeFilters.search = input ? input.value : '';
+        renderFilteredPosts();
+    }, 350);
+};
+
+/**
+ * Alterna la visibilidad del panel de filtros expandidos.
+ */
+window.toggleFeedFiltersExpanded = function() {
+    const panel = document.getElementById('feed-filters-expanded');
+    const btn = document.getElementById('feed-filters-toggle');
+    if (!panel) return;
+    const isOpen = panel.classList.contains('open');
+    panel.classList.toggle('open', !isOpen);
+    if (btn) btn.classList.toggle('active', !isOpen);
+};
+
+/**
+ * Resetea todos los filtros a "todos".
+ */
+window.resetFeedFilters = function() {
+    _activeFilters = { course: 'todos', type: 'todos', author: 'todos', otros: 'todos', search: '' };
+
+    // Reset chips visuales
+    document.querySelectorAll('.feed-filter-chip').forEach(chip => {
+        chip.classList.toggle('active', chip.dataset.val === 'todos');
+    });
+
+    // Reset búsqueda
+    const searchInput = document.getElementById('feed-search-input');
+    if (searchInput) searchInput.value = '';
+
+    // Actualizar count
+    const countEl = document.getElementById('filters-active-count');
+    if (countEl) countEl.style.display = 'none';
+
+    renderFilteredPosts();
+};
+
+/**
+ * Muestra el conteo de filtros activos en el botón.
+ */
+function updateFiltersActiveCount() {
+    const countEl = document.getElementById('filters-active-count');
+    if (!countEl) return;
+
+    let count = 0;
+    if (_activeFilters.course !== 'todos') count++;
+    if (_activeFilters.type !== 'todos') count++;
+    if (_activeFilters.author !== 'todos') count++;
+    if (_activeFilters.otros !== 'todos') count++;
+    if (_activeFilters.search) count++;
+
+    if (count > 0) {
+        countEl.textContent = count;
+        countEl.style.display = 'inline-flex';
+    } else {
+        countEl.style.display = 'none';
+    }
+}
+window.setFeedFilter = setFeedFilter;
+window.debounceFeedFilter = debounceFeedFilter;
+window.toggleFeedFiltersExpanded = toggleFeedFiltersExpanded;
+window.resetFeedFilters = resetFeedFilters;
+window.createCustomTag = createCustomTag;
+window.loadCustomTags = loadCustomTags;
+window.deleteCustomTag = deleteCustomTag;
