@@ -1,3 +1,6 @@
+import { CoursesManager } from '../core/courses-manager.js';
+import { TopicsManager } from '../core/topics-manager.js';
+
 document.addEventListener("DOMContentLoaded", async () => {
     // Asegurar que el usuario está inicializado
     if (window.CurrentUserService && typeof CurrentUserService.init === 'function') {
@@ -22,14 +25,14 @@ async function loadRealPerformanceStats(userId) {
         let topics = [];
         let courses = [];
         try {
-            const [topicsRes, coursesRes] = await Promise.all([
-                fetch("../../mock/topics.json"),
-                fetch("../../mock/courses.json")
+            const [fetchedTopics, fetchedCourses] = await Promise.all([
+                TopicsManager.getAllTopics(),
+                CoursesManager.getCourses()
             ]);
-            topics = await topicsRes.json();
-            courses = await coursesRes.json();
+            topics = fetchedTopics;
+            courses = fetchedCourses;
         } catch (e) {
-            console.error("Error fetching topics/courses", e);
+            console.error("Error fetching topics/courses from Managers", e);
         }
 
         const getCourseName = (cId) => {
@@ -56,7 +59,7 @@ async function loadRealPerformanceStats(userId) {
             let cId = 'general';
             if (stat.topic_id !== 'general') {
                 const topicObj = topics.find(t => t.id === stat.topic_id);
-                if (topicObj) cId = topicObj.courseId;
+                if (topicObj) cId = topicObj.course_id;
             }
 
             if (!courseStats[cId]) {
