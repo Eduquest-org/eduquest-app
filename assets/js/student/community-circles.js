@@ -740,7 +740,6 @@ window.openCircleDetailDrawer = async function(circleId) {
         } else {
             pendingList.innerHTML = requests.map(req => `
                 <div class="user-row" id="req-row-${req.id}">
-                    <div class="user-row-avatar" style="background-image:url(${req.avatar_url})"></div>
                     <div class="user-row-info">
                         <span class="user-row-name">${req.name}</span>
                         <span class="user-row-role" title="${req.message || ''}">${req.message ? `💬 "${req.message}"` : 'Sin mensaje'}</span>
@@ -765,7 +764,6 @@ window.openCircleDetailDrawer = async function(circleId) {
     
     membersList.innerHTML = members.map(m => `
         <div class="user-row">
-            <div class="user-row-avatar" style="background-image:url(${m.avatar_url})"></div>
             <div class="user-row-info">
                 <span class="user-row-name">${m.name} ${m.id_student === userId ? '(Tú)' : ''}</span>
                 <span class="user-row-role ${m.role === 'admin' ? 'admin' : ''}">${m.role === 'admin' ? 'Administrador' : 'Estudiante'}</span>
@@ -785,7 +783,6 @@ window.openCircleDetailDrawer = async function(circleId) {
     rankingList.innerHTML = sortedMembers.map((m, i) => `
         <div class="ranking-row top-${i + 1}">
             <div class="ranking-pos">${i + 1}</div>
-            <div class="user-row-avatar" style="background-image:url(${m.avatar_url}); width:32px; height:32px;"></div>
             <div class="user-row-info" style="flex:1;">
                 <span class="user-row-name" style="font-size:13px; font-weight: 600;">${m.name} ${m.id_student === userId ? '(Tú)' : ''}</span>
             </div>
