@@ -81,6 +81,19 @@ document.addEventListener('DOMContentLoaded', async () => {
         const preloader = document.getElementById('app-preloader');
         if (preloader) preloader.classList.add('fade-out-loader');
     }, 350);
+
+    // Revisar si existe el parámetro 'code' en la URL (al ser escaneado por QR)
+    const urlParams = new URLSearchParams(window.location.search);
+    const codeParam = urlParams.get('code');
+    if (codeParam) {
+        const codeInput = document.getElementById('code-search-input');
+        if (codeInput) {
+            codeInput.value = codeParam;
+            if (typeof window.searchCircleByCode === 'function') {
+                window.searchCircleByCode();
+            }
+        }
+    }
 });
 
 // ============================================================
@@ -867,9 +880,12 @@ window.openQRModal = function(code, circleName) {
     document.getElementById('qr-modal-title').innerText = circleName;
     document.getElementById('qr-modal-code').innerText = code;
     
-    // Generar imagen del QR con API gratuita
+    // Generar imagen del QR con API gratuita apuntando a la URL completa
+    const baseUrl = window.location.origin + window.location.pathname;
+    const fullUrl = `${baseUrl}?code=${code}`;
+    
     const qrImage = document.getElementById('qr-image');
-    qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${code}&format=svg`;
+    qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(fullUrl)}&format=svg`;
     
     modal.classList.add('open');
 };
