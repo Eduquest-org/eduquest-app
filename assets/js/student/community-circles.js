@@ -163,10 +163,12 @@ function renderCirclesStream() {
     const container = document.getElementById('active-circles-container');
     if (!container) return;
 
-    const publicCircles = allCircles.filter(c => c.is_public);
+    // Mostrar grupos que sean públicos, o que sean privados pero el usuario ya sea miembro
+    const visibleCircles = allCircles.filter(c => c.is_public || userCircles.some(uc => uc.id_circle === c.id));
+    
     const filtered = activeCourseFilter === 'ALL'
-        ? publicCircles
-        : publicCircles.filter(c => c.id_theme === activeCourseFilter);
+        ? visibleCircles
+        : visibleCircles.filter(c => c.id_theme === activeCourseFilter);
 
     if (!filtered.length) {
         container.innerHTML = `
@@ -435,7 +437,8 @@ window.submitCreateCircle = async function(e) {
     const name     = document.getElementById('modal-circle-name')?.value.trim();
     const desc     = document.getElementById('modal-circle-desc')?.value.trim();
     const theme    = document.getElementById('modal-circle-theme')?.value;
-    const isPublic = document.getElementById('modal-circle-visibility')?.value !== 'private';
+    const visibilityEl = document.querySelector('input[name="circle-visibility"]:checked');
+    const isPublic = visibilityEl ? visibilityEl.value !== 'private' : true;
     const maxVal   = document.getElementById('modal-circle-max-members')?.value;
     const maxMembers = maxVal ? parseInt(maxVal, 10) : null;
     
