@@ -224,17 +224,21 @@
 
   <!-- Modal: Código QR -->
   <div class="modal-overlay" id="qr-modal">
-    <div class="modal-content" style="max-width: 320px; text-align: center;">
-      <button class="modal-close" onclick="closeQRModal()">×</button>
-      <h2 id="qr-modal-title" style="margin-bottom: 8px;">Código QR</h2>
-      <p style="color: var(--muted); margin-bottom: 20px; font-size: 13px;">Comparte este código para que otros se unan.</p>
+    <div class="modal-content" style="max-width: 340px; text-align: center;">
+      <button class="modal-close" onclick="closeQRModal()">✕</button>
+      <h2 id="qr-modal-title">Código QR</h2>
+      <p class="qr-modal-desc">Comparte este código con tus amigos para que se unan a este círculo de estudio.</p>
       
-      <div id="qr-image-container" style="background: #fff; padding: 16px; border-radius: var(--radius-md); border: 1px solid var(--border); display: inline-block; margin-bottom: 16px;">
+      <div id="qr-image-container">
         <img id="qr-image" src="" alt="Código QR" style="width: 200px; height: 200px; display: block;" />
       </div>
       
-      <h1 id="qr-modal-code" style="letter-spacing: 4px; margin-bottom: 20px; color: var(--dark);"></h1>
-      <button type="button" class="btn-primary" style="width: 100%;" onclick="closeQRModal()">Cerrar</button>
+      <div style="margin-bottom: 24px;">
+        <span style="font-size: 11px; color: var(--muted); text-transform: uppercase; font-weight: 800; letter-spacing: 1px; display: block; margin-bottom: 6px;">CÓDIGO DE ACCESO</span>
+        <h1 id="qr-modal-code"></h1>
+      </div>
+      
+      <button type="button" class="btn-primary" style="width: 100%; border-radius: 12px; font-size: 15px; padding: 14px;" onclick="closeQRModal()">¡Entendido!</button>
     </div>
   </div>
 
