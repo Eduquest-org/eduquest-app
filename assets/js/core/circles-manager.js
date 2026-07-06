@@ -153,9 +153,10 @@ const CirclesManager = {
      * @param {string} circleOwner    - UUID del usuario creador
      * @param {boolean} isPublic      - true = público, false = privado
      * @param {number|null} maxMembers - Límite de miembros (opcional)
+     * @param {string[]} tags          - Lista de materias extras (opcional)
      * @returns {Object|null} El círculo creado con su join_code.
      */
-    async createCircle(circleName, circleDescription, circleTheme, circleOwner, isPublic = true, maxMembers = null) {
+    async createCircle(circleName, circleDescription, circleTheme, circleOwner, isPublic = true, maxMembers = null, tags = []) {
         const { data, error } = await supabase
             .from('circles_table')
             .insert([{
@@ -165,6 +166,7 @@ const CirclesManager = {
                 id_owner:    circleOwner,
                 is_public:   isPublic,
                 max_members: maxMembers,
+                tags:        tags,
             }])
             .select()
             .single();

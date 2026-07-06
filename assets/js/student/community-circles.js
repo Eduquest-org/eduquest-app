@@ -175,11 +175,24 @@ function renderCirclesStream() {
         card.dataset.circleId = circle.id;
         card.onclick = () => openCircleDetailDrawer(circle.id);
 
+        let tagsHtml = '';
+        if (circle.tags && circle.tags.length > 0) {
+            tagsHtml = circle.tags.map(tId => {
+                const t = allSubjects.find(s => s.id === tId);
+                if (!t) return '';
+                const tColor = getCourseColor(tId);
+                return `<span class="circle-course-badge" style="color:${tColor}; background:color-mix(in srgb, ${tColor} 12%, transparent); opacity: 0.8; font-size: 11px;">${t.name}</span>`;
+            }).join(' ');
+        }
+
         card.innerHTML = `
             <div class="circle-card-header">
-                <span class="circle-course-badge" style="color:${color}; background:color-mix(in srgb, ${color} 12%, transparent)">
-                    ${subject?.name || 'General'}
-                </span>
+                <div style="display:flex; flex-wrap:wrap; gap:4px;">
+                    <span class="circle-course-badge" style="color:${color}; background:color-mix(in srgb, ${color} 12%, transparent)">
+                        ${subject?.name || 'General'}
+                    </span>
+                    ${tagsHtml}
+                </div>
                 <span class="circle-meta-members">👥 ${circle.number_students ?? 0}</span>
             </div>
             <h3>${circle.name}</h3>
@@ -216,6 +229,16 @@ async function renderMisCirculos() {
         const color   = getCourseColor(circle.id_theme);
         const isOwner = membership.role === 'admin';
 
+        let tagsHtml = '';
+        if (circle.tags && circle.tags.length > 0) {
+            tagsHtml = circle.tags.map(tId => {
+                const t = allSubjects.find(s => s.id === tId);
+                if (!t) return '';
+                const tColor = getCourseColor(tId);
+                return `<span class="mis-circulos-badge" style="color:${tColor}; background:color-mix(in srgb, ${tColor} 12%, transparent); opacity: 0.8;">${t.name}</span>`;
+            }).join(' ');
+        }
+
         const item = document.createElement('div');
         item.className = 'mis-circulos-item';
         item.id = `mis-circulos-item-${circle.id}`;
@@ -223,9 +246,12 @@ async function renderMisCirculos() {
         item.onclick = () => openCircleDetailDrawer(circle.id);
         item.innerHTML = `
             <div class="mis-circulos-info">
-                <span class="mis-circulos-badge" style="color:${color}; background:color-mix(in srgb, ${color} 12%, transparent)">
-                    ${subject?.name || 'General'}
-                </span>
+                <div style="display:flex; flex-wrap:wrap; gap:4px; margin-bottom: 2px;">
+                    <span class="mis-circulos-badge" style="color:${color}; background:color-mix(in srgb, ${color} 12%, transparent)">
+                        ${subject?.name || 'General'}
+                    </span>
+                    ${tagsHtml}
+                </div>
                 <strong class="mis-circulos-name">${circle.name}</strong>
             </div>
             <button
@@ -352,12 +378,15 @@ window.openCreateCircleModal = async function() {
     const modal = document.getElementById('create-circle-modal');
     if (!modal) return;
 
-    // Poblar el select de materias
+    // Poblar el select de materias (principal y tags)
     const select = document.getElementById('modal-circle-theme');
+    const tagsSelect = document.getElementById('modal-circle-tags');
     if (select && allSubjects.length) {
         select.innerHTML = `<option value="">— Selecciona una materia —</option>`;
+        if (tagsSelect) tagsSelect.innerHTML = '';
         allSubjects.forEach(s => {
             select.innerHTML += `<option value="${s.id}">${s.icon || ''} ${s.name}</option>`;
+            if (tagsSelect) tagsSelect.innerHTML += `<option value="${s.id}">${s.icon || ''} ${s.name}</option>`;
         });
     }
 
@@ -383,6 +412,10 @@ window.submitCreateCircle = async function(e) {
     const isPublic = document.getElementById('modal-circle-visibility')?.value !== 'private';
     const maxVal   = document.getElementById('modal-circle-max-members')?.value;
     const maxMembers = maxVal ? parseInt(maxVal, 10) : null;
+    
+    // Obtener tags
+    const tagsSelect = document.getElementById('modal-circle-tags');
+    const tags = tagsSelect ? Array.from(tagsSelect.selectedOptions).map(opt => opt.value).filter(val => val !== theme) : [];
 
     if (!name)  return showModalError('El nombre del círculo es obligatorio.');
     if (!theme) return showModalError('Selecciona una materia para el círculo.');
@@ -394,7 +427,7 @@ window.submitCreateCircle = async function(e) {
     const submitBtn = document.getElementById('modal-submit-btn');
     if (submitBtn) { submitBtn.disabled = true; submitBtn.innerText = 'Creando...'; }
 
-    const newCircle = await CirclesManager.createCircle(name, desc, theme, userId, isPublic, maxMembers);
+    const newCircle = await CirclesManager.createCircle(name, desc, theme, userId, isPublic, maxMembers, tags);
 
     if (submitBtn) { submitBtn.disabled = false; submitBtn.innerText = 'Crear Círculo'; }
 
@@ -631,9 +664,20 @@ window.openCircleDetailDrawer = async function(circleId) {
     const isAdmin  = role === 'admin';
 
     // 1. Header & Body
+    let tagsHtml = '';
+    if (circle.tags && circle.tags.length > 0) {
+        tagsHtml = circle.tags.map(tId => {
+            const t = allSubjects.find(s => s.id === tId);
+            if (!t) return '';
+            const tColor = getCourseColor(tId);
+            return `<span class="circle-course-badge" style="color:${tColor}; background:color-mix(in srgb, ${tColor} 12%, transparent); opacity: 0.8; font-size: 11px;">${t.name}</span>`;
+        }).join(' ');
+    }
+
     document.getElementById('drawer-header-content').innerHTML = `
         <span class="code-visibility-badge ${circle.is_public ? 'public' : 'private'}">${circle.is_public ? '🌐 Público' : '🔒 Privado'}</span>
         <span class="circle-course-badge" style="color:${color}; background:color-mix(in srgb, ${color} 12%, transparent)">${subject?.name || 'General'}</span>
+        ${tagsHtml}
     `;
 
     document.getElementById('drawer-body-content').innerHTML = `
