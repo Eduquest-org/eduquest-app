@@ -635,7 +635,11 @@ window.openCircleDetailDrawer = async function(circleId) {
         <p>${circle.description || 'Sin descripción.'}</p>
         <div class="drawer-stats">
             <span>📅 Creado el ${new Date(circle.created_at).toLocaleDateString()}</span>
-            ${isAdmin && circle.join_code ? `<span title="Código de acceso">🔑 Código: <strong>${circle.join_code}</strong></span>` : ''}
+            ${isAdmin && circle.join_code ? `
+            <span title="Código de acceso" style="display:flex; align-items:center; gap:8px;">
+                🔑 Código: <strong>${circle.join_code}</strong>
+                <button class="btn-action-icon" style="width:24px;height:24px;" title="Generar QR" onclick="openQRModal('${circle.join_code}', '${circle.name}')">📱</button>
+            </span>` : ''}
         </div>
     `;
 
@@ -762,3 +766,30 @@ window.rejectDrawerRequest = async function(reqId, circleId) {
         alert('Error al rechazar solicitud');
     }
 };
+
+// ============================================================
+// QR Modal
+// ============================================================
+window.openQRModal = function(code, circleName) {
+    const modal = document.getElementById('qr-modal');
+    if (!modal) return;
+    
+    document.getElementById('qr-modal-title').innerText = circleName;
+    document.getElementById('qr-modal-code').innerText = code;
+    
+    // Generar imagen del QR con API gratuita
+    const qrImage = document.getElementById('qr-image');
+    qrImage.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${code}&format=svg`;
+    
+    modal.classList.add('open');
+};
+
+window.closeQRModal = function() {
+    const modal = document.getElementById('qr-modal');
+    if (modal) modal.classList.remove('open');
+};
+
+document.addEventListener('click', (e) => {
+    const qrModal = document.getElementById('qr-modal');
+    if (qrModal && e.target === qrModal) closeQRModal();
+});
