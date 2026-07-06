@@ -60,6 +60,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     allSubjects = allSubjects || [];
     userCircles = userCircles || [];
 
+    // Cargar información de círculos privados a los que el usuario pertenece
+    if (userCircles.length > 0) {
+        const missingCircleIds = userCircles
+            .map(uc => uc.id_circle)
+            .filter(id => !allCircles.find(c => c.id === id));
+            
+        for (const id of missingCircleIds) {
+            const circle = await CirclesManager.getCircleById(id);
+            if (circle) allCircles.push(circle);
+        }
+    }
+
     buildCommunityProfileBanner();
     renderFilterTabs();
     renderCirclesStream();
@@ -138,9 +150,10 @@ function renderCirclesStream() {
     const container = document.getElementById('active-circles-container');
     if (!container) return;
 
+    const publicCircles = allCircles.filter(c => c.is_public);
     const filtered = activeCourseFilter === 'ALL'
-        ? allCircles
-        : allCircles.filter(c => c.id_theme === activeCourseFilter);
+        ? publicCircles
+        : publicCircles.filter(c => c.id_theme === activeCourseFilter);
 
     if (!filtered.length) {
         container.innerHTML = `
@@ -251,9 +264,10 @@ window.searchCircles = function(query) {
     const container = document.getElementById('active-circles-container');
     if (!container) return;
 
+    const publicCircles = allCircles.filter(c => c.is_public);
     const source = activeCourseFilter === 'ALL'
-        ? allCircles
-        : allCircles.filter(c => c.id_theme === activeCourseFilter);
+        ? publicCircles
+        : publicCircles.filter(c => c.id_theme === activeCourseFilter);
 
     const filtered = source.filter(c => c.name.toLowerCase().includes(q));
 
