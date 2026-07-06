@@ -104,10 +104,13 @@ async function renderLeaderboardTable() {
                 <td>
                     <div class="student-row-info">
                         <span class="student-avatar-mini" style="background-color: ${studentColor};">${studentEmoji}</span>
-                        <span>${nameDisplay}</span>
+                        <div class="student-name-meta">
+                            <span>${nameDisplay}</span>
+                            <span class="mobile-only-meta sub-meta-text" style="display: none;">${student.career}</span>
+                        </div>
                     </div>
                 </td>
-                <td class="sub-meta-text">${student.career}</td>
+                <td class="sub-meta-text desktop-only-meta">${student.career}</td>
                 <td style="text-align: center; font-weight: 500; font-size: 13px;">🔥 ${student.streak}</td>
                 <td class="xp-points-cell">${Number(student.xp).toLocaleString()} XP</td>
             `;

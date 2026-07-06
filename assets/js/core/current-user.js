@@ -137,8 +137,18 @@ const UserBindingManager = {
             const xp = CurrentUserService.getStat('totalXp');
             el.innerHTML = xp ? Number(xp).toLocaleString() + ' XP' : '0 XP';
         });
+        document.querySelectorAll('[data-user-xp-progress]').forEach(el => {
+            const xp = Number(CurrentUserService.getStat('totalXp')) || 0;
+            const goal = 2000;
+            const pct = Math.min(100, Math.round((xp / goal) * 100));
+            el.style.width = pct + '%';
+        });
         document.querySelectorAll('[data-user-streak]').forEach(el => el.innerHTML = CurrentUserService.getStat('streakDays') || '0');
         document.querySelectorAll('[data-user-ranking]').forEach(el => el.innerHTML = CurrentUserService.getStat('rankingPos') || 'N/A');
+        document.querySelectorAll('[data-user-bio]').forEach(el => {
+            const bio = CurrentUserService.getProfile()?.bio || CurrentUserService.getProfile()?.profile?.bio || '';
+            el.innerHTML = bio || '¡Hola! Estoy usando EduQuest para prepararme.';
+        });
     }
 };
 

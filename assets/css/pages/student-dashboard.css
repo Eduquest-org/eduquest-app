@@ -132,71 +132,81 @@ body {
   flex-shrink: 0;
 }
 
-/* Mini stats en sidebar (visible en mobile) */
+/* Mini stats en sidebar (visible globalmente) */
 .sb-mini-stats {
-  margin: 0 12px 8px;
-  background: linear-gradient(135deg, rgba(29, 158, 117, 0.08), rgba(127, 119, 221, 0.08));
-  border: 1px solid rgba(29, 158, 117, 0.15);
-  border-radius: 12px;
-  padding: 14px;
-  display: none;
-  /* Solo visible en mobile */
+  margin: 12px 12px 8px;
+  background: linear-gradient(135deg, rgba(29, 158, 117, 0.1), rgba(127, 119, 221, 0.1));
+  border: 1px solid rgba(29, 158, 117, 0.2);
+  border-radius: 14px;
+  padding: 16px;
+  display: block;
 }
 
 .sb-mini-stats-header {
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--sub);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: 10px;
-}
-
-.sb-mini-stats-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  margin-bottom: 10px;
-}
-
-.sb-mini-stat {
-  background: #fff;
-  border-radius: 8px;
-  padding: 10px 8px;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  border: 1px solid var(--border);
-}
-
-.sb-mini-stat-val {
   font-family: 'Sora', sans-serif;
-  font-size: 16px;
-  font-weight: 800;
-  color: var(--dark);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
-.sb-mini-stat-lbl {
-  font-size: 10px;
+.sb-xp-progress-container {
+  margin-bottom: 10px;
+}
+
+.sb-xp-stats {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.sb-xp-current {
+  font-family: 'Sora', sans-serif;
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--green);
+}
+
+.sb-xp-goal {
+  font-size: 12px;
   font-weight: 600;
-  color: var(--muted);
+  color: var(--sub);
+}
+
+.sb-streak-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(239, 159, 39, 0.1);
+  color: var(--amber);
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  width: 100%;
+  justify-content: center;
 }
 
 .sb-stats-link {
   display: block;
   text-align: center;
-  font-size: 12px;
-  font-weight: 600;
+  font-size: 11.5px;
+  font-weight: 700;
   color: var(--green);
   text-decoration: none;
-  padding: 6px;
-  border-radius: 6px;
-  transition: background 0.15s;
+  padding: 8px;
+  border-radius: 8px;
+  transition: all 0.2s;
+  background: rgba(29, 158, 117, 0.05);
+  margin-top: 10px;
 }
 
 .sb-stats-link:hover {
-  background: rgba(29, 158, 117, 0.08);
+  background: rgba(29, 158, 117, 0.12);
+  transform: translateY(-1px);
 }
 
 /* =========================================================
@@ -314,8 +324,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 700;
-  font-size: 14px;
+  font-size: 20px;
+  user-select: none;
 }
 
 .user-name-top {
@@ -344,6 +354,10 @@ body {
   max-width: 1200px;
   margin: 0 auto;
   align-items: start;
+}
+
+.feed-column {
+  min-width: 0;
 }
 
 .upgrade-box {
@@ -571,7 +585,7 @@ body {
 
   /* 5. Colapsar la grilla del dashboard */
   .dashboard-content {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     padding: 16px;
     gap: 20px;
   }

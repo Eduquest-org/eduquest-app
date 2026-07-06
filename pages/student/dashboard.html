@@ -92,13 +92,18 @@
                 title="Adjuntar imagen de tu duda">
                 📷 Adjuntar imagen
               </button>
+              <!-- Contenedor para mostrar las pastillas de etiquetas seleccionadas separadas del botón selector -->
+              <div id="selected-tags-container" style="display: flex; gap: 6px; flex-wrap: wrap; align-items: center;"></div>
+
               <!-- Selector de etiqueta -->
               <div class="tag-selector-wrapper">
                 <button class="toolbar-btn" id="btn-tag-selector" onclick="toggleTagDropdown()"
                   title="Seleccionar etiqueta">
-                  🏷️ <span id="selected-tag-label">Agregar etiqueta</span>
+                  🏷️ <span>Agregar etiqueta</span>
                 </button>
                 <div class="tag-selector-dropdown" id="tag-dropdown">
+                  <!-- Cursos -->
+                  <div class="tag-dropdown-header">📚 Cursos</div>
                   <div class="tag-option" onclick="selectTag('Matemáticas', '📐')">📐 Matemáticas</div>
                   <div class="tag-option" onclick="selectTag('Física', '⚡')">⚡ Física</div>
                   <div class="tag-option" onclick="selectTag('Álgebra', '🔢')">🔢 Álgebra</div>
@@ -110,7 +115,24 @@
                   <div class="tag-option" onclick="selectTag('Geografía', '🌍')">🌍 Geografía</div>
                   <div class="tag-option" onclick="selectTag('RV', '🗣️')">🗣️ RV</div>
                   <div class="tag-option" onclick="selectTag('RM', '🧮')">🧮 RM</div>
-                  <div class="tag-option" onclick="selectTag('#Duda', '❓')">❓ #Duda (general)</div>
+                  
+                  <!-- Tipos de Publicación -->
+                  <div class="tag-dropdown-header">🏷️ Tipo de Publicación</div>
+                  <div class="tag-option" onclick="selectTag('Duda', '❓')">❓ Duda</div>
+                  <div class="tag-option" onclick="selectTag('Ejercicio', '✏️')">✏️ Ejercicio</div>
+                  <div class="tag-option" onclick="selectTag('Recomendación', '💡')">💡 Recomendación</div>
+                  <div class="tag-option" onclick="selectTag('Recurso', '📎')">📎 Recurso</div>
+
+                  <!-- Categoría Otros: etiquetas creadas por los usuarios -->
+                  <div class="tag-dropdown-header" id="otros-header" style="border-top: 1px solid var(--border); padding-top: 8px; display: none;">🌐 Otros</div>
+                  <div id="tag-options-otros"></div>
+
+                  <!-- Crear Etiqueta Personalizada -->
+                  <div class="tag-dropdown-header" style="border-top: 1px solid var(--border); padding-top: 8px;">✨ Nueva Etiqueta</div>
+                  <div class="tag-create-custom-wrapper" style="padding: 8px 12px; display: flex; gap: 6px;">
+                    <input type="text" id="custom-tag-input" placeholder="Nueva etiqueta..." maxlength="20" style="flex:1; padding: 6px 10px; border-radius: 6px; border: 1px solid var(--border); font-size:12px; outline:none;">
+                    <button type="button" class="btn sm green" onclick="createCustomTag()" style="padding: 4px 10px; font-size: 11px; height: auto; border-radius: 6px;">Crear</button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -180,6 +202,15 @@
               </div>
             </div>
 
+            <!-- Grupo Otros: etiquetas creadas por los usuarios -->
+            <div class="feed-filter-group" id="filter-group-otros" style="display: none;">
+              <span class="feed-filter-group-label">🌐 Otros</span>
+              <div class="feed-filter-chips" id="filter-chips-otros">
+                <button class="feed-filter-chip active" data-filter="otros" data-val="todos"
+                  onclick="setFeedFilter('otros', 'todos', this)">Todos</button>
+              </div>
+            </div>
+
             <div class="feed-filter-group">
               <span class="feed-filter-group-label">👤 Tipo de autor</span>
               <div class="feed-filter-chips" id="filter-chips-author">
@@ -202,21 +233,6 @@
 
       <aside class="widgets-column">
 
-        <div class="widget-card summary-card card card-md">
-          <h3>📊 Tu Resumen de Hoy</h3>
-          <p>Gana 850 XP más para subir de liga.</p>
-
-          <div class="xp-stats">
-            <span class="xp-current" data-user-xp>Cargando...</span>
-            <span class="xp-goal">/ 2,000 XP</span>
-          </div>
-
-          <div class="progress-bar-container">
-            <div class="progress-bar" style="width: 65%;"></div>
-          </div>
-          <span class="widget-meta">🔥 Racha de <span data-user-streak></span> consecutivos</span>
-        </div>
-
         <div class="widget-card challenge-card card card-md" id="daily-challenge-widget">
           <h3>🎯 Misión Diaria</h3>
           <p id="challenge-desc">Cargando reto del día...</p>
@@ -228,38 +244,6 @@
             style="margin-top: 12px; width: 100%;">Ir al Simulacro</button>
         </div>
 
-        <div class="widget-card challenge-card card card-md"
-          style="margin-bottom: 24px; padding: 24px; text-align: center;">
-          <h3
-            style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 16px; font-size: 20px; color: #111827; font-weight: 700;">
-            📊 Dasboard Rendimiento
-          </h3>
-          <div style="display: flex; justify-content: center; gap: 24px; margin-bottom: 24px;">
-            <span style="font-size: 14px; color: #6b7280; display: flex; align-items: center; gap: 8px;">
-              <span
-                style="display: inline-block; width: 36px; height: 10px; background: #22c55e; border-radius: 2px;"></span>
-              Aciertos
-            </span>
-            <span style="font-size: 14px; color: #6b7280; display: flex; align-items: center; gap: 8px;">
-              <span
-                style="display: inline-block; width: 36px; height: 10px; background: #ef4444; border-radius: 2px;"></span>
-              Errores
-            </span>
-          </div>
-          <div id="dashboard-rendimiento-chart"
-            style="position: relative; width: 200px; height: 200px; margin: 0 auto 28px; border-radius: 50%; background: conic-gradient(#cbd5e1 0deg 360deg); display: flex; align-items: center; justify-content: center; transition: background 0.5s ease;">
-            <div
-              style="width: 110px; height: 110px; background: #ffffff; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-              <span id="dashboard-chart-pct" style="font-size: 24px; font-weight: 800; color: #111827;">-</span>
-              <span style="font-size: 11px; color: #6b7280; font-weight: 600;">Promedio</span>
-            </div>
-            <div
-              style="position: absolute; width: 100%; height: 100%; border-radius: 50%; box-shadow: inset 0 0 0 4px #ffffff; pointer-events: none;">
-            </div>
-          </div>
-          <button class="btn outline sm full" onclick="window.location.href='estadisticas-rendimiento.html'"
-            style="width: 100%; font-size: 15px; padding: 12px; border-radius: 8px;">Ver Rendimiento</button>
-        </div>
 
         <div class="widget-card ranking-card card card-md">
           <h3>🏆 Top 3 de tu Aula</h3>

@@ -34,18 +34,20 @@
     </div>
   </div>
 
-  <!-- Mini Stats Panel (visible en mobile dentro del sidebar) -->
+  <!-- Resumen de Hoy en Sidebar -->
   <div class="sb-mini-stats" id="sb-mini-stats">
-    <div class="sb-mini-stats-header">📈 Tu progreso</div>
-    <div class="sb-mini-stats-grid">
-      <div class="sb-mini-stat">
-        <span class="sb-mini-stat-val" data-user-xp>—</span>
-        <span class="sb-mini-stat-lbl">XP Total</span>
+    <div class="sb-mini-stats-header">📊 Resumen de Hoy</div>
+    <div class="sb-xp-progress-container">
+      <div class="sb-xp-stats">
+        <span class="sb-xp-current" data-user-xp>—</span>
+        <span class="sb-xp-goal">/ 2,000 XP</span>
       </div>
-      <div class="sb-mini-stat">
-        <span class="sb-mini-stat-val" data-user-streak>—</span>
-        <span class="sb-mini-stat-lbl">🔥 Racha</span>
+      <div class="progress-bar-container" style="height: 6px; background: rgba(0,0,0,0.08); border-radius: 4px; overflow: hidden; margin: 8px 0 4px;">
+        <div class="progress-bar" data-user-xp-progress style="width: 0%; height: 100%; background: var(--green); border-radius: 4px; transition: width 0.6s ease-in-out;"></div>
       </div>
+    </div>
+    <div class="sb-streak-badge">
+      🔥 Racha de <span data-user-streak>—</span> días
     </div>
     <a href="estadisticas-rendimiento.html" class="sb-stats-link">Ver rendimiento completo →</a>
   </div>

@@ -21,6 +21,7 @@ let _activeFilters = {
     course: 'todos',
     type: 'todos',
     author: 'todos',
+    otros: 'todos',
     search: ''
 };
 
@@ -34,6 +35,7 @@ const MAX_IMAGE_SIZE_MB = 5;
 document.addEventListener('DOMContentLoaded', () => {
     loadFeedPosts();
     initPostInputListener();
+    loadCustomTags();
 
     // Cerrar dropdowns al hacer clic fuera
     document.addEventListener('click', (e) => {
@@ -101,9 +103,13 @@ function renderPostCard(post, container) {
     postCard.className = 'feed-card';
     postCard.id = `post-card-${post.id}`;
 
-    const isDuda = (post.tag || '').toLowerCase().includes('duda');
-    const tagClass = isDuda ? 'post-tag duda-tag' : 'post-tag';
-    const tagLabel = post.tag || 'General';
+    const rawTags = post.tag || 'General';
+    const tagHtml = rawTags.split(',').map(t => {
+        const cleaned = t.trim();
+        const isDuda = cleaned.toLowerCase().includes('duda');
+        const tagClass = isDuda ? 'post-tag duda-tag' : 'post-tag';
+        return `<span class="${tagClass}">${cleaned}</span>`;
+    }).join(' ');
 
     // Imagen adjunta
     const imageHtml = post.imageUrl ? `
@@ -139,7 +145,9 @@ function renderPostCard(post, container) {
                 <span class="post-time">${post.timeText || 'Reciente'}</span>
             </div>
             ${deletePostBtn}
-            <span class="${tagClass}">${tagLabel}</span>
+            <div class="post-tags-container" style="display: flex; gap: 6px; flex-wrap: wrap; margin-left: 8px;">
+                ${tagHtml}
+            </div>
         </div>
         <div class="card-body">
             <p>${post.content}</p>
@@ -392,8 +400,8 @@ async function addNewPost() {
     const user = window.CurrentUserService ? CurrentUserService.getProfile() : null;
     if (!user) return;
 
-    // Determinar etiqueta
-    const tag = _selectedTag || '#Duda';
+    // Determinar etiquetas concatenadas
+    const tag = _selectedTags.length > 0 ? _selectedTags.map(t => t.name).join(', ') : '#Duda';
 
     // Insertar en Supabase
     const { error } = await supabase.from('forum_posts').insert({
@@ -414,7 +422,7 @@ async function addNewPost() {
     input.value = '';
     _selectedImageData = null;
     _selectedImageMime = null;
-    _selectedTag = null;
+    _selectedTags = [];
 
     // Cerrar panels
     const uploadZone = document.getElementById('image-upload-zone');
@@ -427,8 +435,8 @@ async function addNewPost() {
     if (attachBtn) attachBtn.classList.remove('active');
 
     // Resetear etiqueta
-    const tagLabel = document.getElementById('selected-tag-label');
-    if (tagLabel) tagLabel.textContent = 'Agregar etiqueta';
+    const container = document.getElementById('selected-tags-container');
+    if (container) container.innerHTML = '';
 
     // Ocultar error de imagen si había
     hideImageError();
@@ -648,21 +656,193 @@ document.addEventListener('keydown', (e) => {
 /* ========================================================
    SELECTOR DE ETIQUETA
    ======================================================== */
+/* ========================================================
+   SELECTOR DE ETIQUETAS MÚLTIPLES Y GESTIÓN DE PERSONALIZADAS
+   ======================================================== */
+let _selectedTags = []; // Array de objetos { name, icon }
+
 function toggleTagDropdown() {
     const dropdown = document.getElementById('tag-dropdown');
     if (dropdown) dropdown.classList.toggle('open');
 }
 
 function selectTag(tagName, tagIcon) {
-    _selectedTag = tagName;
-    const label = document.getElementById('selected-tag-label');
-    if (label) label.textContent = `${tagIcon} ${tagName}`;
+    // Si ya está seleccionada, removerla (toggle)
+    const index = _selectedTags.findIndex(t => t.name === tagName);
+    if (index !== -1) {
+        _selectedTags.splice(index, 1);
+    } else {
+        // Permitir un límite razonable de etiquetas, p. ej. 3
+        if (_selectedTags.length >= 3) {
+            if (window.app?.showToast) window.app.showToast('⚠️ Máximo 3 etiquetas por publicación', 'error');
+            return;
+        }
+        _selectedTags.push({ name: tagName, icon: tagIcon });
+    }
 
-    const dropdown = document.getElementById('tag-dropdown');
-    if (dropdown) dropdown.classList.remove('open');
+    renderSelectedTagsBadge();
+    updateActiveTagOptionsVisuals();
+}
+
+function renderSelectedTagsBadge() {
+    const container = document.getElementById('selected-tags-container');
+    if (!container) return;
+
+    container.innerHTML = '';
+
+    if (_selectedTags.length === 0) {
+        const tagBtn = document.getElementById('btn-tag-selector');
+        if (tagBtn) tagBtn.classList.remove('active');
+        return;
+    }
+
+    // Renderizar tags como pastillas ordenadas al lado del botón de selección
+    _selectedTags.forEach(t => {
+        const pill = document.createElement('span');
+        pill.className = 'selected-tag-pill';
+        pill.innerHTML = `
+            ${t.icon} ${t.name}
+            <span onclick="selectTag('${t.name.replace(/'/g, "\\'")}', '${t.icon}')" style="cursor: pointer; font-weight: bold; margin-left: 4px; color: var(--red);">✕</span>
+        `;
+        container.appendChild(pill);
+    });
 
     const tagBtn = document.getElementById('btn-tag-selector');
     if (tagBtn) tagBtn.classList.add('active');
+}
+
+function updateActiveTagOptionsVisuals() {
+    document.querySelectorAll('#tag-dropdown .tag-option').forEach(opt => {
+        // Encontrar si este option está en la lista de seleccionados
+        const optText = opt.textContent || '';
+        const isSelected = _selectedTags.some(t => optText.includes(t.name));
+        opt.classList.toggle('selected-tag-option', isSelected);
+    });
+}
+
+function loadCustomTags() {
+    const customTags = JSON.parse(localStorage.getItem('eduquest_custom_tags') || '[]');
+    customTags.forEach(tag => {
+        addTagOptionToDOM(tag.name, tag.icon);
+        addFilterChipToDOM(tag.name, tag.icon);
+    });
+}
+
+function createCustomTag() {
+    const input = document.getElementById('custom-tag-input');
+    if (!input) return;
+
+    const tagName = input.value.trim();
+    if (!tagName) {
+        if (window.app?.showToast) window.app.showToast('⚠️ Escribe el nombre de la etiqueta', 'error');
+        return;
+    }
+
+    const customTags = JSON.parse(localStorage.getItem('eduquest_custom_tags') || '[]');
+    if (customTags.some(t => t.name.toLowerCase() === tagName.toLowerCase())) {
+        if (window.app?.showToast) window.app.showToast('⚠️ Esa etiqueta ya existe', 'error');
+        return;
+    }
+
+    const tagIcon = '🏷️';
+    const newTag = { name: tagName, icon: tagIcon };
+    customTags.push(newTag);
+    localStorage.setItem('eduquest_custom_tags', JSON.stringify(customTags));
+
+    addTagOptionToDOM(tagName, tagIcon);
+    addFilterChipToDOM(tagName, tagIcon);
+
+    selectTag(tagName, tagIcon);
+    input.value = '';
+
+    if (window.app?.showToast) window.app.showToast(`✨ Etiqueta "${tagName}" creada`, 'success');
+}
+
+function deleteCustomTag(name, event) {
+    if (event) event.stopPropagation();
+
+    if (!confirm(`¿Deseas eliminar la etiqueta "${name}"? Se quitará de tu lista y tus filtros.`)) return;
+
+    // Remover de localStorage
+    let customTags = JSON.parse(localStorage.getItem('eduquest_custom_tags') || '[]');
+    customTags = customTags.filter(t => t.name !== name);
+    localStorage.setItem('eduquest_custom_tags', JSON.stringify(customTags));
+
+    // Deseleccionar si estaba seleccionada
+    const index = _selectedTags.findIndex(t => t.name === name);
+    if (index !== -1) {
+        _selectedTags.splice(index, 1);
+        renderSelectedTagsBadge();
+    }
+
+    // Remover del DOM (Selector dropdown - Categoría Otros)
+    const options = document.querySelectorAll('#tag-options-otros .tag-option');
+    options.forEach(opt => {
+        if (opt.textContent.includes(name)) opt.remove();
+    });
+
+    // Ocultar encabezado Otros si no quedan etiquetas
+    const otrosContainer = document.getElementById('tag-options-otros');
+    const otrosHeader = document.getElementById('otros-header');
+    if (otrosContainer && otrosHeader && otrosContainer.children.length === 0) {
+        otrosHeader.style.display = 'none';
+    }
+
+    // Remover del DOM (Filtros de búsqueda - Grupo Otros)
+    const chips = document.querySelectorAll('#filter-chips-otros .feed-filter-chip:not([data-val="todos"])');
+    chips.forEach(chip => {
+        if (chip.getAttribute('data-val') === name) chip.remove();
+    });
+
+    // Ocultar grupo Otros en filtros si no quedan chips custom
+    const otrosGroup = document.getElementById('filter-group-otros');
+    const otrosChipsContainer = document.getElementById('filter-chips-otros');
+    if (otrosGroup && otrosChipsContainer) {
+        const customChips = otrosChipsContainer.querySelectorAll('.feed-filter-chip:not([data-val="todos"])');
+        if (customChips.length === 0) otrosGroup.style.display = 'none';
+    }
+
+    if (window.app?.showToast) window.app.showToast(`🗑️ Etiqueta "${name}" eliminada`, 'success');
+}
+
+function addTagOptionToDOM(name, icon) {
+    const otrosContainer = document.getElementById('tag-options-otros');
+    const otrosHeader = document.getElementById('otros-header');
+    if (!otrosContainer) return;
+
+    const opt = document.createElement('div');
+    opt.className = 'tag-option';
+    opt.setAttribute('onclick', `selectTag('${name.replace(/'/g, "\\'")}', '${icon}')`);
+    
+    opt.innerHTML = `
+        <span style="flex:1;">${icon} ${name}</span>
+        <span class="delete-tag-btn" onclick="deleteCustomTag('${name.replace(/'/g, "\\'")}', event)" style="cursor:pointer; padding: 2px 6px; border-radius: 4px; background: #fee2e2; color: var(--red); font-size: 11px; margin-left: 8px;">Eliminar</span>
+    `;
+
+    otrosContainer.appendChild(opt);
+
+    // Mostrar el encabezado de la categoría
+    if (otrosHeader) otrosHeader.style.display = '';
+}
+
+function addFilterChipToDOM(name, icon) {
+    const otrosContainer = document.getElementById('filter-chips-otros');
+    const otrosGroup = document.getElementById('filter-group-otros');
+    if (!otrosContainer) return;
+
+    if (otrosContainer.querySelector(`[data-val="${name}"]`)) return;
+
+    const chip = document.createElement('button');
+    chip.className = 'feed-filter-chip';
+    chip.setAttribute('data-filter', 'otros');
+    chip.setAttribute('data-val', name);
+    chip.setAttribute('onclick', `setFeedFilter('otros', '${name.replace(/'/g, "\\'")}', this)`);
+    chip.textContent = `${icon} ${name}`;
+
+    otrosContainer.appendChild(chip);
+
+    // Mostrar el grupo de filtros Otros
+    if (otrosGroup) otrosGroup.style.display = '';
 }
 
 /* ========================================================
@@ -862,6 +1042,13 @@ function renderFilteredPosts() {
             if (author === 'estudiante' && role === 'teacher') return false;
         }
 
+        // Filtro por etiquetas personalizadas (categoría Otros)
+        const otros = _activeFilters.otros;
+        if (otros !== 'todos') {
+            const tagLower = (post.tag || '').toLowerCase();
+            if (!tagLower.includes(otros.toLowerCase())) return false;
+        }
+
         // Búsqueda de texto libre (contenido + tag)
         if (searchLower) {
             const contentLower = (post.content || '').toLowerCase();
@@ -938,7 +1125,7 @@ window.toggleFeedFiltersExpanded = function() {
  * Resetea todos los filtros a "todos".
  */
 window.resetFeedFilters = function() {
-    _activeFilters = { course: 'todos', type: 'todos', author: 'todos', search: '' };
+    _activeFilters = { course: 'todos', type: 'todos', author: 'todos', otros: 'todos', search: '' };
 
     // Reset chips visuales
     document.querySelectorAll('.feed-filter-chip').forEach(chip => {
@@ -967,6 +1154,7 @@ function updateFiltersActiveCount() {
     if (_activeFilters.course !== 'todos') count++;
     if (_activeFilters.type !== 'todos') count++;
     if (_activeFilters.author !== 'todos') count++;
+    if (_activeFilters.otros !== 'todos') count++;
     if (_activeFilters.search) count++;
 
     if (count > 0) {
@@ -980,3 +1168,6 @@ window.setFeedFilter = setFeedFilter;
 window.debounceFeedFilter = debounceFeedFilter;
 window.toggleFeedFiltersExpanded = toggleFeedFiltersExpanded;
 window.resetFeedFilters = resetFeedFilters;
+window.createCustomTag = createCustomTag;
+window.loadCustomTags = loadCustomTags;
+window.deleteCustomTag = deleteCustomTag;
