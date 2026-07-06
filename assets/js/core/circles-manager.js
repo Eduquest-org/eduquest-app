@@ -105,7 +105,7 @@ const CirclesManager = {
                 id_student,
                 role,
                 joined_at,
-                profiles:id_student ( name, avatar_url, total_xp )
+                profiles ( name, avatar_url, total_xp )
             `)
             .eq('id_circle', circleId)
             .order('joined_at', { ascending: true });
@@ -384,10 +384,12 @@ const JoinRequestManager = {
             .from('circle_join_requests')
             .select(`
                 id,
+                id_circle,
                 id_student,
                 message,
+                status,
                 created_at,
-                profiles:id_student ( name, avatar_url )
+                profiles ( name, avatar_url )
             `)
             .eq('id_circle', circleId)
             .eq('status', 'pending')
