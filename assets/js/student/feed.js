@@ -70,7 +70,8 @@ async function loadFeedPosts() {
                 authorId: post.author_id,
                 authorAvatar: post.author_avatar,
                 authorName: post.author_name,
-                authorTarget: post.author_target,
+                authorTarget: post.author_badge || post.author_target,
+                authorRole: post.author_role,
                 tag: post.tag,
                 content: post.content,
                 imageUrl: post.image_url,
@@ -125,6 +126,7 @@ function renderPostCard(post, container) {
             <div class="author-info">
                 <h4>${post.authorName || post.author || 'Usuario'}
                     ${post.authorTarget ? `<span class="user-target">${post.authorTarget}</span>` : ''}
+                    ${post.authorRole === 'teacher' ? '<span class="user-target teacher-badge">Docente</span>' : ''}
                     ${pinnedBadge}
                 </h4>
                 <span class="post-time">${post.timeText || 'Reciente'}</span>

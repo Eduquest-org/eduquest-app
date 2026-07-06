@@ -66,75 +66,25 @@
 
         <section class="panel composer">
           <div class="composer-row">
-            <div class="avatar" data-user-avatar>T</div>
-            <input type="text" placeholder="Comparte un anuncio o recordatorio con tus alumnos...">
+            <div class="avatar" data-user-avatar>...</div>
+            <input type="text" id="teacher-announcement-input" placeholder="Comparte un anuncio o recordatorio con tus alumnos...">
           </div>
           <div class="composer-footer">
-            <button class="ghost-link">
+            <button class="ghost-link" type="button">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5 12 20.5a4.5 4.5 0 0 1-6.36-6.36l8.49-8.49a3 3 0 0 1 4.24 4.24l-8 8a1.5 1.5 0 0 1-2.12-2.12l7-7"/></svg>
               Agregar recurso
             </button>
-            <button class="btn btn-amber">Publicar anuncio</button>
+            <button class="btn btn-amber" type="button" id="btn-publish-announcement">Publicar anuncio</button>
           </div>
         </section>
 
         <div class="feed-header">
           <h3>Dudas pendientes</h3>
-          <span>2 esperando respuesta</span>
+          <span id="pendingDoubtsCount">Cargando...</span>
         </div>
 
-        <div class="feed">
-
-          <article class="feed-card">
-            <div class="feed-top">
-              <div class="feed-avatar" style="background:var(--brand);">C</div>
-              <div class="feed-meta">
-                <div class="feed-name">Chris Carrasco</div>
-                <div class="feed-time">Hace 2 horas</div>
-              </div>
-              <span class="tag physics">Física</span>
-            </div>
-            <p class="feed-text">No logro plantear el producto vectorial para hallar el ángulo entre dos direcciones en 3D — se pierde apenas llega al determinante. ¿Alguien tiene un ejemplo guiado?</p>
-            <div class="feed-footer">
-              <div class="feed-stats">
-                <span class="stat-pill">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 10v12"/><path d="M15 5.88 14 10h6.29a2 2 0 0 1 1.94 2.5l-1.54 6A2 2 0 0 1 18.75 20H7a2 2 0 0 1-2-2v-7a2 2 0 0 1 .58-1.41L9.5 6a1 1 0 0 1 1.5.86V9"/></svg>
-                  24 con la misma duda
-                </span>
-                <span class="stat-pill">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 1 1 17 0Z"/></svg>
-                  2 comentarios
-                </span>
-              </div>
-              <button class="btn-outline-amber">Responder</button>
-            </div>
-          </article>
-
-          <article class="feed-card">
-            <div class="feed-top">
-              <div class="feed-avatar" style="background:var(--amber-dark);">M</div>
-              <div class="feed-meta">
-                <div class="feed-name">Mariana Pérez</div>
-                <div class="feed-time">Hace 5 horas</div>
-              </div>
-              <span class="tag algebra">Álgebra</span>
-            </div>
-            <p class="feed-text">En sistemas de ecuaciones con tres variables, ¿cuándo conviene usar reducción en vez de sustitución? Tengo un ejercicio del simulacro que no me cierra.</p>
-            <div class="feed-footer">
-              <div class="feed-stats">
-                <span class="stat-pill">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 10v12"/><path d="M15 5.88 14 10h6.29a2 2 0 0 1 1.94 2.5l-1.54 6A2 2 0 0 1 18.75 20H7a2 2 0 0 1-2-2v-7a2 2 0 0 1 .58-1.41L9.5 6a1 1 0 0 1 1.5.86V9"/></svg>
-                  9 con la misma duda
-                </span>
-                <span class="stat-pill">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 1 1 17 0Z"/></svg>
-                  0 comentarios
-                </span>
-              </div>
-              <button class="btn-outline-amber">Responder</button>
-            </div>
-          </article>
-
+        <div class="feed" id="teacher-feed-container">
+          <p class="feed-empty">Cargando dudas...</p>
         </div>
 
       </main>
@@ -148,16 +98,17 @@
             </div>
             <h3>Secciones</h3>
           </div>
-          <p class="panel-sub" id="sectionsSummary">3 aulas activas · 87 alumnos en total</p>
+          <p class="panel-sub" id="sectionsSummary">Cargando...</p>
 
-          <div class="stat-row">
-            <span class="stat-big">142</span>
-            <span class="stat-of">/ 180 tareas</span>
+          <div id="gradedPanel" hidden>
+            <div class="stat-row">
+              <span class="stat-big">—</span>
+              <span class="stat-of">/ — tareas</span>
+            </div>
+            <p class="stat-label">Tareas calificadas este mes</p>
+            <div class="progress-track"><div class="progress-fill" style="width:0%"></div></div>
+            <div class="streak-row">🔥 Racha de revisión: —</div>
           </div>
-          <p class="stat-label">Tareas calificadas este mes</p>
-          <div class="progress-track"><div class="progress-fill" style="width:79%"></div></div>
-
-          <div class="streak-row">🔥 Racha de revisión: 3 días consecutivos</div>
 
           <span class="panel-link">Ver secciones →</span>
         </div>
@@ -182,22 +133,22 @@
           </div>
 
           <div class="bar-stack">
-            <div class="bar-amber" style="width:80%"></div>
-            <div class="bar-red" style="width:20%"></div>
+            <div class="bar-amber" id="perfBarCorrect" style="width:0%"></div>
+            <div class="bar-red" id="perfBarError" style="width:0%"></div>
           </div>
 
           <div class="legend">
             <div class="legend-row">
               <span class="legend-key"><span class="legend-swatch amber"></span>Aciertos</span>
-              <span class="legend-value">1,284</span>
+              <span class="legend-value" id="perfCorrectCount">0</span>
             </div>
             <div class="legend-row">
               <span class="legend-key"><span class="legend-swatch red"></span>Errores</span>
-              <span class="legend-value">316</span>
+              <span class="legend-value" id="perfErrorCount">0</span>
             </div>
           </div>
 
-          <p class="panel-foot-note">80% de aciertos en general</p>
+          <p class="panel-foot-note" id="perfAccuracyNote">Cargando rendimiento...</p>
         </div>
 
       </aside>
@@ -216,6 +167,7 @@
 <script src="../../assets/js/teacher/teacher-common.js"></script>
 <script src="../../assets/js/teacher/teacher-store.js"></script>
 <script src="../../assets/js/teacher/dashboard.js"></script>
+<script type="module" src="../../assets/js/teacher/teacher-feed.js"></script>
 
 </body>
 </html>
