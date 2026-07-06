@@ -14,6 +14,13 @@
 @keyframes spin   { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 .fade-out-loader  { opacity: 0; visibility: hidden; pointer-events: none; transition: all 0.3s ease; }
 
+.view-header { margin-bottom: 24px; }
+.view-header h2 { font-family: 'Sora', sans-serif; font-size: 24px; font-weight: 800; color: var(--dark); margin-bottom: 6px; }
+.view-header p { font-size: 14px; color: var(--sub); line-height: 1.4; }
+
+.community-main-column { display: flex; flex-direction: column; gap: 28px; min-width: 0; }
+.community-sidebar-column { position: sticky; top: 115px; display: flex; flex-direction: column; gap: 24px; }
+
 /* =======================================================
    2. LAYOUT PRINCIPAL
    ======================================================= */
@@ -174,6 +181,7 @@
 }
 .circles-empty-state span { font-size: 40px; }
 .circles-empty-state p    { font-size: 14px; line-height: 1.6; }
+
 
 /* =======================================================
    6. SIDEBAR
@@ -912,4 +920,54 @@
     background: color-mix(in srgb, var(--primary) 15%, transparent);
     color: var(--primary);
     border-color: var(--primary);
+    border-color: var(--primary);
+/* WIDGETS LATERALES */
+.community-sidebar-card { background: #ffffff; border: 1px solid var(--border); border-radius: 16px; padding: 24px; box-shadow: 0 4px 15px rgba(0,0,0,0.01); }
+.community-sidebar-card h3 { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+.community-sidebar-card p { font-size: 13px; color: var(--sub); margin-bottom: 16px; }
+.trending-circles-list { list-style: none; display: flex; flex-direction: column; gap: 14px; }
+.trending-circles-list li { display: flex; justify-content: space-between; align-items: center; padding-bottom: 12px; border-bottom: 1px solid #f3f4f6; }
+.trending-circles-list li:last-child { border-bottom: none; padding-bottom: 0; }
+.trending-info { display: flex; flex-direction: column; gap: 2px; }
+.trending-info strong { font-size: 13px; color: var(--dark); }
+.trending-info span { font-size: 11px; color: var(--muted); }
+.trending-badge { font-size: 10px; font-weight: 800; color: var(--amber); background: rgba(239, 159, 39, 0.1); padding: 4px 8px; border-radius: 4px; }
+
+/* Responsive styles for Community Circles */
+@media (max-width: 900px) {
+  .community-sidebar-column {
+    position: static;
+  }
+}
+
+@media (max-width: 600px) {
+  .create-circle-trigger {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+  .user-avatar-placeholder {
+    display: none;
+  }
+  .create-circle-trigger input {
+    width: 100%;
+    border-radius: 12px;
+  }
+  .create-circle-trigger button {
+    width: 100%;
+    text-align: center;
+    border-radius: 12px;
+  }
+  .circles-stream-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .circle-item-card {
+    padding: 18px;
+  }
+  .tab-btn {
+    padding: 8px 14px;
+    font-size: 12px;
+  }
+}
 }
