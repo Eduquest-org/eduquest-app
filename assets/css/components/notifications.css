@@ -229,3 +229,32 @@ body.dark-mode .notification-message {
   height: 48px;
   opacity: 0.5;
 }
+
+/* Panel Desplegable Responsive */
+@media (max-width: 900px) {
+  .notifications-dropdown {
+    position: fixed;
+    top: 80px;
+    left: 5% !important;
+    right: 5% !important;
+    width: 90% !important;
+    max-width: 360px !important;
+    margin: 0 auto !important;
+    max-height: calc(100vh - 100px) !important;
+    border-radius: 12px !important;
+    border: 1px solid var(--border-color, #eaeaea) !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15) !important;
+    transform: translateY(-10px);
+  }
+  .notifications-dropdown.show {
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 480px) {
+  .notifications-dropdown {
+    top: 70px;
+    max-height: calc(100vh - 90px) !important;
+  }
+}
+

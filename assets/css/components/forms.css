@@ -10,6 +10,9 @@
 }
 
 .form-input{
+  flex: 1 1 0;
+  min-width: 0;
+  width: 0;
   height:46px;
   padding:0 14px;
 

@@ -1,21 +1,78 @@
 <div class="topbar">
   <div class="topbar-left">
-    <button class="mobile-menu-btn" onclick="document.getElementById('sidebar-container').classList.toggle('active')">
-      ☰
+    <button class="mobile-menu-btn" id="mobile-menu-toggle" onclick="toggleMobileSidebar()" aria-label="Abrir menú">
+      <span class="hamburger-line"></span>
+      <span class="hamburger-line"></span>
+      <span class="hamburger-line"></span>
     </button>
     <div class="search-wrapper">
       <span class="search-icon">🔍</span>
-      <input type="text" placeholder="Busca un simulacro, curso o tema...">
+      <input type="text" placeholder="Busca un simulacro, curso o tema..." id="global-search-input">
     </div>
   </div>
   
   <div class="topbar-right">
-    <button class="nav-icon-btn">
-      🔔 <span class="notification-badge"></span>
-    </button>
-    <button class="user-profile-btn" onclick="window.location.href='profile.html'">
+    <!-- Notificaciones -->
+    <div class="notifications-wrapper" id="notifications-wrapper">
+      <button class="nav-icon-btn" id="notif-toggle-btn" onclick="toggleNotificationsPanel()" aria-label="Notificaciones">
+        🔔
+        <span class="notification-badge" id="notif-badge"></span>
+      </button>
+
+      <!-- Panel Dropdown de Notificaciones -->
+      <div class="notifications-dropdown" id="notifications-panel" role="dialog" aria-label="Panel de notificaciones">
+        <div class="notifications-header">
+          <h3>🔔 Notificaciones</h3>
+          <button class="mark-all-read-btn" onclick="markAllNotificationsRead()">Marcar todas como leídas</button>
+        </div>
+        <ul class="notifications-list" id="notifications-list">
+          <!-- Generado por JS -->
+          <li class="notification-item unread">
+            <div class="notification-icon achievement">🏆</div>
+            <div class="notification-content">
+              <p class="notification-title">¡Nueva insignia desbloqueada!</p>
+              <p class="notification-message">Obtuviste "Racha de 3 días". ¡Sigue así!</p>
+              <span class="notification-time">Hace 2h</span>
+            </div>
+          </li>
+          <li class="notification-item unread">
+            <div class="notification-icon course">📚</div>
+            <div class="notification-content">
+              <p class="notification-title">Nuevo contenido disponible</p>
+              <p class="notification-message">Se añadió Trigonometría a tu ruta de estudio.</p>
+              <span class="notification-time">Hace 5h</span>
+            </div>
+          </li>
+          <li class="notification-item">
+            <div class="notification-icon system">💬</div>
+            <div class="notification-content">
+              <p class="notification-title">Alguien respondió tu duda</p>
+              <p class="notification-message">Chris C. respondió en "¿Cómo factorizar expresiones?"</p>
+              <span class="notification-time">Ayer</span>
+            </div>
+          </li>
+          <li class="notification-item">
+            <div class="notification-icon alert">⚡</div>
+            <div class="notification-content">
+              <p class="notification-title">¡Misión diaria disponible!</p>
+              <p class="notification-message">Completa 5 preguntas de Álgebra para ganar +150 XP.</p>
+              <span class="notification-time">Hoy</span>
+            </div>
+          </li>
+        </ul>
+        <div class="notifications-footer">
+          <a href="#" class="notif-see-all">Ver todas las notificaciones</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Perfil de usuario -->
+    <button class="user-profile-btn" onclick="window.location.href='profile.html'" aria-label="Ver perfil">
       <span class="user-name-top" data-user-name>Cargando...</span>
-      <div class="user-avatar-top" data-user-initials>...</div>
+      <div class="user-avatar-top" data-user-avatar>👤</div>
     </button>
   </div>
 </div>
+
+<!-- Overlay para cerrar sidebar en mobile -->
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="closeMobileSidebar()"></div>

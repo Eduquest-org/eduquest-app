@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EduQuest — Recursos</title>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Inter:wght@400;500;600;700;900&family=Sora:wght@700;800&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Sora:wght@700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="../../assets/css/global/reset.css">
+  <link rel="stylesheet" href="../../assets/css/global/variables.css">
+  <link rel="stylesheet" href="../../assets/css/pages/student-dashboard.css">
+  <link rel="stylesheet" href="../../assets/css/components/buttons.css">
+  <link rel="stylesheet" href="../../assets/css/pages/resources.css">
+  <link rel="stylesheet" href="../../assets/css/components/loader.css">
+  <link rel="stylesheet" href="../../assets/css/components/modals.css">
+
+  <link rel="icon" type="image/x-icon" href="../../assets/img/logos/eduquest-logo.ico">
+</head>
+<body>
+
+  <div id="topbar-container" data-path="../../components/topbar-students.html"></div>
+  <div class="app-shell" id="student-shell">
+    <div id="sidebar-container" data-path="../../components/sidebar.html"></div>
+
+    <main class="dashboard-content" style="padding:0; overflow-y:auto; flex-grow:1;">
+      <div class="resources-view-container">
+
+        <!-- HERO HEADER -->
+        <div class="resources-hero">
+          <div class="resources-hero-text">
+            <div class="resources-hero-badge">📚 Biblioteca de Estudio</div>
+            <h1>Todos tus recursos en un solo lugar</h1>
+            <p>Accede a videos, lecturas y materiales curados por curso para acelerar tu preparación.</p>
+          </div>
+          <div class="resources-hero-emoji">📖</div>
+        </div>
+
+        <!-- STATS PILLS -->
+        <div class="resources-stats" id="resources-stats">
+          <div class="resources-stat-pill">🎥 <span class="stat-count" id="stat-videos">–</span> Videos</div>
+          <div class="resources-stat-pill">📄 <span class="stat-count" id="stat-lecturas">–</span> Lecturas</div>
+          <div class="resources-stat-pill">🧠 <span class="stat-count" id="stat-quizzes">–</span> Evaluaciones</div>
+          <div class="resources-stat-pill">📦 <span class="stat-count" id="stat-total">–</span> Total</div>
+        </div>
+
+        <!-- BARRA DE BÚSQUEDA -->
+        <div class="resources-search-bar">
+          <span class="resources-search-icon">🔍</span>
+          <input
+            type="text"
+            id="resources-search"
+            class="resources-search-input"
+            placeholder="Buscar recurso por nombre..."
+            autocomplete="off"
+          >
+        </div>
+
+        <!-- FILTRO POR CURSO (desplegable) -->
+        <div class="course-dropdown-wrapper" id="course-dropdown-wrapper">
+          <button class="course-dropdown-toggle" id="course-dropdown-toggle" onclick="toggleCourseDropdown()">
+            <span class="course-dropdown-label">
+              <span class="resources-filter-label" style="text-transform:none; font-size:13px; color:var(--sub);">📚 Filtrar por curso:</span>
+              <span id="course-selected-name" class="course-selected-name">Todos los cursos</span>
+            </span>
+            <span class="course-dropdown-chevron" id="course-dropdown-chevron">▾</span>
+          </button>
+          <div class="course-dropdown-panel" id="course-dropdown-panel">
+            <div class="course-chips-container" id="course-filters">
+              <span class="course-chips-loading">Cargando cursos...</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- FILTROS -->
+        <div class="resources-filters-row">
+          <span class="resources-filter-label">Filtrar por tipo:</span>
+          <div class="resources-filters">
+            <button class="filter-chip active" onclick="filterResources('todos',      this)">⭐ Todos</button>
+            <button class="filter-chip"        onclick="filterResources('leccion',    this)">🎥 Videos / Lecciones</button>
+            <button class="filter-chip"        onclick="filterResources('recurso',    this)">📄 Lecturas</button>
+            <button class="filter-chip"        onclick="filterResources('evaluacion', this)">🧠 Evaluaciones</button>
+          </div>
+        </div>
+
+        <!-- GRILLA DE RECURSOS -->
+        <div class="resources-grid" id="resources-grid"></div>
+
+        <!-- PAGINACIÓN -->
+        <div class="resources-pagination-wrapper">
+          <p class="pagination-info" id="pagination-info"></p>
+          <div class="resources-pagination" id="resources-pagination" style="display:none;"></div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <script src="../../assets/js/components/global-loader.js"></script>
+  <script src="../../assets/js/utils/component-loader.js"></script>
+  <script src="../../assets/js/core/storage.js"></script>
+  <script type="module" src="../../assets/js/core/user-manager.js"></script>
+  <script type="module" src="../../assets/js/core/auth.js"></script>
+  <script src="../../assets/js/core/router.js"></script>
+  <script src="../../assets/js/core/current-user.js"></script>
+  <script src="../../assets/js/core/app.js"></script>
+  <script type="module" src="../../assets/js/student/resources.js"></script>
+
+</body>
+</html>
