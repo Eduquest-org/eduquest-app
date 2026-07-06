@@ -3,25 +3,28 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>EduQuest — Comunidad</title>
+  <title>EduQuest — Círculos de Estudio</title>
+  <meta name="description" content="Únete o crea círculos de estudio colaborativos con compañeros que comparten tus metas académicas.">
   
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=Sora:wght@700;800&display=swap" rel="stylesheet">
   
   <link rel="stylesheet" href="../../assets/css/global/reset.css">
   <link rel="stylesheet" href="../../assets/css/global/variables.css">
+  <link rel="stylesheet" href="../../assets/css/global/variablesColorsSubject.css">
   <link rel="stylesheet" href="../../assets/css/components/buttons.css">
+  <link rel="stylesheet" href="../../assets/css/components/forms.css">
   <link rel="stylesheet" href="../../assets/css/components/profile-banner.css">
-  <link rel="stylesheet" href="../../assets/css/components/advice-card.css">
+  <link rel="stylesheet" href="../../assets/css/components/advice-cards.css">
   <link rel="stylesheet" href="../../assets/css/pages/student-dashboard.css">
   <link rel="stylesheet" href="../../assets/css/pages/community-circles.css">
 
-    <link rel="icon" type="image/x-icon" href="../../assets/img/logos/eduquest-logo.ico">
+  <link rel="icon" type="image/x-icon" href="../../assets/img/logos/eduquest-logo.ico">
 </head>
 <body>
 
   <div id="app-preloader">
     <div class="spinner"></div>
-    <p>Conectando con las salas de estudio de tu aula...</p>
+    <p>Conectando con los círculos de estudio...</p>
   </div>
 
   <div id="topbar-container" data-path="../../components/topbar-students.html"></div>
@@ -32,60 +35,83 @@
     <main class="dashboard-content">
       
       <div class="community-main-column">
-        
 
+        <!-- Banner de perfil -->
+        <div id="community-profile-summary" class="profile-express-card card"></div>
 
+        <!-- Cabecera de sección -->
         <div class="view-header">
-          <h2>👥 Círculos de Estudio Colectivo</h2>
-          <p>Únete a salas interactivas creadas por alumnos con tus mismas metas y refuercen temas clave compartiendo apuntes o resolviendo dudas.</p>
+          <h2>👥 Círculos de Estudio</h2>
+          <p>Únete a salas creadas por alumnos con tus mismas metas, o crea la tuya y lidera tu grupo.</p>
         </div>
 
-        <div class="filter-tabs-bar">
-          <button class="tab-btn active" onclick="filterCirclesByCourse('ALL')">Todos los círculos</button>
-          <button class="tab-btn" onclick="filterCirclesByCourse('ALGEBRA')">📐 Álgebra</button>
-          <button class="tab-btn" onclick="filterCirclesByCourse('FISICA')">⚡ Física</button>
-          <button class="tab-btn" onclick="filterCirclesByCourse('GEOMETRIA')">🔮 Geometría</button>
-          <button class="tab-btn" onclick="filterCirclesByCourse('LECTORA')">📚 Lectura</button>
-        </div>
-
-        <div class="create-circle-card card">
-          <div class="create-circle-trigger">
-            <span class="user-avatar-placeholder" data-user-avatar>🎓</span>
-            <input type="text" id="new-circle-input" class="form-input" placeholder="¿Quieres armar un nuevo grupo de repaso rápido? Ponle un nombre aquí...">
-            <button class="tab-btn" onclick="triggerCreateCircleMock()">Crear Círculo</button>
+        <!-- Barra de acciones: buscar por nombre + crear -->
+        <div class="circles-action-bar">
+          <div class="circles-search-wrap">
+            <span class="circles-search-icon">🔍</span>
+            <input
+              type="text"
+              id="circles-search-input"
+              class="circles-search-input"
+              placeholder="Buscar círculo por nombre..."
+              oninput="searchCircles(this.value)"
+            >
           </div>
+          <button class="btn-create-circle" onclick="openCreateCircleModal()">
+            ＋ Nuevo Círculo
+          </button>
         </div>
 
-        <div id="active-circles-container" class="circles-stream-grid">
+        <!-- Sección: Ingresar con código -->
+        <div class="code-entry-section">
+          <div class="code-entry-label">
+            <span class="code-entry-icon">🔑</span>
+            <span>¿Tienes un código de acceso?</span>
           </div>
+          <div class="code-entry-row">
+            <input
+              type="text"
+              id="code-search-input"
+              class="code-search-input"
+              placeholder="ALG4K2"
+              maxlength="6"
+              oninput="onCodeInput(this)"
+              onkeydown="if(event.key==='Enter') searchCircleByCode()"
+              autocomplete="off"
+              spellcheck="false"
+            >
+            <button id="code-search-btn" class="btn-code-search" onclick="searchCircleByCode()">
+              Buscar
+            </button>
+          </div>
+          <p id="code-search-error" class="code-search-error" style="display:none"></p>
+        </div>
+
+        <!-- Tabs de filtrado (generados dinámicamente) -->
+        <div id="filter-tabs-bar" class="filter-tabs-bar">
+          <button class="tab-btn active" id="tab-ALL" onclick="filterCirclesByCourse('ALL')">
+            Todos los círculos
+          </button>
+        </div>
+
+        <!-- Grid de círculos -->
+        <div id="active-circles-container" class="circles-stream-grid"></div>
 
       </div>
 
+      <!-- Sidebar derecho -->
       <aside class="community-sidebar-column">
-        
+
+        <!-- Mis Círculos -->
         <div class="community-sidebar-card card card-md">
-          <h3>🔥 Tendencia en tu Aula</h3>
-          <p>Los grupos con más debate en las últimas horas.</p>
-          <ul class="trending-circles-list">
-            <li>
-              <div class="trending-info">
-                <strong>⚡ Repaso Fiel: Vectores UNI</strong>
-                <span>42 mensajes nuevos hoy</span>
-              </div>
-              <span class="trending-badge">TOP 1</span>
-            </li>
-            <li>
-              <div class="trending-info">
-                <strong>📐 Productos Notables Inc.</strong>
-                <span>19 alumnos activos ahora</span>
-              </div>
-              <span class="trending-badge">TOP 2</span>
-            </li>
-          </ul>
+          <h3>🏠 Mis Círculos</h3>
+          <p>Grupos de estudio a los que perteneces.</p>
+          <div id="mis-circulos-list" class="mis-circulos-list"></div>
         </div>
 
+        <!-- Consejo -->
         <div class="community-sidebar-card advice-card card-md">
-          <h3>🧠 Recordatorio de Enfoque</h3>
+          <h3>🧠 Consejo de Enfoque</h3>
           <p class="advice-text">"El aprendizaje en grupo acelera tu retención hasta un 60%, pero cuida los distractores. ¡A por esa meta preuniversitaria!"</p>
           <span class="advice-author">— Tutor Inteligente EduQuest</span>
         </div>
@@ -93,6 +119,215 @@
       </aside>
 
     </main>
+  </div>
+
+  <!-- =============================================
+       Modal — Crear Círculo
+  ============================================= -->
+  <div id="create-circle-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-create-title">
+    <div class="modal-card">
+
+      <div class="modal-header">
+        <h2 id="modal-create-title">✨ Crear nuevo círculo</h2>
+        <button class="modal-close-btn" onclick="closeCreateCircleModal()" aria-label="Cerrar">✕</button>
+      </div>
+
+      <form id="create-circle-form" onsubmit="submitCreateCircle(event)" novalidate>
+
+        <div class="modal-body">
+
+          <div class="form-group">
+            <label class="form-label" for="modal-circle-name">Nombre del círculo *</label>
+            <input
+              type="text"
+              id="modal-circle-name"
+              class="form-input modal-input"
+              placeholder="Ej: Vectores y Matrices UNI"
+              maxlength="80"
+              required
+            >
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="modal-circle-theme">Materia principal *</label>
+            <select id="modal-circle-theme" class="form-input modal-input modal-select" required>
+              <option value="">— Cargando materias... —</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Materias adicionales (Opcional)</label>
+            <div id="modal-tags-container" class="tags-selector-container">
+              <!-- Renderizado en JS -->
+            </div>
+            <small style="color:var(--muted); font-size:11px;">Múltiples materias para círculos interdisciplinarios.</small>
+          </div>
+
+          <!-- Visibilidad: Público / Privado -->
+          <div class="form-group">
+            <label class="form-label" for="modal-circle-visibility">Visibilidad</label>
+            <div class="visibility-toggle-group">
+              <label class="visibility-option">
+                <input type="radio" name="circle-visibility" id="modal-circle-visibility" value="public" checked>
+                <span class="visibility-card">
+                  <span class="vis-icon">🌐</span>
+                  <span class="vis-label">Público</span>
+                  <span class="vis-desc">Cualquiera puede unirse</span>
+                </span>
+              </label>
+              <label class="visibility-option">
+                <input type="radio" name="circle-visibility" id="modal-circle-visibility-private" value="private">
+                <span class="visibility-card">
+                  <span class="vis-icon">🔒</span>
+                  <span class="vis-label">Privado</span>
+                  <span class="vis-desc">Requiere aprobación del admin</span>
+                </span>
+              </label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="modal-circle-max-members">Límite de miembros (Opcional)</label>
+            <input
+              type="number"
+              id="modal-circle-max-members"
+              class="form-input modal-input"
+              placeholder="Ej: 50"
+              min="2"
+              max="1000"
+            >
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="modal-circle-desc">Descripción (opcional)</label>
+            <textarea
+              id="modal-circle-desc"
+              class="form-input modal-textarea"
+              placeholder="¿De qué va tu círculo? ¿Para qué universidad se preparan?"
+              maxlength="280"
+              rows="3"
+            ></textarea>
+          </div>
+
+          <p id="modal-error-msg" class="modal-error" style="display:none"></p>
+
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-modal-cancel" onclick="closeCreateCircleModal()">Cancelar</button>
+          <button type="submit" id="modal-submit-btn" class="btn-modal-submit">Crear Círculo</button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Código QR -->
+  <div class="modal-overlay" id="qr-modal">
+    <div class="modal-content" style="max-width: 340px; text-align: center;">
+      <button class="modal-close" onclick="closeQRModal()">✕</button>
+      <h2 id="qr-modal-title">Código QR</h2>
+      <p class="qr-modal-desc">Comparte este código con tus amigos para que se unan a este círculo de estudio.</p>
+      
+      <div id="qr-image-container">
+        <img id="qr-image" src="" alt="Código QR" style="width: 200px; height: 200px; display: block;" />
+      </div>
+      
+      <div style="margin-bottom: 24px;">
+        <span style="font-size: 11px; color: var(--muted); text-transform: uppercase; font-weight: 800; letter-spacing: 1px; display: block; margin-bottom: 6px;">CÓDIGO DE ACCESO</span>
+        <h1 id="qr-modal-code"></h1>
+      </div>
+      
+      <button type="button" class="btn-primary" style="width: 100%; border-radius: 12px; font-size: 15px; padding: 14px;" onclick="closeQRModal()">¡Entendido!</button>
+    </div>
+  </div>
+
+  <!-- =============================================
+       Modal — Resultado de búsqueda por código
+  ============================================= -->
+  <div id="code-result-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-code-title">
+    <div class="modal-card modal-card-sm">
+
+      <div class="modal-header">
+        <h2 id="modal-code-title">🔑 Círculo encontrado</h2>
+        <button class="modal-close-btn" onclick="closeCodeSearchModal()" aria-label="Cerrar">✕</button>
+      </div>
+
+      <div class="modal-body" id="code-result-body">
+        <!-- Contenido renderizado dinámicamente por JS -->
+      </div>
+
+    </div>
+  </div>
+
+  <!-- =============================================
+       Drawer — Detalle de Círculo
+  ============================================= -->
+  <div id="circle-detail-drawer" class="drawer-overlay" role="dialog" aria-modal="true" aria-labelledby="drawer-circle-title">
+    <div class="drawer-panel">
+      
+      <div class="drawer-header">
+        <button class="drawer-close-btn" onclick="closeCircleDetailDrawer()" aria-label="Cerrar">✕</button>
+        <div id="drawer-header-content">
+          <!-- Contenido renderizado por JS (badge materia, visibilidad) -->
+        </div>
+      </div>
+
+      <div class="drawer-tabs">
+        <button class="drawer-tab active" id="btn-tab-info" onclick="switchDrawerTab('info')">Información</button>
+        <button class="drawer-tab" id="btn-tab-ranking" onclick="switchDrawerTab('ranking')">Ranking</button>
+      </div>
+
+      <div class="drawer-content-scroll">
+        <!-- TAB: INFORMACIÓN -->
+        <div id="drawer-tab-info" class="drawer-tab-content active">
+          <div class="drawer-body" id="drawer-body-content">
+            <!-- Renderizado dinámicamente: Título, desc, stats -->
+          </div>
+
+          <!-- Panel de Admin (Solicitudes Pendientes) -->
+          <div id="drawer-admin-panel" class="drawer-section" style="display:none;">
+            <div class="drawer-section-header">
+              <h3>📬 Solicitudes Pendientes</h3>
+              <span id="drawer-pending-count" class="badge-count">0</span>
+            </div>
+            <div id="drawer-pending-list" class="drawer-pending-list">
+              <!-- Solicitudes renderizadas aquí -->
+            </div>
+          </div>
+
+          <!-- Lista de Miembros -->
+          <div class="drawer-section">
+            <div class="drawer-section-header">
+              <h3>👥 Miembros</h3>
+              <span id="drawer-members-count" class="badge-count">0</span>
+            </div>
+            <div id="drawer-members-list" class="drawer-members-list">
+              <!-- Miembros renderizados aquí -->
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB: RANKING -->
+        <div id="drawer-tab-ranking" class="drawer-tab-content" style="display:none;">
+          <div class="drawer-section">
+            <div class="drawer-section-header">
+              <h3>🏆 Leaderboard del Círculo</h3>
+              <span class="badge-count">General</span>
+            </div>
+            <div id="drawer-ranking-list" class="drawer-ranking-list">
+              <!-- Ranking renderizado aquí -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer CTA -->
+      <div class="drawer-footer" id="drawer-footer-cta">
+        <!-- Botón de acción renderizado por JS -->
+      </div>
+
+    </div>
   </div>
 
   <script src="../../assets/js/components/global-loader.js"></script>
@@ -103,7 +338,6 @@
   <script src="../../assets/js/core/router.js"></script>
   <script src="../../assets/js/core/current-user.js"></script>
   <script src="../../assets/js/core/app.js"></script>
-
-  <script src="../../assets/js/student/community-circles.js"></script>
+  <script type="module" src="../../assets/js/student/community-circles.js"></script>
 </body>
 </html>

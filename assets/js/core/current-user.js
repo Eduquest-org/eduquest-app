@@ -28,6 +28,9 @@ const CurrentUserService = {
     getProfile() {
         return currentUserCache;
     },
+    getId(){
+        return this.getProfile()?.id || '';
+    },
     getName() {
         return this.getProfile()?.name || '';
     },
