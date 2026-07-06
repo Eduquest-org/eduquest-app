@@ -176,6 +176,24 @@ const CirclesManager = {
         await UserCirclesManager.createConectionCircleStudent('admin', data.id, circleOwner);
         return data;
     },
+
+    /**
+     * Actualiza la descripción de un círculo
+     * @param {string} circleId 
+     * @param {string} description 
+     * @returns {boolean}
+     */
+    async updateCircleDesc(circleId, description) {
+        const { error } = await supabase
+            .from('circles_table')
+            .update({ description })
+            .eq('id', circleId);
+        if (error) {
+            console.error('CirclesManager.updateCircleDesc:', error.message);
+            return false;
+        }
+        return true;
+    }
 };
 
 // ============================================================

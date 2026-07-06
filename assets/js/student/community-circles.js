@@ -632,7 +632,8 @@ window.openCircleDetailDrawer = async function(circleId) {
 
     document.getElementById('drawer-body-content').innerHTML = `
         <h2>${circle.name}</h2>
-        <p>${circle.description || 'Sin descripción.'}</p>
+        <p id="circle-desc-text-${circle.id}">${circle.description || 'Sin descripción.'}</p>
+        ${isAdmin ? `<button onclick="editCircleDescription('${circle.id}')" style="background:none;border:none;color:var(--primary);cursor:pointer;font-size:12px;margin-bottom:10px;padding:0;">✎ Editar descripción</button>` : ''}
         <div class="drawer-stats">
             <span>📅 Creado el ${new Date(circle.created_at).toLocaleDateString()}</span>
             ${isAdmin && circle.join_code ? `
@@ -689,6 +690,11 @@ window.openCircleDetailDrawer = async function(circleId) {
                 <span class="user-row-name">${m.name} ${m.id_student === userId ? '(Tú)' : ''}</span>
                 <span class="user-row-role ${m.role === 'admin' ? 'admin' : ''}">${m.role === 'admin' ? 'Administrador' : 'Estudiante'}</span>
             </div>
+            ${(isAdmin && m.id_student !== userId) ? `
+            <div class="user-row-actions">
+                ${m.role !== 'admin' ? `<button class="btn-action-icon approve" onclick="promoteDrawerMember('${circle.id}', '${m.id_student}')" title="Hacer administrador">⭐</button>` : ''}
+                <button class="btn-action-icon reject" onclick="kickDrawerMember('${circle.id}', '${m.id_student}')" title="Expulsar del círculo">👢</button>
+            </div>` : ''}
         </div>
     `).join('');
 
@@ -764,6 +770,40 @@ window.rejectDrawerRequest = async function(reqId, circleId) {
     } else {
         if (btnReject) btnReject.disabled = false;
         alert('Error al rechazar solicitud');
+    }
+};
+
+window.editCircleDescription = async function(circleId) {
+    const newDesc = prompt("Ingresa la nueva descripción del círculo:");
+    if (newDesc !== null) {
+        const ok = await CirclesManager.updateCircleDesc(circleId, newDesc);
+        if (ok) {
+            const circle = allCircles.find(c => c.id === circleId);
+            if (circle) circle.description = newDesc;
+            openCircleDetailDrawer(circleId); // Refresh
+        } else {
+            alert('Error al actualizar la descripción');
+        }
+    }
+};
+
+window.promoteDrawerMember = async function(circleId, studentId) {
+    if (!confirm('¿Estás seguro de ascender a este miembro a Administrador?')) return;
+    const ok = await UserCirclesManager.updateRoleCircleStudent(circleId, studentId, 'admin');
+    if (ok) {
+        openCircleDetailDrawer(circleId); // Refresh
+    } else {
+        alert('Error al ascender al miembro');
+    }
+};
+
+window.kickDrawerMember = async function(circleId, studentId) {
+    if (!confirm('¿Estás seguro de expulsar a este miembro del círculo?')) return;
+    const ok = await UserCirclesManager.leaveCircle(circleId, studentId);
+    if (ok) {
+        openCircleDetailDrawer(circleId); // Refresh
+    } else {
+        alert('Error al expulsar al miembro');
     }
 };
 
