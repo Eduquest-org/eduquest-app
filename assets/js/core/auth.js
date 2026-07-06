@@ -31,23 +31,16 @@ const Auth = {
 
             window.location.href = role === 'student' ? '../student/dashboard.html' : '../teacher/dashboard.html';
         } catch (error) {
-            console.warn("Supabase login failed, trying mock bypass...", error);
-            
-            // BYPASS PARA DESARROLLO (lo que teníamos hace 30 min)
-            let role = 'student';
-            if (user.includes('profesor') || user.includes('teacher') || user.includes('profe')) {
-                role = 'teacher';
+            console.error("Supabase login failed:", error);
+            if (errDiv) {
+                const textSpan = errDiv.querySelector('span:last-child') || errDiv;
+                textSpan.textContent = '⚠️ Credenciales incorrectas o error de conexión.';
+                errDiv.style.display = 'flex';
+                errDiv.style.animation = 'none';
+                void errDiv.offsetWidth;
+                errDiv.style.animation = '';
+                setTimeout(() => { errDiv.style.display = 'none'; }, 5000);
             }
-            
-            localStorage.setItem('mock_session', JSON.stringify({
-                id: 'test-user-id',
-                role: role,
-                name: user || 'Usuario de Prueba',
-                email: user || 'test@eduquest.com'
-            }));
-            
-            if (errDiv) errDiv.style.display = 'none';
-            window.location.href = role === 'student' ? '../student/dashboard.html' : '../teacher/dashboard.html';
         }
     },
 
@@ -58,10 +51,6 @@ const Auth = {
     },
 
     async checkSession(redirectOnFail = true) {
-        if (localStorage.getItem('mock_session')) {
-            return true;
-        }
-        
         const { data: { session } } = await supabase.auth.getSession();
         if (!session) {
             if (redirectOnFail) this.logout();
@@ -71,8 +60,6 @@ const Auth = {
     },
 
     getCurrentUser() {
-        const mock = localStorage.getItem('mock_session');
-        if (mock) return JSON.parse(mock);
         
         if (window.CurrentUserService) return CurrentUserService.getProfile();
         return null;

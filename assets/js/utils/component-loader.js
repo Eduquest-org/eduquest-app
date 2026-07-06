@@ -10,8 +10,11 @@ async function loadComponent(containerId, path) {
         const response = await fetch(path);
         const html = await response.text();
         container.innerHTML = html;
-        GlobalLoader.hide(500); 
-        return true; 
+        // GlobalLoader solo existe en páginas que cargan global-loader.js
+        // (p. ej. estudiante). En el panel docente no está, así que lo
+        // invocamos de forma defensiva para no romper la carga del componente.
+        if (typeof GlobalLoader !== 'undefined') GlobalLoader.hide(500);
+        return true;
     } catch (error) {
         console.error(`Error crítico cargando el componente [${containerId}]:`, error);
         return false;

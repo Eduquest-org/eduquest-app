@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EduQuest · Reportes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="../../assets/css/global/reset.css">
+<link rel="stylesheet" href="../../assets/css/global/variables.css">
+<link rel="stylesheet" href="../../assets/css/teacher/dashboard.css">
+<link rel="stylesheet" href="../../assets/css/teacher/classrooms.css">
+<link rel="stylesheet" href="../../assets/css/teacher/teacher-ui.css">
+<link rel="stylesheet" href="../../assets/css/teacher/reports.css">
+
+<!-- SheetJS para exportar a Excel (.xlsx) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+    <link rel="icon" type="image/x-icon" href="../../assets/img/logos/eduquest-logo.ico">
+</head>
+<body>
+
+<div class="app">
+
+  <div id="sidebar-container" data-path="../../components/sidebar-profesor.html"></div>
+
+  <div class="main-wrap">
+
+    <div id="topbar-container" data-path="../../components/navbar-teacher.html"></div>
+
+    <div class="content content-full">
+
+      <div class="page-head">
+        <h2>Reportes de progreso</h2>
+        <p>Genera y exporta el avance de tus secciones en CSV, Excel o PDF.</p>
+      </div>
+
+      <!-- Estado vacío (sin secciones) -->
+      <div class="empty-state hidden" id="reportsEmpty">
+        <div class="empty-ico">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+        </div>
+        <h3>No hay nada que reportar todavía</h3>
+        <p>Crea una sección con alumnos para poder generar y exportar reportes de progreso.</p>
+        <a class="btn btn-purple" href="classrooms.html?create=1">Crear sección</a>
+      </div>
+
+      <div id="reportsBody">
+        <!-- Controles -->
+        <div class="panel report-toolbar no-print">
+          <div class="report-controls">
+            <div class="rc-field">
+              <label for="reportSection">Sección</label>
+              <select id="reportSection"></select>
+            </div>
+            <div class="rc-field">
+              <label>Tipo de reporte</label>
+              <div class="toolbar-tabs" id="reportType">
+                <button class="toolbar-tab active" data-type="alumno">Por alumno</button>
+                <button class="toolbar-tab" data-type="resumen">Resumen de aulas</button>
+              </div>
+            </div>
+            <div class="rc-field">
+              <label for="reportPeriod">Periodo</label>
+              <select id="reportPeriod">
+                <option value="Todo el periodo">Todo el periodo</option>
+                <option value="Este mes">Este mes</option>
+                <option value="Esta semana">Esta semana</option>
+              </select>
+            </div>
+          </div>
+          <div class="report-actions">
+            <button class="btn btn-ghost btn-sm btn-icon" id="exportCsv">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              CSV
+            </button>
+            <button class="btn btn-ghost btn-sm btn-icon" id="exportXlsx">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 8l8 8M16 8l-8 8"/></svg>
+              Excel
+            </button>
+            <button class="btn btn-purple btn-sm btn-icon" id="exportPdf">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8" rx="1"/></svg>
+              PDF / Imprimir
+            </button>
+          </div>
+        </div>
+
+        <!-- Documento del reporte (área imprimible) -->
+        <div class="report-doc" id="reportDoc">
+          <div class="report-doc-head">
+            <div class="rd-brand">
+              <div class="rd-logo">EQ</div>
+              <div>
+                <div class="rd-app">EduQuest</div>
+                <div class="rd-tag">Reporte de progreso</div>
+              </div>
+            </div>
+            <div class="rd-meta" id="reportMeta"></div>
+          </div>
+
+          <h3 class="rd-title" id="reportTitle">—</h3>
+
+          <div class="rd-kpis" id="reportKpis"></div>
+
+          <div class="table-scroll">
+            <table class="data-table" id="reportTable">
+              <thead id="reportThead"></thead>
+              <tbody id="reportTbody"></tbody>
+            </table>
+          </div>
+
+          <div class="rd-footer">
+            <span>Generado por EduQuest · Plataforma de preparación preuniversitaria</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="../../assets/js/utils/component-loader.js"></script>
+<script src="../../assets/js/core/storage.js"></script>
+<script src="../../assets/js/core/user-manager.js"></script>
+<script src="../../assets/js/core/auth.js"></script>
+<script src="../../assets/js/core/router.js"></script>
+<script src="../../assets/js/core/current-user.js"></script>
+<script src="../../assets/js/core/app.js"></script>
+<script src="../../assets/js/teacher/dashboard.js"></script>
+<script src="../../assets/js/teacher/teacher-common.js"></script>
+<script src="../../assets/js/teacher/teacher-store.js"></script>
+<script src="../../assets/js/teacher/teacher-ui.js"></script>
+<script src="../../assets/js/teacher/reports.js"></script>
+
+</body>
+</html>

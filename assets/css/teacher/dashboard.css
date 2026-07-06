@@ -71,8 +71,9 @@ a{color:inherit;text-decoration:none;}
   cursor:pointer;
 }
 .nav-item:hover{background:var(--bg);}
-.nav-item.active{background:var(--brand-soft);color:var(--brand-dark);font-weight:600;}
+.nav-item.active,.nav-item.on{background:var(--brand-soft);color:var(--brand-dark);font-weight:600;}
 .nav-dot{width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.55;}
+.nav-dot.g{opacity:1;}
 .sidebar-spacer{flex:1;}
 .upgrade-card{
   background:#15161C;color:#fff;border-radius:var(--radius-md);
