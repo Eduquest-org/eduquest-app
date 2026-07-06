@@ -233,29 +233,52 @@
         </div>
       </div>
 
-      <div class="drawer-body" id="drawer-body-content">
-        <!-- Renderizado dinámicamente: Título, desc, stats -->
+      <div class="drawer-tabs">
+        <button class="drawer-tab active" id="btn-tab-info" onclick="switchDrawerTab('info')">Información</button>
+        <button class="drawer-tab" id="btn-tab-ranking" onclick="switchDrawerTab('ranking')">Ranking</button>
       </div>
 
-      <!-- Panel de Admin (Solicitudes Pendientes) -->
-      <div id="drawer-admin-panel" class="drawer-section" style="display:none;">
-        <div class="drawer-section-header">
-          <h3>📬 Solicitudes Pendientes</h3>
-          <span id="drawer-pending-count" class="badge-count">0</span>
-        </div>
-        <div id="drawer-pending-list" class="drawer-pending-list">
-          <!-- Solicitudes renderizadas aquí -->
-        </div>
-      </div>
+      <div class="drawer-content-scroll">
+        <!-- TAB: INFORMACIÓN -->
+        <div id="drawer-tab-info" class="drawer-tab-content active">
+          <div class="drawer-body" id="drawer-body-content">
+            <!-- Renderizado dinámicamente: Título, desc, stats -->
+          </div>
 
-      <!-- Lista de Miembros -->
-      <div class="drawer-section">
-        <div class="drawer-section-header">
-          <h3>👥 Miembros</h3>
-          <span id="drawer-members-count" class="badge-count">0</span>
+          <!-- Panel de Admin (Solicitudes Pendientes) -->
+          <div id="drawer-admin-panel" class="drawer-section" style="display:none;">
+            <div class="drawer-section-header">
+              <h3>📬 Solicitudes Pendientes</h3>
+              <span id="drawer-pending-count" class="badge-count">0</span>
+            </div>
+            <div id="drawer-pending-list" class="drawer-pending-list">
+              <!-- Solicitudes renderizadas aquí -->
+            </div>
+          </div>
+
+          <!-- Lista de Miembros -->
+          <div class="drawer-section">
+            <div class="drawer-section-header">
+              <h3>👥 Miembros</h3>
+              <span id="drawer-members-count" class="badge-count">0</span>
+            </div>
+            <div id="drawer-members-list" class="drawer-members-list">
+              <!-- Miembros renderizados aquí -->
+            </div>
+          </div>
         </div>
-        <div id="drawer-members-list" class="drawer-members-list">
-          <!-- Miembros renderizados aquí -->
+
+        <!-- TAB: RANKING -->
+        <div id="drawer-tab-ranking" class="drawer-tab-content" style="display:none;">
+          <div class="drawer-section">
+            <div class="drawer-section-header">
+              <h3>🏆 Leaderboard del Círculo</h3>
+              <span class="badge-count">General</span>
+            </div>
+            <div id="drawer-ranking-list" class="drawer-ranking-list">
+              <!-- Ranking renderizado aquí -->
+            </div>
+          </div>
         </div>
       </div>
 

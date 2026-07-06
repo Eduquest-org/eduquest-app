@@ -105,7 +105,7 @@ const CirclesManager = {
                 id_student,
                 role,
                 joined_at,
-                profiles:id_student ( name, avatar_url )
+                profiles:id_student ( name, avatar_url, total_xp )
             `)
             .eq('id_circle', circleId)
             .order('joined_at', { ascending: true });
@@ -113,7 +113,7 @@ const CirclesManager = {
             console.error('CirclesManager.getCircleMembers:', error.message);
             return null;
         }
-        // Aplanar: mover name y avatar_url al nivel raíz para facilitar el render
+        // Aplanar: mover name, avatar_url y total_xp al nivel raíz
         return (data || []).map(m => ({
             id:         m.id,
             id_student: m.id_student,
@@ -121,6 +121,7 @@ const CirclesManager = {
             joined_at:  m.joined_at,
             name:       m.profiles?.name       || 'Usuario',
             avatar_url: m.profiles?.avatar_url || '👤',
+            total_xp:   m.profiles?.total_xp   || 0,
         }));
     },
 

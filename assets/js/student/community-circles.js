@@ -613,6 +613,9 @@ window.openCircleDetailDrawer = async function(circleId) {
 
     const drawer = document.getElementById('circle-detail-drawer');
     if (!drawer) return;
+    
+    // Resetear a la pestaña Info
+    if (window.switchDrawerTab) window.switchDrawerTab('info');
 
     const userId  = window.CurrentUserService?.getId();
     const subject = allSubjects.find(s => s.id === circle.id_theme);
@@ -685,7 +688,22 @@ window.openCircleDetailDrawer = async function(circleId) {
         </div>
     `).join('');
 
-    // 4. Footer CTA
+    // 4. Ranking
+    const rankingList = document.getElementById('drawer-ranking-list');
+    const sortedMembers = [...members].sort((a, b) => (b.total_xp || 0) - (a.total_xp || 0));
+    
+    rankingList.innerHTML = sortedMembers.map((m, i) => `
+        <div class="ranking-row top-${i + 1}">
+            <div class="ranking-pos">${i + 1}</div>
+            <div class="user-row-avatar" style="background-image:url(${m.avatar_url}); width:32px; height:32px;"></div>
+            <div class="user-row-info" style="flex:1;">
+                <span class="user-row-name" style="font-size:13px; font-weight: 600;">${m.name} ${m.id_student === userId ? '(Tú)' : ''}</span>
+            </div>
+            <div class="ranking-xp">${m.total_xp || 0} XP</div>
+        </div>
+    `).join('');
+
+    // 5. Footer CTA
     const footer = document.getElementById('drawer-footer-cta');
     const reqStatus = (userId && !isMember) ? await JoinRequestManager.checkRequest(circle.id, userId) : null;
     
@@ -704,6 +722,13 @@ window.openCircleDetailDrawer = async function(circleId) {
     }
 
     drawer.classList.add('open');
+};
+
+window.switchDrawerTab = function(tabName) {
+    document.getElementById('btn-tab-info').classList.toggle('active', tabName === 'info');
+    document.getElementById('btn-tab-ranking').classList.toggle('active', tabName === 'ranking');
+    document.getElementById('drawer-tab-info').style.display = tabName === 'info' ? 'block' : 'none';
+    document.getElementById('drawer-tab-ranking').style.display = tabName === 'ranking' ? 'block' : 'none';
 };
 
 window.closeCircleDetailDrawer = function() {

@@ -745,3 +745,77 @@
 .drawer-footer .btn-code-action {
     margin: 0;
 }
+
+/* =======================================================
+   12. DRAWER TABS & RANKING
+   ======================================================= */
+.drawer-content-scroll {
+    flex: 1;
+    overflow-y: auto;
+}
+
+.drawer-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border);
+    background: #fff;
+    position: sticky;
+    top: 81px; /* Justo debajo del header */
+    z-index: 9;
+}
+.drawer-tab {
+    flex: 1;
+    padding: 14px 0;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--sub);
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.drawer-tab:hover { color: var(--dark); background: var(--fill); }
+.drawer-tab.active {
+    color: var(--dark);
+    font-weight: 700;
+    border-bottom-color: var(--dark);
+}
+
+.drawer-ranking-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.ranking-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: var(--radius-md);
+    background: var(--fill);
+}
+.ranking-pos {
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--muted);
+    width: 24px;
+    text-align: center;
+}
+.ranking-row.top-1 .ranking-pos { color: #F59E0B; } /* Oro */
+.ranking-row.top-2 .ranking-pos { color: #9CA3AF; } /* Plata */
+.ranking-row.top-3 .ranking-pos { color: #B45309; } /* Bronce */
+
+.ranking-row.top-1 { background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.2); }
+.ranking-row.top-2 { background: rgba(156,163,175,0.08); border: 1px solid rgba(156,163,175,0.2); }
+.ranking-row.top-3 { background: rgba(180,83,9,0.08); border: 1px solid rgba(180,83,9,0.2); }
+
+.ranking-xp {
+    margin-left: auto;
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--dark);
+    background: #fff;
+    padding: 4px 8px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+}
