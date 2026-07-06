@@ -1,12 +1,13 @@
-import { CirclesManager, UserCirclesManager, SubjectManager } from '../core/circles-manager.js';
+import { CirclesManager, UserCirclesManager, JoinRequestManager, SubjectManager } from '../core/circles-manager.js';
 
 // ============================================================
 // Estado del módulo
 // ============================================================
-let allCircles   = [];   // Caché de todos los círculos traídos de Supabase
-let userCircles  = [];   // Membresías del usuario (rows de circles_table_student)
-let allSubjects  = [];   // Caché de todos los cursos
+let allCircles         = [];   // Caché de todos los círculos traídos de Supabase
+let userCircles        = [];   // Membresías del usuario (rows de circles_table_student)
+let allSubjects        = [];   // Caché de todos los cursos
 let activeCourseFilter = 'ALL';
+let codeResultCircle   = null; // Círculo encontrado por código (estado temporal)
 
 // ============================================================
 // Helpers de color de materias
@@ -354,9 +355,10 @@ window.submitCreateCircle = async function(e) {
     const userId = window.CurrentUserService?.getId();
     if (!userId) return;
 
-    const name  = document.getElementById('modal-circle-name')?.value.trim();
-    const desc  = document.getElementById('modal-circle-desc')?.value.trim();
-    const theme = document.getElementById('modal-circle-theme')?.value;
+    const name     = document.getElementById('modal-circle-name')?.value.trim();
+    const desc     = document.getElementById('modal-circle-desc')?.value.trim();
+    const theme    = document.getElementById('modal-circle-theme')?.value;
+    const isPublic = document.getElementById('modal-circle-visibility')?.value !== 'private';
 
     if (!name)  return showModalError('El nombre del círculo es obligatorio.');
     if (!theme) return showModalError('Selecciona una materia para el círculo.');
@@ -368,7 +370,7 @@ window.submitCreateCircle = async function(e) {
     const submitBtn = document.getElementById('modal-submit-btn');
     if (submitBtn) { submitBtn.disabled = true; submitBtn.innerText = 'Creando...'; }
 
-    const newCircle = await CirclesManager.createCircle(name, desc, theme, userId);
+    const newCircle = await CirclesManager.createCircle(name, desc, theme, userId, isPublic);
 
     if (submitBtn) { submitBtn.disabled = false; submitBtn.innerText = 'Crear Círculo'; }
 
@@ -398,6 +400,184 @@ function clearModalError() {
 
 // Cerrar modal al hacer click fuera
 document.addEventListener('click', e => {
-    const modal = document.getElementById('create-circle-modal');
-    if (modal && e.target === modal) closeCreateCircleModal();
+    const createModal = document.getElementById('create-circle-modal');
+    if (createModal && e.target === createModal) closeCreateCircleModal();
+
+    const codeModal = document.getElementById('code-result-modal');
+    if (codeModal && e.target === codeModal) closeCodeSearchModal();
 });
+
+// ============================================================
+// Búsqueda por código de círculo
+// ============================================================
+
+/**
+ * Fuerza mayúsculas y límite de 6 chars en el input de código.
+ */
+window.onCodeInput = function(input) {
+    input.value = input.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6);
+};
+
+/**
+ * Busca un círculo por su join_code y abre el modal de resultado.
+ */
+window.searchCircleByCode = async function() {
+    const input = document.getElementById('code-search-input');
+    const code  = input?.value.trim().toUpperCase();
+
+    if (!code || code.length < 6) {
+        showCodeError('Ingresa un código de 6 caracteres.');
+        return;
+    }
+
+    const searchBtn = document.getElementById('code-search-btn');
+    if (searchBtn) { searchBtn.disabled = true; searchBtn.innerText = 'Buscando...'; }
+
+    codeResultCircle = await CirclesManager.getCircleByCode(code);
+
+    if (searchBtn) { searchBtn.disabled = false; searchBtn.innerText = 'Buscar'; }
+
+    if (!codeResultCircle) {
+        showCodeError('Código no encontrado. Verifica que esté escrito correctamente.');
+        return;
+    }
+
+    clearCodeError();
+    await openCodeSearchModal();
+};
+
+window.openCodeSearchModal = async function() {
+    const modal = document.getElementById('code-result-modal');
+    if (!modal || !codeResultCircle) return;
+
+    const userId  = window.CurrentUserService?.getId();
+    const circle  = codeResultCircle;
+    const subject = allSubjects.find(s => s.id === circle.id_theme);
+    const color   = getCourseColor(circle.id_theme);
+
+    // Determinar el estado del usuario respecto a este círculo
+    const isMember  = userId && userCircles.some(uc => uc.id_circle === circle.id);
+    const reqStatus = (userId && !isMember) ? await JoinRequestManager.checkRequest(circle.id, userId) : null;
+
+    // Construir el CTA según estado
+    let ctaHtml = '';
+    if (!userId) {
+        ctaHtml = `<p class="code-result-notice">Inicia sesión para unirte a este círculo.</p>`;
+    } else if (isMember) {
+        ctaHtml = `<button class="btn-code-action joined" disabled></button>`;
+        ctaHtml = `<span class="code-result-notice success">✅ Ya eres miembro de este círculo.</span>`;
+    } else if (circle.is_public) {
+        ctaHtml = `<button class="btn-code-action" onclick="doJoinByCode()">Unirse al Círculo</button>`;
+    } else if (reqStatus === 'pending') {
+        ctaHtml = `<span class="code-result-notice pending">⏳ Tu solicitud está en revisión. Espera la respuesta del admin.</span>`;
+    } else if (reqStatus === 'rejected') {
+        ctaHtml = `
+            <span class="code-result-notice warning">❌ Tu solicitud anterior fue rechazada. Puedes volver a intentarlo.</span>
+            <div class="code-request-form">
+                <textarea id="code-request-message" class="form-input modal-textarea" placeholder="Mensaje para el admin (opcional)" rows="2" maxlength="200"></textarea>
+                <button class="btn-code-action" onclick="submitJoinRequest()">Enviar nueva solicitud</button>
+            </div>`;
+    } else {
+        // Círculo privado, sin solicitud previa
+        ctaHtml = `
+            <div class="code-request-form">
+                <p class="code-result-notice"></span>Para unirte necesitas la aprobación del admin.</p>
+                <textarea id="code-request-message" class="form-input modal-textarea" placeholder="Mensaje para el admin (opcional)" rows="2" maxlength="200"></textarea>
+                <button class="btn-code-action" onclick="submitJoinRequest()">Enviar solicitud de unión</button>
+            </div>`;
+    }
+
+    document.getElementById('code-result-body').innerHTML = `
+        <div class="code-result-card">
+            <div class="code-result-header">
+                <span class="circle-course-badge" style="color:${color}; background:color-mix(in srgb, ${color} 12%, transparent)">
+                    ${subject?.name || 'General'}
+                </span>
+                <span class="code-visibility-badge ${circle.is_public ? 'public' : 'private'}">
+                    ${circle.is_public ? '🌐 Público' : '🔒 Privado'}
+                </span>
+            </div>
+            <h3>${circle.name}</h3>
+            <p class="code-result-desc">${circle.description || 'Sin descripción.'}</p>
+            <span class="code-result-members">👥 ${circle.number_students ?? 0} miembros</span>
+            <div class="code-result-cta">
+                ${ctaHtml}
+            </div>
+        </div>
+    `;
+
+    modal.classList.add('open');
+};
+
+window.closeCodeSearchModal = function() {
+    const modal = document.getElementById('code-result-modal');
+    if (modal) modal.classList.remove('open');
+};
+
+/**
+ * Unión directa para círculos públicos encontrados por código.
+ */
+window.doJoinByCode = async function() {
+    const userId = window.CurrentUserService?.getId();
+    if (!userId || !codeResultCircle) return;
+
+    const btn = document.querySelector('.btn-code-action');
+    if (btn) { btn.disabled = true; btn.innerText = 'Uniéndote...'; }
+
+    const membership = await UserCirclesManager.createConectionCircleStudent('member', codeResultCircle.id, userId);
+
+    if (!membership) {
+        if (btn) { btn.disabled = false; btn.innerText = 'Unirse al Círculo'; }
+        return;
+    }
+
+    // Actualizar estado local
+    userCircles.push(membership);
+    const circle = allCircles.find(c => c.id === codeResultCircle.id);
+    if (circle) circle.number_students = (circle.number_students || 0) + 1;
+    else allCircles.unshift({ ...codeResultCircle, number_students: 1 }); // por si no estaba en caché
+
+    closeCodeSearchModal();
+    updateBannerCount();
+    renderCirclesStream();
+    renderMisCirculos();
+    document.getElementById('code-search-input').value = '';
+};
+
+/**
+ * Envía solicitud de unión para un círculo privado.
+ */
+window.submitJoinRequest = async function() {
+    const userId = window.CurrentUserService?.getId();
+    if (!userId || !codeResultCircle) return;
+
+    const message = document.getElementById('code-request-message')?.value.trim() || '';
+    const btn     = document.querySelector('.btn-code-action');
+    if (btn) { btn.disabled = true; btn.innerText = 'Enviando...'; }
+
+    const request = await JoinRequestManager.sendRequest(codeResultCircle.id, userId, message);
+
+    if (!request) {
+        if (btn) { btn.disabled = false; btn.innerText = 'Enviar solicitud de unión'; }
+        return;
+    }
+
+    // Mostrar confirmación en el modal
+    document.getElementById('code-result-body').innerHTML = `
+        <div class="code-sent-confirm">
+            <span class="code-sent-icon">📬</span>
+            <h3>Solicitud enviada</h3>
+            <p>El administrador de <strong>${codeResultCircle.name}</strong> revisará tu solicitud y recibirás una notificación con su respuesta.</p>
+            <button class="btn-code-action" onclick="closeCodeSearchModal()">Entendido</button>
+        </div>
+    `;
+};
+
+function showCodeError(msg) {
+    const el = document.getElementById('code-search-error');
+    if (el) { el.innerText = msg; el.style.display = 'block'; }
+}
+function clearCodeError() {
+    const el = document.getElementById('code-search-error');
+    if (el) { el.innerText = ''; el.style.display = 'none'; }
+}

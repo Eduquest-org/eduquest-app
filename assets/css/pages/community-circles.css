@@ -364,3 +364,192 @@
 }
 .btn-modal-submit:hover:not(:disabled) { background: var(--green); }
 .btn-modal-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* Variante pequeña del modal (resultado de código) */
+.modal-card-sm { max-width: 420px; }
+
+/* =======================================================
+   8. SECCIÓN INGRESAR POR CÓDIGO
+   ======================================================= */
+.code-entry-section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 16px 20px;
+    background: var(--fill);
+    border: 1.5px dashed var(--border);
+    border-radius: var(--radius-lg);
+}
+
+.code-entry-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--sub);
+}
+.code-entry-icon { font-size: 16px; }
+
+.code-entry-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+/* Input monospace estilo "token" */
+.code-search-input {
+    width: 140px;
+    height: 48px;
+    padding: 0 16px;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 6px;
+    text-align: center;
+    text-transform: uppercase;
+    border: 2px solid var(--border);
+    border-radius: var(--radius-md);
+    background: #fff;
+    color: var(--dark);
+    outline: none;
+    transition: 0.2s;
+}
+.code-search-input:focus {
+    border-color: var(--dark);
+    box-shadow: 0 0 0 3px rgba(30, 30, 50, 0.07);
+}
+.code-search-input::placeholder {
+    color: var(--muted);
+    letter-spacing: 4px;
+    font-size: 16px;
+}
+
+.btn-code-search {
+    height: 48px;
+    padding: 0 22px;
+    background: var(--dark);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.2s;
+    flex-shrink: 0;
+}
+.btn-code-search:hover:not(:disabled) { background: var(--green); }
+.btn-code-search:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.code-search-error {
+    font-size: 12px;
+    color: var(--red-err);
+    font-weight: 500;
+    margin-top: 2px;
+}
+
+/* =======================================================
+   9. TOGGLE DE VISIBILIDAD EN MODAL DE CREACIÓN
+   ======================================================= */
+.visibility-toggle-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.visibility-option { cursor: pointer; }
+.visibility-option input[type="radio"] { display: none; }
+
+.visibility-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 14px 10px;
+    border: 2px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--fill);
+    transition: 0.2s;
+    text-align: center;
+}
+.visibility-option:hover .visibility-card {
+    border-color: var(--dark);
+    background: #fff;
+}
+.visibility-option input:checked + .visibility-card {
+    border-color: var(--dark);
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(30, 30, 50, 0.06);
+}
+
+.vis-icon  { font-size: 22px; }
+.vis-label { font-size: 13px; font-weight: 700; color: var(--dark); }
+.vis-desc  { font-size: 11px; color: var(--sub); line-height: 1.3; }
+
+/* =======================================================
+   10. MODAL RESULTADO DE BÚSQUEDA POR CÓDIGO
+   ======================================================= */
+.code-result-card       { display: flex; flex-direction: column; gap: 12px; }
+.code-result-header     { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+/* Badge público / privado */
+.code-visibility-badge {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: var(--radius-pill);
+    letter-spacing: 0.3px;
+}
+.code-visibility-badge.public  { background: rgba(29,158,117,0.1); color: var(--green); }
+.code-visibility-badge.private { background: rgba(120,80,220,0.1);  color: #7850DC; }
+
+.code-result-card h3     { font-family: 'Sora', sans-serif; font-size: 18px; font-weight: 800; color: var(--dark); margin: 0; }
+.code-result-desc        { font-size: 13px; color: var(--sub); line-height: 1.6; }
+.code-result-members     { font-size: 12px; font-weight: 600; color: var(--muted); }
+.code-result-cta         { margin-top: 4px; display: flex; flex-direction: column; gap: 10px; }
+
+/* Mensajes de estado */
+.code-result-notice {
+    font-size: 13px;
+    padding: 10px 14px;
+    border-radius: var(--radius-md);
+    font-weight: 500;
+    background: var(--fill);
+    color: var(--sub);
+    border: 1px solid var(--border);
+}
+.code-result-notice.success { background: rgba(29,158,117,0.08); color: var(--green); border-color: var(--green-border); }
+.code-result-notice.pending { background: rgba(245,158,11,0.08);  color: #B45309;    border-color: rgba(245,158,11,0.2); }
+.code-result-notice.warning { background: rgba(226,75,74,0.08);   color: var(--red-err); border-color: rgba(226,75,74,0.2); }
+
+.code-request-form   { display: flex; flex-direction: column; gap: 10px; }
+
+/* Botón de acción principal dentro del modal de código */
+.btn-code-action {
+    width: 100%;
+    padding: 13px;
+    border: none;
+    background: var(--dark);
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: 0.2s;
+}
+.btn-code-action:hover:not(:disabled) { background: var(--green); }
+.btn-code-action:disabled { opacity: 0.6; cursor: not-allowed; }
+.btn-code-action.joined   { background: rgba(29,158,117,0.12); color: var(--green); cursor: default; }
+
+/* Confirmación de solicitud enviada */
+.code-sent-confirm {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 12px;
+    padding: 12px 0 4px;
+}
+.code-sent-icon        { font-size: 44px; }
+.code-sent-confirm h3  { font-family: 'Sora', sans-serif; font-size: 18px; font-weight: 800; color: var(--dark); }
+.code-sent-confirm p   { font-size: 13px; color: var(--sub); line-height: 1.6; max-width: 280px; }
