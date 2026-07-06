@@ -326,6 +326,8 @@ window.toggleCircleMembership = async function(circleId) {
             // Actualizar contador local del círculo
             const circle = allCircles.find(c => c.id === circleId);
             if (circle) circle.number_students = Math.max(0, (circle.number_students || 1) - 1);
+        } else {
+            alert('No se pudo salir del círculo.');
         }
     } else {
         const membership = await UserCirclesManager.createConectionCircleStudent('member', circleId, userId);
@@ -333,6 +335,8 @@ window.toggleCircleMembership = async function(circleId) {
             userCircles.push(membership);
             const circle = allCircles.find(c => c.id === circleId);
             if (circle) circle.number_students = (circle.number_students || 0) + 1;
+        } else {
+            alert('No se pudo unir al círculo. Puede que esté lleno.');
         }
     }
 
@@ -377,6 +381,8 @@ window.submitCreateCircle = async function(e) {
     const desc     = document.getElementById('modal-circle-desc')?.value.trim();
     const theme    = document.getElementById('modal-circle-theme')?.value;
     const isPublic = document.getElementById('modal-circle-visibility')?.value !== 'private';
+    const maxVal   = document.getElementById('modal-circle-max-members')?.value;
+    const maxMembers = maxVal ? parseInt(maxVal, 10) : null;
 
     if (!name)  return showModalError('El nombre del círculo es obligatorio.');
     if (!theme) return showModalError('Selecciona una materia para el círculo.');
@@ -388,7 +394,7 @@ window.submitCreateCircle = async function(e) {
     const submitBtn = document.getElementById('modal-submit-btn');
     if (submitBtn) { submitBtn.disabled = true; submitBtn.innerText = 'Creando...'; }
 
-    const newCircle = await CirclesManager.createCircle(name, desc, theme, userId, isPublic);
+    const newCircle = await CirclesManager.createCircle(name, desc, theme, userId, isPublic, maxMembers);
 
     if (submitBtn) { submitBtn.disabled = false; submitBtn.innerText = 'Crear Círculo'; }
 
