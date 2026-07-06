@@ -553,3 +553,195 @@
 .code-sent-icon        { font-size: 44px; }
 .code-sent-confirm h3  { font-family: 'Sora', sans-serif; font-size: 18px; font-weight: 800; color: var(--dark); }
 .code-sent-confirm p   { font-size: 13px; color: var(--sub); line-height: 1.6; max-width: 280px; }
+
+/* =======================================================
+   11. DRAWER — DETALLE DEL CÍRCULO
+   ======================================================= */
+.drawer-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 10, 20, 0.4);
+    backdrop-filter: blur(2px);
+    z-index: 1100;
+    justify-content: flex-end;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+.drawer-overlay.open {
+    display: flex;
+    opacity: 1;
+}
+
+.drawer-panel {
+    background: #fff;
+    width: 100%;
+    max-width: 420px;
+    height: 100%;
+    box-shadow: -10px 0 40px rgba(0,0,0,0.1);
+    transform: translateX(100%);
+    transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+.drawer-overlay.open .drawer-panel {
+    transform: translateX(0);
+}
+
+.drawer-header {
+    padding: 24px;
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    background: #fff;
+    z-index: 10;
+}
+#drawer-header-content {
+    display: flex;
+    gap: 8px;
+}
+
+.drawer-close-btn {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: var(--fill);
+    color: var(--sub);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: 0.2s;
+}
+.drawer-close-btn:hover { background: var(--error-bg); color: var(--red-err); border-color: var(--red-err); }
+
+.drawer-body {
+    padding: 24px;
+}
+.drawer-body h2 {
+    font-family: 'Sora', sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--dark);
+    margin-bottom: 8px;
+    line-height: 1.3;
+}
+.drawer-body p {
+    font-size: 14px;
+    color: var(--sub);
+    line-height: 1.6;
+    margin-bottom: 16px;
+}
+.drawer-stats {
+    display: flex;
+    gap: 16px;
+    font-size: 12px;
+    color: var(--muted);
+    font-weight: 600;
+}
+
+/* Secciones del drawer (miembros / solicitudes) */
+.drawer-section {
+    padding: 0 24px 24px;
+}
+.drawer-section-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+.drawer-section-header h3 {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--dark);
+}
+.badge-count {
+    background: var(--fill);
+    color: var(--sub);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: var(--radius-pill);
+    border: 1px solid var(--border);
+}
+
+/* Listas de usuarios */
+.drawer-members-list,
+.drawer-pending-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.user-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    background: #fff;
+}
+.user-row-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: var(--fill);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+}
+.user-row-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+}
+.user-row-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--dark);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.user-row-role {
+    font-size: 11px;
+    color: var(--sub);
+}
+.user-row-role.admin { color: var(--indigo); font-weight: 600; }
+
+.user-row-actions {
+    display: flex;
+    gap: 6px;
+}
+.btn-action-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: var(--fill);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: 0.2s;
+    font-size: 12px;
+}
+.btn-action-icon.approve:hover { background: rgba(29,158,117,0.1); color: var(--green); border-color: var(--green); }
+.btn-action-icon.reject:hover  { background: rgba(226,75,74,0.1); color: var(--red-err); border-color: var(--red-err); }
+
+/* Footer del drawer */
+.drawer-footer {
+    margin-top: auto;
+    padding: 20px 24px;
+    border-top: 1px solid var(--border);
+    background: var(--fill);
+    position: sticky;
+    bottom: 0;
+}
+.drawer-footer .btn-code-action {
+    margin: 0;
+}

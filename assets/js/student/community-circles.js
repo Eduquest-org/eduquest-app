@@ -160,6 +160,7 @@ function renderCirclesStream() {
         const card = document.createElement('div');
         card.className = `circle-item-card ${isMember ? 'joined-active' : ''}`;
         card.dataset.circleId = circle.id;
+        card.onclick = () => openCircleDetailDrawer(circle.id);
 
         card.innerHTML = `
             <div class="circle-card-header">
@@ -173,7 +174,7 @@ function renderCirclesStream() {
             <button
                 class="btn-join-circle"
                 id="btn-circle-${circle.id}"
-                onclick="toggleCircleMembership('${circle.id}')">
+                onclick="event.stopPropagation(); toggleCircleMembership('${circle.id}')">
                 ${isMember ? '🟢 Dentro del Círculo' : 'Unirse al Círculo'}
             </button>
         `;
@@ -205,6 +206,8 @@ async function renderMisCirculos() {
         const item = document.createElement('div');
         item.className = 'mis-circulos-item';
         item.id = `mis-circulos-item-${circle.id}`;
+        item.style.cursor = 'pointer';
+        item.onclick = () => openCircleDetailDrawer(circle.id);
         item.innerHTML = `
             <div class="mis-circulos-info">
                 <span class="mis-circulos-badge" style="color:${color}; background:color-mix(in srgb, ${color} 12%, transparent)">
@@ -214,7 +217,7 @@ async function renderMisCirculos() {
             </div>
             <button
                 class="btn-leave-circle ${isOwner ? 'btn-leave-disabled' : ''}"
-                onclick="toggleCircleMembership('${circle.id}')"
+                onclick="event.stopPropagation(); toggleCircleMembership('${circle.id}')"
                 ${isOwner ? 'title="Eres el admin, no puedes salir" disabled' : 'title="Salir del círculo"'}>
                 ${isOwner ? '👑' : '✕'}
             </button>
@@ -272,6 +275,7 @@ window.searchCircles = function(query) {
         const card = document.createElement('div');
         card.className = `circle-item-card ${isMember ? 'joined-active' : ''}`;
         card.dataset.circleId = circle.id;
+        card.onclick = () => openCircleDetailDrawer(circle.id);
         card.innerHTML = `
             <div class="circle-card-header">
                 <span class="circle-course-badge" style="color:${color}; background:color-mix(in srgb, ${color} 12%, transparent)">
@@ -281,7 +285,7 @@ window.searchCircles = function(query) {
             </div>
             <h3>${circle.name}</h3>
             <p>${circle.description || 'Círculo de estudio colaborativo.'}</p>
-            <button class="btn-join-circle" id="btn-circle-${circle.id}" onclick="toggleCircleMembership('${circle.id}')">
+            <button class="btn-join-circle" id="btn-circle-${circle.id}" onclick="event.stopPropagation(); toggleCircleMembership('${circle.id}')">
                 ${isMember ? '🟢 Dentro del Círculo' : 'Unirse al Círculo'}
             </button>
         `;
@@ -405,6 +409,9 @@ document.addEventListener('click', e => {
 
     const codeModal = document.getElementById('code-result-modal');
     if (codeModal && e.target === codeModal) closeCodeSearchModal();
+
+    const drawer = document.getElementById('circle-detail-drawer');
+    if (drawer && e.target === drawer) closeCircleDetailDrawer();
 });
 
 // ============================================================
@@ -581,3 +588,138 @@ function clearCodeError() {
     const el = document.getElementById('code-search-error');
     if (el) { el.innerText = ''; el.style.display = 'none'; }
 }
+
+// ============================================================
+// Drawer — Detalle de Círculo
+// ============================================================
+
+window.openCircleDetailDrawer = async function(circleId) {
+    const circle = allCircles.find(c => c.id === circleId);
+    if (!circle) return;
+
+    const drawer = document.getElementById('circle-detail-drawer');
+    if (!drawer) return;
+
+    const userId  = window.CurrentUserService?.getId();
+    const subject = allSubjects.find(s => s.id === circle.id_theme);
+    const color   = getCourseColor(circle.id_theme);
+    const role    = userId ? await UserCirclesManager.getUserRole(circle.id, userId) : null;
+    const isMember = !!role;
+    const isAdmin  = role === 'admin';
+
+    // 1. Header & Body
+    document.getElementById('drawer-header-content').innerHTML = `
+        <span class="code-visibility-badge ${circle.is_public ? 'public' : 'private'}">${circle.is_public ? '🌐 Público' : '🔒 Privado'}</span>
+        <span class="circle-course-badge" style="color:${color}; background:color-mix(in srgb, ${color} 12%, transparent)">${subject?.name || 'General'}</span>
+    `;
+
+    document.getElementById('drawer-body-content').innerHTML = `
+        <h2>${circle.name}</h2>
+        <p>${circle.description || 'Sin descripción.'}</p>
+        <div class="drawer-stats">
+            <span>📅 Creado el ${new Date(circle.created_at).toLocaleDateString()}</span>
+            ${isAdmin && circle.join_code ? `<span title="Código de acceso">🔑 Código: <strong>${circle.join_code}</strong></span>` : ''}
+        </div>
+    `;
+
+    // 2. Panel de admin (solicitudes pendientes)
+    const adminPanel = document.getElementById('drawer-admin-panel');
+    const pendingList = document.getElementById('drawer-pending-list');
+    
+    if (isAdmin && !circle.is_public) {
+        adminPanel.style.display = 'block';
+        pendingList.innerHTML = '<p style="font-size:12px;color:var(--muted);">Cargando...</p>';
+        const requests = await JoinRequestManager.getPendingRequests(circle.id) || [];
+        
+        document.getElementById('drawer-pending-count').innerText = requests.length;
+        
+        if (requests.length === 0) {
+            pendingList.innerHTML = '<p style="font-size:12px;color:var(--muted);">No hay solicitudes pendientes.</p>';
+        } else {
+            pendingList.innerHTML = requests.map(req => `
+                <div class="user-row" id="req-row-${req.id}">
+                    <div class="user-row-avatar" style="background-image:url(${req.avatar_url})"></div>
+                    <div class="user-row-info">
+                        <span class="user-row-name">${req.name}</span>
+                        <span class="user-row-role" title="${req.message || ''}">${req.message ? `💬 "${req.message}"` : 'Sin mensaje'}</span>
+                    </div>
+                    <div class="user-row-actions">
+                        <button class="btn-action-icon approve" onclick="approveDrawerRequest('${req.id}', '${circle.id}')" title="Aprobar">✓</button>
+                        <button class="btn-action-icon reject" onclick="rejectDrawerRequest('${req.id}', '${circle.id}')" title="Rechazar">✕</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+    } else {
+        adminPanel.style.display = 'none';
+    }
+
+    // 3. Miembros
+    const membersList = document.getElementById('drawer-members-list');
+    membersList.innerHTML = '<p style="font-size:12px;color:var(--muted);">Cargando miembros...</p>';
+    
+    const members = await CirclesManager.getCircleMembers(circle.id) || [];
+    document.getElementById('drawer-members-count').innerText = members.length;
+    
+    membersList.innerHTML = members.map(m => `
+        <div class="user-row">
+            <div class="user-row-avatar" style="background-image:url(${m.avatar_url})"></div>
+            <div class="user-row-info">
+                <span class="user-row-name">${m.name} ${m.id_student === userId ? '(Tú)' : ''}</span>
+                <span class="user-row-role ${m.role === 'admin' ? 'admin' : ''}">${m.role === 'admin' ? 'Administrador' : 'Estudiante'}</span>
+            </div>
+        </div>
+    `).join('');
+
+    // 4. Footer CTA
+    const footer = document.getElementById('drawer-footer-cta');
+    const reqStatus = (userId && !isMember) ? await JoinRequestManager.checkRequest(circle.id, userId) : null;
+    
+    if (!userId) {
+        footer.innerHTML = `<button class="btn-code-action joined" disabled>Inicia sesión para unirte</button>`;
+    } else if (isAdmin) {
+        footer.innerHTML = `<button class="btn-code-action joined" disabled>Eres el administrador</button>`;
+    } else if (isMember) {
+        footer.innerHTML = `<button class="btn-code-action" style="background:var(--error-bg);color:var(--red-err);" onclick="toggleCircleMembership('${circle.id}'); closeCircleDetailDrawer();">Salir del Círculo</button>`;
+    } else if (circle.is_public) {
+        footer.innerHTML = `<button class="btn-code-action" onclick="toggleCircleMembership('${circle.id}'); closeCircleDetailDrawer();">Unirse al Círculo</button>`;
+    } else if (reqStatus === 'pending') {
+        footer.innerHTML = `<button class="btn-code-action joined" disabled>⏳ Solicitud en revisión</button>`;
+    } else {
+        footer.innerHTML = `<button class="btn-code-action" onclick="codeResultCircle = allCircles.find(c => c.id === '${circle.id}'); submitJoinRequest(); closeCircleDetailDrawer();">Enviar solicitud de unión</button>`;
+    }
+
+    drawer.classList.add('open');
+};
+
+window.closeCircleDetailDrawer = function() {
+    const drawer = document.getElementById('circle-detail-drawer');
+    if (drawer) drawer.classList.remove('open');
+};
+
+window.approveDrawerRequest = async function(reqId, circleId) {
+    const btnApprove = document.querySelector(`#req-row-${reqId} .approve`);
+    if (btnApprove) btnApprove.disabled = true;
+    
+    const ok = await JoinRequestManager.approveRequest(reqId);
+    if (ok) {
+        // Refrescar el drawer silenciosamente
+        openCircleDetailDrawer(circleId);
+    } else {
+        if (btnApprove) btnApprove.disabled = false;
+        alert('Error al aprobar solicitud');
+    }
+};
+
+window.rejectDrawerRequest = async function(reqId, circleId) {
+    const btnReject = document.querySelector(`#req-row-${reqId} .reject`);
+    if (btnReject) btnReject.disabled = true;
+    
+    const ok = await JoinRequestManager.rejectRequest(reqId);
+    if (ok) {
+        openCircleDetailDrawer(circleId);
+    } else {
+        if (btnReject) btnReject.disabled = false;
+        alert('Error al rechazar solicitud');
+    }
+};

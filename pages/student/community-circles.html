@@ -220,6 +220,53 @@
     </div>
   </div>
 
+  <!-- =============================================
+       Drawer — Detalle de Círculo
+  ============================================= -->
+  <div id="circle-detail-drawer" class="drawer-overlay" role="dialog" aria-modal="true" aria-labelledby="drawer-circle-title">
+    <div class="drawer-panel">
+      
+      <div class="drawer-header">
+        <button class="drawer-close-btn" onclick="closeCircleDetailDrawer()" aria-label="Cerrar">✕</button>
+        <div id="drawer-header-content">
+          <!-- Contenido renderizado por JS (badge materia, visibilidad) -->
+        </div>
+      </div>
+
+      <div class="drawer-body" id="drawer-body-content">
+        <!-- Renderizado dinámicamente: Título, desc, stats -->
+      </div>
+
+      <!-- Panel de Admin (Solicitudes Pendientes) -->
+      <div id="drawer-admin-panel" class="drawer-section" style="display:none;">
+        <div class="drawer-section-header">
+          <h3>📬 Solicitudes Pendientes</h3>
+          <span id="drawer-pending-count" class="badge-count">0</span>
+        </div>
+        <div id="drawer-pending-list" class="drawer-pending-list">
+          <!-- Solicitudes renderizadas aquí -->
+        </div>
+      </div>
+
+      <!-- Lista de Miembros -->
+      <div class="drawer-section">
+        <div class="drawer-section-header">
+          <h3>👥 Miembros</h3>
+          <span id="drawer-members-count" class="badge-count">0</span>
+        </div>
+        <div id="drawer-members-list" class="drawer-members-list">
+          <!-- Miembros renderizados aquí -->
+        </div>
+      </div>
+
+      <!-- Footer CTA -->
+      <div class="drawer-footer" id="drawer-footer-cta">
+        <!-- Botón de acción renderizado por JS -->
+      </div>
+
+    </div>
+  </div>
+
   <script src="../../assets/js/components/global-loader.js"></script>
   <script src="../../assets/js/utils/component-loader.js"></script>
   <script src="../../assets/js/core/storage.js"></script>
