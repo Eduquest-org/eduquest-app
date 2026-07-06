@@ -104,11 +104,11 @@ const CirclesManager = {
                 id,
                 id_student,
                 role,
-                joined_at,
+                "joined on",
                 profiles ( name, avatar_url, total_xp )
             `)
             .eq('id_circle', circleId)
-            .order('joined_at', { ascending: true });
+            .order('"joined on"', { ascending: true });
         if (error) {
             console.error('CirclesManager.getCircleMembers:', error.message);
             return null;
@@ -118,7 +118,7 @@ const CirclesManager = {
             id:         m.id,
             id_student: m.id_student,
             role:       m.role,
-            joined_at:  m.joined_at,
+            joined_at:  m["joined on"],
             name:       m.profiles?.name       || 'Usuario',
             avatar_url: m.profiles?.avatar_url || '👤',
             total_xp:   m.profiles?.total_xp   || 0,
