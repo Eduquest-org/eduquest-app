@@ -897,8 +897,9 @@ window.openQRModal = function(code, circleName) {
     document.getElementById('qr-modal-title').innerText = circleName;
     document.getElementById('qr-modal-code').innerText = code;
     
-    // Generar imagen del QR con API gratuita apuntando a la URL completa
-    const baseUrl = window.location.origin + window.location.pathname;
+    // Generar imagen del QR con API gratuita apuntando a la URL en producción
+    // (Incluso en local, el QR generará la ruta hacia eduquest-pe.netlify.app)
+    const baseUrl = 'https://eduquest-pe.netlify.app' + window.location.pathname;
     const fullUrl = `${baseUrl}?code=${code}`;
     
     const qrImage = document.getElementById('qr-image');
