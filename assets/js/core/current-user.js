@@ -161,7 +161,10 @@ const UserBindingManager = {
         document.querySelectorAll('[data-user-streak]').forEach(el => el.innerHTML = CurrentUserService.getStat('streakDays') || '0');
         document.querySelectorAll('[data-user-ranking]').forEach(el => el.innerHTML = CurrentUserService.getStat('rankingPos') || 'N/A');
         document.querySelectorAll('[data-user-bio]').forEach(el => {
-            const bio = CurrentUserService.getProfile()?.bio || CurrentUserService.getProfile()?.profile?.bio || '';
+            let bio = CurrentUserService.getProfile()?.bio || CurrentUserService.getProfile()?.profile?.bio || '';
+            if (!bio && CurrentUserService.getProfile()?.id) {
+                bio = localStorage.getItem(`bio_${CurrentUserService.getProfile().id}`) || '';
+            }
             el.innerHTML = bio || '¡Hola! Estoy usando EduQuest para prepararme.';
         });
     }

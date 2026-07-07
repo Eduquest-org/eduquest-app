@@ -190,19 +190,25 @@ const GamificationManager = {
         const user = CurrentUserService.getProfile();
         if (!user) return;
 
-        if (!user.profile) user.profile = {};
-        if (!user.profile.badges) user.profile.badges = [];
+        if (!user.badges) {
+            user.badges = JSON.parse(localStorage.getItem(`badges_${userId}`) || '[]');
+        }
 
         // Si ya tiene la insignia, no hacer nada
-        if (user.profile.badges.includes(badgeId)) return;
+        if (user.badges.includes(badgeId)) return;
 
         // Obtener datos de la insignia
         const badge = AVAILABLE_BADGES.find(b => b.id === badgeId);
         if (!badge) return;
 
         // Otorgar insignia
-        user.profile.badges.push(badgeId);
-        UserManager.updateProfile(userId, { badges: user.profile.badges });
+        user.badges.push(badgeId);
+        
+        // Guardar en Supabase (fallará en silencio si no existe la columna)
+        UserManager.updateProfile(userId, { badges: user.badges });
+        
+        // Fallback de persistencia local
+        localStorage.setItem(`badges_${userId}`, JSON.stringify(user.badges));
 
         // Otorgar XP
         UserManager.addXp(userId, badge.xpReward);
