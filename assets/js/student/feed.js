@@ -168,8 +168,8 @@ function renderPostCard(post, container) {
 
     container.appendChild(postCard);
 
-    // Precarga los comentarios en el DOM (ocultos hasta click)
-    renderComments(post.id, pinnedId);
+    // Los comentarios se cargarán on-demand cuando el usuario haga clic
+    // en toggleComments()
 }
 
 /* ========================================================
