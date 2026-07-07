@@ -71,25 +71,26 @@ async function loadFeedPosts() {
             return;
         }
 
-        // Mapear y guardar en caché para filtros
-        _cachedPosts = enrichedPosts.map(post => ({
-            id: post.id,
-            authorId: post.author_id,
-            authorAvatar: post.author_avatar,
-            authorName: post.author_name,
-            authorTarget: post.author_target,
-            authorRole: post.author_role || 'student', // 'student' | 'teacher'
-            tag: post.tag,
-            content: post.content,
-            imageUrl: post.image_url,
-            upvotes: post.upvotes,
-            timeText: post.created_at ? formatTime(post.created_at) : 'Reciente',
-            commentsCount: parseInt(post.comments_count) || 0,
-            isLikedByMe: post.is_liked_by_me || false
-        }));
-
-        // Renderizar con filtros actuales
-        renderFilteredPosts();
+        // Renderizar usando los datos de Supabase y renderPostCard
+        enrichedPosts.forEach(post => {
+            // Mapeamos de Supabase snake_case a camelCase para renderPostCard
+            const mappedPost = {
+                id: post.id,
+                authorId: post.author_id,
+                authorAvatar: post.author_avatar,
+                authorName: post.author_name,
+                authorTarget: post.author_badge || post.author_target,
+                authorRole: post.author_role,
+                tag: post.tag,
+                content: post.content,
+                imageUrl: post.image_url,
+                upvotes: post.upvotes,
+                timeText: post.created_at ? formatTime(post.created_at) : 'Reciente',
+                commentsCount: parseInt(post.comments_count) || 0,
+                isLikedByMe: post.is_liked_by_me || false
+            };
+            renderPostCard(mappedPost, container);
+        });
 
     } catch (error) {
         console.error('Error cargando el feed:', error);
@@ -140,6 +141,7 @@ function renderPostCard(post, container) {
             <div class="author-info">
                 <h4>${post.authorName || post.author || 'Usuario'}
                     ${post.authorTarget ? `<span class="user-target">${post.authorTarget}</span>` : ''}
+                    ${post.authorRole === 'teacher' ? '<span class="user-target teacher-badge">Docente</span>' : ''}
                     ${pinnedBadge}
                 </h4>
                 <span class="post-time">${post.timeText || 'Reciente'}</span>

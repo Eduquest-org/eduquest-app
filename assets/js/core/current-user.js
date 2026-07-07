@@ -108,6 +108,8 @@ const CurrentUserService = {
     }
 };
 
+const ROLE_LABELS = { teacher: 'Docente', student: 'Estudiante', admin: 'Admin' };
+
 const UserBindingManager = {
     bindAll() {
         if (!CurrentUserService.getProfile()) return;
@@ -117,13 +119,19 @@ const UserBindingManager = {
         document.querySelectorAll('[data-user-lastname]').forEach(el => el.innerHTML = CurrentUserService.getLastName());
         document.querySelectorAll('[data-user-email]').forEach(el => el.innerHTML = CurrentUserService.getEmail());
         document.querySelectorAll('[data-user-role]').forEach(el => el.innerHTML = CurrentUserService.getRole());
+        document.querySelectorAll('[data-user-role-label]').forEach(el => {
+            const label = ROLE_LABELS[CurrentUserService.getRole()] || '';
+            el.textContent = label;
+            el.hidden = !label;
+        });
         document.querySelectorAll('[data-user-avatar]').forEach(el => {
-            const raw = CurrentUserService.getProfile()?.avatar_url || CurrentUserService.getProfile()?.profile?.avatar || '👤';
-            const { emoji, color } = parseAvatar(raw);
+            const avatar = CurrentUserService.getAvatar();
             if (el.tagName.toLowerCase() === 'img') {
-                el.src = emoji;
+                el.src = avatar;
+            } else if (typeof avatar === 'string' && (avatar.startsWith('http') || avatar.startsWith('/'))) {
+                el.innerHTML = `<img src="${avatar}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;">`;
             } else {
-                el.innerHTML = emoji;
+                el.innerHTML = avatar;
             }
             el.style.backgroundColor = color;
         });
