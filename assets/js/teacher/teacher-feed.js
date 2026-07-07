@@ -5,6 +5,13 @@
 
 import { supabase } from '../config/supabase.js';
 
+let _isFetchingTeacherFeed = false;
+let _teacherFeedOffset = 0;
+let _allTeacherDoubts = [];
+let _teacherFeedObserver = null;
+const TEACHER_FEED_PAGE_SIZE = 10;
+
+
 const TAG_CLASS_MAP = {
   física: 'physics',
   physics: 'physics',
