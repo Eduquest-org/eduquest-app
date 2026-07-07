@@ -52,6 +52,10 @@ document.addEventListener('DOMContentLoaded', () => {
         notifScript.type = 'module';
         notifScript.src = '../../assets/js/core/notifications.js';
         document.body.appendChild(notifScript);
+
+        const searchScript = document.createElement('script');
+        searchScript.src = '../../assets/js/core/global-search.js';
+        document.body.appendChild(searchScript);
     }
 });
 

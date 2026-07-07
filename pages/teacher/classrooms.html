@@ -386,14 +386,45 @@
         </div>
         <div class="field-grid">
           <div class="field" data-field="dueDate">
-            <label for="act-due">Fecha límite</label>
-            <input type="date" id="act-due" name="dueDate">
+            <label for="act-due">Fecha límite (Obligatorio)</label>
+            <input type="datetime-local" id="act-due" name="dueDate" required>
             <div class="field-error"></div>
           </div>
           <div class="field" data-field="points">
-            <label for="act-points">Puntos (XP)</label>
-            <input type="number" id="act-points" name="points" placeholder="100" min="0" max="1000">
+            <label for="act-points">Puntos (XP) <span class="req">*</span></label>
+            <input type="number" id="act-points" name="points" placeholder="100" min="0" max="1000" required>
             <div class="field-error"></div>
+          </div>
+        </div>
+        
+        <!-- ============ CREADOR DINÁMICO DE QUIZ ============ -->
+        <div id="quiz-builder-container" class="hidden" style="margin-top: 20px; border-top: 1px dashed var(--border); padding-top: 20px;">
+          <h4 style="margin-bottom: 12px; color: var(--brand);">Configuración del Quiz</h4>
+          
+          <div class="field" data-field="quizDesc">
+            <label for="quiz-desc">Descripción del Quiz</label>
+            <textarea id="quiz-desc" name="quizDesc" placeholder="Instrucciones para los alumnos..." maxlength="240"></textarea>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <label style="font-weight: 600; font-size: 14px; color: var(--dark); margin:0;">Preguntas</label>
+            <button type="button" class="btn btn-sm btn-ghost" id="btnAddQuestion" style="color: var(--brand); font-weight: 600; padding: 4px 8px;">+ Agregar Pregunta</button>
+          </div>
+          <div id="quiz-questions-list" style="display: flex; flex-direction: column; gap: 16px; margin-bottom: 16px;">
+            <!-- Preguntas inyectadas por JS -->
+          </div>
+
+          <div class="field">
+            <label>Material de apoyo (Opcional)</label>
+            <div id="selected-material-display" style="display: none; padding: 10px; background: var(--fill); border-radius: 8px; margin-bottom: 8px; font-size: 13px; border: 1px solid var(--border);">
+              <span id="selected-material-title" style="font-weight: 600;"></span>
+              <button type="button" id="btnRemoveMaterial" style="float: right; background: transparent; border: none; cursor: pointer; color: var(--red-err); font-size: 12px;">✕ Quitar</button>
+              <input type="hidden" name="linkedMaterialId" id="linkedMaterialId">
+            </div>
+            <button type="button" class="btn btn-line btn-icon" id="btnOpenMaterialSelector" style="width: 100%;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+              Agregar material
+            </button>
           </div>
         </div>
       </div>
@@ -422,6 +453,31 @@
       <h3 style="font-size: 18px; margin-bottom: 20px;">Entregas de los Estudiantes <span id="grading-submissions-count" style="margin-left:8px; font-size:14px; color:var(--brand); background:var(--brand-soft); padding:4px 8px; border-radius:12px;">0</span></h3>
       <div id="grading-submissions-list" style="display: flex; flex-direction: column;">
         <!-- Lista de alumnos renderizada dinámicamente -->
+      </div>
+    </div>
+  </div>
+<!-- ============ MODAL: Selector de Material ============ -->
+<div class="tmodal-overlay" id="modal-material-selector" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="modal-material-title">
+  <div class="tmodal tmodal-sm">
+    <div class="tmodal-head">
+      <div class="tmodal-icon purple">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+      </div>
+      <div class="tmodal-titles">
+        <div class="tmodal-title" id="modal-material-title">Seleccionar Material</div>
+        <div class="tmodal-subtitle">Busca y vincula un recurso existente</div>
+      </div>
+      <button class="tmodal-close" data-close-modal aria-label="Cerrar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="tmodal-body" style="max-height: 400px; overflow-y: auto;">
+      <div class="mini-search" style="margin-bottom: 16px;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="materialSearch" placeholder="Buscar por título o tema...">
+      </div>
+      <div id="material-list-container" style="display: flex; flex-direction: column; gap: 8px;">
+        <!-- Lista de materiales inyectada por JS -->
       </div>
     </div>
   </div>

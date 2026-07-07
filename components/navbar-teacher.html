@@ -2,9 +2,14 @@
   <button class="menu-toggle" id="menuToggle" aria-label="Abrir menú">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
   </button>
-  <div class="search-box">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-    <input type="text" placeholder="Busca una sección, curso o estudiante... (Ej: Álgebra)">
+  <div class="search-box" style="position: relative; z-index: 50;">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="pointer-events: none;"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input type="text" placeholder="Busca una sección, curso o estudiante... (Ej: Álgebra)" id="globalSearchInput" style="position: relative; z-index: 51; pointer-events: auto; width: 100%;">
+    
+    <!-- Contenedor del Dropdown de Búsqueda -->
+    <div id="search-results-dropdown" class="hidden" style="position: absolute; top: 100%; left: 0; width: 100%; max-height: 400px; overflow-y: auto; background: #fff; border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); z-index: 1000; margin-top: 4px; display: flex; flex-direction: column; gap: 0; pointer-events: auto;">
+      <!-- Resultados inyectados por JS -->
+    </div>
   </div>
   <div class="topbar-right">
     <button class="icon-btn" aria-label="Notificaciones">
@@ -20,3 +25,4 @@
     </div>
   </div>
 </header>
+<!-- </body> -->
