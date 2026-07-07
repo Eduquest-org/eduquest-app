@@ -3,11 +3,22 @@ import { CirclesManager, UserCirclesManager, JoinRequestManager, SubjectManager 
 // ============================================================
 // Estado del módulo
 // ============================================================
-let allCircles         = [];   // Caché de todos los círculos traídos de Supabase
-let userCircles        = [];   // Membresías del usuario (rows de circles_table_student)
-let allSubjects        = [];   // Caché de todos los cursos
+let allCircles         = [];   // Caché global de todos los círculos conocidos
+let userCircles        = [];   // Membresías del usuario
+let allSubjects        = [];   // Caché de cursos
 let activeCourseFilter = 'ALL';
-let codeResultCircle   = null; // Círculo encontrado por código (estado temporal)
+let codeResultCircle   = null;
+
+// Variables para paginación
+let _circlesOffset     = 0;
+let _isFetchingCircles = false;
+let _streamCircles     = [];   // Los círculos que se muestran actualmente en la grilla
+const CIRCLES_PAGE_SIZE = 10;
+
+let _drawerMembersOffset = 0;
+let _drawerMembers = [];
+let _isFetchingDrawerMembers = false;
+let _currentDrawerCircleId = null;
 
 // ============================================================
 // Helpers de color de materias
@@ -82,6 +93,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     buildCommunityProfileBanner();
     renderFilterTabs();
+    
+    // Inicializar el stream con los primeros cargados
+    _streamCircles = [...allCircles];
+    _circlesOffset = allCircles.length;
     renderCirclesStream();
     renderMisCirculos();
 
@@ -167,18 +182,18 @@ function renderFilterTabs() {
 // ============================================================
 // Grid de círculos
 // ============================================================
-function renderCirclesStream() {
+function renderCirclesStream(append = false) {
     const container = document.getElementById('active-circles-container');
     if (!container) return;
 
-    // Mostrar grupos que sean públicos, o que sean privados pero el usuario ya sea miembro
-    const visibleCircles = allCircles.filter(c => c.is_public || userCircles.some(uc => uc.id_circle === c.id));
-    
-    const filtered = activeCourseFilter === 'ALL'
-        ? visibleCircles
-        : visibleCircles.filter(c => c.id_theme === activeCourseFilter);
+    if (!append) {
+        container.innerHTML = '';
+    } else {
+        const btn = document.getElementById('btn-load-more-circles');
+        if (btn) btn.remove();
+    }
 
-    if (!filtered.length) {
+    if (!_streamCircles.length && !append) {
         container.innerHTML = `
             <div class="circles-empty-state">
                 <span>🔒</span>
@@ -187,13 +202,16 @@ function renderCirclesStream() {
         return;
     }
 
-    container.innerHTML = '';
-    filtered.forEach(circle => {
+    _streamCircles.forEach(circle => {
+        // Evitar duplicados en el DOM si se hace append múltiple (opcional, pero buena práctica)
+        if (document.getElementById(`circle-card-${circle.id}`)) return;
+
         const isMember = userCircles.some(uc => uc.id_circle === circle.id);
         const subject  = allSubjects.find(s => s.id === circle.id_theme);
         const color    = getCourseColor(circle.id_theme);
 
         const card = document.createElement('div');
+        card.id = `circle-card-${circle.id}`;
         card.className = `circle-item-card ${isMember ? 'joined-active' : ''}`;
         card.dataset.circleId = circle.id;
         card.onclick = () => openCircleDetailDrawer(circle.id);
@@ -229,6 +247,53 @@ function renderCirclesStream() {
         `;
         container.appendChild(card);
     });
+
+    // Agregar botón de "Cargar más" si trajimos suficientes en la última llamada
+    // Como no tenemos el número exacto del último fetch aquí, lo estimamos
+    // o simplemente lo mostramos siempre que el total sea múltiplo del page size
+    // Para ser precisos, lo ideal es que loadMoreCircles decida mostrarlo o no.
+    if (_streamCircles.length > 0 && _streamCircles.length % CIRCLES_PAGE_SIZE === 0) {
+        const loadMoreBtn = document.createElement('button');
+        loadMoreBtn.id = 'btn-load-more-circles';
+        loadMoreBtn.className = 'btn outline sm';
+        loadMoreBtn.style.margin = '20px auto';
+        loadMoreBtn.style.display = 'block';
+        loadMoreBtn.innerText = 'Cargar más círculos';
+        loadMoreBtn.onclick = () => loadMoreCircles();
+        container.appendChild(loadMoreBtn);
+    }
+}
+
+async function loadMoreCircles() {
+    if (_isFetchingCircles) return;
+    _isFetchingCircles = true;
+    
+    const btn = document.getElementById('btn-load-more-circles');
+    if (btn) btn.innerText = 'Cargando...';
+
+    let newCircles = [];
+    if (activeCourseFilter === 'ALL') {
+        newCircles = await CirclesManager.getAllCircles(CIRCLES_PAGE_SIZE, _circlesOffset);
+    } else {
+        newCircles = await CirclesManager.getCirclesByTheme(activeCourseFilter, CIRCLES_PAGE_SIZE, _circlesOffset);
+    }
+
+    if (newCircles && newCircles.length > 0) {
+        // Filtrar aquellos que ya pudimos haber cargado
+        const unique = newCircles.filter(nc => !_streamCircles.some(sc => sc.id === nc.id));
+        _streamCircles.push(...unique);
+        
+        // También actualizamos el caché global para otros usos
+        unique.forEach(c => { if (!allCircles.some(ac => ac.id === c.id)) allCircles.push(c); });
+        
+        _circlesOffset += newCircles.length;
+        renderCirclesStream(true); // append
+    } else {
+        if (btn) {
+            btn.outerHTML = '<p style="text-align:center; color:var(--sub); width:100%; margin-top:20px;">Nada más por actualizar 🚀</p>';
+        }
+    }
+    _isFetchingCircles = false;
 }
 
 // ============================================================
@@ -291,12 +356,34 @@ async function renderMisCirculos() {
 // ============================================================
 // Filtrar por materia
 // ============================================================
-window.filterCirclesByCourse = function(courseId) {
+window.filterCirclesByCourse = async function(courseId) {
+    if (_isFetchingCircles) return;
+    
     activeCourseFilter = courseId;
+    _circlesOffset = 0;
+    _streamCircles = [];
 
     document.querySelectorAll('#filter-tabs-bar .tab-btn').forEach(btn => {
         btn.classList.toggle('active', btn.id === `tab-${courseId}`);
     });
+    
+    const container = document.getElementById('active-circles-container');
+    if (container) container.innerHTML = '<div style="text-align:center; padding:20px;"><div class="spinner"></div></div>';
+    
+    _isFetchingCircles = true;
+    let newCircles = [];
+    if (courseId === 'ALL') {
+        newCircles = await CirclesManager.getAllCircles(CIRCLES_PAGE_SIZE, _circlesOffset);
+    } else {
+        newCircles = await CirclesManager.getCirclesByTheme(courseId, CIRCLES_PAGE_SIZE, _circlesOffset);
+    }
+    
+    if (newCircles) {
+        _streamCircles = newCircles;
+        newCircles.forEach(c => { if (!allCircles.some(ac => ac.id === c.id)) allCircles.push(c); });
+        _circlesOffset = newCircles.length;
+    }
+    _isFetchingCircles = false;
 
     renderCirclesStream();
 };
@@ -599,20 +686,6 @@ window.openCodeSearchModal = async function() {
             <p class="code-result-desc">${circle.description || 'Sin descripción.'}</p>
             <span class="code-result-members">👥 ${circle.number_students ?? 0} miembros</span>
             <div class="code-result-cta">
-                ${ctaHtml}
-            </div>
-        </div>
-    `;
-
-    modal.classList.add('open');
-};
-
-window.closeCodeSearchModal = function() {
-    const modal = document.getElementById('code-result-modal');
-    if (modal) modal.classList.remove('open');
-};
-
-/**
  * Unión directa para círculos públicos encontrados por código.
  */
 window.doJoinByCode = async function() {
@@ -770,36 +843,24 @@ window.openCircleDetailDrawer = async function(circleId) {
     const membersList = document.getElementById('drawer-members-list');
     membersList.innerHTML = '<p style="font-size:12px;color:var(--muted);">Cargando miembros...</p>';
     
-    const members = await CirclesManager.getCircleMembers(circle.id) || [];
-    document.getElementById('drawer-members-count').innerText = members.length;
+    _currentDrawerCircleId = circle.id;
+    _drawerMembersOffset = 0;
+    _drawerMembers = [];
     
-    membersList.innerHTML = members.map(m => `
-        <div class="user-row">
-            <div class="user-row-info">
-                <span class="user-row-name">${m.name} ${m.id_student === userId ? '(Tú)' : ''}</span>
-                <span class="user-row-role ${m.role === 'admin' ? 'admin' : ''}">${m.role === 'admin' ? 'Administrador' : 'Estudiante'}</span>
-            </div>
-            ${(isAdmin && m.id_student !== userId) ? `
-            <div class="user-row-actions">
-                ${m.role !== 'admin' ? `<button class="btn-action-icon approve" onclick="promoteDrawerMember('${circle.id}', '${m.id_student}')" title="Hacer administrador">⭐</button>` : ''}
-                <button class="btn-action-icon reject" onclick="kickDrawerMember('${circle.id}', '${m.id_student}')" title="Expulsar del círculo">👢</button>
-            </div>` : ''}
-        </div>
-    `).join('');
+    const members = await CirclesManager.getCircleMembers(circle.id, 20, 0) || [];
+    _drawerMembers = members;
+    _drawerMembersOffset = members.length;
+    
+    // Necesitamos saber el total real de estudiantes para mostrar correctamente el count superior, 
+    // pero por ahora usamos el cache del círculo
+    document.getElementById('drawer-members-count').innerText = circle.number_students || members.length;
+    
+    renderDrawerMembersList(userId, isAdmin);
 
     // 4. Ranking
-    const rankingList = document.getElementById('drawer-ranking-list');
-    const sortedMembers = [...members].sort((a, b) => (b.total_xp || 0) - (a.total_xp || 0));
-    
-    rankingList.innerHTML = sortedMembers.map((m, i) => `
-        <div class="ranking-row top-${i + 1}">
-            <div class="ranking-pos">${i + 1}</div>
-            <div class="user-row-info" style="flex:1;">
-                <span class="user-row-name" style="font-size:13px; font-weight: 600;">${m.name} ${m.id_student === userId ? '(Tú)' : ''}</span>
-            </div>
-            <div class="ranking-xp">${m.total_xp || 0} XP</div>
-        </div>
-    `).join('');
+    // Idealmente el ranking debería venir ordenado de DB, pero por simplicidad de UI
+    // ordenamos los miembros cargados. 
+    renderDrawerRankingList(userId);
 
     // 5. Footer CTA
     const footer = document.getElementById('drawer-footer-cta');
@@ -821,6 +882,85 @@ window.openCircleDetailDrawer = async function(circleId) {
 
     drawer.classList.add('open');
 };
+
+function renderDrawerMembersList(userId, isAdmin) {
+    const membersList = document.getElementById('drawer-members-list');
+    if (!membersList) return;
+
+    if (_drawerMembers.length === 0) {
+        membersList.innerHTML = '<p style="font-size:12px;color:var(--muted);">No hay miembros aún.</p>';
+        return;
+    }
+
+    const html = _drawerMembers.map(m => `
+        <div class="user-row">
+            <div class="user-row-info">
+                <span class="user-row-name">${m.name} ${m.id_student === userId ? '(Tú)' : ''}</span>
+                <span class="user-row-role ${m.role === 'admin' ? 'admin' : ''}">${m.role === 'admin' ? 'Administrador' : 'Estudiante'}</span>
+            </div>
+            ${(isAdmin && m.id_student !== userId) ? `
+            <div class="user-row-actions">
+                ${m.role !== 'admin' ? `<button class="btn-action-icon approve" onclick="promoteDrawerMember('${_currentDrawerCircleId}', '${m.id_student}')" title="Hacer administrador">⭐</button>` : ''}
+                <button class="btn-action-icon reject" onclick="kickDrawerMember('${_currentDrawerCircleId}', '${m.id_student}')" title="Expulsar del círculo">👢</button>
+            </div>` : ''}
+        </div>
+    `).join('');
+
+    membersList.innerHTML = html;
+    
+    // Si trajimos 20 (el límite), es posible que haya más
+    if (_drawerMembers.length > 0 && _drawerMembers.length % 20 === 0) {
+        const btn = document.createElement('button');
+        btn.className = 'btn outline sm';
+        btn.style.width = '100%';
+        btn.style.marginTop = '12px';
+        btn.innerText = 'Cargar más miembros';
+        btn.onclick = () => loadMoreDrawerMembers(userId, isAdmin);
+        membersList.appendChild(btn);
+    }
+}
+
+function renderDrawerRankingList(userId) {
+    const rankingList = document.getElementById('drawer-ranking-list');
+    if (!rankingList) return;
+    
+    const sortedMembers = [..._drawerMembers].sort((a, b) => (b.total_xp || 0) - (a.total_xp || 0));
+    
+    rankingList.innerHTML = sortedMembers.map((m, i) => `
+        <div class="ranking-row top-${i + 1}">
+            <div class="ranking-pos">${i + 1}</div>
+            <div class="user-row-info" style="flex:1;">
+                <span class="user-row-name" style="font-size:13px; font-weight: 600;">${m.name} ${m.id_student === userId ? '(Tú)' : ''}</span>
+            </div>
+            <div class="ranking-xp">${m.total_xp || 0} XP</div>
+        </div>
+    `).join('');
+}
+
+async function loadMoreDrawerMembers(userId, isAdmin) {
+    if (_isFetchingDrawerMembers || !_currentDrawerCircleId) return;
+    _isFetchingDrawerMembers = true;
+    
+    const membersList = document.getElementById('drawer-members-list');
+    const btn = membersList.querySelector('button.outline.sm');
+    if (btn) btn.innerText = 'Cargando...';
+
+    const newMembers = await CirclesManager.getCircleMembers(_currentDrawerCircleId, 20, _drawerMembersOffset) || [];
+    
+    if (newMembers.length > 0) {
+        const unique = newMembers.filter(nm => !_drawerMembers.some(dm => dm.id_student === nm.id_student));
+        _drawerMembers.push(...unique);
+        _drawerMembersOffset += newMembers.length;
+        renderDrawerMembersList(userId, isAdmin);
+        renderDrawerRankingList(userId);
+    } else {
+        if (btn) {
+            btn.outerHTML = '<p style="text-align:center; color:var(--sub); font-size:12px; margin-top:10px;">No hay más miembros.</p>';
+        }
+    }
+    
+    _isFetchingDrawerMembers = false;
+}
 
 window.switchDrawerTab = function(tabName) {
     document.getElementById('btn-tab-info').classList.toggle('active', tabName === 'info');
