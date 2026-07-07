@@ -5,6 +5,13 @@
 
 import { supabase } from '../config/supabase.js';
 
+let _isFetchingTeacherFeed = false;
+let _teacherFeedOffset = 0;
+let _allTeacherDoubts = [];
+let _teacherFeedObserver = null;
+const TEACHER_FEED_PAGE_SIZE = 10;
+
+
 const TAG_CLASS_MAP = {
   física: 'physics',
   physics: 'physics',
@@ -118,46 +125,133 @@ function renderFeedCard(post) {
   `;
 }
 
-async function loadTeacherFeed() {
+async function loadTeacherFeed(reset = true) {
   const container = document.getElementById('teacher-feed-container');
   const pendingEl = document.getElementById('pendingDoubtsCount');
   if (!container) return;
 
-  container.innerHTML = '<p class="feed-empty">Cargando dudas...</p>';
+  if (_isFetchingTeacherFeed) return;
+  _isFetchingTeacherFeed = true;
+
+  if (reset) {
+    _teacherFeedOffset = 0;
+    _allTeacherDoubts = [];
+    container.innerHTML = `
+      <div style="text-align: center; padding: 40px; color: var(--sub);">
+          <div class="spinner" style="margin: 0 auto 12px auto; border-color: var(--primary) transparent var(--primary) transparent;"></div>
+          <p>Buscando dudas...</p>
+      </div>`;
+      
+    if (_teacherFeedObserver) {
+      _teacherFeedObserver.disconnect();
+      _teacherFeedObserver = null;
+    }
+  } else {
+    const bottomSpinner = document.createElement('div');
+    bottomSpinner.id = 'teacher-feed-bottom-spinner';
+    bottomSpinner.style.textAlign = 'center';
+    bottomSpinner.style.padding = '20px';
+    bottomSpinner.innerHTML = `
+        <div class="spinner" style="width:24px; height:24px; margin: 0 auto 8px auto; border-color: var(--primary) transparent var(--primary) transparent; border-width: 2px;"></div>
+        <span style="color: var(--sub); font-size: 13px;">Cargando más dudas...</span>`;
+    container.appendChild(bottomSpinner);
+  }
 
   try {
     const { data: posts, error } = await supabase.rpc('get_forum_feed', {
-      limit_val: 50,
-      offset_val: 0,
+      limit_val: TEACHER_FEED_PAGE_SIZE,
+      offset_val: _teacherFeedOffset,
     });
 
     if (error) {
       console.error('[teacher-feed] Error cargando feed:', error);
-      container.innerHTML = '<p class="feed-empty">No se pudo cargar el tablón.</p>';
+      if (reset) container.innerHTML = '<p class="feed-empty">No se pudo cargar el tablón.</p>';
+      _isFetchingTeacherFeed = false;
       return;
     }
 
-    const doubts = (posts || []).filter(isStudentDoubt);
-    const pending = doubts.filter((p) => (parseInt(p.comments_count, 10) || 0) === 0);
-
-    if (pendingEl) {
-      const n = pending.length;
-      pendingEl.textContent = n === 0
-        ? 'Sin dudas pendientes'
-        : `${n} esperando respuesta`;
+    if (reset) container.innerHTML = '';
+    else {
+      const spinner = document.getElementById('teacher-feed-bottom-spinner');
+      if (spinner) spinner.remove();
     }
 
-    if (doubts.length === 0) {
-      container.innerHTML = '<p class="feed-empty">No hay dudas de alumnos por ahora.</p>';
-      return;
-    }
+    if (posts && posts.length > 0) {
+        const newDoubts = posts.filter(isStudentDoubt);
+        _allTeacherDoubts = _allTeacherDoubts.concat(newDoubts);
+        
+        // Actualizar contador global de pendientes (aproximado)
+        if (pendingEl) {
+            const pending = _allTeacherDoubts.filter((p) => (parseInt(p.comments_count, 10) || 0) === 0);
+            const n = pending.length;
+            pendingEl.textContent = n === 0
+                ? 'Sin dudas pendientes'
+                : `${n} esperando respuesta`;
+        }
 
-    container.innerHTML = doubts.map(renderFeedCard).join('');
-    wireReplyButtons();
+        if (newDoubts.length > 0) {
+            const html = newDoubts.map(renderFeedCard).join('');
+            // Creamos un wrapper temporal para insertar los nodos uno por uno
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = html;
+            while (tempDiv.firstChild) {
+                container.appendChild(tempDiv.firstChild);
+            }
+            wireReplyButtons();
+        }
+        
+        _teacherFeedOffset += posts.length;
+        
+        if (posts.length === TEACHER_FEED_PAGE_SIZE) {
+            setupTeacherFeedObserver(container.lastElementChild);
+        } else {
+            showTeacherFeedEndMessage(container);
+        }
+    } else {
+        if (reset) container.innerHTML = '<p class="feed-empty">No hay dudas de alumnos por ahora.</p>';
+        else showTeacherFeedEndMessage(container);
+    }
   } catch (err) {
     console.error('[teacher-feed] Error inesperado:', err);
-    container.innerHTML = '<p class="feed-empty">Error al cargar el feed.</p>';
+    if (reset) container.innerHTML = '<p class="feed-empty">Error al cargar el feed.</p>';
+  } finally {
+    _isFetchingTeacherFeed = false;
   }
+}
+
+function showTeacherFeedEndMessage(container) {
+    // Evitar duplicados
+    if (container.querySelector('.feed-end-message')) return;
+    const endMsg = document.createElement('div');
+    endMsg.className = 'feed-end-message';
+    endMsg.style.textAlign = 'center';
+    endMsg.style.padding = '24px';
+    endMsg.style.color = 'var(--sub)';
+    endMsg.style.fontSize = '14px';
+    endMsg.innerHTML = '<p>Nada más por actualizar 🚀</p>';
+    container.appendChild(endMsg);
+}
+
+function setupTeacherFeedObserver(lastElement) {
+    if (_teacherFeedObserver) {
+        _teacherFeedObserver.disconnect();
+    }
+
+    _teacherFeedObserver = new IntersectionObserver((entries) => {
+        const entry = entries[0];
+        if (entry.isIntersecting) {
+            _teacherFeedObserver.unobserve(lastElement);
+            loadTeacherFeed(false);
+        }
+    }, {
+        root: null,
+        rootMargin: '0px',
+        threshold: 0.5
+    });
+
+    if (lastElement) {
+        _teacherFeedObserver.observe(lastElement);
+    }
 }
 
 function wireReplyButtons() {

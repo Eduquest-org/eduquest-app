@@ -58,12 +58,13 @@ const CirclesManager = {
      * Obtiene todos los círculos públicos ordenados por fecha de creación.
      * @returns {Array|null}
      */
-    async getAllCircles() {
+    async getAllCircles(limit = 10, offset = 0) {
         const { data, error } = await supabase
             .from('circles_table')
             .select('*')
             .eq('is_public', true)
-            .order('created_at', { ascending: false });
+            .order('created_at', { ascending: false })
+            .range(offset, offset + limit - 1);
         if (error) {
             console.error('CirclesManager.getAllCircles:', error.message);
             return null;
@@ -76,13 +77,14 @@ const CirclesManager = {
      * @param {string} themeId - ej. 'course_algebra'
      * @returns {Array|null}
      */
-    async getCirclesByTheme(themeId) {
+    async getCirclesByTheme(themeId, limit = 10, offset = 0) {
         const { data, error } = await supabase
             .from('circles_table')
             .select('*')
             .eq('id_theme', themeId)
             .eq('is_public', true)
-            .order('created_at', { ascending: false });
+            .order('created_at', { ascending: false })
+            .range(offset, offset + limit - 1);
         if (error) {
             console.error('CirclesManager.getCirclesByTheme:', error.message);
             return null;
@@ -97,7 +99,7 @@ const CirclesManager = {
      * @param {string} circleId
      * @returns {Array|null} Array de { id, id_student, role, joined_at, name, avatar_url }
      */
-    async getCircleMembers(circleId) {
+    async getCircleMembers(circleId, limit = 20, offset = 0) {
         const { data, error } = await supabase
             .from('circles_table_student')
             .select(`
@@ -108,7 +110,8 @@ const CirclesManager = {
                 profiles ( name, avatar_url, total_xp )
             `)
             .eq('id_circle', circleId)
-            .order('"joined on"', { ascending: true });
+            .order('"joined on"', { ascending: true })
+            .range(offset, offset + limit - 1);
         if (error) {
             console.error('CirclesManager.getCircleMembers:', error.message);
             return null;
