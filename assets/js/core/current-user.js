@@ -126,14 +126,18 @@ const UserBindingManager = {
         });
         document.querySelectorAll('[data-user-avatar]').forEach(el => {
             const avatar = CurrentUserService.getAvatar();
+            const raw = CurrentUserService.getProfile()?.avatar_url || CurrentUserService.getProfile()?.profile?.avatar || '👤';
+            const { color } = parseAvatar(raw);
+            
             if (el.tagName.toLowerCase() === 'img') {
                 el.src = avatar;
             } else if (typeof avatar === 'string' && (avatar.startsWith('http') || avatar.startsWith('/'))) {
                 el.innerHTML = `<img src="${avatar}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;">`;
+                el.style.backgroundColor = 'transparent';
             } else {
                 el.innerHTML = avatar;
+                el.style.backgroundColor = color;
             }
-            el.style.backgroundColor = color;
         });
         document.querySelectorAll('[data-user-initials]').forEach(el => {
             el.innerHTML = CurrentUserService.getInitials();
