@@ -66,9 +66,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             .map(uc => uc.id_circle)
             .filter(id => !allCircles.find(c => c.id === id));
             
-        for (const id of missingCircleIds) {
-            const circle = await CirclesManager.getCircleById(id);
-            if (circle) allCircles.push(circle);
+        if (missingCircleIds.length > 0) {
+            const missingCircles = await Promise.all(missingCircleIds.map(id => CirclesManager.getCircleById(id)));
+            missingCircles.forEach(circle => {
+                if (circle) allCircles.push(circle);
+            });
         }
     }
 
