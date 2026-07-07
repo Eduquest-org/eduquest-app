@@ -6,6 +6,16 @@
 // se activa solo si encuentra sus nodos.
 // ==========================================================================
 
+// --- Perfil global del docente (todas las páginas teacher/) ---
+document.addEventListener("DOMContentLoaded", async () => {
+  if (window.CurrentUserService) {
+    await CurrentUserService.init();
+  }
+  if (window.UserBindingManager) {
+    UserBindingManager.bindAll();
+  }
+});
+
 // --- Menú móvil (delegación: sidebar/navbar se inyectan async) ---
 document.addEventListener("click", (e) => {
   const toggle = e.target.closest("#menuToggle");
@@ -27,13 +37,189 @@ document.addEventListener("click", (e) => {
 (function () {
   "use strict";
 
-  // Mapeo de accesos rápidos por su título visible.
   const TILE_NAV = {
     "Crear aula": "classrooms.html?create=1",
     "Ver secciones": "classrooms.html",
     "Asignar tarea": "classrooms.html",
     "Calificar tareas": "classrooms.html",
   };
+
+  function getSupabase() {
+    return window.supabase || null;
+  }
+
+  async function waitForSupabase(maxMs = 3000) {
+    const start = Date.now();
+    while (!getSupabase() && Date.now() - start < maxMs) {
+      await new Promise((r) => setTimeout(r, 50));
+    }
+    return getSupabase();
+  }
+
+  async function getTeacherScope(teacherId) {
+    const supabase = getSupabase();
+    if (!supabase || !teacherId) return { classroomIds: [], studentIds: [] };
+
+    const { data: classrooms, error: classErr } = await supabase
+      .from("classrooms")
+      .select("id")
+      .eq("teacher_id", teacherId);
+
+    if (classErr) {
+      console.error("[dashboard] Error cargando aulas:", classErr);
+      return { classroomIds: [], studentIds: [] };
+    }
+
+    const classroomIds = (classrooms ?? []).map((c) => c.id);
+    if (!classroomIds.length) return { classroomIds, studentIds: [] };
+
+    const { data: enrollments, error: enrollErr } = await supabase
+      .from("classroom_students")
+      .select("student_id")
+      .in("classroom_id", classroomIds);
+
+    if (enrollErr) {
+      console.error("[dashboard] Error cargando alumnos:", enrollErr);
+      return { classroomIds, studentIds: [] };
+    }
+
+    const studentIds = [...new Set((enrollments ?? []).map((e) => e.student_id))];
+    return { classroomIds, studentIds };
+  }
+
+  function refreshSectionsSummary(scope) {
+    const summary = document.getElementById("sectionsSummary");
+    if (!summary) return;
+
+    const sectionCount = scope.classroomIds.length;
+    const studentCount = scope.studentIds.length;
+
+    if (sectionCount === 0) {
+      summary.textContent = "Sin aulas activas · 0 alumnos en total";
+      return;
+    }
+
+    const aulas =
+      sectionCount === 1 ? "1 aula activa" : `${sectionCount} aulas activas`;
+    summary.textContent = `${aulas} · ${studentCount} alumnos en total`;
+  }
+
+  async function refreshPerformancePanel(studentIds) {
+    const barCorrect = document.getElementById("perfBarCorrect");
+    const barError = document.getElementById("perfBarError");
+    const correctEl = document.getElementById("perfCorrectCount");
+    const errorEl = document.getElementById("perfErrorCount");
+    const noteEl = document.getElementById("perfAccuracyNote");
+
+    if (!barCorrect || !barError || !correctEl || !errorEl || !noteEl) return;
+
+    const supabase = getSupabase();
+    if (!supabase || !studentIds.length) {
+      barCorrect.style.width = "0%";
+      barError.style.width = "0%";
+      correctEl.textContent = "0";
+      errorEl.textContent = "0";
+      noteEl.textContent = "Sin datos de rendimiento";
+      return;
+    }
+
+    const { data: stats, error } = await supabase
+      .from("user_topic_stats")
+      .select("correct_answers, incorrect_answers")
+      .in("user_id", studentIds);
+
+    if (error) {
+      console.error("[dashboard] Error cargando stats:", error);
+      noteEl.textContent = "No se pudo cargar el rendimiento";
+      return;
+    }
+
+    let totalCorrect = 0;
+    let totalIncorrect = 0;
+    (stats ?? []).forEach((row) => {
+      totalCorrect += row.correct_answers ?? 0;
+      totalIncorrect += row.incorrect_answers ?? 0;
+    });
+
+    const total = totalCorrect + totalIncorrect;
+    const pct = total > 0 ? Math.round((totalCorrect / total) * 100) : 0;
+
+    barCorrect.style.width = `${pct}%`;
+    barError.style.width = `${total > 0 ? 100 - pct : 0}%`;
+    correctEl.textContent = totalCorrect.toLocaleString("es-PE");
+    errorEl.textContent = totalIncorrect.toLocaleString("es-PE");
+    noteEl.textContent =
+      total > 0
+        ? `${pct}% de aciertos en general`
+        : "Sin datos de rendimiento";
+  }
+
+  async function refreshGradingPanel(scope) {
+    const gradedPanel = document.getElementById("gradedPanel");
+    if (!gradedPanel) return;
+
+    const classIds = scope.classrooms.map(c => c.id);
+    if (!classIds.length) {
+      gradedPanel.hidden = false;
+      gradedPanel.innerHTML = '<p class="stat-label" style="margin-top:10px;">Crea un aula para asignar tareas.</p>';
+      return;
+    }
+
+    try {
+      const { data: activities } = await window.supabase
+        .from('classroom_activities')
+        .select('id')
+        .in('classroom_id', classIds);
+        
+      if (!activities || !activities.length) {
+          gradedPanel.hidden = false;
+          gradedPanel.innerHTML = '<p class="stat-label" style="margin-top:10px;">No hay tareas asignadas aún.</p>';
+          return;
+      }
+      
+      const actIds = activities.map(a => a.id);
+      const { data: submissions } = await window.supabase
+        .from('activity_submissions')
+        .select('id, status')
+        .in('activity_id', actIds);
+        
+      const total = (submissions || []).length;
+      const pending = (submissions || []).filter(s => s.status === 'pending').length;
+      const graded = total - pending;
+
+      gradedPanel.hidden = false;
+      gradedPanel.innerHTML = `
+        <div class="stat-row">
+          <span class="stat-big" style="color:var(--brand);">${pending}</span>
+          <span class="stat-of"> por revisar</span>
+        </div>
+        <p class="stat-label" style="margin-bottom:8px;">De ${total} entregas totales</p>
+        <div class="progress-track" style="background:rgba(0,0,0,0.05); height:8px; border-radius:4px; margin: 10px 0;">
+          <div class="progress-fill" style="width:${total > 0 ? (graded/total)*100 : 0}%; background:var(--brand); height:100%; border-radius:4px;"></div>
+        </div>
+        <div class="streak-row" style="font-size:13px; color:var(--sub);"><span style="color:var(--amber);">⭐</span> ${graded} calificadas</div>
+      `;
+    } catch(err) {
+      console.error("Error al cargar calificaciones:", err);
+      gradedPanel.hidden = false;
+    }
+  }
+
+  async function initDashboardData() {
+    await waitForSupabase();
+
+    if (window.CurrentUserService && !CurrentUserService.getProfile()) {
+      await CurrentUserService.init();
+    }
+
+    const teacherId = window.CurrentUserService?.getProfile()?.id;
+    if (!teacherId) return;
+
+    const scope = await getTeacherScope(teacherId);
+    refreshSectionsSummary(scope);
+    await refreshPerformancePanel(scope.studentIds);
+    await refreshGradingPanel(scope);
+  }
 
   function wireQuickActions() {
     document.querySelectorAll(".action-tile").forEach((tile) => {
@@ -47,7 +233,6 @@ document.addEventListener("click", (e) => {
       });
     });
 
-    // Enlaces y botones de los paneles laterales.
     document.querySelectorAll(".panel-link").forEach((link) => {
       if (link.textContent.includes("Ver secciones")) {
         link.style.cursor = "pointer";
@@ -61,21 +246,10 @@ document.addEventListener("click", (e) => {
     });
   }
 
-  function refreshSectionsSummary() {
-    const summary = document.getElementById("sectionsSummary");
-    if (!summary || !window.TeacherStore) return;
-    TeacherStore.init().then(() => {
-      const agg = TeacherStore.aggregate();
-      const aulas = agg.sections === 1 ? "1 aula activa" : `${agg.sections} aulas activas`;
-      summary.textContent = `${aulas} · ${agg.students} alumnos en total`;
-    });
-  }
-
-  function init() {
-    // Solo actúa si estamos en el inicio (hay accesos rápidos).
+  async function init() {
     if (!document.querySelector(".quick-actions")) return;
     wireQuickActions();
-    refreshSectionsSummary();
+    await initDashboardData();
   }
 
   if (document.readyState === "loading") {

@@ -18,6 +18,39 @@
 }
 
 /* =======================================================
+   2. TABS DE CLASIFICACIÓN
+   ======================================================= */
+.ranking-tabs {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.rank-tab {
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: #f1f5f9;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.rank-tab:hover {
+  background: var(--fill);
+  color: var(--dark);
+}
+
+.rank-tab.active {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+  box-shadow: 0 4px 10px rgba(79, 70, 229, 0.2);
+}
+
+/* =======================================================
    3. TABLA DE CLASIFICACIÓN (LEADERBOARD)
    ======================================================= */
 .leaderboard-card-wrapper {

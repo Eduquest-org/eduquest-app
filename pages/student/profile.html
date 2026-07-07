@@ -116,27 +116,7 @@
           <div class="profile-activity-panel">
             <h3>🕒 Actividad Reciente</h3>
             <div class="activity-timeline" id="profile-activity-list">
-              <div class="activity-item">
-                <div class="activity-icon green">✓</div>
-                <div class="activity-detail">
-                  <p class="activity-text">Completó simulacro de <strong>Álgebra</strong></p>
-                  <span class="activity-time">Hace 2 horas</span>
-                </div>
-              </div>
-              <div class="activity-item">
-                <div class="activity-icon indigo">💬</div>
-                <div class="activity-detail">
-                  <p class="activity-text">Publicó una duda en el foro: <em>"¿Cómo se resuelve..."</em></p>
-                  <span class="activity-time">Ayer</span>
-                </div>
-              </div>
-              <div class="activity-item">
-                <div class="activity-icon amber">🔥</div>
-                <div class="activity-detail">
-                  <p class="activity-text">Inició una racha de estudio de 3 días</p>
-                  <span class="activity-time">Hace 3 días</span>
-                </div>
-              </div>
+              <!-- Actividad cargada dinámicamente por JS -->
             </div>
           </div>
         </div>
@@ -149,38 +129,10 @@
             <h3>📅 Tu Progreso Semanal</h3>
             <p class="weekly-sub">Sigue tu ritmo diario de estudio y XP ganados</p>
             <div class="weekly-chart-bars">
-              <div class="weekly-bar-col">
-                <div class="weekly-bar-fill" style="height: 40%"></div>
-                <span class="weekly-day">Lun</span>
-              </div>
-              <div class="weekly-bar-col">
-                <div class="weekly-bar-fill" style="height: 75%"></div>
-                <span class="weekly-day">Mar</span>
-              </div>
-              <div class="weekly-bar-col">
-                <div class="weekly-bar-fill" style="height: 90%"></div>
-                <span class="weekly-day">Mié</span>
-              </div>
-              <div class="weekly-bar-col">
-                <div class="weekly-bar-fill active" style="height: 60%"></div>
-                <span class="weekly-day active">Jue</span>
-              </div>
-              <div class="weekly-bar-col">
-                <div class="weekly-bar-fill" style="height: 0%"></div>
-                <span class="weekly-day">Vie</span>
-              </div>
-              <div class="weekly-bar-col">
-                <div class="weekly-bar-fill" style="height: 0%"></div>
-                <span class="weekly-day">Sáb</span>
-              </div>
-              <div class="weekly-bar-col">
-                <div class="weekly-bar-fill" style="height: 0%"></div>
-                <span class="weekly-day">Dom</span>
-              </div>
+              <!-- Barras cargadas dinámicamente por JS -->
             </div>
             <div class="weekly-footer-stats">
-              <span>🎯 Meta diaria: <strong>500 XP</strong></span>
-              <span>⚡ Hoy ganaste: <strong>320 XP</strong></span>
+              <!-- Stats cargados dinámicamente por JS -->
             </div>
           </div>
 
@@ -331,6 +283,6 @@
   <script src="../../assets/js/core/app.js"></script>
 
   <script src="../../assets/js/student/gamification.js"></script>
-  <script src="../../assets/js/student/profile.js"></script>
+  <script type="module" src="../../assets/js/student/profile.js"></script>
 </body>
 </html>

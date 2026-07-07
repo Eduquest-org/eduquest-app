@@ -432,6 +432,9 @@
       console.error("[analytics] Chart.js no está disponible.");
     }
 
+    if (window.CurrentUserService && typeof CurrentUserService.init === 'function') {
+        await CurrentUserService.init();
+    }
     await Store.init();
     const sections = Store.getSections();
 

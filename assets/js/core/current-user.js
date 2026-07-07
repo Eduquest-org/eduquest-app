@@ -108,6 +108,8 @@ const CurrentUserService = {
     }
 };
 
+const ROLE_LABELS = { teacher: 'Docente', student: 'Estudiante', admin: 'Admin' };
+
 const UserBindingManager = {
     bindAll() {
         if (!CurrentUserService.getProfile()) return;
@@ -117,15 +119,25 @@ const UserBindingManager = {
         document.querySelectorAll('[data-user-lastname]').forEach(el => el.innerHTML = CurrentUserService.getLastName());
         document.querySelectorAll('[data-user-email]').forEach(el => el.innerHTML = CurrentUserService.getEmail());
         document.querySelectorAll('[data-user-role]').forEach(el => el.innerHTML = CurrentUserService.getRole());
+        document.querySelectorAll('[data-user-role-label]').forEach(el => {
+            const label = ROLE_LABELS[CurrentUserService.getRole()] || '';
+            el.textContent = label;
+            el.hidden = !label;
+        });
         document.querySelectorAll('[data-user-avatar]').forEach(el => {
+            const avatar = CurrentUserService.getAvatar();
             const raw = CurrentUserService.getProfile()?.avatar_url || CurrentUserService.getProfile()?.profile?.avatar || '👤';
-            const { emoji, color } = parseAvatar(raw);
+            const { color } = parseAvatar(raw);
+            
             if (el.tagName.toLowerCase() === 'img') {
-                el.src = emoji;
+                el.src = avatar;
+            } else if (typeof avatar === 'string' && (avatar.startsWith('http') || avatar.startsWith('/'))) {
+                el.innerHTML = `<img src="${avatar}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;">`;
+                el.style.backgroundColor = 'transparent';
             } else {
-                el.innerHTML = emoji;
+                el.innerHTML = avatar;
+                el.style.backgroundColor = color;
             }
-            el.style.backgroundColor = color;
         });
         document.querySelectorAll('[data-user-initials]').forEach(el => {
             el.innerHTML = CurrentUserService.getInitials();
@@ -149,7 +161,10 @@ const UserBindingManager = {
         document.querySelectorAll('[data-user-streak]').forEach(el => el.innerHTML = CurrentUserService.getStat('streakDays') || '0');
         document.querySelectorAll('[data-user-ranking]').forEach(el => el.innerHTML = CurrentUserService.getStat('rankingPos') || 'N/A');
         document.querySelectorAll('[data-user-bio]').forEach(el => {
-            const bio = CurrentUserService.getProfile()?.bio || CurrentUserService.getProfile()?.profile?.bio || '';
+            let bio = CurrentUserService.getProfile()?.bio || CurrentUserService.getProfile()?.profile?.bio || '';
+            if (!bio && CurrentUserService.getProfile()?.id) {
+                bio = localStorage.getItem(`bio_${CurrentUserService.getProfile().id}`) || '';
+            }
             el.innerHTML = bio || '¡Hola! Estoy usando EduQuest para prepararme.';
         });
     }
