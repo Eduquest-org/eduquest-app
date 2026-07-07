@@ -46,6 +46,26 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             cachedClassrooms = classrooms;
             renderClassrooms(classrooms);
+
+            // Revisar parámetros de URL (Ej: desde el buscador global)
+            const urlParams = new URLSearchParams(window.location.search);
+            const sectionId = urlParams.get('section');
+            const activityId = urlParams.get('activity');
+            if (sectionId) {
+                window.history.replaceState({}, document.title, window.location.pathname); // Limpiar URL
+                const cls = classrooms.find(c => c.id === sectionId);
+                if (cls) {
+                    // Abrir modal de clase
+                    await window.openClassroomModal(sectionId);
+                    if (activityId) {
+                        // Esperar a que se rendericen las actividades y hacer clic en entregar
+                        setTimeout(() => {
+                            const btn = document.querySelector(`button[onclick*="'${activityId}'"]`);
+                            if (btn) btn.click();
+                        }, 500);
+                    }
+                }
+            }
         } catch (error) {
             console.error("Error al cargar las clases:", error);
             gridEl.innerHTML = `
@@ -250,7 +270,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 let actionHtml = '';
 
                 if (!sub) {
-                    statusHtml = '<span style="color: var(--danger); font-weight: 500; font-size: 13px;">🔴 Pendiente</span>';
+                    statusHtml = '<span style="color: var(--danger); font-weight: 500; font-size: 13px;">🔴 Pendiente</span> <span style="background: #E8F5E9; color: #2E7D32; font-size: 11px; font-weight: 700; padding: 2px 6px; border-radius: 4px; margin-left: 8px; border: 1px solid #C8E6C9;">YES - Nueva Tarea Activa</span>';
                     actionHtml = `<button class="btn btn-primary btn-sm" onclick="window.openSubmitActivityModal('${act.id}', '${act.title.replace(/'/g, "\\'")}')">Entregar</button>`;
                 } else if (sub.status === 'pending') {
                     statusHtml = '<span style="color: var(--warning); font-weight: 500; font-size: 13px;">🟡 Enviado, en revisión</span>';
