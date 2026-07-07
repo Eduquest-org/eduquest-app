@@ -2,19 +2,16 @@
 // assets/js/teacher/teacher-store.js
 // CAPA DE DATOS DEL PANEL DOCENTE (secciones / aulas)
 // ==========================================================================
-// Persistencia 100% client-side en localStorage, sembrada desde
-// mock/teacher-classroom.json. Toda lectura/escritura de secciones y
-// actividades (tareas, retos, quizzes) pasa por aquí.
-//
+// Integración con Supabase para la persistencia real de los datos.
 // API pública (window.TeacherStore):
-//   await init()                       → siembra si hace falta y resuelve
-//   getSections()                      → Array de secciones
-//   getSection(id)                     → sección | null
-//   createSection(payload)             → { ok, section?, errors? }
-//   updateSection(id, patch)           → sección | null
-//   deleteSection(id)                  → boolean
-//   addActivity(sectionId, activity)   → { ok, activity?, errors? }
-//   removeActivity(sectionId, actId)   → boolean
+//   await init()                       → siembra la cache desde Supabase
+//   getSections()                      → Array de secciones (sincrónico, lee cache)
+//   getSection(id)                     → sección | null (sincrónico, lee cache)
+//   createSection(payload)             → { ok, section?, errors? } (asíncrono)
+//   updateSection(id, patch)           → sección | null (asíncrono)
+//   deleteSection(id)                  → boolean (asíncrono)
+//   addActivity(sectionId, activity)   → { ok, activity?, errors? } (asíncrono)
+//   removeActivity(sectionId, actId)   → boolean (asíncrono)
 //   computeStats(section)              → métricas agregadas de la sección
 //   aggregate()                        → métricas globales de todas las aulas
 // ==========================================================================
@@ -22,29 +19,14 @@
 (function () {
   "use strict";
 
-  const STORAGE_KEY = "eduquest_teacher_sections";
-  const VERSION_KEY = "eduquest_teacher_sections_v";
-  const SCHEMA_VERSION = 2;
-  const MOCK_PATH = "../../mock/teacher-classroom.json";
+  let cache = []; // Array de secciones en memoria
 
-  let cache = null; // Array de secciones en memoria (espejo de localStorage)
-
-  // ─── Persistencia base ──────────────────────────────────────────────
-
-  function read() {
-    if (cache) return cache;
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      cache = raw ? JSON.parse(raw) : [];
-    } catch (err) {
-      console.error("[TeacherStore] localStorage corrupto, reiniciando:", err);
-      cache = [];
-    }
-    return cache;
+  function getSupabase() {
+    return window.supabase || null;
   }
 
-  function persist() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(cache || []));
+  function getCurrentTeacherId() {
+    return window.CurrentUserService?.getId() || null;
   }
 
   // ─── Utilidades internas ────────────────────────────────────────────
@@ -53,20 +35,10 @@
     return String(text || "")
       .toLowerCase()
       .normalize("NFD")
-      .replace(/[̀-ͯ]/g, "") // quita tildes/diacríticos
+      .replace(/[\u0300-\u036f]/g, "") // quita tildes/diacríticos
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/(^-|-$)/g, "")
       .slice(0, 24);
-  }
-
-  function uniqueId(base) {
-    const sections = read();
-    let id = base || "sec";
-    let n = 2;
-    while (sections.some((s) => s.id === id)) {
-      id = `${base}-${n++}`;
-    }
-    return id;
   }
 
   function randomToken(len) {
@@ -78,14 +50,12 @@
     return out;
   }
 
-  /** Genera un código de unión único tipo `FIS-7K2A`. */
   function generateJoinCode(course) {
-    const sections = read();
     const prefix = slugify(course).replace(/-/g, "").slice(0, 3).toUpperCase() || "AUL";
     let code;
     do {
       code = `${prefix}-${randomToken(4)}`;
-    } while (sections.some((s) => s.joinCode === code));
+    } while (cache.some((s) => s.joinCode === code));
     return code;
   }
 
@@ -102,7 +72,7 @@
     } else if (name.length < 3) {
       errors.name = "El nombre es demasiado corto.";
     } else {
-      const dup = read().some(
+      const dup = cache.some(
         (s) => s.id !== ignoreId && s.name.trim().toLowerCase() === name.toLowerCase()
       );
       if (dup) errors.name = "Ya tienes una sección con ese nombre.";
@@ -141,139 +111,295 @@
   // ─── API pública ────────────────────────────────────────────────────
 
   const TeacherStore = {
-    /**
-     * Siembra el almacén desde el mock si está vacío o desactualizado.
-     * Idempotente: respeta las secciones creadas por el docente.
-     * @returns {Promise<Array>} Lista de secciones.
-     */
     async init() {
-      const storedVersion = Number(localStorage.getItem(VERSION_KEY));
-      const hasData = !!localStorage.getItem(STORAGE_KEY);
-
-      if (hasData && storedVersion === SCHEMA_VERSION) {
-        return read();
+      const supabase = getSupabase();
+      const teacherId = getCurrentTeacherId();
+      if (!supabase || !teacherId) {
+        console.warn("[TeacherStore] Supabase o TeacherId no disponibles, usando caché vacío.");
+        cache = [];
+        return cache;
       }
 
-      // Primera carga o cambio de esquema: sembrar desde el mock.
       try {
-        const res = await fetch(MOCK_PATH);
-        if (res.ok) {
-          const data = await res.json();
-          cache = Array.isArray(data.sections) ? data.sections : [];
-        } else {
-          cache = cache || [];
+        // 1. Obtener classrooms del profesor
+        const { data: classrooms, error: classErr } = await supabase
+          .from("classrooms")
+          .select("*")
+          .eq("teacher_id", teacherId)
+          .order("created_at", { ascending: false });
+
+        if (classErr) throw classErr;
+
+        if (!classrooms || classrooms.length === 0) {
+          cache = [];
+          return cache;
         }
+
+        const classIds = classrooms.map(c => c.id);
+
+        // 2. Obtener actividades de estas aulas
+        const { data: activities, error: actErr } = await supabase
+          .from("classroom_activities")
+          .select("*")
+          .in("classroom_id", classIds)
+          .order("created_at", { ascending: false });
+        if (actErr) throw actErr;
+
+        // 3. Obtener estudiantes matriculados y sus perfiles
+        // Nota: Un JOIN más completo sería ideal, pero lo simulamos pidiendo los estudiantes
+        const { data: enrollments, error: enrollErr } = await supabase
+          .from("classroom_students")
+          .select("classroom_id, student_id, profiles(name)")
+          .in("classroom_id", classIds);
+        if (enrollErr) throw enrollErr;
+
+        const studentIds = enrollments.map(e => e.student_id);
+        
+        // 4. Obtener progreso/XP de los estudiantes si existen
+        let userStatsMap = {};
+        if (studentIds.length > 0) {
+          const { data: stats, error: statsErr } = await supabase
+            .from("user_topic_stats")
+            .select("user_id, correct_answers, incorrect_answers, total_attempts")
+            .in("user_id", studentIds);
+            
+          if (!statsErr && stats) {
+             stats.forEach(st => {
+                 if (!userStatsMap[st.user_id]) userStatsMap[st.user_id] = { correct: 0, total: 0, attempts: 0 };
+                 userStatsMap[st.user_id].correct += (st.correct_answers || 0);
+                 userStatsMap[st.user_id].total += ((st.correct_answers || 0) + (st.incorrect_answers || 0));
+                 userStatsMap[st.user_id].attempts += (st.total_attempts || 0);
+             });
+          }
+        }
+
+        // Armar el caché con la misma estructura que espera la UI
+        cache = classrooms.map(c => {
+          const sectionActivities = (activities || []).filter(a => a.classroom_id === c.id).map(a => ({
+              id: a.id,
+              type: a.type,
+              title: a.title,
+              topic: a.topic,
+              dueDate: a.due_date,
+              points: a.points,
+              createdAt: a.created_at
+          }));
+
+          const sectionEnrollments = (enrollments || []).filter(e => e.classroom_id === c.id);
+          const sectionStudents = sectionEnrollments.map(e => {
+              const uStats = userStatsMap[e.student_id] || { correct: 0, total: 0, attempts: 0 };
+              const acc = uStats.total > 0 ? Math.round((uStats.correct / uStats.total) * 100) : 0;
+              return {
+                  id: e.student_id,
+                  name: e.profiles?.name || "Alumno Anónimo",
+                  xp: uStats.correct * 10, // Estimación de XP basado en aciertos
+                  accuracy: acc,
+                  completion: Math.min(100, uStats.attempts * 5),
+                  simulacros: Math.floor(uStats.attempts / 10),
+                  activity: uStats.attempts > 0 ? "Activo recientemente" : "Sin actividad reciente"
+              };
+          });
+
+          return {
+            id: c.id,
+            course: c.course || "General",
+            name: c.name,
+            cycle: c.cycle || "",
+            shift: c.shift || "",
+            schedule: c.schedule || "",
+            capacity: c.capacity,
+            joinCode: c.join_code,
+            description: c.description || "",
+            createdAt: c.created_at,
+            activities: sectionActivities,
+            students: sectionStudents,
+            topicPerformance: [], // Pendiente de agregación por topic real si se desea
+            weeklyActivity: [] // Se podría derivar de un histórico, actualmente vacío
+          };
+        });
+
       } catch (err) {
-        console.error("[TeacherStore] No se pudo cargar el mock:", err);
-        cache = read(); // conservar lo que hubiera
+        console.error("[TeacherStore] Error cargando datos de Supabase:", err);
       }
 
-      persist();
-      localStorage.setItem(VERSION_KEY, String(SCHEMA_VERSION));
       return cache;
     },
 
     getSections() {
-      return read();
+      return cache;
     },
 
     getSection(id) {
-      return read().find((s) => s.id === id) || null;
+      return cache.find((s) => s.id === id) || null;
     },
 
-    /**
-     * Crea una nueva sección validada.
-     * @returns {{ok:boolean, section?:Object, errors?:Object}}
-     */
-    createSection(payload) {
+    async createSection(payload) {
       const errors = validateSection(payload);
       if (Object.keys(errors).length) return { ok: false, errors };
 
-      const sections = read();
-      const section = {
-        id: uniqueId(slugify(`${payload.course}-${payload.name}`) || "seccion"),
-        course: payload.course.trim(),
+      const supabase = getSupabase();
+      const teacherId = getCurrentTeacherId();
+      if (!supabase || !teacherId) return { ok: false, errors: { server: "No autenticado" } };
+
+      const joinCode = generateJoinCode(payload.course);
+      const newClassroom = {
+        teacher_id: teacherId,
         name: payload.name.trim(),
+        course: payload.course.trim(),
         cycle: (payload.cycle || "").trim(),
         shift: (payload.shift || "").trim(),
         schedule: (payload.schedule || "").trim(),
         capacity: payload.capacity ? Number(payload.capacity) : null,
-        joinCode: generateJoinCode(payload.course),
-        description: (payload.description || "").trim(),
-        createdAt: new Date().toISOString(),
-        topicPerformance: [],
-        weeklyActivity: [],
-        students: [],
-        activities: [],
+        join_code: joinCode,
+        description: (payload.description || "").trim()
       };
 
-      sections.unshift(section); // las más nuevas primero
-      persist();
-      return { ok: true, section };
+      try {
+        const { data, error } = await supabase
+          .from("classrooms")
+          .insert(newClassroom)
+          .select()
+          .single();
+
+        if (error) throw error;
+
+        // Formatear para caché local
+        const section = {
+          id: data.id,
+          course: data.course,
+          name: data.name,
+          cycle: data.cycle,
+          shift: data.shift,
+          schedule: data.schedule,
+          capacity: data.capacity,
+          joinCode: data.join_code,
+          description: data.description,
+          createdAt: data.created_at,
+          topicPerformance: [],
+          weeklyActivity: [],
+          students: [],
+          activities: [],
+        };
+
+        cache.unshift(section);
+        return { ok: true, section };
+      } catch (err) {
+        console.error("[TeacherStore] Error creando sección:", err);
+        return { ok: false, errors: { server: "Error al guardar en la base de datos." } };
+      }
     },
 
-    updateSection(id, patch) {
-      const sections = read();
-      const section = sections.find((s) => s.id === id);
+    async updateSection(id, patch) {
+      const section = this.getSection(id);
       if (!section) return null;
-      Object.assign(section, patch);
-      persist();
-      return section;
+      
+      const supabase = getSupabase();
+      if (!supabase) return null;
+
+      try {
+          const dbPatch = {};
+          if (patch.name !== undefined) dbPatch.name = patch.name;
+          if (patch.course !== undefined) dbPatch.course = patch.course;
+          if (patch.cycle !== undefined) dbPatch.cycle = patch.cycle;
+          if (patch.shift !== undefined) dbPatch.shift = patch.shift;
+          if (patch.schedule !== undefined) dbPatch.schedule = patch.schedule;
+          if (patch.description !== undefined) dbPatch.description = patch.description;
+          if (patch.capacity !== undefined) dbPatch.capacity = patch.capacity;
+
+          const { error } = await supabase.from("classrooms").update(dbPatch).eq("id", id);
+          if (error) throw error;
+
+          Object.assign(section, patch);
+          return section;
+      } catch(err) {
+          console.error("Error actualizando aula", err);
+          return null;
+      }
     },
 
-    deleteSection(id) {
-      const sections = read();
-      const idx = sections.findIndex((s) => s.id === id);
+    async deleteSection(id) {
+      const idx = cache.findIndex((s) => s.id === id);
       if (idx === -1) return false;
-      sections.splice(idx, 1);
-      persist();
-      return true;
+
+      const supabase = getSupabase();
+      if (!supabase) return false;
+
+      try {
+          const { error } = await supabase.from("classrooms").delete().eq("id", id);
+          if (error) throw error;
+          cache.splice(idx, 1);
+          return true;
+      } catch(err) {
+          console.error("Error eliminando aula", err);
+          return false;
+      }
     },
 
-    /**
-     * Añade una actividad (tarea / reto / quiz) a una sección.
-     * @returns {{ok:boolean, activity?:Object, errors?:Object}}
-     */
-    addActivity(sectionId, payload) {
+    async addActivity(sectionId, payload) {
       const section = this.getSection(sectionId);
       if (!section) return { ok: false, errors: { section: "Sección no encontrada." } };
 
       const errors = validateActivity(payload);
       if (Object.keys(errors).length) return { ok: false, errors };
 
-      const activity = {
-        id: `act-${Date.now()}-${randomToken(4).toLowerCase()}`,
+      const supabase = getSupabase();
+      if (!supabase) return { ok: false, errors: { server: "No autenticado" } };
+
+      const newActivity = {
+        classroom_id: sectionId,
         type: payload.type,
         title: payload.title.trim(),
         topic: (payload.topic || "").trim(),
-        dueDate: payload.dueDate || null,
+        due_date: payload.dueDate || null,
         points: payload.points ? Number(payload.points) : 0,
-        createdAt: new Date().toISOString(),
       };
 
-      if (!Array.isArray(section.activities)) section.activities = [];
-      section.activities.unshift(activity);
-      persist();
-      return { ok: true, activity };
+      try {
+          const { data, error } = await supabase.from("classroom_activities").insert(newActivity).select().single();
+          if (error) throw error;
+          
+          const activity = {
+              id: data.id,
+              type: data.type,
+              title: data.title,
+              topic: data.topic,
+              dueDate: data.due_date,
+              points: data.points,
+              createdAt: data.created_at
+          };
+
+          if (!Array.isArray(section.activities)) section.activities = [];
+          section.activities.unshift(activity);
+          return { ok: true, activity };
+      } catch(err) {
+          console.error("Error agregando actividad", err);
+          return { ok: false, errors: { server: "Error al guardar la actividad en base de datos." } };
+      }
     },
 
-    removeActivity(sectionId, activityId) {
+    async removeActivity(sectionId, activityId) {
       const section = this.getSection(sectionId);
       if (!section || !Array.isArray(section.activities)) return false;
       const idx = section.activities.findIndex((a) => a.id === activityId);
       if (idx === -1) return false;
-      section.activities.splice(idx, 1);
-      persist();
-      return true;
+
+      const supabase = getSupabase();
+      if (!supabase) return false;
+
+      try {
+          const { error } = await supabase.from("classroom_activities").delete().eq("id", activityId);
+          if (error) throw error;
+          
+          section.activities.splice(idx, 1);
+          return true;
+      } catch (err) {
+          console.error("Error eliminando actividad", err);
+          return false;
+      }
     },
 
     generateJoinCode,
 
-    /**
-     * Calcula métricas agregadas de una sección a partir de sus alumnos.
-     * @returns {Object} { students, avgXp, activity, avgAccuracy,
-     *   avgCompletion, totalSimulacros, distribution, atRisk, topPerformer }
-     */
     computeStats(section) {
       const students = (section && section.students) || [];
       const count = students.length;
@@ -309,8 +435,6 @@
         distribution[band] = (distribution[band] || 0) + 1;
       });
 
-      // % de actividad: si la sección no lo trae, lo derivamos de la
-      // última semana de weeklyActivity vs. nº de alumnos.
       let activity = section.activity;
       if (activity == null && Array.isArray(section.weeklyActivity) && section.weeklyActivity.length) {
         const last = section.weeklyActivity[section.weeklyActivity.length - 1];
@@ -330,15 +454,9 @@
       };
     },
 
-    /**
-     * Métricas globales sumando todas las secciones (para el inicio).
-     * @returns {Object} { sections, students, avgXp, avgAccuracy,
-     *   activities, distribution }
-     */
     aggregate() {
-      const sections = read();
       const totals = {
-        sections: sections.length,
+        sections: cache.length,
         students: 0,
         avgXp: 0,
         avgAccuracy: 0,
@@ -350,7 +468,7 @@
       let accAccum = 0;
       let studentAccum = 0;
 
-      sections.forEach((section) => {
+      cache.forEach((section) => {
         const stats = this.computeStats(section);
         totals.students += stats.students;
         totals.activities += (section.activities || []).length;

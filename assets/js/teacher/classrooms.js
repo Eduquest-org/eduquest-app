@@ -256,12 +256,14 @@
     UI.openModal("modal-section");
   }
 
-  function handleCreateSection(e) {
+  async function handleCreateSection(e) {
     e.preventDefault();
     const data = Object.fromEntries(new FormData(sectionForm).entries());
-    const result = Store.createSection(data);
+    
+    const result = await Store.createSection(data);
 
     if (!result.ok) {
+
       UI.showFieldErrors(sectionForm, result.errors);
       return;
     }
@@ -305,11 +307,12 @@
     UI.openModal("modal-activity");
   }
 
-  function handleCreateActivity(e) {
+  async function handleCreateActivity(e) {
     e.preventDefault();
     if (!currentSectionId) return;
     const data = Object.fromEntries(new FormData(activityForm).entries());
-    const result = Store.addActivity(currentSectionId, data);
+    
+    const result = await Store.addActivity(currentSectionId, data);
 
     if (!result.ok) {
       UI.showFieldErrors(activityForm, result.errors);
@@ -366,10 +369,10 @@
     });
 
     // Eliminar actividad (delegación en la lista)
-    document.getElementById("activitiesList")?.addEventListener("click", (e) => {
+    document.getElementById("activitiesList")?.addEventListener("click", async (e) => {
       const btn = e.target.closest("[data-del-activity]");
       if (!btn || !currentSectionId) return;
-      if (Store.removeActivity(currentSectionId, btn.dataset.delActivity)) {
+      if (await Store.removeActivity(currentSectionId, btn.dataset.delActivity)) {
         renderActivities(Store.getSection(currentSectionId));
         UI.toast("Actividad eliminada", "info");
       }
