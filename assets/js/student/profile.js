@@ -43,9 +43,40 @@ if (document.readyState === 'loading') {
 /* ====================================================================
    CARGA DE DATOS DEL PERFIL
    ==================================================================== */
-function loadProfileData() {
-    const user = window.CurrentUserService ? window.CurrentUserService.getProfile() : null;
-    if (!user) return;
+async function loadProfileData() {
+    let user = window.CurrentUserService ? window.CurrentUserService.getProfile() : null;
+    let isOtherUser = false;
+
+    // Verificar si hay parametro en URL para ver otro perfil
+    const urlParams = new URLSearchParams(window.location.search);
+    const targetUserId = urlParams.get('user');
+
+    if (targetUserId && user && targetUserId !== user.id) {
+        isOtherUser = true;
+        // Ocultar boton de edicion si es otro usuario
+        const btnEdit = document.getElementById("btn-edit-profile");
+        if (btnEdit) btnEdit.style.display = 'none';
+
+        try {
+            const { data: targetProfile, error } = await window.supabase
+                .from('profiles')
+                .select('*')
+                .eq('id', targetUserId)
+                .single();
+            
+            if (targetProfile) {
+                user = targetProfile;
+            } else {
+                console.warn("User not found");
+                return;
+            }
+        } catch (e) {
+            console.error(e);
+            return;
+        }
+    } else if (!user) {
+        return;
+    }
 
     const avatarRaw = user.avatar_url || '🚀|#7F77DD';
     const { emoji, color } = window.parseAvatar(avatarRaw);
@@ -57,18 +88,24 @@ function loadProfileData() {
     if (avatarEmoji) avatarEmoji.innerText = emoji;
 
     // Datos de nombre y email
-    const name = window.CurrentUserService.getName();
+    const name = isOtherUser ? user.name : window.CurrentUserService.getName();
     document.getElementById("profile-full-name").innerText = name || 'Sin nombre';
-    document.getElementById("profile-email").innerText = window.CurrentUserService.getEmail();
+    document.getElementById("profile-email").innerText = isOtherUser ? user.email : window.CurrentUserService.getEmail();
 
     // Badges de meta y carrera
-    const targetUni = window.CurrentUserService.getStat('target') || "UNI";
+    const targetUni = isOtherUser ? (user.target || 'UNI') : (window.CurrentUserService.getStat('target') || "UNI");
     document.getElementById("profile-uni-target").innerText = `Meta: ${targetUni}`;
-    document.getElementById("profile-career").innerText = window.CurrentUserService.getStat('career') || "Por elegir";
+    document.getElementById("profile-career").innerText = isOtherUser ? (user.career || 'Por elegir') : (window.CurrentUserService.getStat('career') || "Por elegir");
 
     // Stats rápidas del header
-    const xp = window.CurrentUserService.getStat('totalXp') || 0;
-    const streak = window.CurrentUserService.getStat('streakDays') || 0;
+    // Si es otro usuario, estos stats deberán calcularse luego, o podemos usar valores por defecto temporales
+    let xp = 0;
+    let streak = 0;
+    if (!isOtherUser) {
+        xp = window.CurrentUserService.getStat('totalXp') || 0;
+        streak = window.CurrentUserService.getStat('streakDays') || 0;
+    }
+    
     document.getElementById("profile-xp-value").innerText = Number(xp).toLocaleString() + " XP";
     document.getElementById("profile-streak-value").innerText = `🔥 ${streak}`;
 
@@ -77,7 +114,7 @@ function loadProfileData() {
     document.getElementById("stats-streak-days").innerText = `${streak} ${streak === 1 ? 'día' : 'días'}`;
     
     // Cargar datos dinámicos desde Supabase
-    loadDynamicProfileStats(user.id);
+    loadDynamicProfileStats(user.id, isOtherUser, user);
 
     // Insignias
     renderBadgesShowcase(user);
@@ -86,23 +123,42 @@ function loadProfileData() {
 /* ====================================================================
    MÉTRICAS DINÁMICAS (DB)
    ==================================================================== */
-async function loadDynamicProfileStats(userId) {
+async function loadDynamicProfileStats(userId, isOtherUser = false, userObj = null) {
     try {
         // 1. Obtener todos los topic_progress del usuario
-        const { data: progressData, error } = await supabase
+        const { data: progressData, error } = await window.supabase
             .from('user_topic_progress')
-            .select('topic_id, status, last_accessed')
+            .select('topic_id, status, last_accessed, score')
             .eq('user_id', userId);
             
         if (error) throw error;
         const progressList = progressData || [];
+
+        // Calcular XP Total (score * 10) si es otro usuario (o siempre actualizarlo)
+        if (isOtherUser && userObj) {
+            let totalXp = 0;
+            progressList.forEach(p => {
+                totalXp += (p.score || 0) * 10;
+            });
+            const xp = userObj.xp || userObj.total_xp || totalXp;
+            // Para la demo, asignar racha y retos diarios basados en la actividad si no existen
+            const streak = userObj.streak || userObj.streak_days || Math.max(1, progressList.length % 7); 
+            const completedChallenges = userObj.completed_challenges || Math.floor(progressList.length / 2);
+            
+            // Actualizar header stats para otro usuario
+            document.getElementById("profile-xp-value").innerText = Number(xp).toLocaleString() + " XP";
+            document.getElementById("profile-streak-value").innerText = `🔥 ${streak}`;
+            document.getElementById("stats-total-xp").innerText = Number(xp).toLocaleString();
+            document.getElementById("stats-streak-days").innerText = `${streak} ${streak === 1 ? 'día' : 'días'}`;
+            document.getElementById("stats-completed-challenges").innerText = completedChallenges;
+        } else {
+            // Retos diarios para usuario actual
+            document.getElementById("stats-completed-challenges").innerText = parseInt(localStorage.getItem('completedChallengesCount') || '0', 10);
+        }
         
         // 2. Calcular Simulacros completados
         const completedCount = progressList.filter(p => p.status === 'completed').length;
         document.getElementById("stats-completed-quizzes").innerText = completedCount;
-        
-        // 3. Retos diarios
-        document.getElementById("stats-completed-challenges").innerText = parseInt(localStorage.getItem('completedChallengesCount') || '0', 10);
         
         // 4. Cargar Actividad Reciente (Últimos 5 ordenados por fecha)
         renderRecentActivity(progressList);

@@ -294,6 +294,19 @@
     if (submit) submit.textContent = type === "tarea" ? "Asignar" : "Crear";
     const icon = document.getElementById("activityIcon");
     if (icon) icon.className = "tmodal-icon " + (type === "quiz" ? "" : "amber");
+
+    const quizContainer = document.getElementById("quiz-builder-container");
+    if (quizContainer) {
+      if (type === "quiz") {
+        quizContainer.classList.remove("hidden");
+        // Asegurarnos que haya al menos una pregunta al abrir
+        if (document.getElementById("quiz-questions-list").children.length === 0) {
+          addQuizQuestion();
+        }
+      } else {
+        quizContainer.classList.add("hidden");
+      }
+    }
   }
 
   function openActivityModal(type) {
@@ -326,6 +339,98 @@
 
     const section = Store.getSection(currentSectionId);
     renderActivities(section);
+  }
+
+  // ─── Quiz Builder Lógica ─────────────────────────────────────────────
+  let questionCount = 0;
+  function addQuizQuestion() {
+    questionCount++;
+    const list = document.getElementById("quiz-questions-list");
+    if (!list) return;
+
+    const qDiv = document.createElement("div");
+    qDiv.className = "quiz-question-item";
+    qDiv.style = "background: #fdfdfd; border: 1px solid var(--border); border-radius: 8px; padding: 12px;";
+    qDiv.innerHTML = `
+      <div style="display:flex; justify-content: space-between; margin-bottom: 8px;">
+        <label style="font-size: 13px; font-weight: 600;">Pregunta ${questionCount}</label>
+        <button type="button" class="btn-remove-q" style="background:none; border:none; color:var(--red-err); cursor:pointer; font-size:12px;">Eliminar</button>
+      </div>
+      <input type="text" name="q_${questionCount}_text" placeholder="Escribe la pregunta..." required style="width:100%; margin-bottom:8px; padding:8px; border:1px solid var(--border); border-radius:4px;">
+      <div class="quiz-options-grid">
+        <div style="display:flex; align-items:center; gap:4px;">
+          <input type="radio" name="q_${questionCount}_correct" value="0" required>
+          <input type="text" name="q_${questionCount}_opt0" placeholder="Opción 1" required style="width:100%; padding:6px; border:1px solid var(--border); border-radius:4px;">
+        </div>
+        <div style="display:flex; align-items:center; gap:4px;">
+          <input type="radio" name="q_${questionCount}_correct" value="1">
+          <input type="text" name="q_${questionCount}_opt1" placeholder="Opción 2" required style="width:100%; padding:6px; border:1px solid var(--border); border-radius:4px;">
+        </div>
+        <div style="display:flex; align-items:center; gap:4px;">
+          <input type="radio" name="q_${questionCount}_correct" value="2">
+          <input type="text" name="q_${questionCount}_opt2" placeholder="Opción 3" required style="width:100%; padding:6px; border:1px solid var(--border); border-radius:4px;">
+        </div>
+        <div style="display:flex; align-items:center; gap:4px;">
+          <input type="radio" name="q_${questionCount}_correct" value="3">
+          <input type="text" name="q_${questionCount}_opt3" placeholder="Opción 4" required style="width:100%; padding:6px; border:1px solid var(--border); border-radius:4px;">
+        </div>
+      </div>
+    `;
+    qDiv.querySelector(".btn-remove-q").addEventListener("click", () => {
+      qDiv.remove();
+    });
+    list.appendChild(qDiv);
+  }
+
+  // ─── Material Selector Lógica ────────────────────────────────────────
+  let materialsCache = [];
+  
+  async function loadMaterials() {
+    try {
+      const res = await fetch("../../mock/resources.json");
+      materialsCache = await res.json();
+    } catch (e) {
+      console.error("Error loading resources:", e);
+    }
+  }
+
+  function renderMaterialList(query = "") {
+    const container = document.getElementById("material-list-container");
+    if (!container) return;
+    
+    const lowerQ = query.toLowerCase();
+    const filtered = materialsCache.filter(m => 
+      m.title.toLowerCase().includes(lowerQ) || 
+      (m.topicId && m.topicId.toLowerCase().includes(lowerQ))
+    ).slice(0, 15); // limit to 15 for performance
+
+    if (filtered.length === 0) {
+      container.innerHTML = '<div style="padding:10px; text-align:center; color:var(--sub); font-size:13px;">No se encontraron materiales.</div>';
+      return;
+    }
+
+    container.innerHTML = filtered.map(m => `
+      <div style="padding: 10px; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: space-between;" class="material-item-row" data-id="${m.id}" data-title="${Common.escapeHtml(m.title)}">
+        <div>
+          <div style="font-weight: 600; font-size: 13px;">${Common.escapeHtml(m.title)}</div>
+          <div style="font-size: 11px; color: var(--sub);">${m.type.toUpperCase()} · ${m.courseId}</div>
+        </div>
+        <button type="button" class="btn btn-sm btn-line" style="pointer-events: none;">Seleccionar</button>
+      </div>
+    `).join("");
+
+    container.querySelectorAll(".material-item-row").forEach(row => {
+      row.addEventListener("click", () => {
+        selectMaterial(row.dataset.id, row.dataset.title);
+      });
+    });
+  }
+
+  function selectMaterial(id, title) {
+    document.getElementById("linkedMaterialId").value = id;
+    document.getElementById("selected-material-title").textContent = title;
+    document.getElementById("selected-material-display").style.display = "block";
+    UI.closeModal("modal-material-selector");
   }
 
   // ─── Helpers ────────────────────────────────────────────────────────
@@ -368,6 +473,27 @@
     if (activityForm) activityForm.addEventListener("submit", handleCreateActivity);
     document.querySelectorAll("#activityTypePicker .type-option").forEach((opt) => {
       opt.addEventListener("click", () => selectActivityType(opt.dataset.type));
+    });
+
+    // Quiz Builder y Material Selector
+    document.getElementById("btnAddQuestion")?.addEventListener("click", addQuizQuestion);
+    
+    document.getElementById("btnOpenMaterialSelector")?.addEventListener("click", () => {
+      UI.openModal("modal-material-selector");
+      if (materialsCache.length === 0) {
+        loadMaterials().then(() => renderMaterialList(""));
+      } else {
+        renderMaterialList(document.getElementById("materialSearch")?.value || "");
+      }
+    });
+
+    document.getElementById("materialSearch")?.addEventListener("input", (e) => {
+      renderMaterialList(e.target.value);
+    });
+
+    document.getElementById("btnRemoveMaterial")?.addEventListener("click", () => {
+      document.getElementById("linkedMaterialId").value = "";
+      document.getElementById("selected-material-display").style.display = "none";
     });
 
     // Eliminar actividad (delegación en la lista)

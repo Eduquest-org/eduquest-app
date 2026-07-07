@@ -66,7 +66,8 @@
 }
 .tmodal-close:hover { background: var(--bg); color: var(--ink); }
 .tmodal-close svg { width: 18px; height: 18px; }
-.tmodal-body { padding: 20px 24px; overflow-y: auto; }
+.tmodal form { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+.tmodal-body { padding: 20px 24px; overflow-y: auto; flex: 1; min-height: 0; }
 .tmodal-foot {
   display: flex; align-items: center; justify-content: flex-end; gap: 10px;
   padding: 16px 24px; border-top: 1px solid var(--border);
@@ -247,8 +248,15 @@
 }
 .section-switcher select:focus { border-color: var(--brand); box-shadow: 0 0 0 3px var(--brand-soft); }
 
+.quiz-options-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
 @media (max-width: 760px) {
   .kpi-grid { grid-template-columns: 1fr 1fr; }
   .field-grid { grid-template-columns: 1fr; }
   .tmodal-foot { flex-wrap: wrap; }
+  .quiz-options-grid { grid-template-columns: 1fr; }
 }
