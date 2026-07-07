@@ -67,10 +67,16 @@ document.addEventListener('DOMContentLoaded', async () => {
             .filter(id => !allCircles.find(c => c.id === id));
             
         if (missingCircleIds.length > 0) {
-            const missingCircles = await Promise.all(missingCircleIds.map(id => CirclesManager.getCircleById(id)));
-            missingCircles.forEach(circle => {
-                if (circle) allCircles.push(circle);
-            });
+            const { data: missingCircles, error } = await window.supabase
+                .from('circles_table')
+                .select('*')
+                .in('id', missingCircleIds);
+                
+            if (!error && missingCircles) {
+                missingCircles.forEach(circle => {
+                    allCircles.push(circle);
+                });
+            }
         }
     }
 
