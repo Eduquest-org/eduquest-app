@@ -71,6 +71,9 @@ async function loadFeedPosts() {
             return;
         }
 
+        // Limpiar el caché antes de repoblar
+        _cachedPosts = [];
+
         // Renderizar usando los datos de Supabase y renderPostCard
         enrichedPosts.forEach(post => {
             // Mapeamos de Supabase snake_case a camelCase para renderPostCard
@@ -89,6 +92,7 @@ async function loadFeedPosts() {
                 commentsCount: parseInt(post.comments_count) || 0,
                 isLikedByMe: post.is_liked_by_me || false
             };
+            _cachedPosts.push(mappedPost);
             renderPostCard(mappedPost, container);
         });
 
