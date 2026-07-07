@@ -1,21 +1,12 @@
 /* =======================================================
    1. ARQUITECTURA DE GRID INTERNA DE RANKINGS
    ======================================================= */
-.dashboard-content {
-  flex: 1;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 340px;
-  gap: 40px;
-  padding: 40px;
-  max-width: 1250px;
-  margin: 0 auto;
-  align-items: start;
-}
 
 .ranking-main-column {
   display: flex;
   flex-direction: column;
   gap: 28px;
+  min-width: 0;
 }
 
 .ranking-sidebar-column {
@@ -155,4 +146,51 @@
   font-size: 13px;
   color: #475569;
   line-height: 1.5;
+}
+
+/* =======================================================
+   5. RESPONSIVE DESIGN DE RANKINGS
+   ======================================================= */
+@media (max-width: 900px) {
+  .ranking-sidebar-column {
+    position: static;
+  }
+}
+
+@media (max-width: 600px) {
+  .leaderboard-table th, 
+  .leaderboard-table td {
+    padding: 12px 10px;
+    font-size: 13px;
+  }
+  
+  .desktop-only-meta {
+    display: none;
+  }
+  
+  .mobile-only-meta {
+    display: block;
+    font-size: 11px;
+    color: var(--sub);
+    margin-top: 2px;
+  }
+  
+  .student-name-meta {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .student-avatar-mini {
+    width: 28px;
+    height: 28px;
+    font-size: 12px;
+  }
+  
+  .xp-points-cell {
+    padding-right: 10px !important;
+  }
+
+  .table-responsive {
+    border-radius: 12px;
+  }
 }

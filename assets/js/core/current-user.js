@@ -7,6 +7,17 @@
 
 let currentUserCache = null;
 
+// Helper to parse avatar composite: emoji|color
+function parseAvatar(avatarString) {
+    if (!avatarString) return { emoji: '👤', color: 'var(--indigo)' };
+    const parts = avatarString.split('|');
+    return {
+        emoji: parts[0] || '👤',
+        color: parts[1] || 'var(--indigo)'
+    };
+}
+window.parseAvatar = parseAvatar;
+
 const CurrentUserService = {
     async init() {
         if (window.UserManager) {
@@ -16,6 +27,9 @@ const CurrentUserService = {
     },
     getProfile() {
         return currentUserCache;
+    },
+    getId(){
+        return this.getProfile()?.id || '';
     },
     getName() {
         return this.getProfile()?.name || '';
@@ -34,7 +48,12 @@ const CurrentUserService = {
         return this.getProfile()?.role || '';
     },
     getAvatar() {
-        return this.getProfile()?.avatar_url || this.getProfile()?.profile?.avatar || '👤';
+        const raw = this.getProfile()?.avatar_url || this.getProfile()?.profile?.avatar || '👤';
+        return parseAvatar(raw).emoji;
+    },
+    getAvatarColor() {
+        const raw = this.getProfile()?.avatar_url || this.getProfile()?.profile?.avatar || '👤';
+        return parseAvatar(raw).color;
     },
     getInitials() {
         const name = this.getName();
@@ -114,8 +133,14 @@ const UserBindingManager = {
             } else {
                 el.innerHTML = avatar;
             }
+            el.style.backgroundColor = color;
         });
-        document.querySelectorAll('[data-user-initials]').forEach(el => el.innerHTML = CurrentUserService.getInitials());
+        document.querySelectorAll('[data-user-initials]').forEach(el => {
+            el.innerHTML = CurrentUserService.getInitials();
+            const raw = CurrentUserService.getProfile()?.avatar_url || CurrentUserService.getProfile()?.profile?.avatar || '👤';
+            const { color } = parseAvatar(raw);
+            el.style.backgroundColor = color;
+        });
 
         document.querySelectorAll('[data-user-target]').forEach(el => el.innerHTML = CurrentUserService.getStat('target'));
         document.querySelectorAll('[data-user-career]').forEach(el => el.innerHTML = CurrentUserService.getStat('career'));
@@ -123,8 +148,18 @@ const UserBindingManager = {
             const xp = CurrentUserService.getStat('totalXp');
             el.innerHTML = xp ? Number(xp).toLocaleString() + ' XP' : '0 XP';
         });
+        document.querySelectorAll('[data-user-xp-progress]').forEach(el => {
+            const xp = Number(CurrentUserService.getStat('totalXp')) || 0;
+            const goal = 2000;
+            const pct = Math.min(100, Math.round((xp / goal) * 100));
+            el.style.width = pct + '%';
+        });
         document.querySelectorAll('[data-user-streak]').forEach(el => el.innerHTML = CurrentUserService.getStat('streakDays') || '0');
         document.querySelectorAll('[data-user-ranking]').forEach(el => el.innerHTML = CurrentUserService.getStat('rankingPos') || 'N/A');
+        document.querySelectorAll('[data-user-bio]').forEach(el => {
+            const bio = CurrentUserService.getProfile()?.bio || CurrentUserService.getProfile()?.profile?.bio || '';
+            el.innerHTML = bio || '¡Hola! Estoy usando EduQuest para prepararme.';
+        });
     }
 };
 

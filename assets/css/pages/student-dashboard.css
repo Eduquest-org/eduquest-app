@@ -1,7 +1,14 @@
 :root {
-  --green: #1D9E75; --amber: #EF9F27; --indigo: #7F77DD; --red: #E24B4A;
-  --border: #e5e7eb; --fill: #f8fafc; --muted: #9ca3af;
-  --text: #111827; --sub: #6b7280; --dark: #111;
+  --green: #1D9E75;
+  --amber: #EF9F27;
+  --indigo: #7F77DD;
+  --red: #E24B4A;
+  --border: #e5e7eb;
+  --fill: #f8fafc;
+  --muted: #9ca3af;
+  --text: #111827;
+  --sub: #6b7280;
+  --dark: #111;
 }
 
 * {
@@ -9,39 +16,198 @@
 }
 
 body {
-  margin: 0; padding: 0;
+  margin: 0;
+  padding: 0;
   background-color: var(--fill);
   font-family: 'Inter', sans-serif;
   overflow-x: hidden;
 }
 
 /* =========================================================
-   1. EL SIDEBAR (EL JEFE DEL LAYOUT)
+   1. EL SIDEBAR
    ========================================================= */
 #sidebar-container {
   position: fixed;
   top: 0;
   left: 0;
   width: 260px;
-  height: 100vh; /* Desde el techo hasta el piso */
+  height: 100vh;
   background: #ffffff;
   border-right: 1px solid var(--border);
-  z-index: 1000; /* Superpuesto a todo */
+  z-index: 1000;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
-/* Estilos rescatados de tu menú original */
-#sidebar-container .sidebar { width: 100%; height: 100%; display: flex; flex-direction: column; }
-.sb-logo { font-family:'Sora',sans-serif; font-size:20px; font-weight:800; padding:24px; display:flex; align-items:center; gap:12px; color:var(--dark); cursor:pointer;}
-.sb-icon { width:32px; height:32px; border-radius:8px; display:flex; align-items:center; justify-content:center; color:#fff; font-size:14px; font-weight:bold; background:var(--green); }
-.sb-nav { padding:0 16px; display:flex; flex-direction:column; gap:8px; flex:1; margin-top: 10px;}
-.sb-sec { font-size:11px; text-transform:uppercase; color:var(--muted); font-weight:700; margin:16px 0 6px 12px; letter-spacing:0.5px; }
-.sb-item { display:flex; align-items:center; gap:12px; padding:12px 14px; border-radius:10px; color:var(--sub); font-size:14px; font-weight:600; cursor:pointer; transition:all 0.2s; text-decoration: none; }
-.sb-item:hover { background:var(--fill); color:var(--text); }
-.sb-item.on { background:rgba(29,158,117,0.1); color:var(--green); }
-.sb-dot { width:6px; height:6px; border-radius:50%; background:var(--border); transition:0.2s; }
-.sb-item:hover .sb-dot { background:var(--sub); }
-.sb-item.on .sb-dot { background:var(--green); box-shadow:0 0 6px var(--green); }
-.sb-bottom { padding:24px; border-top:1px solid var(--border); }
+#sidebar-container .sidebar {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.sb-logo {
+  font-family: 'Sora', sans-serif;
+  font-size: 20px;
+  font-weight: 800;
+  padding: 24px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--dark);
+  cursor: pointer;
+  border-bottom: 1px solid var(--border);
+}
+
+.sb-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 14px;
+  font-weight: bold;
+  background: var(--green);
+  flex-shrink: 0;
+}
+
+.sb-nav {
+  padding: 12px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.sb-sec {
+  font-size: 10px;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 700;
+  margin: 14px 0 4px 10px;
+  letter-spacing: 0.8px;
+}
+
+.sb-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  color: var(--sub);
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s;
+  text-decoration: none;
+}
+
+.sb-item:hover {
+  background: var(--fill);
+  color: var(--text);
+}
+
+.sb-item.on {
+  background: rgba(29, 158, 117, 0.1);
+  color: var(--green);
+}
+
+.sb-icon-nav {
+  font-size: 16px;
+  width: 22px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.sb-item.on .sb-icon-nav {
+  filter: none;
+}
+
+.sb-bottom {
+  padding: 16px;
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+/* Mini stats en sidebar (visible globalmente) */
+.sb-mini-stats {
+  margin: 12px 12px 8px;
+  background: linear-gradient(135deg, rgba(29, 158, 117, 0.1), rgba(127, 119, 221, 0.1));
+  border: 1px solid rgba(29, 158, 117, 0.2);
+  border-radius: 14px;
+  padding: 16px;
+  display: block;
+}
+
+.sb-mini-stats-header {
+  font-family: 'Sora', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sb-xp-progress-container {
+  margin-bottom: 10px;
+}
+
+.sb-xp-stats {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.sb-xp-current {
+  font-family: 'Sora', sans-serif;
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--green);
+}
+
+.sb-xp-goal {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--sub);
+}
+
+.sb-streak-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(239, 159, 39, 0.1);
+  color: var(--amber);
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  width: 100%;
+  justify-content: center;
+}
+
+.sb-stats-link {
+  display: block;
+  text-align: center;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--green);
+  text-decoration: none;
+  padding: 8px;
+  border-radius: 8px;
+  transition: all 0.2s;
+  background: rgba(29, 158, 117, 0.05);
+  margin-top: 10px;
+}
+
+.sb-stats-link:hover {
+  background: rgba(29, 158, 117, 0.12);
+  transform: translateY(-1px);
+}
 
 /* =========================================================
    2. EL TOPBAR (SE ACOMODA A LA DERECHA)
@@ -49,8 +215,10 @@ body {
 #topbar-container {
   position: fixed;
   top: 0;
-  left: 260px; /* Empieza exactamente donde termina el sidebar */
-  width: calc(100% - 260px); /* Resta el tamaño del sidebar */
+  left: 260px;
+  /* Empieza exactamente donde termina el sidebar */
+  width: calc(100% - 260px);
+  /* Resta el tamaño del sidebar */
   height: 75px;
   background: #ffffff;
   border-bottom: 1px solid var(--border);
@@ -61,38 +229,126 @@ body {
 
 .topbar {
   display: flex;
-  justify-content: space-between; /* Buscador izq, Perfil der */
+  justify-content: space-between;
+  /* Buscador izq, Perfil der */
   align-items: center;
   width: 100%;
   padding: 0 40px;
 }
 
 /* Buscador y Perfil */
-.search-wrapper { position: relative; width: 400px; }
-.search-wrapper input { width: 100%; padding: 12px 16px 12px 40px; border: 1px solid var(--border); border-radius: 30px; background: var(--fill); outline: none; font-size: 13px; transition: 0.2s; }
-.search-wrapper input:focus { background: #fff; border-color: var(--green); box-shadow: 0 0 0 3px rgba(29, 158, 117, 0.1); }
-.search-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-size: 14px; opacity: 0.5; }
-.topbar-right { display: flex; align-items: center; gap: 20px; }
-.nav-icon-btn { background: none; border: none; font-size: 20px; cursor: pointer; position: relative; padding: 8px; border-radius: 50%; transition: 0.2s; }
-.nav-icon-btn:hover { background: var(--fill); }
-.notification-badge { position: absolute; top: 6px; right: 6px; width: 8px; height: 8px; background-color: var(--red); border-radius: 50%; }
-.user-profile-btn { display: flex; align-items: center; gap: 12px; background: none; border: none; cursor: pointer; padding: 6px 12px; border-radius: 30px; transition: 0.2s; }
-.user-profile-btn:hover { background: var(--fill); }
-.user-avatar-top { width: 36px; height: 36px; border-radius: 50%; background: var(--indigo); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; }
-.user-name-top { font-size: 14px; font-weight: 600; color: var(--text); }
+.search-wrapper {
+  position: relative;
+  width: 400px;
+}
+
+.search-wrapper input {
+  width: 100%;
+  padding: 12px 16px 12px 40px;
+  border: 1px solid var(--border);
+  border-radius: 30px;
+  background: var(--fill);
+  outline: none;
+  font-size: 13px;
+  transition: 0.2s;
+}
+
+.search-wrapper input:focus {
+  background: #fff;
+  border-color: var(--green);
+  box-shadow: 0 0 0 3px rgba(29, 158, 117, 0.1);
+}
+
+.search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 14px;
+  opacity: 0.5;
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.nav-icon-btn {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  position: relative;
+  padding: 8px;
+  border-radius: 50%;
+  transition: 0.2s;
+}
+
+.nav-icon-btn:hover {
+  background: var(--fill);
+}
+
+.notification-badge {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 8px;
+  height: 8px;
+  background-color: var(--red);
+  border-radius: 50%;
+}
+
+.user-profile-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: 30px;
+  transition: 0.2s;
+}
+
+.user-profile-btn:hover {
+  background: var(--fill);
+}
+
+.user-avatar-top {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--indigo);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  user-select: none;
+}
+
+.user-name-top {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+}
 
 /* =========================================================
    3. EL CONTENIDO PRINCIPAL (MURO + WIDGETS)
    ========================================================= */
 .app-shell {
-  margin-left: 260px; /* Offset vital: Todo el contenido empieza después del sidebar */
-  padding-top: 75px; /* Offset vital: Todo empieza debajo del Topbar */
+  margin-left: 260px;
+  /* Offset vital: Todo el contenido empieza después del sidebar */
+  padding-top: 75px;
+  /* Offset vital: Todo empieza debajo del Topbar */
   min-height: 100vh;
 }
 
 .dashboard-content {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 340px; /* Feed expansivo + Widgets fijos */
+  grid-template-columns: minmax(0, 1fr) 340px;
+  /* Feed expansivo + Widgets fijos */
   gap: 40px;
   padding: 40px;
   max-width: 1200px;
@@ -100,71 +356,145 @@ body {
   align-items: start;
 }
 
-.upgrade-box { 
-  background: linear-gradient(135deg, #111, #333); 
-  border-radius: 12px; 
-  padding: 16px; 
-  color: #fff; 
-  margin-bottom: 16px; 
+.feed-column {
+  min-width: 0;
 }
-.upgrade-title { 
-  font-size: 14px; 
-  font-weight: 700; 
-  margin-bottom: 4px; 
+
+.upgrade-box {
+  background: linear-gradient(135deg, #111, #333);
+  border-radius: 12px;
+  padding: 16px;
+  color: #fff;
+  margin-bottom: 16px;
 }
-.upgrade-sub { 
-  font-size: 12px; 
-  color: #aaa; 
-  margin-bottom: 12px; 
-  line-height: 1.4; 
+
+.upgrade-title {
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.upgrade-sub {
+  font-size: 12px;
+  color: #aaa;
+  margin-bottom: 12px;
+  line-height: 1.4;
 }
 
 /* Botones genéricos de la parte inferior */
-.sb-bottom .btn { 
-  display: block; 
-  text-align: center; 
-  cursor: pointer; 
-  transition: 0.2s; 
-  border: none; 
-  font-family: 'Inter', sans-serif; 
+.sb-bottom .btn {
+  display: block;
+  text-align: center;
+  cursor: pointer;
+  transition: 0.2s;
+  border: none;
+  font-family: 'Inter', sans-serif;
   font-weight: 600;
 }
-.sb-bottom .btn.dark { 
-  background: #111; 
-  color: #fff; 
+
+.sb-bottom .btn.dark {
+  background: #111;
+  color: #fff;
 }
-.sb-bottom .btn.dark:hover { 
-  background: #000; 
+
+.sb-bottom .btn.dark:hover {
+  background: #000;
 }
-.sb-bottom .btn.outline.sm { 
-  padding: 10px; 
-  border-radius: 8px; 
-  font-size: 13px; 
-  background: transparent; 
+
+.sb-bottom .btn.outline.sm {
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 13px;
+  background: transparent;
 }
-.sb-bottom .btn.outline.sm:hover { 
-  background: #fff5f5; /* Un hover rojito sutil para el de cerrar sesión */
+
+.sb-bottom .btn.outline.sm:hover {
+  background: #fff5f5;
+}
+
+/* =========================================================
+   TOPBAR MEJORADO — Hamburger + Notificaciones
+   ========================================================= */
+
+/* Hamburger button con 3 líneas */
+.mobile-menu-btn {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 8px;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+
+.mobile-menu-btn:hover {
+  background: var(--fill);
+}
+
+.hamburger-line {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: var(--text);
+  border-radius: 2px;
+  transition: all 0.3s ease;
+  transform-origin: center;
+}
+
+/* Estado activo del hamburger (X) */
+.mobile-menu-btn.active .hamburger-line:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+
+.mobile-menu-btn.active .hamburger-line:nth-child(2) {
+  opacity: 0;
+  transform: scaleX(0);
+}
+
+.mobile-menu-btn.active .hamburger-line:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+/* Notificaciones — ajustes de posición */
+.notifications-dropdown {
+  top: calc(100% + 12px);
+  right: -8px;
+  z-index: 1500;
+}
+
+/* Footer del panel de notificaciones */
+.notifications-footer {
+  padding: 12px 16px;
+  border-top: 1px solid var(--border);
+  text-align: center;
+}
+
+.notif-see-all {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--green);
+  text-decoration: none;
+}
+
+.notif-see-all:hover {
+  text-decoration: underline;
 }
 
 /* =========================================================
    4. RESPONSIVE (TABLET Y MÓVIL)
    ========================================================= */
 
-/* Ocultar el botón de menú en escritorio */
-.mobile-menu-btn {
-  display: none;
-  background: none;
-  border: none;
-  font-size: 24px;
-  cursor: pointer;
-  color: var(--text);
-  padding: 8px;
-  border-radius: 8px;
-  transition: 0.2s;
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
 }
-.mobile-menu-btn:hover { background: var(--fill); }
-
-.topbar-left { display: flex; align-items: center; gap: 16px; flex: 1; min-width: 0; }
 
 /* === TABLET (≤ 1024px) === */
 @media (max-width: 1024px) {
@@ -177,11 +507,12 @@ body {
 
 /* === MOBILE (≤ 900px) === */
 @media (max-width: 900px) {
+
   /* 1. Sidebar se oculta a la izquierda (Off-canvas) */
   #sidebar-container {
     transform: translateX(-100%);
-    transition: transform 0.3s ease;
-    box-shadow: 4px 0 20px rgba(0,0,0,0.1);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.12);
     z-index: 1100;
   }
 
@@ -189,23 +520,35 @@ body {
     transform: translateX(0);
   }
 
+  /* Mostrar mini-stats en mobile (dentro del sidebar) */
+  .sb-mini-stats {
+    display: block;
+  }
+
   /* Overlay oscuro para cerrar el sidebar en móvil */
   .sidebar-overlay {
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.45);
+    background: rgba(0, 0, 0, 0.5);
     z-index: 1050;
     backdrop-filter: blur(2px);
+    cursor: pointer;
   }
+
   .sidebar-overlay.visible {
     display: block;
-    animation: fadeInOverlayBg 0.2s ease;
+    animation: fadeInOverlayBg 0.25s ease;
   }
 
   @keyframes fadeInOverlayBg {
-    from { opacity: 0; }
-    to   { opacity: 1; }
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
   }
 
   /* 2. Topbar toma el 100% del ancho */
@@ -214,15 +557,26 @@ body {
     width: 100%;
   }
 
-  /* 3. Mostrar botón de menú */
-  .mobile-menu-btn { display: block; }
+  /* 3. Mostrar botón de menú hamburger */
+  .mobile-menu-btn {
+    display: flex !important;
+  }
 
-  /* Achicar el buscador en móvil */
-  .search-wrapper { width: 100%; max-width: none; }
-  .topbar { padding: 0 16px; gap: 10px; }
+  /* Buscador en móvil */
+  .search-wrapper {
+    width: 100%;
+    max-width: none;
+  }
+
+  .topbar {
+    padding: 0 14px;
+    gap: 8px;
+  }
 
   /* Ocultar nombre de usuario en móvil */
-  .user-name-top { display: none; }
+  .user-name-top {
+    display: none;
+  }
 
   /* 4. App Shell pierde el margen izquierdo */
   .app-shell {
@@ -231,30 +585,221 @@ body {
 
   /* 5. Colapsar la grilla del dashboard */
   .dashboard-content {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     padding: 16px;
     gap: 20px;
   }
 
-  /* 6. El buscador se achica en móvil para no solaparse */
-  .search-wrapper input {
-    font-size: 14px;
-    padding: 10px 14px 10px 36px;
-  }
+  /* 6. Notificaciones: panel responsive se controla en notifications.css */
 }
 
 /* === PEQUEÑO MOBILE (≤ 480px) === */
 @media (max-width: 480px) {
   .dashboard-content {
-    padding: 12px;
+    padding: 10px;
   }
 
   .topbar {
-    padding: 0 12px;
-    gap: 8px;
+    padding: 0 10px;
+    gap: 6px;
   }
 
   .search-wrapper {
-    display: none; /* En pantallas muy pequeñas se oculta el buscador para dar espacio */
+    display: none;
   }
-}
+
+  /* En muy pequeño, notificaciones responsive se controla en notifications.css */
+}
+
+/* =========================================================
+   ESTILOS DE FILTROS DEL FEED (FORO COMUNITARIO)
+   ========================================================= */
+.feed-filters-panel {
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.01);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-sizing: border-box;
+}
+
+.feed-filters-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.feed-filter-search {
+  position: relative;
+  flex: 1;
+}
+
+.feed-search-input {
+  width: 100%;
+  padding: 12px 16px 12px 40px;
+  border: 1px solid var(--border);
+  border-radius: 30px;
+  background: var(--fill);
+  outline: none;
+  font-size: 13.5px;
+  transition: all 0.2s ease;
+}
+
+.feed-search-input:focus {
+  background: #ffffff;
+  border-color: var(--green);
+  box-shadow: 0 0 0 3px rgba(29, 158, 117, 0.1);
+}
+
+.filter-search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 14px;
+  opacity: 0.5;
+}
+
+.feed-filters-toggle-btn {
+  background: #fff;
+  border: 1px solid var(--border);
+  color: var(--sub);
+  padding: 12px 18px;
+  border-radius: 30px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s;
+}
+
+.feed-filters-toggle-btn:hover,
+.feed-filters-toggle-btn.active {
+  border-color: var(--muted);
+  color: var(--text);
+  background: var(--fill);
+}
+
+.filters-active-count {
+  background: var(--green);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.feed-filters-expanded {
+  display: none;
+  flex-direction: column;
+  gap: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+  animation: slideDownFilters 0.25s ease-out forwards;
+}
+
+.feed-filters-expanded.open {
+  display: flex;
+}
+
+@keyframes slideDownFilters {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.feed-filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.feed-filter-group-label {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.feed-filter-chips {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+/* En mobile queremos que las chips hagan scroll horizontal suave */
+@media (max-width: 600px) {
+  .feed-filter-chips {
+    flex-wrap: nowrap;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    /* Firefox */
+  }
+
+  .feed-filter-chips::-webkit-scrollbar {
+    display: none;
+    /* Chrome/Safari */
+  }
+}
+
+.feed-filter-chip {
+  background: var(--fill);
+  border: 1px solid var(--border);
+  color: var(--sub);
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+  flex-shrink: 0;
+  font-family: inherit;
+}
+
+.feed-filter-chip:hover {
+  border-color: var(--muted);
+  color: var(--text);
+}
+
+.feed-filter-chip.active {
+  background: var(--green);
+  border-color: var(--green);
+  color: #fff;
+  box-shadow: 0 4px 10px rgba(29, 158, 117, 0.15);
+}
+
+.feed-filters-reset-btn {
+  background: none;
+  border: none;
+  color: var(--red);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  align-self: flex-start;
+  padding: 6px 0;
+  transition: opacity 0.2s;
+}
+
+.feed-filters-reset-btn:hover {
+  opacity: 0.8;
+}

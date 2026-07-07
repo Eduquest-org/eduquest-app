@@ -11,9 +11,8 @@
   <link rel="stylesheet" href="../../assets/css/components/buttons.css">
   <link rel="stylesheet" href="../../assets/css/pages/student-dashboard.css">
   <link rel="stylesheet" href="../../assets/css/pages/profile.css">
-  <link rel="stylesheet" href="../../assets/css/components/modals.css">
 
-    <link rel="icon" type="image/x-icon" href="../../assets/img/logos/eduquest-logo.ico">
+  <link rel="icon" type="image/x-icon" href="../../assets/img/logos/eduquest-logo.ico">
 </head>
 <body>
 
@@ -30,48 +29,44 @@
 
     <main class="dashboard-content profile-main-layout">
       
-      <!-- CABECERA DE PERFIL PERSONALIZADA -->
-      <div class="profile-header-banner">
-        <div class="profile-avatar-wrapper">
-          <div class="profile-avatar-display" id="profile-avatar-btn" onclick="toggleAvatarDropdown()">
-            <span id="profile-current-avatar">🚀</span>
-            <div class="avatar-edit-overlay">Editar</div>
+      <!-- CONTENEDOR DE PERFIL CON PORTADA -->
+      <div class="profile-card-container">
+        <div class="profile-cover-photo"></div>
+        
+        <div class="profile-header-banner">
+          <div class="profile-avatar-wrapper">
+            <!-- Avatar solo visual, sin click interactivo propio -->
+            <div class="profile-avatar-display" id="profile-avatar-display">
+              <span id="profile-current-avatar">🚀</span>
+            </div>
           </div>
-          
-          <!-- Selector de Emojis desplegable -->
-          <div class="avatar-selection-dropdown" id="avatar-dropdown">
-            <span onclick="changeUserAvatar('🚀')">🚀</span>
-            <span onclick="changeUserAvatar('🧠')">🧠</span>
-            <span onclick="changeUserAvatar('🎓')">🎓</span>
-            <span onclick="changeUserAvatar('🌟')">🌟</span>
-            <span onclick="changeUserAvatar('🦁')">🦁</span>
-            <span onclick="changeUserAvatar('🦉')">🦉</span>
-            <span onclick="changeUserAvatar('🦖')">🦖</span>
-            <span onclick="changeUserAvatar('🔥')">🔥</span>
-            <span onclick="changeUserAvatar('⚡')">⚡</span>
-            <span onclick="changeUserAvatar('🎨')">🎨</span>
-            <span onclick="changeUserAvatar('🏆')">🏆</span>
-            <span onclick="changeUserAvatar('🧪')">🧪</span>
-          </div>
-        </div>
 
-        <div class="profile-details-column">
-          <h2 id="profile-full-name">Cargando Nombre...</h2>
-          <p class="profile-meta-subtitle" id="profile-email">email@eduquest.pe</p>
-          <div class="profile-badges-row">
-            <span class="target-tag-badge" id="profile-uni-target">Meta: UNI</span>
-            <span class="career-tag-badge" id="profile-career">Ingeniería</span>
+          <div class="profile-details-column">
+            <h2 id="profile-full-name">Cargando Nombre...</h2>
+            <p class="profile-meta-subtitle" id="profile-email">email@eduquest.pe</p>
+            <p class="profile-bio" id="profile-bio" data-user-bio>¡Hola! Estoy usando EduQuest para prepararme.</p>
+            <div class="profile-badges-row">
+              <span class="target-tag-badge" id="profile-uni-target">Meta: UNI</span>
+              <span class="career-tag-badge" id="profile-career">Ingeniería</span>
+            </div>
           </div>
-        </div>
 
-        <div class="profile-quick-stats">
-          <div class="quick-stat-pill">
-            <span class="pill-number" id="profile-xp-value" style="color: var(--green);">0</span>
-            <span class="pill-label">XP Acumulado</span>
+          <div class="profile-actions-wrapper">
+            <button class="btn-edit-profile" onclick="openEditProfileModal()" id="btn-edit-profile">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              Editar Perfil
+            </button>
           </div>
-          <div class="quick-stat-pill">
-            <span class="pill-number" id="profile-streak-value" style="color: var(--amber);">🔥 0</span>
-            <span class="pill-label">Racha Activa</span>
+
+          <div class="profile-quick-stats">
+            <div class="quick-stat-pill">
+              <span class="pill-number" id="profile-xp-value" style="color: var(--green);">0</span>
+              <span class="pill-label">XP Acumulado</span>
+            </div>
+            <div class="quick-stat-pill">
+              <span class="pill-number" id="profile-streak-value" style="color: var(--amber);">🔥 0</span>
+              <span class="pill-label">Racha Activa</span>
+            </div>
           </div>
         </div>
       </div>
@@ -79,50 +74,126 @@
       <!-- ESTADÍSTICAS Y VITRINA DE INSIGNIAS -->
       <div class="profile-body-grid">
         
-        <!-- COLUMNA IZQUIERDA: METRICAS ACADÉMICAS -->
-        <div class="profile-stats-panel">
-          <h3>📊 Estadísticas de Aprendizaje</h3>
-          <div class="stats-cards-grid">
-            <div class="stat-metric-card">
-              <div class="stat-metric-icon">🏆</div>
-              <div class="stat-metric-info">
-                <span class="stat-val" id="stats-total-xp">1,150</span>
-                <span class="stat-lbl">XP Totales</span>
+        <!-- COLUMNA IZQUIERDA: METRICAS ACADÉMICAS Y ACTIVIDAD RECIENTE -->
+        <div class="profile-left-column">
+          
+          <!-- Estadísticas de Aprendizaje -->
+          <div class="profile-stats-panel mb24">
+            <h3>📊 Estadísticas de Aprendizaje</h3>
+            <div class="stats-cards-grid">
+              <div class="stat-metric-card">
+                <div class="stat-metric-icon">🏆</div>
+                <div class="stat-metric-info">
+                  <span class="stat-val" id="stats-total-xp">1,150</span>
+                  <span class="stat-lbl">XP Totales</span>
+                </div>
+              </div>
+              <div class="stat-metric-card">
+                <div class="stat-metric-icon">🔥</div>
+                <div class="stat-metric-info">
+                  <span class="stat-val" id="stats-streak-days">3 días</span>
+                  <span class="stat-lbl">Racha Actual</span>
+                </div>
+              </div>
+              <div class="stat-metric-card">
+                <div class="stat-metric-icon">📝</div>
+                <div class="stat-metric-info">
+                  <span class="stat-val" id="stats-completed-quizzes">0</span>
+                  <span class="stat-lbl">Simulacros Resueltos</span>
+                </div>
+              </div>
+              <div class="stat-metric-card">
+                <div class="stat-metric-icon">🎯</div>
+                <div class="stat-metric-info">
+                  <span class="stat-val" id="stats-completed-challenges">0</span>
+                  <span class="stat-lbl">Retos Diarios Cumplidos</span>
+                </div>
               </div>
             </div>
-            <div class="stat-metric-card">
-              <div class="stat-metric-icon">🔥</div>
-              <div class="stat-metric-info">
-                <span class="stat-val" id="stats-streak-days">3 días</span>
-                <span class="stat-lbl">Racha Actual</span>
+          </div>
+
+          <!-- Actividad Reciente -->
+          <div class="profile-activity-panel">
+            <h3>🕒 Actividad Reciente</h3>
+            <div class="activity-timeline" id="profile-activity-list">
+              <div class="activity-item">
+                <div class="activity-icon green">✓</div>
+                <div class="activity-detail">
+                  <p class="activity-text">Completó simulacro de <strong>Álgebra</strong></p>
+                  <span class="activity-time">Hace 2 horas</span>
+                </div>
               </div>
-            </div>
-            <div class="stat-metric-card">
-              <div class="stat-metric-icon">📝</div>
-              <div class="stat-metric-info">
-                <span class="stat-val" id="stats-completed-quizzes">0</span>
-                <span class="stat-lbl">Simulacros Resueltos</span>
+              <div class="activity-item">
+                <div class="activity-icon indigo">💬</div>
+                <div class="activity-detail">
+                  <p class="activity-text">Publicó una duda en el foro: <em>"¿Cómo se resuelve..."</em></p>
+                  <span class="activity-time">Ayer</span>
+                </div>
               </div>
-            </div>
-            <div class="stat-metric-card">
-              <div class="stat-metric-icon">🎯</div>
-              <div class="stat-metric-info">
-                <span class="stat-val" id="stats-completed-challenges">0</span>
-                <span class="stat-lbl">Retos Diarios Cumplidos</span>
+              <div class="activity-item">
+                <div class="activity-icon amber">🔥</div>
+                <div class="activity-detail">
+                  <p class="activity-text">Inició una racha de estudio de 3 días</p>
+                  <span class="activity-time">Hace 3 días</span>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- COLUMNA DERECHA: VITRINA DE LOGROS (INSIGNIAS) -->
-        <div class="profile-badges-panel">
-          <div class="panel-header-badges">
-            <h3>🏅 Mis Insignias Digitales</h3>
-            <span id="badges-unlocked-ratio">0 / 6 Desbloqueadas</span>
+        <!-- COLUMNA DERECHA: VITRINA DE LOGROS (INSIGNIAS) Y GRÁFICO SEMANAL -->
+        <div class="profile-right-column">
+          
+          <!-- Progreso de Estudio Semanal -->
+          <div class="profile-weekly-progress card mb24">
+            <h3>📅 Tu Progreso Semanal</h3>
+            <p class="weekly-sub">Sigue tu ritmo diario de estudio y XP ganados</p>
+            <div class="weekly-chart-bars">
+              <div class="weekly-bar-col">
+                <div class="weekly-bar-fill" style="height: 40%"></div>
+                <span class="weekly-day">Lun</span>
+              </div>
+              <div class="weekly-bar-col">
+                <div class="weekly-bar-fill" style="height: 75%"></div>
+                <span class="weekly-day">Mar</span>
+              </div>
+              <div class="weekly-bar-col">
+                <div class="weekly-bar-fill" style="height: 90%"></div>
+                <span class="weekly-day">Mié</span>
+              </div>
+              <div class="weekly-bar-col">
+                <div class="weekly-bar-fill active" style="height: 60%"></div>
+                <span class="weekly-day active">Jue</span>
+              </div>
+              <div class="weekly-bar-col">
+                <div class="weekly-bar-fill" style="height: 0%"></div>
+                <span class="weekly-day">Vie</span>
+              </div>
+              <div class="weekly-bar-col">
+                <div class="weekly-bar-fill" style="height: 0%"></div>
+                <span class="weekly-day">Sáb</span>
+              </div>
+              <div class="weekly-bar-col">
+                <div class="weekly-bar-fill" style="height: 0%"></div>
+                <span class="weekly-day">Dom</span>
+              </div>
+            </div>
+            <div class="weekly-footer-stats">
+              <span>🎯 Meta diaria: <strong>500 XP</strong></span>
+              <span>⚡ Hoy ganaste: <strong>320 XP</strong></span>
+            </div>
           </div>
 
-          <div class="badges-showcase-grid" id="badges-gallery-container">
-            <!-- Insignias generadas dinámicamente por JS -->
+          <!-- Mis Insignias -->
+          <div class="profile-badges-panel">
+            <div class="panel-header-badges">
+              <h3>🏅 Mis Insignias Digitales</h3>
+              <span id="badges-unlocked-ratio">0 / 6 Desbloqueadas</span>
+            </div>
+
+            <div class="badges-showcase-grid" id="badges-gallery-container">
+              <!-- Insignias generadas dinámicamente por JS -->
+            </div>
           </div>
         </div>
 
@@ -130,6 +201,124 @@
 
     </main>
 
+  </div>
+
+  <!-- ==========================================
+       MODAL DE EDICIÓN DE PERFIL — ÚNICO Y PREMIUM
+       ========================================== -->
+  <div class="profile-edit-overlay" id="edit-profile-modal" aria-modal="true" role="dialog" aria-label="Editar perfil">
+    <div class="profile-edit-card" id="edit-profile-card">
+
+      <!-- Header del modal -->
+      <div class="pedit-header">
+        <div class="pedit-header-title">
+          <span class="pedit-header-icon">✏️</span>
+          <div>
+            <h2>Editar Perfil</h2>
+            <p>Personaliza cómo te ven tus compañeros</p>
+          </div>
+        </div>
+        <button class="pedit-close-btn" onclick="closeEditProfileModal()" aria-label="Cerrar">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+
+      <!-- Preview de avatar en vivo -->
+      <div class="pedit-avatar-preview-section">
+        <div class="pedit-avatar-preview" id="pedit-avatar-preview-circle">
+          <span id="pedit-avatar-emoji-preview">🚀</span>
+        </div>
+        <div class="pedit-preview-info">
+          <span class="pedit-preview-name" id="pedit-preview-name">Tu nombre</span>
+          <span class="pedit-preview-sub">Vista previa en tiempo real</span>
+        </div>
+      </div>
+
+      <form id="edit-profile-form" onsubmit="saveUserProfile(event)" novalidate>
+
+        <!-- Campo: Nombre -->
+        <div class="pedit-field-group">
+          <label class="pedit-label" for="edit-name">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            Nombre Completo
+          </label>
+          <input type="text" id="edit-name" class="pedit-input" required placeholder="Escribe tu nombre..." autocomplete="name" oninput="updatePreviewName(this.value)">
+        </div>
+
+        <!-- Campo: Descripción / Bio -->
+        <div class="pedit-field-group">
+          <label class="pedit-label" for="edit-bio">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+            Descripción / Bio corta
+          </label>
+          <textarea id="edit-bio" class="pedit-input" style="resize: vertical; min-height: 70px; font-family: inherit;" placeholder="¡Hola! Cuéntanos algo corto sobre ti o tus metas..." maxlength="120"></textarea>
+        </div>
+
+        <!-- Selector de Avatar Emoji -->
+        <div class="pedit-field-group">
+          <label class="pedit-label">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+            Tu Icono de Perfil
+          </label>
+          <div class="pedit-emoji-grid" id="pedit-emoji-grid">
+            <button type="button" class="pedit-emoji-btn" data-emoji="🚀" onclick="selectEmoji('🚀', this)">🚀</button>
+            <button type="button" class="pedit-emoji-btn" data-emoji="🧠" onclick="selectEmoji('🧠', this)">🧠</button>
+            <button type="button" class="pedit-emoji-btn" data-emoji="🎓" onclick="selectEmoji('🎓', this)">🎓</button>
+            <button type="button" class="pedit-emoji-btn" data-emoji="🌟" onclick="selectEmoji('🌟', this)">🌟</button>
+            <button type="button" class="pedit-emoji-btn" data-emoji="🦁" onclick="selectEmoji('🦁', this)">🦁</button>
+            <button type="button" class="pedit-emoji-btn" data-emoji="🦉" onclick="selectEmoji('🦉', this)">🦉</button>
+            <button type="button" class="pedit-emoji-btn" data-emoji="🦖" onclick="selectEmoji('🦖', this)">🦖</button>
+            <button type="button" class="pedit-emoji-btn" data-emoji="🔥" onclick="selectEmoji('🔥', this)">🔥</button>
+            <button type="button" class="pedit-emoji-btn" data-emoji="⚡" onclick="selectEmoji('⚡', this)">⚡</button>
+            <button type="button" class="pedit-emoji-btn" data-emoji="🎨" onclick="selectEmoji('🎨', this)">🎨</button>
+            <button type="button" class="pedit-emoji-btn" data-emoji="🏆" onclick="selectEmoji('🏆', this)">🏆</button>
+            <button type="button" class="pedit-emoji-btn" data-emoji="🧪" onclick="selectEmoji('🧪', this)">🧪</button>
+            <button type="button" class="pedit-emoji-btn" data-emoji="🌊" onclick="selectEmoji('🌊', this)">🌊</button>
+            <button type="button" class="pedit-emoji-btn" data-emoji="🎯" onclick="selectEmoji('🎯', this)">🎯</button>
+            <button type="button" class="pedit-emoji-btn" data-emoji="🦋" onclick="selectEmoji('🦋', this)">🦋</button>
+            <button type="button" class="pedit-emoji-btn" data-emoji="🐉" onclick="selectEmoji('🐉', this)">🐉</button>
+          </div>
+          <input type="hidden" id="edit-avatar-emoji" value="🚀">
+        </div>
+
+        <!-- Selector de Color de Fondo -->
+        <div class="pedit-field-group">
+          <label class="pedit-label">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>
+            Color de Fondo
+          </label>
+          <div class="pedit-color-grid" id="pedit-color-grid">
+            <button type="button" class="pedit-color-btn" data-color="#7F77DD" style="background:#7F77DD" onclick="selectColor('#7F77DD', this)" title="Índigo"></button>
+            <button type="button" class="pedit-color-btn" data-color="#1D9E75" style="background:#1D9E75" onclick="selectColor('#1D9E75', this)" title="Verde"></button>
+            <button type="button" class="pedit-color-btn" data-color="#EF9F27" style="background:#EF9F27" onclick="selectColor('#EF9F27', this)" title="Ámbar"></button>
+            <button type="button" class="pedit-color-btn" data-color="#E24B4A" style="background:#E24B4A" onclick="selectColor('#E24B4A', this)" title="Rojo"></button>
+            <button type="button" class="pedit-color-btn" data-color="#3b82f6" style="background:#3b82f6" onclick="selectColor('#3b82f6', this)" title="Azul"></button>
+            <button type="button" class="pedit-color-btn" data-color="#a855f7" style="background:#a855f7" onclick="selectColor('#a855f7', this)" title="Morado"></button>
+            <button type="button" class="pedit-color-btn" data-color="#ec4899" style="background:#ec4899" onclick="selectColor('#ec4899', this)" title="Rosa"></button>
+            <button type="button" class="pedit-color-btn" data-color="#14b8a6" style="background:#14b8a6" onclick="selectColor('#14b8a6', this)" title="Turquesa"></button>
+            <button type="button" class="pedit-color-btn" data-color="#f97316" style="background:#f97316" onclick="selectColor('#f97316', this)" title="Naranja"></button>
+            <button type="button" class="pedit-color-btn" data-color="#1e293b" style="background:#1e293b" onclick="selectColor('#1e293b', this)" title="Oscuro"></button>
+          </div>
+          <input type="hidden" id="edit-avatar-color" value="#7F77DD">
+        </div>
+
+        <!-- Botón de Guardar -->
+        <div class="pedit-footer">
+          <button type="button" class="pedit-btn-cancel" onclick="closeEditProfileModal()">Cancelar</button>
+          <button type="submit" class="pedit-btn-save" id="pedit-save-btn">
+            <span class="pedit-save-label">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              Guardar Cambios
+            </span>
+            <span class="pedit-save-loading" style="display:none;">
+              <svg class="pedit-spinner-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+              Guardando...
+            </span>
+          </button>
+        </div>
+
+      </form>
+    </div>
   </div>
 
   <script src="../../assets/js/components/global-loader.js"></script>
