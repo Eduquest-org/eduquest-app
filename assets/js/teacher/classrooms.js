@@ -218,7 +218,7 @@
         const due = act.dueDate ? `Entrega ${Common.formatDate(act.dueDate)}` : "Sin fecha límite";
         const topic = act.topic ? ` · ${Common.escapeHtml(act.topic)}` : "";
         return `
-      <div class="activity-row">
+      <div class="activity-row" style="cursor: pointer; transition: transform 0.2s; position: relative;" onclick="window.openGradingModal('${act.id}', '${Common.escapeHtml(act.title.replace(/'/g, "\\'"))}')" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
         <div class="activity-ico">${meta.icon}</div>
         <div class="activity-main">
           <div class="activity-title">${Common.escapeHtml(act.title)}</div>
@@ -226,7 +226,7 @@
         </div>
         <span class="badge ${act.type}">${meta.label}</span>
         <span class="activity-points">${act.points ? `+${act.points} XP` : ""}</span>
-        <button class="activity-del" data-del-activity="${act.id}" aria-label="Eliminar actividad" title="Eliminar">
+        <button class="activity-del" data-del-activity="${act.id}" aria-label="Eliminar actividad" title="Eliminar" onclick="event.stopPropagation();">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2m2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>
         </button>
       </div>`;
@@ -263,7 +263,9 @@
     const result = await Store.createSection(data);
 
     if (!result.ok) {
-
+      if (result.errors.server) {
+        UI.toast(result.errors.server, "error");
+      }
       UI.showFieldErrors(sectionForm, result.errors);
       return;
     }
@@ -378,6 +380,138 @@
       }
     });
 
+    // ==========================================
+    // LÓGICA DE CALIFICACIÓN (MODAL CENTRAL)
+    // ==========================================
+
+    window.openGradingModal = async (activityId, activityTitle) => {
+      document.getElementById('grading-header-content').innerHTML = `
+        <span style="font-size: 11px; background: rgba(255,255,255,0.5); padding: 4px 8px; border-radius: 4px; color: var(--brand); font-weight: 700;">CALIFICACIÓN</span>
+        <h2 style="font-size: 24px; font-weight: 800; margin-top: 8px; color: var(--dark);">${activityTitle}</h2>
+      `;
+      
+      const listEl = document.getElementById('grading-submissions-list');
+      const countEl = document.getElementById('grading-submissions-count');
+      
+      listEl.innerHTML = '<div style="padding: 20px; text-align: center;">Cargando entregas...</div>';
+      countEl.textContent = '...';
+      
+      document.getElementById('grading-center-modal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+
+      try {
+        const { data: submissions, error } = await window.supabase
+          .from('activity_submissions')
+          .select('id, content, score, feedback, status, submitted_at, profiles:student_id(name)')
+          .eq('activity_id', activityId)
+          .order('submitted_at', { ascending: false });
+
+        if (error) throw error;
+
+        countEl.textContent = submissions.length;
+
+        if (submissions.length === 0) {
+          listEl.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--sub);">Aún no hay entregas para esta tarea.</div>';
+          return;
+        }
+
+        listEl.innerHTML = submissions.map(sub => {
+          const studentName = sub.profiles?.name || 'Alumno Anónimo';
+          const isGraded = sub.status === 'graded' || sub.status === 'returned';
+          const badgeHtml = isGraded 
+            ? `<span style="font-size:12px; background:var(--green-soft); color:var(--green); padding:4px 8px; border-radius:12px; font-weight:600;">Calificado</span>`
+            : `<span style="font-size:12px; background:var(--amber-soft); color:var(--amber); padding:4px 8px; border-radius:12px; font-weight:600;">Pendiente</span>`;
+
+          const contentIsLink = sub.content && (sub.content.startsWith('http://') || sub.content.startsWith('https://'));
+          const displayContent = contentIsLink 
+            ? `<a href="${sub.content}" target="_blank" style="color:var(--brand); text-decoration:underline;">Abrir enlace adjunto ↗</a>`
+            : Common.escapeHtml(sub.content || 'Sin contenido');
+
+          return `
+            <div class="grading-row">
+              <div class="grading-row-header">
+                <div class="grading-student-name">${Common.escapeHtml(studentName)}</div>
+                <div>${badgeHtml} <span style="font-size:12px; color:var(--sub); margin-left:8px;">Entregado: ${Common.formatDate(sub.submitted_at)}</span></div>
+              </div>
+              <div class="grading-content-box">
+                ${displayContent}
+              </div>
+              <div class="grading-inputs">
+                <div class="grading-input-group">
+                  <label>Nota (0-100)</label>
+                  <input type="number" id="score-${sub.id}" value="${sub.score || ''}" placeholder="Ej. 85" min="0" max="100">
+                </div>
+                <div class="grading-input-group">
+                  <label>Retroalimentación</label>
+                  <input type="text" id="feedback-${sub.id}" value="${sub.feedback || ''}" placeholder="Buen trabajo, pero faltó...">
+                </div>
+                <div>
+                  <button class="btn btn-primary" onclick="window.saveGrade('${sub.id}', '${activityId}')">Guardar</button>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+      } catch (err) {
+        console.error("Error al cargar entregas:", err);
+        listEl.innerHTML = '<div style="color:red; padding:20px;">Error al cargar las entregas.</div>';
+      }
+    };
+
+    window.closeGradingModal = () => {
+      document.getElementById('grading-center-modal').classList.remove('open');
+      document.body.style.overflow = '';
+    };
+
+    window.saveGrade = async (submissionId, activityId) => {
+      const scoreInput = document.getElementById(`score-${submissionId}`);
+      const feedbackInput = document.getElementById(`feedback-${submissionId}`);
+      
+      let score = parseInt(scoreInput.value);
+      if (isNaN(score) || score < 0 || score > 100) {
+        UI.toast("La nota debe ser un número entre 0 y 100", "error");
+        return;
+      }
+      
+      const btn = event.currentTarget;
+      const originalText = btn.textContent;
+      btn.textContent = 'Guardando...';
+      btn.disabled = true;
+
+      try {
+        const { error } = await window.supabase
+          .from('activity_submissions')
+          .update({
+            score: score,
+            feedback: feedbackInput.value || null,
+            status: 'graded'
+          })
+          .eq('id', submissionId);
+
+        if (error) throw error;
+
+        UI.toast("Calificación guardada", "success");
+        // No cerramos el modal, solo repintamos (opcionalmente) o marcamos el badge localmente
+        btn.textContent = 'Guardado ✓';
+        btn.style.background = 'var(--green)';
+        btn.style.borderColor = 'var(--green)';
+        
+        setTimeout(() => {
+          btn.textContent = 'Guardar';
+          btn.style.background = '';
+          btn.style.borderColor = '';
+          btn.disabled = false;
+        }, 2000);
+
+      } catch (err) {
+        console.error("Error al guardar calificación:", err);
+        UI.toast("Error al guardar", "error");
+        btn.textContent = originalText;
+        btn.disabled = false;
+      }
+    };
+
     // Copiar código de unión
     document.getElementById("copyJoinCode")?.addEventListener("click", async () => {
       const code = document.getElementById("detailJoinValue")?.textContent || "";
@@ -410,6 +544,11 @@
       console.error("[classrooms] Dependencias del panel docente no cargadas.");
       return;
     }
+    
+    if (window.CurrentUserService && !CurrentUserService.getProfile()) {
+      await CurrentUserService.init();
+    }
+
     await Store.init();
     populateCourseSelect();
     renderFilterChips();

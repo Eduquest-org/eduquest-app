@@ -16,7 +16,109 @@ document.addEventListener("DOMContentLoaded", async () => {
   
   // Renderizar widget de rendimiento
   await renderDashboardRendimientoWidget();
+  
+  // Renderizar Top 3 Dinámico
+  await renderTop3Ranking();
 });
+
+async function renderTop3Ranking() {
+  const rankingListEl = document.getElementById("dashboard-ranking-list");
+  if (!rankingListEl) return;
+  
+  const user = window.CurrentUserService ? CurrentUserService.getProfile() : null;
+  if (!user) return;
+  
+  rankingListEl.innerHTML = '<div style="text-align:center; padding: 20px; font-size:12px; color:var(--sub);">Cargando ranking...</div>';
+
+  try {
+    // 1. Obtener el aula del usuario actual (la última aula a la que se unió o cualquier aula activa)
+    const { data: enrollments, error: enrErr } = await window.supabase
+        .from('classroom_students')
+        .select('classroom_id')
+        .eq('student_id', user.id);
+        
+    if (enrErr) throw enrErr;
+    if (!enrollments || enrollments.length === 0) {
+        rankingListEl.innerHTML = '<div style="text-align:center; padding: 20px; font-size:12px; color:var(--sub);">Únete a un aula para competir.</div>';
+        return;
+    }
+    
+    // Tomar la primera aula
+    const classId = enrollments[0].classroom_id;
+    
+    // 2. Obtener todos los estudiantes del aula
+    const { data: studentsEnrolled, error: stuErr } = await window.supabase
+        .from('classroom_students')
+        .select('student_id, profiles:student_id(name)')
+        .eq('classroom_id', classId);
+        
+    if (stuErr) throw stuErr;
+    if (!studentsEnrolled || studentsEnrolled.length === 0) return;
+    
+    const studentIds = studentsEnrolled.map(e => e.student_id);
+    
+    // 3. Obtener el progreso (XP total) de esos estudiantes desde user_topic_progress
+    const { data: stats, error: statsErr } = await window.supabase
+        .from('user_topic_progress')
+        .select('user_id, score')
+        .in('user_id', studentIds);
+        
+    if (statsErr) throw statsErr;
+    
+    // Sumar XP
+    let xpMap = {};
+    studentsEnrolled.forEach(s => {
+        xpMap[s.student_id] = { name: s.profiles?.name || 'Alumno', xp: 0, isMe: s.student_id === user.id };
+    });
+    
+    if (stats) {
+        stats.forEach(st => {
+            if (xpMap[st.user_id]) {
+                xpMap[st.user_id].xp += (st.score || 0) * 10; // 1 pt = 10 XP aprox para el visual
+            }
+        });
+    }
+    
+    // Ordenar Top 3
+    const sorted = Object.values(xpMap).sort((a, b) => b.xp - a.xp).slice(0, 3);
+    
+    if (sorted.length === 0) {
+        rankingListEl.innerHTML = '<div style="text-align:center; padding: 20px; font-size:12px; color:var(--sub);">No hay datos de ranking.</div>';
+        return;
+    }
+    
+    const escapeHtml = (unsafe) => {
+        return (unsafe || '').toString()
+             .replace(/&/g, "&amp;")
+             .replace(/</g, "&lt;")
+             .replace(/>/g, "&gt;")
+             .replace(/"/g, "&quot;")
+             .replace(/'/g, "&#039;");
+    };
+    
+    const medals = ['🎓', '🧠', '⚡'];
+    rankingListEl.innerHTML = sorted.map((st, i) => {
+        const isMeStyle = st.isMe ? 'background: rgba(29, 158, 117, 0.1); border-radius: 8px; padding: 6px 8px;' : '';
+        const rankColor = st.isMe ? 'color: var(--green);' : '';
+        const nameHtml = st.isMe ? `<strong>Tú (${escapeHtml(st.name)})</strong>` : escapeHtml(st.name);
+        
+        return `
+            <li style="${isMeStyle}">
+              <div class="rank-user">
+                <span class="rank-num" style="${rankColor}">${i + 1}</span>
+                <span class="user-avatar-mini" style="width: 28px; height: 28px; font-size: 14px;">${medals[i] || '⭐'}</span>
+                ${nameHtml}
+              </div>
+              <span class="rank-pts">${st.xp.toLocaleString()} XP</span>
+            </li>
+        `;
+    }).join('');
+
+  } catch(err) {
+      console.error("Error al cargar ranking dinámico:", err);
+      rankingListEl.innerHTML = '<div style="text-align:center; padding: 20px; font-size:12px; color:var(--sub);">Error cargando ranking</div>';
+  }
+}
 
 function renderDailyChallengeWidget() {
   const descEl = document.getElementById("challenge-desc");
@@ -29,14 +131,22 @@ function renderDailyChallengeWidget() {
   const user = window.CurrentUserService ? CurrentUserService.getProfile() : null;
   if (!user) return;
 
-  // Si no hay reto diario en DB (por migración), crear uno de respaldo para UI
-  const challenge = user.dailyChallenge || {
-      description: "Completa 2 quizzes hoy para mantener tu racha.",
-      current: 0,
-      target: 2,
-      type: "quiz_questions",
-      completed: false
-  };
+  let challenge = null;
+  if (user && user.stats && user.stats.dailyChallenge) {
+      challenge = user.stats.dailyChallenge;
+  } else {
+      try { challenge = JSON.parse(localStorage.getItem('dailyChallenge')); } catch (e) {}
+  }
+  
+  if (!challenge) {
+      challenge = {
+          description: "Completa 2 quizzes hoy para mantener tu racha.",
+          current: 0,
+          target: 2,
+          type: "quiz_questions",
+          completed: false
+      };
+  }
 
   // 1. Mostrar descripción
   descEl.innerHTML = challenge.description;

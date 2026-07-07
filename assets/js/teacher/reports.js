@@ -322,11 +322,14 @@
   // ─── Init ───────────────────────────────────────────────────────────
   async function init() {
     if (!Store || !Common || !UI) {
-      console.error("[reports] Dependencias del panel docente no cargadas.");
+      console.error("Faltan dependencias en reports.js");
       return;
     }
+    if (window.CurrentUserService && typeof CurrentUserService.init === 'function') {
+        await CurrentUserService.init();
+    }
     await Store.init();
-
+    
     if (!Store.getSections().length) {
       document.getElementById("reportsBody")?.classList.add("hidden");
       document.getElementById("reportsEmpty")?.classList.remove("hidden");

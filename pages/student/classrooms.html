@@ -5,14 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>EduQuest — Mis Clases</title>
   
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="../../assets/css/variables.css" />
-  <link rel="stylesheet" href="../../assets/css/base.css" />
-  <link rel="stylesheet" href="../../assets/css/components/sidebar.css" />
-  <link rel="stylesheet" href="../../assets/css/components/topbar.css" />
-  <link rel="stylesheet" href="../../assets/css/components/cards.css" />
-  <link rel="stylesheet" href="../../assets/css/components/buttons.css" />
-  <link rel="stylesheet" href="../../assets/css/components/modals.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=Sora:wght@700;800&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../../assets/css/global/reset.css">
+  <link rel="stylesheet" href="../../assets/css/global/variables.css">
+  <link rel="stylesheet" href="../../assets/css/global/variablesColorsSubject.css">
+  <link rel="stylesheet" href="../../assets/css/components/buttons.css">
+  <link rel="stylesheet" href="../../assets/css/components/forms.css">
+  <link rel="stylesheet" href="../../assets/css/pages/student-dashboard.css">
+  <link rel="stylesheet" href="../../assets/css/components/modals.css">
+  <link rel="stylesheet" href="../../assets/css/components/drawer.css">
   
   <style>
     /* Estilos específicos para la vista de Mis Clases */
@@ -148,17 +150,230 @@
       max-width: 400px;
       margin: 0 auto;
     }
+    
+    /* =======================================================
+       MODAL CENTRAL (INMERSIVO) PARA DETALLE DE AULA
+       ======================================================= */
+    .center-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 10, 20, 0.6);
+      backdrop-filter: blur(8px);
+      z-index: 1200;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    
+    .center-modal-overlay.open {
+      display: flex;
+      opacity: 1;
+    }
+    
+    .center-modal-panel {
+      background: #ffffff;
+      width: 100%;
+      max-width: 850px;
+      height: 100%;
+      max-height: 85vh;
+      border-radius: 24px;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.15);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transform: translateY(20px) scale(0.98);
+      transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+    
+    .center-modal-overlay.open .center-modal-panel {
+      transform: translateY(0) scale(1);
+    }
+    
+    .center-modal-header {
+      padding: 30px 40px;
+      background: linear-gradient(135deg, rgba(111, 76, 255, 0.05), rgba(111, 76, 255, 0.1));
+      border-bottom: 1px solid var(--border);
+      position: relative;
+    }
+    
+    .center-modal-close {
+      position: absolute;
+      top: 24px;
+      right: 24px;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: #fff;
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--sub);
+      font-size: 16px;
+      transition: all 0.2s;
+    }
+    
+    .center-modal-close:hover {
+      background: var(--error-bg);
+      color: var(--red-err);
+      border-color: var(--red-err);
+      transform: rotate(90deg);
+    }
+    
+    .center-modal-tabs {
+      display: flex;
+      gap: 32px;
+      padding: 0 40px;
+      border-bottom: 1px solid var(--border);
+      background: #fff;
+    }
+    
+    .center-modal-tab {
+      padding: 16px 0;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--sub);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+    }
+    
+    .center-modal-tab:hover {
+      color: var(--brand);
+    }
+    
+    .center-modal-tab.active {
+      color: var(--dark);
+      border-bottom-color: var(--brand);
+    }
+    
+    .center-modal-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 40px;
+      background: #fdfdfd;
+    }
+    
+    .c-section-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--dark);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    /* =======================================================
+       MODAL DE ENVÍO DE TAREAS (SECUNDARIO)
+       ======================================================= */
+    .submit-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 10, 20, 0.7);
+      backdrop-filter: blur(4px);
+      z-index: 1300; /* Mayor que el modal central */
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+    
+    .submit-modal-overlay.open {
+      display: flex;
+      opacity: 1;
+    }
+    
+    .submit-modal-card {
+      background: #ffffff;
+      width: 100%;
+      max-width: 500px;
+      border-radius: 20px;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.2);
+      transform: scale(0.95);
+      transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+    
+    .submit-modal-overlay.open .submit-modal-card {
+      transform: scale(1);
+    }
+    
+    .submit-modal-header {
+      padding: 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .submit-modal-close {
+      background: var(--fill);
+      border: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      cursor: pointer;
+      color: var(--sub);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+    
+    .submit-modal-close:hover {
+      background: var(--error-bg);
+      color: var(--red-err);
+    }
+    
+    .submit-modal-body {
+      padding: 24px;
+    }
+    
+    .submit-modal-footer {
+      padding: 20px 24px;
+      border-top: 1px solid var(--border);
+      background: #fdfdfd;
+      border-bottom-left-radius: 20px;
+      border-bottom-right-radius: 20px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+    }
+    
+    .modal-textarea {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      font-size: 14px;
+      resize: vertical;
+      background: var(--fill);
+      transition: border-color 0.2s;
+    }
+    
+    .modal-textarea:focus {
+      outline: none;
+      border-color: var(--brand);
+      background: #fff;
+    }
   </style>
 </head>
 <body>
   
-  <div class="app-layout">
-    <div id="sidebar-container"></div>
+  <div id="topbar-container" data-path="../../components/topbar-students.html"></div>
 
-    <div class="main-content">
-      <div id="topbar-container"></div>
+  <div class="app-shell" id="student-shell">
+    <div id="sidebar-container" data-path="../../components/sidebar.html"></div>
+
+    <main class="dashboard-content">
       
-      <div class="page-container" style="max-width: 1000px; margin: 0 auto;">
+      <div class="page-container" style="max-width: 1000px; margin: 0 auto; padding-top: 30px;">
         
         <div class="classrooms-header">
           <div>
@@ -183,6 +398,82 @@
         </div>
 
       </div>
+    </main>
+  </div>
+
+  <!-- =============================================
+       Modal Central Inmersivo — Detalle de Aula
+  ============================================= -->
+  <div id="classroom-center-modal" class="center-modal-overlay" role="dialog" aria-modal="true">
+    <div class="center-modal-panel">
+      
+      <div class="center-modal-header">
+        <button class="center-modal-close" onclick="closeClassroomModal()" aria-label="Cerrar">✕</button>
+        <div id="modal-header-content">
+          <!-- Renderizado dinámicamente -->
+        </div>
+      </div>
+
+      <div class="center-modal-tabs">
+        <div class="center-modal-tab active" id="btn-tab-activities" onclick="switchClassroomTab('activities')">📝 Tareas & Evaluaciones</div>
+        <div class="center-modal-tab" id="btn-tab-ranking" onclick="switchClassroomTab('ranking')">🏆 Ranking de la Clase</div>
+      </div>
+
+      <div class="center-modal-content">
+        <!-- TAB: ACTIVIDADES -->
+        <div id="modal-tab-activities" class="modal-tab-content active">
+          <div class="c-section-title">
+            Tareas Asignadas <span id="modal-activities-count" class="badge-count" style="margin-left: 8px;">0</span>
+          </div>
+          <div id="modal-activities-list" style="display: flex; flex-direction: column; gap: 16px;">
+            <!-- Actividades renderizadas aquí -->
+          </div>
+        </div>
+
+        <!-- TAB: RANKING E INFO -->
+        <div id="modal-tab-ranking" class="modal-tab-content" style="display:none;">
+          <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 40px;">
+            <div>
+              <div class="c-section-title">Información</div>
+              <div id="modal-info-content" style="background: #fff; padding: 24px; border-radius: 16px; border: 1px solid var(--border); font-size: 14px;">
+                <!-- Renderizado dinámicamente -->
+              </div>
+            </div>
+            <div>
+              <div class="c-section-title">Leaderboard</div>
+              <div id="modal-ranking-list" style="background: #fff; padding: 8px; border-radius: 16px; border: 1px solid var(--border);">
+                <!-- Ranking renderizado aquí -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- =============================================
+       Modal — Enviar Tarea
+  ============================================= -->
+  <div id="submit-activity-modal" class="submit-modal-overlay" role="dialog" aria-modal="true">
+    <div class="submit-modal-card">
+      <div class="submit-modal-header">
+        <h2 style="font-size: 20px; font-weight: 700; margin: 0;">Entregar Tarea</h2>
+        <button type="button" class="submit-modal-close" onclick="closeSubmitActivityModal()" aria-label="Cerrar">✕</button>
+      </div>
+      <form id="submit-activity-form">
+        <div class="submit-modal-body">
+          <p id="submit-activity-title" style="margin-top: 0; margin-bottom: 16px; font-weight: 600; color: var(--brand); font-size: 15px;"></p>
+          <div class="form-group" style="margin: 0;">
+            <label class="form-label" style="display: block; margin-bottom: 8px; font-size: 13px; font-weight: 600;">Tu respuesta (Link a Google Drive, Notion, o texto directo):</label>
+            <textarea id="submit-activity-content" class="modal-textarea" rows="5" required placeholder="Pega aquí el enlace o tu respuesta detallada..."></textarea>
+          </div>
+        </div>
+        <div class="submit-modal-footer">
+          <button type="button" class="btn outline" onclick="closeSubmitActivityModal()">Cancelar</button>
+          <button type="submit" id="btn-submit-task" class="btn btn-primary" style="background: var(--brand); border-color: var(--brand);">Enviar Tarea</button>
+        </div>
+      </form>
     </div>
   </div>
 

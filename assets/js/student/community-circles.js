@@ -55,6 +55,17 @@ function getCourseColor(courseId) {
 // Inicialización
 // ============================================================
 document.addEventListener('DOMContentLoaded', async () => {
+  try {
+    // Mostrar spinner inmediatamente antes de cualquier llamada asíncrona
+    const container = document.getElementById('active-circles-container');
+    if (container) {
+        container.innerHTML = `
+            <div style="text-align: center; padding: 40px; color: var(--sub);">
+                <div class="spinner" style="margin: 0 auto 12px auto; border-color: var(--primary) transparent var(--primary) transparent;"></div>
+                <p>Cargando comunidades...</p>
+            </div>`;
+    }
+
     if (window.CurrentUserService) {
         await CurrentUserService.init();
     }
@@ -117,6 +128,10 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         }
     }
+  } catch (error) {
+    console.error(error);
+    alert('Error crítico detectado en el script:\n' + (error.stack || error.message || error));
+  }
 });
 
 // ============================================================
@@ -686,6 +701,13 @@ window.openCodeSearchModal = async function() {
             <p class="code-result-desc">${circle.description || 'Sin descripción.'}</p>
             <span class="code-result-members">👥 ${circle.number_students ?? 0} miembros</span>
             <div class="code-result-cta">
+                ${ctaHtml}
+            </div>
+        </div>
+    `;
+};
+
+/**
  * Unión directa para círculos públicos encontrados por código.
  */
 window.doJoinByCode = async function() {

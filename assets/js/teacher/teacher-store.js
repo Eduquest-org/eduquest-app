@@ -323,7 +323,7 @@
         return { ok: true, section };
       } catch (err) {
         console.error("[TeacherStore] Error creando sección:", err);
-        return { ok: false, errors: { server: "Error al guardar en la base de datos." } };
+        return { ok: false, errors: { server: (err.message || "Error al guardar en base de datos") } };
       }
     },
 
