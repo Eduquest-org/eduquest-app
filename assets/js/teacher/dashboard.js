@@ -1,3 +1,12 @@
+/**
+ * @fileoverview Panel de Control Analítico e Informativo para Docentes.
+ * Agrupa y visualiza datos de rendimiento de las aulas a su cargo.
+ * 
+ * Flujo de ejecución:
+ * 1. Valida el rol docente mediante abstracciones core de autenticación.
+ * 2. Realiza múltiples consultas asíncronas para conteo de alumnos y recursos.
+ * 3. Renderiza indicadores numéricos y estados del `Feed` (anuncios).
+ */
 // ==========================================================================
 // assets/js/teacher/dashboard.js
 // Comportamiento del shell docente (menú móvil) + inicio (accesos rápidos)
@@ -40,8 +49,8 @@ document.addEventListener("click", (e) => {
   const TILE_NAV = {
     "Crear aula": "classrooms.html?create=1",
     "Ver secciones": "classrooms.html",
-    "Asignar tarea": "classrooms.html",
-    "Calificar tareas": "classrooms.html",
+    "Asignar tarea": "classrooms.html?assign=1",
+    "Recursos": "resources.html",
   };
 
   function getSupabase() {
@@ -154,11 +163,50 @@ document.addEventListener("click", (e) => {
         : "Sin datos de rendimiento";
   }
 
-  async function refreshGradingPanel(scope) {
+  async function refreshXpPanel(scope) {
+    const totalEl = document.getElementById("xpTotalCount");
+    const avgLabel = document.getElementById("xpAvgLabel");
+    const studentsCount = document.getElementById("xpStudentsCount");
+    const noteEl = document.getElementById("xpClassNote");
+
+    if (!totalEl || !avgLabel || !studentsCount || !noteEl) return;
+
+    const supabase = getSupabase();
+    if (!supabase || !scope.classroomIds.length) {
+      totalEl.textContent = "0";
+      avgLabel.textContent = "0 XP promedio por alumno";
+      studentsCount.textContent = "0";
+      noteEl.textContent = "Sin aulas activas";
+      return;
+    }
+
+    const { data, error } = await supabase
+      .from("classroom_student_stats")
+      .select("student_id, total_xp")
+      .in("classroom_id", scope.classroomIds);
+
+    if (error) {
+      console.error("[dashboard] Error cargando XP:", error);
+      noteEl.textContent = "No se pudo cargar el XP";
+      return;
+    }
+
+    const rows = data || [];
+    const totalXp = rows.reduce((sum, r) => sum + (r.total_xp || 0), 0);
+    const activeStudents = rows.filter((r) => r.total_xp > 0).length;
+    const avg = scope.studentIds.length ? Math.round(totalXp / scope.studentIds.length) : 0;
+
+    totalEl.textContent = totalXp.toLocaleString("es-PE");
+    avgLabel.textContent = `${avg.toLocaleString("es-PE")} XP promedio por alumno`;
+    studentsCount.textContent = activeStudents.toLocaleString("es-PE");
+    noteEl.textContent = `${scope.classroomIds.length} ${scope.classroomIds.length === 1 ? "aula" : "aulas"} · ${scope.studentIds.length} ${scope.studentIds.length === 1 ? "alumno" : "alumnos"}`;
+  }
+
+  async function hideGradingPanel(scope) {
     const gradedPanel = document.getElementById("gradedPanel");
     if (!gradedPanel) return;
 
-    const classIds = scope.classrooms.map(c => c.id);
+    const classIds = scope.classroomIds;
     if (!classIds.length) {
       gradedPanel.hidden = false;
       gradedPanel.innerHTML = '<p class="stat-label" style="margin-top:10px;">Crea un aula para asignar tareas.</p>';
@@ -218,7 +266,8 @@ document.addEventListener("click", (e) => {
     const scope = await getTeacherScope(teacherId);
     refreshSectionsSummary(scope);
     await refreshPerformancePanel(scope.studentIds);
-    await refreshGradingPanel(scope);
+    await refreshXpPanel(scope);
+    await hideGradingPanel(scope);
   }
 
   function wireQuickActions() {
@@ -241,7 +290,7 @@ document.addEventListener("click", (e) => {
     });
     document.querySelectorAll(".panel .full-btn").forEach((btn) => {
       if (btn.textContent.trim() === "Asignar tarea") {
-        btn.addEventListener("click", () => (window.location.href = "classrooms.html"));
+        btn.addEventListener("click", () => (window.location.href = "classrooms.html?assign=1"));
       }
     });
   }

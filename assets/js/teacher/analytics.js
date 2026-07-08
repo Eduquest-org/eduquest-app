@@ -1,15 +1,20 @@
 // ==========================================================================
 // assets/js/teacher/analytics.js
 // US-06 · Dashboard de rendimiento grupal (y por alumno)
-// Datos vía TeacherStore · gráficos con Chart.js
+// Datos reales vía Supabase RPC get_teacher_analytics_rows · gráficos con Chart.js
 // ==========================================================================
 
 (function () {
   "use strict";
 
   const Common = window.TeacherCommon;
-  const Store = window.TeacherStore;
   const UI = window.TeacherUI;
+
+  // Datos reales cargados desde Supabase
+  let teacherSections = [];
+  let sectionStatsMap = new Map();
+  let currentSectionId = null;
+  let currentStudents = [];
 
   // Paleta de gráficos
   const C = {
@@ -22,9 +27,7 @@
     text: "#8B8FA0",
   };
 
-  let currentSectionId = null;
-  let currentStudents = []; // roster filtrado de la sección activa
-  const charts = {}; // instancias de Chart por id de canvas
+  const charts = {};
   let studentChart = null;
 
   // ─── Utilidades de Chart.js ─────────────────────────────────────────
@@ -37,6 +40,128 @@
 
   function baseFont() {
     return { family: "'Inter', sans-serif", size: 12 };
+  }
+
+  // ─── Datos reales desde Supabase ────────────────────────────────────
+  function getSupabase() {
+    return window.supabase || null;
+  }
+
+  function computeSectionStats(section) {
+    const students = (section && section.students) || [];
+    const count = students.length;
+    const empty = {
+      students: 0,
+      avgXp: 0,
+      activity: 0,
+      avgAccuracy: 0,
+      avgCompletion: 0,
+      totalSimulacros: 0,
+      distribution: { excelente: 0, bueno: 0, regular: 0, riesgo: 0 },
+      atRisk: 0,
+      topPerformer: null,
+    };
+    if (!count) return empty;
+
+    const distribution = { excelente: 0, bueno: 0, regular: 0, riesgo: 0 };
+    let sumXp = 0;
+    let sumAcc = 0;
+    let sumComp = 0;
+    let sumSim = 0;
+    let top = students[0];
+
+    students.forEach((st) => {
+      const xp = st.xp || 0;
+      const accuracy = st.accuracy || 0;
+      const completion = st.completion || 0;
+      const sims = st.simulacros || 0;
+
+      sumXp += xp;
+      sumAcc += accuracy;
+      sumComp += completion;
+      sumSim += sims;
+
+      const band = Common.performanceBand(accuracy);
+      distribution[band.key]++;
+
+      if (!top || xp > top.xp) top = st;
+    });
+
+    return {
+      students: count,
+      avgXp: Math.round(sumXp / count),
+      activity: section.activity || 0,
+      avgAccuracy: Math.round(sumAcc / count),
+      avgCompletion: Math.round(sumComp / count),
+      totalSimulacros: sumSim,
+      distribution,
+      atRisk: distribution.riesgo,
+      topPerformer: top,
+    };
+  }
+
+  async function loadRealData() {
+    const supabase = getSupabase();
+    if (!supabase) {
+      console.error("[analytics] Supabase no está disponible.");
+      return [];
+    }
+
+    const user = window.CurrentUserService?.getProfile();
+    const teacherId = user?.id;
+    if (!teacherId) {
+      console.error("[analytics] No se encontró el perfil del docente.");
+      return [];
+    }
+
+    const { data, error } = await supabase.rpc("get_teacher_analytics_rows", {
+      p_teacher_id: teacherId,
+    });
+
+    if (error) {
+      console.error("[analytics] Error cargando datos:", error);
+      return [];
+    }
+
+    if (!data) return [];
+
+    // Construir objetos con la forma que espera el resto de la UI
+    teacherSections = data.map((row) => buildSection(row));
+    sectionStatsMap.clear();
+    teacherSections.forEach((sec) => {
+      sectionStatsMap.set(sec.id, computeSectionStats(sec));
+    });
+
+    return teacherSections;
+  }
+
+  function buildSection(row) {
+    const students = (row.students || []).map((st) => ({
+      id: st.id,
+      name: st.name,
+      avatar_url: st.avatar_url,
+      xp: st.total_xp || 0,
+      accuracy: Number(st.accuracy) || 0,
+      completion: Number(st.completion) || 0,
+      simulacros: st.simulacros || 0,
+      lastActive: st.last_active,
+      activity: Common.statusFor({ lastActive: st.last_active }).label,
+      topic_stats: st.topic_stats || [],
+    }));
+
+    return {
+      id: row.id,
+      name: row.name,
+      course: row.course,
+      cycle: row.cycle,
+      shift: row.shift,
+      schedule: row.schedule,
+      joinCode: row.join_code,
+      capacity: row.capacity,
+      students,
+      topicPerformance: row.topic_performance || [],
+      weeklyActivity: row.weekly_activity || [],
+    };
   }
 
   // ─── KPIs ───────────────────────────────────────────────────────────
@@ -211,9 +336,9 @@
     destroyChart("compare");
     const ctx = document.getElementById("compareChart");
     if (!ctx) return;
-    const sections = Store.getSections();
+    const sections = teacherSections;
     const labels = sections.map((s) => s.name.replace(/^[^·]+·\s*/, "").trim() || s.course);
-    const values = sections.map((s) => Store.computeStats(s).avgAccuracy);
+    const values = sections.map((s) => sectionStatsMap.get(s.id)?.avgAccuracy || 0);
     const colors = sections.map((s) => (s.id === activeId ? C.brandDark : "rgba(127,119,221,.45)"));
     charts.compare = new Chart(ctx, {
       type: "bar",
@@ -275,7 +400,7 @@
 
   // ─── Dashboard individual (modal) ───────────────────────────────────
   function openStudent(studentId) {
-    const section = Store.getSection(currentSectionId);
+    const section = teacherSections.find((s) => s.id === currentSectionId);
     if (!section) return;
     const st = (section.students || []).find((s) => s.id === studentId);
     if (!st) return;
@@ -307,21 +432,24 @@
 
     setText("studentChartSub", `Curso: ${section.course}`);
 
-    // Detalle por tema (derivado de la precisión global del alumno)
-    const topics = (section.topicPerformance || []).map((t) => t.topic);
-    const scores = Common.topicScoresFor(st, topics);
+    // Detalle por tema usando los datos reales del alumno
+    const topicScores = (st.topic_stats || []).map((t) => {
+      const total = (t.correct || 0) + (t.incorrect || 0);
+      const score = total > 0 ? Math.round(((t.correct || 0) / total) * 100) : 0;
+      return { topic: t.topic_name, score };
+    });
     if (studentChart) studentChart.destroy();
     const ctx = document.getElementById("studentTopicChart");
     if (ctx) {
       studentChart = new Chart(ctx, {
         type: "bar",
         data: {
-          labels: scores.map((s) => s.topic),
+          labels: topicScores.map((s) => s.topic),
           datasets: [
             {
               label: "Aciertos (%)",
-              data: scores.map((s) => s.score),
-              backgroundColor: scores.map((s) => Common.performanceBand(s.score).color),
+              data: topicScores.map((s) => s.score),
+              backgroundColor: topicScores.map((s) => Common.performanceBand(s.score).color),
               borderRadius: 5,
               maxBarThickness: 22,
             },
@@ -344,7 +472,7 @@
     if (activity) {
       activity.innerHTML = `
         <div class="sa-row"><span class="badge ${status.key}">${status.label}</span>
-          <span class="sa-text">Última actividad: ${Common.escapeHtml(st.activity || "—")}</span></div>
+          <span class="sa-text">Última actividad: ${status.label}</span></div>
         <div class="sa-date">Conexión: ${Common.formatDate(st.lastActive)}</div>`;
     }
 
@@ -353,11 +481,11 @@
 
   // ─── Render principal de la sección activa ──────────────────────────
   function renderSection(sectionId) {
-    const section = Store.getSection(sectionId);
+    const section = teacherSections.find((s) => s.id === sectionId);
     if (!section) return;
     currentSectionId = sectionId;
     currentStudents = [...(section.students || [])].sort((a, b) => (b.xp || 0) - (a.xp || 0));
-    const stats = Store.computeStats(section);
+    const stats = sectionStatsMap.get(sectionId) || computeSectionStats(section);
 
     const meta = document.getElementById("switcherMeta");
     if (meta) {
@@ -384,11 +512,12 @@
   function populateSectionSelect(preferredId) {
     const select = document.getElementById("sectionSelect");
     if (!select) return null;
-    const sections = Store.getSections();
-    select.innerHTML = sections
+    select.innerHTML = teacherSections
       .map((s) => `<option value="${Common.escapeHtml(s.id)}">${Common.escapeHtml(s.name)}</option>`)
       .join("");
-    const chosen = sections.some((s) => s.id === preferredId) ? preferredId : sections[0] && sections[0].id;
+    const chosen = teacherSections.some((s) => s.id === preferredId)
+      ? preferredId
+      : teacherSections[0] && teacherSections[0].id;
     if (chosen) select.value = chosen;
     return chosen;
   }
@@ -424,7 +553,7 @@
 
   // ─── Init ───────────────────────────────────────────────────────────
   async function init() {
-    if (!Store || !Common || !UI) {
+    if (!Common || !UI) {
       console.error("[analytics] Dependencias del panel docente no cargadas.");
       return;
     }
@@ -432,13 +561,13 @@
       console.error("[analytics] Chart.js no está disponible.");
     }
 
-    if (window.CurrentUserService && typeof CurrentUserService.init === 'function') {
-        await CurrentUserService.init();
+    if (window.CurrentUserService && !CurrentUserService.getProfile()) {
+      await CurrentUserService.init();
     }
-    await Store.init();
-    const sections = Store.getSections();
 
-    if (!sections.length) {
+    await loadRealData();
+
+    if (!teacherSections.length) {
       document.getElementById("analyticsBody")?.classList.add("hidden");
       document.querySelector(".section-switcher")?.classList.add("hidden");
       document.getElementById("analyticsEmpty")?.classList.remove("hidden");

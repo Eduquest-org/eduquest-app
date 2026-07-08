@@ -1,3 +1,12 @@
+/**
+ * @fileoverview Controlador de las Comunidades y Grupos de Estudio (Círculos).
+ * Permite a los estudiantes agruparse mediante códigos de invitación y explorar foros.
+ * 
+ * Flujo de ejecución:
+ * 1. Consulta la pertenencia de un estudiante a círculos activos (`circle_members`).
+ * 2. Muestra tarjetas con metadatos del grupo y eventos programados.
+ * 3. Lógica para buscar y unirse mediante validación transaccional de código.
+ */
 import { CirclesManager, UserCirclesManager, JoinRequestManager, SubjectManager } from '../core/circles-manager.js';
 
 // ============================================================

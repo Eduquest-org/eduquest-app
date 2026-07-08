@@ -572,7 +572,6 @@
   background: var(--red) !important;
   color: #fff !important;
 }
-}
 
 .tag-option:hover {
   background: var(--fill, #f8fafc);
@@ -651,6 +650,53 @@
 .post-tag.duda-tag {
   background: rgba(29, 158, 117, 0.12);
   color: var(--green, #1D9E75);
+}
+
+/* =========================================================
+   8b. ANUNCIOS DEL DOCENTE (DEGRADADO ESPECIAL)
+   ========================================================= */
+.feed-card.is-announcement {
+  position: relative;
+  border: 1px solid #FAC775;
+  background: linear-gradient(135deg, #FFF9EF 0%, #FDF1DA 55%, #FCE7C2 100%);
+  box-shadow: 0 12px 34px -20px rgba(133, 79, 11, 0.4);
+  overflow: hidden;
+}
+
+.feed-card.is-announcement::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 5px;
+  background: linear-gradient(90deg, #EF9F27, #FBBF55, #854F0B);
+}
+
+.announcement-banner {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: #854F0B;
+  background: rgba(239, 159, 39, 0.16);
+  border: 1px solid #FAC775;
+  border-radius: 999px;
+  padding: 5px 14px;
+  margin-bottom: 16px;
+}
+
+.post-tag.announcement-tag {
+  background: linear-gradient(135deg, #EF9F27, #854F0B);
+  color: #fff;
+}
+
+.teacher-badge {
+  background: rgba(239, 159, 39, 0.16) !important;
+  color: #854F0B !important;
 }
 
 /* =========================================================

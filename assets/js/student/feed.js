@@ -6,15 +6,15 @@
 /* ========================================================
    ESTADO GLOBAL DEL MÓDULO
    ======================================================== */
-let _selectedImageData = null; // base64 de la imagen seleccionada
-let _selectedImageMime = null; // mime type
-let _selectedTag = null; // etiqueta seleccionada por el usuario
-let _allPosts = [];   // caché de todos los posts (para búsqueda de similares)
-let _cachedPosts = []; // caché de posts mapeados para filtrado
-let _allComments = [];   // caché de todos los comentarios
-let _similarSearchTimer = null; // debounce para búsqueda de similares
-let _currentUserId = null; // id del usuario en sesión
-let _feedFilterDebounce = null; // debounce para filtro de texto
+let _selectedImageData = null;
+let _selectedImageMime = null;
+let _selectedTag = null;
+let _allPosts = [];
+let _cachedPosts = [];
+let _allComments = [];
+let _similarSearchTimer = null;
+let _currentUserId = null;
+let _feedFilterDebounce = null;
 
 // Filtros activos del foro
 let _activeFilters = {
@@ -106,7 +106,7 @@ async function loadFeedPosts(reset = true) {
         _currentUserId = user?.id || null;
 
         if (reset) {
-            container.innerHTML = ''; // Quitar spinner principal
+            container.innerHTML = '';
             if (!enrichedPosts || enrichedPosts.length === 0) {
                 container.innerHTML = '<div style="text-align:center; padding:40px; color:var(--sub);"><p>Aún no hay publicaciones en el foro. ¡Sé el primero en preguntar algo!</p></div>';
                 _isFetchingPosts = false;
@@ -180,12 +180,12 @@ function setupFeedObserver(lastElement) {
         const entry = entries[0];
         if (entry.isIntersecting) {
             _feedObserver.unobserve(lastElement);
-            loadFeedPosts(false); // Cargar más (append mode)
+            loadFeedPosts(false);
         }
     }, {
         root: null,
-        rootMargin: '0px', // Cargar solo cuando realmente entra en la vista
-        threshold: 0.5     // Cuando al menos el 50% del último post sea visible
+        rootMargin: '0px',
+        threshold: 0.5
     });
 
     if (lastElement) {
@@ -194,17 +194,26 @@ function setupFeedObserver(lastElement) {
 }
 
 function renderPostCard(post, container) {
+    const rawTags = post.tag || 'General';
+    const isAnnouncement = post.authorRole === 'teacher' ||
+        rawTags.toLowerCase().includes('anuncio') || rawTags.toLowerCase().includes('comunicado');
+
     const postCard = document.createElement('div');
-    postCard.className = 'feed-card';
+    postCard.className = isAnnouncement ? 'feed-card is-announcement' : 'feed-card';
     postCard.id = `post-card-${post.id}`;
 
-    const rawTags = post.tag || 'General';
     const tagHtml = rawTags.split(',').map(t => {
         const cleaned = t.trim();
-        const isDuda = cleaned.toLowerCase().includes('duda');
-        const tagClass = isDuda ? 'post-tag duda-tag' : 'post-tag';
+        const lower = cleaned.toLowerCase();
+        const isDuda = lower.includes('duda');
+        const isAnn = lower.includes('anuncio') || lower.includes('comunicado');
+        const tagClass = isAnn ? 'post-tag announcement-tag' : (isDuda ? 'post-tag duda-tag' : 'post-tag');
         return `<span class="${tagClass}">${cleaned}</span>`;
     }).join(' ');
+
+    const announcementBanner = isAnnouncement
+        ? '<div class="announcement-banner">📢 Anuncio del docente</div>'
+        : '';
 
     // Imagen adjunta
     const imageHtml = post.imageUrl ? `
@@ -230,6 +239,7 @@ function renderPostCard(post, container) {
     const { emoji: postEmoji, color: postColor } = window.parseAvatar ? window.parseAvatar(post.authorAvatar) : { emoji: post.authorAvatar || '👤', color: 'var(--indigo)' };
 
     postCard.innerHTML = `
+        ${announcementBanner}
         <div class="card-header">
             <div class="author-avatar" style="background-color: ${postColor};">${postEmoji}</div>
             <div class="author-info">
@@ -304,7 +314,7 @@ async function renderComments(postId, pinnedId, showAll = false) {
         .order('created_at', { ascending: true });
 
     if (!showAll) {
-        query = query.range(0, 4); // Trae los 5 primeros
+        query = query.range(0, 4);
     }
 
     const { data: allComments, error, count } = await query;
@@ -785,7 +795,7 @@ document.addEventListener('keydown', (e) => {
 /* ========================================================
    SELECTOR DE ETIQUETAS MÚLTIPLES Y GESTIÓN DE PERSONALIZADAS
    ======================================================== */
-let _selectedTags = []; // Array de objetos { name, icon }
+let _selectedTags = [];
 
 function toggleTagDropdown() {
     const dropdown = document.getElementById('tag-dropdown');
@@ -1006,7 +1016,7 @@ function searchSimilarPosts(query) {
             const text = (post.content + ' ' + post.tag).toLowerCase();
             return keywords.some(kw => text.includes(kw));
         })
-        .slice(0, 3); // máximo 3 sugerencias
+        .slice(0, 3);
 
     const panel = document.getElementById('similar-posts-panel');
     const list = document.getElementById('similar-posts-list');
