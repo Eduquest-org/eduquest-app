@@ -253,6 +253,8 @@ async function buildCourseSelectionGrid() {
         grid.appendChild(banner);
     }
 
+    try {
+
     const globalRutasData = await fetchDynamicRoadmap();
     window._cachedRutasData = globalRutasData; 
 
@@ -285,6 +287,13 @@ async function buildCourseSelectionGrid() {
         `;
         grid.appendChild(card);
     });
+
+    } catch (err) {
+        console.error('[Roadmap] Error cargando rutas:', err);
+        grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--sub);"><p>No se pudieron cargar las rutas. Por favor, recarga la página.</p></div>`;
+        const preloader = document.getElementById("app-preloader");
+        if (preloader) preloader.classList.add("fade-out-loader");
+    }
 }
 
 function openSpecificCourseMap(courseId) {
