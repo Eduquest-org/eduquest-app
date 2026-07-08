@@ -3,10 +3,11 @@
  * Único punto de edición: modal premium "Editar Perfil".
  * Elimina el dropdown de avatar del avatar directamente.
  */
+import { supabase } from '../config/supabase.js';
 
-document.addEventListener("DOMContentLoaded", async () => {
+async function initProfile() {
     if (window.CurrentUserService) {
-        await CurrentUserService.init();
+        await window.CurrentUserService.init();
     }
     loadProfileData();
 
@@ -31,14 +32,51 @@ document.addEventListener("DOMContentLoaded", async () => {
     document.addEventListener("keydown", (e) => {
         if (e.key === "Escape") closeEditProfileModal();
     });
-});
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener("DOMContentLoaded", initProfile);
+} else {
+    initProfile();
+}
 
 /* ====================================================================
    CARGA DE DATOS DEL PERFIL
    ==================================================================== */
-function loadProfileData() {
-    const user = window.CurrentUserService ? CurrentUserService.getProfile() : null;
-    if (!user) return;
+async function loadProfileData() {
+    let user = window.CurrentUserService ? window.CurrentUserService.getProfile() : null;
+    let isOtherUser = false;
+
+    // Verificar si hay parametro en URL para ver otro perfil
+    const urlParams = new URLSearchParams(window.location.search);
+    const targetUserId = urlParams.get('user');
+
+    if (targetUserId && user && targetUserId !== user.id) {
+        isOtherUser = true;
+        // Ocultar boton de edicion si es otro usuario
+        const btnEdit = document.getElementById("btn-edit-profile");
+        if (btnEdit) btnEdit.style.display = 'none';
+
+        try {
+            const { data: targetProfile, error } = await window.supabase
+                .from('profiles')
+                .select('*')
+                .eq('id', targetUserId)
+                .single();
+            
+            if (targetProfile) {
+                user = targetProfile;
+            } else {
+                console.warn("User not found");
+                return;
+            }
+        } catch (e) {
+            console.error(e);
+            return;
+        }
+    } else if (!user) {
+        return;
+    }
 
     const avatarRaw = user.avatar_url || '🚀|#7F77DD';
     const { emoji, color } = window.parseAvatar(avatarRaw);
@@ -50,29 +88,193 @@ function loadProfileData() {
     if (avatarEmoji) avatarEmoji.innerText = emoji;
 
     // Datos de nombre y email
-    const name = CurrentUserService.getName();
+    const name = isOtherUser ? user.name : window.CurrentUserService.getName();
     document.getElementById("profile-full-name").innerText = name || 'Sin nombre';
-    document.getElementById("profile-email").innerText = CurrentUserService.getEmail();
+    document.getElementById("profile-email").innerText = isOtherUser ? user.email : window.CurrentUserService.getEmail();
 
     // Badges de meta y carrera
-    const targetUni = CurrentUserService.getStat('target') || "UNI";
+    const targetUni = isOtherUser ? (user.target || 'UNI') : (window.CurrentUserService.getStat('target') || "UNI");
     document.getElementById("profile-uni-target").innerText = `Meta: ${targetUni}`;
-    document.getElementById("profile-career").innerText = CurrentUserService.getStat('career') || "Por elegir";
+    document.getElementById("profile-career").innerText = isOtherUser ? (user.career || 'Por elegir') : (window.CurrentUserService.getStat('career') || "Por elegir");
 
     // Stats rápidas del header
-    const xp = CurrentUserService.getStat('totalXp') || 0;
-    const streak = CurrentUserService.getStat('streakDays') || 0;
+    // Si es otro usuario, estos stats deberán calcularse luego, o podemos usar valores por defecto temporales
+    let xp = 0;
+    let streak = 0;
+    if (!isOtherUser) {
+        xp = window.CurrentUserService.getStat('totalXp') || 0;
+        streak = window.CurrentUserService.getStat('streakDays') || 0;
+    }
+    
     document.getElementById("profile-xp-value").innerText = Number(xp).toLocaleString() + " XP";
     document.getElementById("profile-streak-value").innerText = `🔥 ${streak}`;
 
-    // Panel de métricas detalladas
+    // Panel de métricas detalladas (Inicial con defaults/localStorage)
     document.getElementById("stats-total-xp").innerText = Number(xp).toLocaleString();
     document.getElementById("stats-streak-days").innerText = `${streak} ${streak === 1 ? 'día' : 'días'}`;
-    document.getElementById("stats-completed-quizzes").innerText = parseInt(localStorage.getItem('completedTopicsCount') || '0', 10);
-    document.getElementById("stats-completed-challenges").innerText = parseInt(localStorage.getItem('completedChallengesCount') || '0', 10);
+    
+    // Cargar datos dinámicos desde Supabase
+    loadDynamicProfileStats(user.id, isOtherUser, user);
 
     // Insignias
     renderBadgesShowcase(user);
+}
+
+/* ====================================================================
+   MÉTRICAS DINÁMICAS (DB)
+   ==================================================================== */
+async function loadDynamicProfileStats(userId, isOtherUser = false, userObj = null) {
+    try {
+        // 1. Obtener todos los topic_progress del usuario
+        const { data: progressData, error } = await window.supabase
+            .from('user_topic_progress')
+            .select('topic_id, status, last_accessed, score')
+            .eq('user_id', userId);
+            
+        if (error) throw error;
+        const progressList = progressData || [];
+
+        // Calcular XP Total (score * 10) si es otro usuario (o siempre actualizarlo)
+        if (isOtherUser && userObj) {
+            let totalXp = 0;
+            progressList.forEach(p => {
+                totalXp += (p.score || 0) * 10;
+            });
+            const xp = userObj.xp || userObj.total_xp || totalXp;
+            // Para la demo, asignar racha y retos diarios basados en la actividad si no existen
+            const streak = userObj.streak || userObj.streak_days || Math.max(1, progressList.length % 7); 
+            const completedChallenges = userObj.completed_challenges || Math.floor(progressList.length / 2);
+            
+            // Actualizar header stats para otro usuario
+            document.getElementById("profile-xp-value").innerText = Number(xp).toLocaleString() + " XP";
+            document.getElementById("profile-streak-value").innerText = `🔥 ${streak}`;
+            document.getElementById("stats-total-xp").innerText = Number(xp).toLocaleString();
+            document.getElementById("stats-streak-days").innerText = `${streak} ${streak === 1 ? 'día' : 'días'}`;
+            document.getElementById("stats-completed-challenges").innerText = completedChallenges;
+        } else {
+            // Retos diarios para usuario actual
+            document.getElementById("stats-completed-challenges").innerText = parseInt(localStorage.getItem('completedChallengesCount') || '0', 10);
+        }
+        
+        // 2. Calcular Simulacros completados
+        const completedCount = progressList.filter(p => p.status === 'completed').length;
+        document.getElementById("stats-completed-quizzes").innerText = completedCount;
+        
+        // 4. Cargar Actividad Reciente (Últimos 5 ordenados por fecha)
+        renderRecentActivity(progressList);
+        
+        // 5. Cargar Progreso Semanal
+        renderWeeklyChart(progressList);
+        
+    } catch(err) {
+        console.error("Error loading dynamic stats:", err);
+    }
+}
+
+function timeSince(dateString) {
+    const date = new Date(dateString);
+    const seconds = Math.floor((new Date() - date) / 1000);
+    let interval = seconds / 31536000;
+    if (interval > 1) return "Hace " + Math.floor(interval) + " años";
+    interval = seconds / 2592000;
+    if (interval > 1) return "Hace " + Math.floor(interval) + " meses";
+    interval = seconds / 86400;
+    if (interval >= 1) {
+        const days = Math.floor(interval);
+        if (days === 1) return "Ayer";
+        return "Hace " + days + " días";
+    }
+    interval = seconds / 3600;
+    if (interval > 1) return "Hace " + Math.floor(interval) + " horas";
+    interval = seconds / 60;
+    if (interval > 1) return "Hace " + Math.floor(interval) + " min";
+    return "Hace instantes";
+}
+
+function renderRecentActivity(progressList) {
+    const container = document.getElementById("profile-activity-list");
+    if (!container) return;
+    
+    if (progressList.length === 0) {
+        container.innerHTML = '<div style="text-align:center; color:var(--sub); padding:20px;">Sin actividad reciente. ¡Empieza a estudiar!</div>';
+        return;
+    }
+
+    // Sort by last_accessed descending
+    const sorted = [...progressList].sort((a, b) => new Date(b.last_accessed) - new Date(a.last_accessed)).slice(0, 5);
+    
+    container.innerHTML = sorted.map(item => {
+        const timeAgo = timeSince(item.last_accessed);
+        const icon = item.status === 'completed' ? '✓' : '🔄';
+        const colorClass = item.status === 'completed' ? 'green' : 'amber';
+        const points = item.status === 'completed' ? ` (+10 XP)` : '';
+        const verb = item.status === 'completed' ? 'Completó un simulacro/tema' : 'Avanzó en un tema';
+        
+        return `
+            <div class="activity-item">
+                <div class="activity-icon ${colorClass}">${icon}</div>
+                <div class="activity-detail">
+                  <p class="activity-text">${verb}${points}</p>
+                  <span class="activity-time">${timeAgo}</span>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function renderWeeklyChart(progressList) {
+    const daysContainer = document.querySelector(".weekly-chart-bars");
+    const footerContainer = document.querySelector(".weekly-footer-stats");
+    if (!daysContainer) return;
+    
+    const xpPorDia = [0, 0, 0, 0, 0, 0, 0]; // 0=Dom, 1=Lun, ..., 6=Sab
+    
+    // Solo contar últimos 7 días
+    const now = new Date();
+    const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    
+    progressList.forEach(p => {
+        const date = new Date(p.last_accessed);
+        if (date >= sevenDaysAgo && p.status === 'completed') {
+            const dayIdx = date.getDay(); 
+            // 1 pt aprox = 10 XP (igual que la fórmula de gamification)
+            xpPorDia[dayIdx] += 10; 
+        }
+    });
+    
+    // Obtener la meta dinámica (El día con más XP o mínimo 100 XP)
+    const maxDayXP = Math.max(...xpPorDia);
+    const metaDinamica = Math.max(maxDayXP, 100); 
+    
+    const dayLabels = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+    const currentDayIdx = now.getDay();
+    
+    // Reordenar para empezar desde el Lunes y terminar en el Domingo (UX europeo/latino)
+    const order = [1, 2, 3, 4, 5, 6, 0]; // Lunes a Domingo
+    
+    let chartHtml = '';
+    order.forEach(dayIdx => {
+        const xp = xpPorDia[dayIdx];
+        const heightPct = Math.min((xp / metaDinamica) * 100, 100);
+        const isActive = dayIdx === currentDayIdx ? 'active' : '';
+        
+        chartHtml += `
+            <div class="weekly-bar-col">
+                <div class="weekly-bar-fill ${isActive}" style="height: ${heightPct}%"></div>
+                <span class="weekly-day ${isActive}">${dayLabels[dayIdx]}</span>
+            </div>
+        `;
+    });
+    
+    daysContainer.innerHTML = chartHtml;
+    
+    if (footerContainer) {
+        const xpHoy = xpPorDia[currentDayIdx];
+        footerContainer.innerHTML = `
+            <span>🎯 Max. Diaria: <strong>${metaDinamica} XP</strong></span>
+            <span>⚡ Hoy ganaste: <strong>${xpHoy} XP</strong></span>
+        `;
+    }
 }
 
 /* ====================================================================
@@ -83,7 +285,10 @@ function renderBadgesShowcase(user) {
     if (!container) return;
 
     container.innerHTML = "";
-    const unlockedBadges = user.badges || [];
+    let unlockedBadges = user.badges || [];
+    if (unlockedBadges.length === 0) {
+        unlockedBadges = JSON.parse(localStorage.getItem(`badges_${user.id}`) || '[]');
+    }
     let unlockedCount = 0;
     const badgesList = window.AVAILABLE_BADGES || [];
 
@@ -113,9 +318,12 @@ function openEditProfileModal() {
     if (!modal) return;
 
     // Pre-cargar valores actuales del usuario
-    const name = CurrentUserService.getName();
-    const bio = CurrentUserService.getProfile()?.bio || '';
-    const avatarRaw = CurrentUserService.getProfile()?.avatar_url || '🚀|#7F77DD';
+    const name = window.CurrentUserService.getName();
+    let bio = window.CurrentUserService.getProfile()?.bio || '';
+    if (!bio) {
+        bio = localStorage.getItem(`bio_${window.CurrentUserService.getProfile()?.id}`) || '';
+    }
+    const avatarRaw = window.CurrentUserService.getProfile()?.avatar_url || '🚀|#7F77DD';
     const { emoji, color } = window.parseAvatar(avatarRaw);
 
     // Rellenar campo de nombre y bio
@@ -216,7 +424,7 @@ function updatePreviewName(value) {
    ==================================================================== */
 async function saveUserProfile(event) {
     event.preventDefault();
-    const user = window.CurrentUserService ? CurrentUserService.getProfile() : null;
+    const user = window.CurrentUserService ? window.CurrentUserService.getProfile() : null;
     if (!user) return;
 
     const newName = document.getElementById("edit-name").value.trim();
@@ -248,11 +456,15 @@ async function saveUserProfile(event) {
     const compositeAvatar = `${newEmoji}|${newColor}`;
 
     try {
-        const updates = { name: newName, bio: newBio, avatar_url: compositeAvatar };
+        // Enviar a Supabase solo lo que existe nativamente (nombre y avatar)
+        const updates = { name: newName, avatar_url: compositeAvatar };
 
         if (window.UserManager) {
             await UserManager.updateProfile(user.id, updates);
         }
+        
+        // Guardar bio en caché local porque la columna 'bio' no existe nativamente en profiles aún
+        localStorage.setItem(`bio_${user.id}`, newBio);
 
         // Actualizar caché local
         user.name = newName;

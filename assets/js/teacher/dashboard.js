@@ -195,7 +195,53 @@ document.addEventListener("click", (e) => {
 
   function hideGradingPanel() {
     const gradedPanel = document.getElementById("gradedPanel");
-    if (gradedPanel) gradedPanel.hidden = true;
+    if (!gradedPanel) return;
+
+    const classIds = scope.classrooms.map(c => c.id);
+    if (!classIds.length) {
+      gradedPanel.hidden = false;
+      gradedPanel.innerHTML = '<p class="stat-label" style="margin-top:10px;">Crea un aula para asignar tareas.</p>';
+      return;
+    }
+
+    try {
+      const { data: activities } = await window.supabase
+        .from('classroom_activities')
+        .select('id')
+        .in('classroom_id', classIds);
+        
+      if (!activities || !activities.length) {
+          gradedPanel.hidden = false;
+          gradedPanel.innerHTML = '<p class="stat-label" style="margin-top:10px;">No hay tareas asignadas aún.</p>';
+          return;
+      }
+      
+      const actIds = activities.map(a => a.id);
+      const { data: submissions } = await window.supabase
+        .from('activity_submissions')
+        .select('id, status')
+        .in('activity_id', actIds);
+        
+      const total = (submissions || []).length;
+      const pending = (submissions || []).filter(s => s.status === 'pending').length;
+      const graded = total - pending;
+
+      gradedPanel.hidden = false;
+      gradedPanel.innerHTML = `
+        <div class="stat-row">
+          <span class="stat-big" style="color:var(--brand);">${pending}</span>
+          <span class="stat-of"> por revisar</span>
+        </div>
+        <p class="stat-label" style="margin-bottom:8px;">De ${total} entregas totales</p>
+        <div class="progress-track" style="background:rgba(0,0,0,0.05); height:8px; border-radius:4px; margin: 10px 0;">
+          <div class="progress-fill" style="width:${total > 0 ? (graded/total)*100 : 0}%; background:var(--brand); height:100%; border-radius:4px;"></div>
+        </div>
+        <div class="streak-row" style="font-size:13px; color:var(--sub);"><span style="color:var(--amber);">⭐</span> ${graded} calificadas</div>
+      `;
+    } catch(err) {
+      console.error("Error al cargar calificaciones:", err);
+      gradedPanel.hidden = false;
+    }
   }
 
   async function initDashboardData() {

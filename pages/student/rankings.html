@@ -37,8 +37,20 @@
           </div>
 
         <div class="view-header">
-          <h2>🏆 Tabla de Clasificación Semanal</h2>
-          <p>Mídete con los alumnos de tu aula virtual. Los 3 primeros puestos de la semana obtendrán multiplicadores de XP asistidos por IA.</p>
+          <h2>🏆 Tabla de Clasificación</h2>
+          <p>Mídete con tus compañeros. Los 3 primeros puestos de la semana obtendrán multiplicadores de XP asistidos por IA.</p>
+          
+          <div class="ranking-tabs">
+            <button class="rank-tab active" data-scope="global" onclick="switchRankingScope('global', this)">🌎 Semanal (Global)</button>
+            <button class="rank-tab" data-scope="classroom" onclick="switchRankingScope('classroom', this)">📚 Mi Aula</button>
+            <button class="rank-tab" data-scope="circle" onclick="switchRankingScope('circle', this)">🔮 Mi Círculo</button>
+          </div>
+          
+          <div id="ranking-scope-selector-container" style="display:none; margin-top: 16px; align-items: center; gap: 12px;">
+            <label id="ranking-scope-label" style="font-weight: 600; color: var(--sub); font-size: 14px;">Sección</label>
+            <select id="ranking-scope-select" onchange="renderLeaderboardTable(window.currentRankingScope, this.value)" style="padding: 10px 14px; border-radius: 12px; border: 1px solid var(--border); outline: none; font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 600; color: var(--dark); background: white; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.02);">
+            </select>
+          </div>
         </div>
 
         <div class="leaderboard-card-wrapper">

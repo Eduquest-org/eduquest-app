@@ -5,6 +5,13 @@
 
 import { supabase } from '../config/supabase.js';
 
+let _isFetchingTeacherFeed = false;
+let _teacherFeedOffset = 0;
+let _allTeacherDoubts = [];
+let _teacherFeedObserver = null;
+const TEACHER_FEED_PAGE_SIZE = 10;
+
+
 const TAG_CLASS_MAP = {
   física: 'physics',
   physics: 'physics',
@@ -167,22 +174,48 @@ function renderFeedCard(post) {
   `;
 }
 
-async function loadTeacherFeed() {
+async function loadTeacherFeed(reset = true) {
   const container = document.getElementById('teacher-feed-container');
   const pendingEl = document.getElementById('pendingDoubtsCount');
   if (!container) return;
 
-  container.innerHTML = '<p class="feed-empty">Cargando dudas...</p>';
+  if (_isFetchingTeacherFeed) return;
+  _isFetchingTeacherFeed = true;
+
+  if (reset) {
+    _teacherFeedOffset = 0;
+    _allTeacherDoubts = [];
+    container.innerHTML = `
+      <div style="text-align: center; padding: 40px; color: var(--sub);">
+          <div class="spinner" style="margin: 0 auto 12px auto; border-color: var(--primary) transparent var(--primary) transparent;"></div>
+          <p>Buscando dudas...</p>
+      </div>`;
+      
+    if (_teacherFeedObserver) {
+      _teacherFeedObserver.disconnect();
+      _teacherFeedObserver = null;
+    }
+  } else {
+    const bottomSpinner = document.createElement('div');
+    bottomSpinner.id = 'teacher-feed-bottom-spinner';
+    bottomSpinner.style.textAlign = 'center';
+    bottomSpinner.style.padding = '20px';
+    bottomSpinner.innerHTML = `
+        <div class="spinner" style="width:24px; height:24px; margin: 0 auto 8px auto; border-color: var(--primary) transparent var(--primary) transparent; border-width: 2px;"></div>
+        <span style="color: var(--sub); font-size: 13px;">Cargando más dudas...</span>`;
+    container.appendChild(bottomSpinner);
+  }
 
   try {
     const { data: posts, error } = await supabase.rpc('get_forum_feed', {
-      limit_val: 50,
-      offset_val: 0,
+      limit_val: TEACHER_FEED_PAGE_SIZE,
+      offset_val: _teacherFeedOffset,
     });
 
     if (error) {
       console.error('[teacher-feed] Error cargando feed:', error);
-      container.innerHTML = '<p class="feed-empty">No se pudo cargar el tablón.</p>';
+      if (reset) container.innerHTML = '<p class="feed-empty">No se pudo cargar el tablón.</p>';
+      _isFetchingTeacherFeed = false;
       return;
     }
 
@@ -208,7 +241,9 @@ async function loadTeacherFeed() {
     renderFeedPage();
   } catch (err) {
     console.error('[teacher-feed] Error inesperado:', err);
-    container.innerHTML = '<p class="feed-empty">Error al cargar el feed.</p>';
+    if (reset) container.innerHTML = '<p class="feed-empty">Error al cargar el feed.</p>';
+  } finally {
+    _isFetchingTeacherFeed = false;
   }
 }
 

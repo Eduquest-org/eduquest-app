@@ -25,6 +25,12 @@ let _activeFilters = {
     search: ''
 };
 
+// Variables para paginación y scroll infinito
+let _currentFeedOffset = 0;
+let _isFetchingPosts = false;
+let _feedObserver = null;
+const FEED_PAGE_SIZE = 10;
+
 // Formatos de imagen válidos
 const VALID_IMAGE_TYPES = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/webp'];
 const MAX_IMAGE_SIZE_MB = 5;
@@ -50,52 +56,140 @@ document.addEventListener('DOMContentLoaded', () => {
 /* ========================================================
    CARGA Y RENDERIZADO DEL FEED
    ======================================================== */
-async function loadFeedPosts() {
+async function loadFeedPosts(reset = true) {
     const container = document.getElementById('feed-container');
     if (!container) return;
 
+    // Si ya estamos pidiendo posts, evitar llamadas duplicadas
+    if (_isFetchingPosts) return;
+    _isFetchingPosts = true;
+
+    if (reset) {
+        _currentFeedOffset = 0;
+        _cachedPosts = [];
+        container.innerHTML = `
+            <div class="feed-spinner-container" style="text-align: center; padding: 40px; color: var(--sub);">
+                <div class="spinner" style="margin: 0 auto 12px auto; border-color: var(--primary) transparent var(--primary) transparent;"></div>
+                <p>Cargando foro...</p>
+            </div>`;
+        
+        // Limpiar el observer anterior
+        if (_feedObserver) {
+            _feedObserver.disconnect();
+            _feedObserver = null;
+        }
+    } else {
+        // Modo "Append": mostrar pequeño spinner al final
+        const bottomSpinner = document.createElement('div');
+        bottomSpinner.id = 'feed-bottom-spinner';
+        bottomSpinner.style.textAlign = 'center';
+        bottomSpinner.style.padding = '20px';
+        bottomSpinner.innerHTML = `
+            <div class="spinner" style="width:24px; height:24px; margin: 0 auto 8px auto; border-color: var(--primary) transparent var(--primary) transparent; border-width: 2px;"></div>
+            <span style="color: var(--sub); font-size: 13px;">Cargando más posts...</span>`;
+        container.appendChild(bottomSpinner);
+    }
+
     try {
-        const { data: enrichedPosts, error } = await supabase.rpc('get_forum_feed', { limit_val: 50, offset_val: 0 });
+        const { data: enrichedPosts, error } = await supabase.rpc('get_forum_feed', { 
+            limit_val: FEED_PAGE_SIZE, 
+            offset_val: _currentFeedOffset 
+        });
         
         if (error) {
             console.error("Error cargando feed desde Supabase:", error);
+            _isFetchingPosts = false;
             return;
         }
 
-        // Guardar userId del usuario en sesión ANTES de renderizar
         const user = window.CurrentUserService ? CurrentUserService.getProfile() : null;
         _currentUserId = user?.id || null;
 
-        if (!enrichedPosts || enrichedPosts.length === 0) {
-            container.innerHTML = '<div style="text-align:center; padding:40px; color:var(--sub);"><p>Aún no hay publicaciones en el foro. ¡Sé el primero en preguntar algo!</p></div>';
-            return;
+        if (reset) {
+            container.innerHTML = ''; // Quitar spinner principal
+            if (!enrichedPosts || enrichedPosts.length === 0) {
+                container.innerHTML = '<div style="text-align:center; padding:40px; color:var(--sub);"><p>Aún no hay publicaciones en el foro. ¡Sé el primero en preguntar algo!</p></div>';
+                _isFetchingPosts = false;
+                return;
+            }
+        } else {
+            const spinner = document.getElementById('feed-bottom-spinner');
+            if (spinner) spinner.remove();
         }
 
-        // Renderizar usando los datos de Supabase y renderPostCard
-        enrichedPosts.forEach(post => {
-            // Mapeamos de Supabase snake_case a camelCase para renderPostCard
-            const mappedPost = {
-                id: post.id,
-                authorId: post.author_id,
-                authorAvatar: post.author_avatar,
-                authorName: post.author_name,
-                authorTarget: post.author_badge || post.author_target,
-                authorRole: post.author_role,
-                tag: post.tag,
-                content: post.content,
-                imageUrl: post.image_url,
-                upvotes: post.upvotes,
-                timeText: post.created_at ? formatTime(post.created_at) : 'Reciente',
-                commentsCount: parseInt(post.comments_count) || 0,
-                isLikedByMe: post.is_liked_by_me || false
-            };
-            renderPostCard(mappedPost, container);
-        });
+        if (enrichedPosts && enrichedPosts.length > 0) {
+            enrichedPosts.forEach(post => {
+                const mappedPost = {
+                    id: post.id,
+                    authorId: post.author_id,
+                    authorAvatar: post.author_avatar,
+                    authorName: post.author_name,
+                    authorTarget: post.author_badge || post.author_target,
+                    authorRole: post.author_role,
+                    tag: post.tag,
+                    content: post.content,
+                    imageUrl: post.image_url,
+                    upvotes: post.upvotes,
+                    timeText: post.created_at ? formatTime(post.created_at) : 'Reciente',
+                    commentsCount: parseInt(post.comments_count) || 0,
+                    isLikedByMe: post.is_liked_by_me || false
+                };
+                _cachedPosts.push(mappedPost);
+                renderPostCard(mappedPost, container);
+            });
+            
+            _currentFeedOffset += enrichedPosts.length;
+            
+            // Si trajimos suficientes posts como para llenar la página, ponemos el observer
+            // en el ÚLTIMO post renderizado para detectar cuando el usuario hace scroll
+            if (enrichedPosts.length === FEED_PAGE_SIZE) {
+                setupFeedObserver(container.lastElementChild);
+            } else {
+                showFeedEndMessage(container);
+            }
+        } else if (!reset) {
+            showFeedEndMessage(container);
+        }
 
     } catch (error) {
         console.error('Error cargando el feed:', error);
-        const container = document.getElementById('feed-container');
-        if (container) container.innerHTML = '<p style="color:#9ca3af;padding:24px;text-align:center;">No se pudo cargar el feed. Intenta recargar la página.</p>';
+        if (reset) {
+            container.innerHTML = '<p style="color:#9ca3af;padding:24px;text-align:center;">No se pudo cargar el feed. Intenta recargar la página.</p>';
+        }
+    } finally {
+        _isFetchingPosts = false;
+    }
+}
+
+function showFeedEndMessage(container) {
+    const endMsg = document.createElement('div');
+    endMsg.style.textAlign = 'center';
+    endMsg.style.padding = '24px';
+    endMsg.style.color = 'var(--sub)';
+    endMsg.style.fontSize = '14px';
+    endMsg.innerHTML = '<p>Nada más por actualizar 🚀</p>';
+    container.appendChild(endMsg);
+}
+
+function setupFeedObserver(lastElement) {
+    if (_feedObserver) {
+        _feedObserver.disconnect();
+    }
+
+    _feedObserver = new IntersectionObserver((entries) => {
+        const entry = entries[0];
+        if (entry.isIntersecting) {
+            _feedObserver.unobserve(lastElement);
+            loadFeedPosts(false); // Cargar más (append mode)
+        }
+    }, {
+        root: null,
+        rootMargin: '0px', // Cargar solo cuando realmente entra en la vista
+        threshold: 0.5     // Cuando al menos el 50% del último post sea visible
+    });
+
+    if (lastElement) {
+        _feedObserver.observe(lastElement);
     }
 }
 
@@ -178,8 +272,8 @@ function renderPostCard(post, container) {
 
     container.appendChild(postCard);
 
-    // Precarga los comentarios en el DOM (ocultos hasta click)
-    renderComments(post.id, pinnedId);
+    // Los comentarios se cargarán on-demand cuando el usuario haga clic
+    // en toggleComments()
 }
 
 /* ========================================================
@@ -196,19 +290,38 @@ function toggleComments(postId) {
     }
 }
 
-async function renderComments(postId, pinnedId) {
+async function renderComments(postId, pinnedId, showAll = false) {
     const section = document.getElementById(`comments-${postId}`);
     if (!section) return;
 
-    // Obtener comentarios de Supabase
-    const { data: allComments, error } = await supabase
+    // Spinner solo si es la carga inicial
+    if (!showAll && section.children.length === 0) {
+        section.innerHTML = `<div style="text-align:center; padding:12px;">
+            <div class="spinner" style="width:20px; height:20px; margin: 0 auto; border-color: var(--primary) transparent var(--primary) transparent; border-width: 2px;"></div>
+        </div>`;
+    } else if (showAll) {
+        const loadMoreBtn = document.getElementById(`load-more-comments-${postId}`);
+        if (loadMoreBtn) {
+            loadMoreBtn.innerHTML = `<div class="spinner" style="width:16px; height:16px; margin: 0 auto; border-color: var(--primary) transparent var(--primary) transparent; border-width: 2px;"></div>`;
+        }
+    }
+
+    // Obtener comentarios de Supabase con límite si no es "showAll"
+    let query = supabase
         .from('forum_comments')
-        .select('*, profiles(name, avatar_url)')
+        .select('*, profiles(name, avatar_url)', { count: 'exact' })
         .eq('post_id', postId)
         .order('created_at', { ascending: true });
 
+    if (!showAll) {
+        query = query.range(0, 4); // Trae los 5 primeros
+    }
+
+    const { data: allComments, error, count } = await query;
+
     if (error) {
         console.error("Error cargando comentarios:", error);
+        section.innerHTML = '<p style="color:var(--error);font-size:13px;text-align:center;">Error al cargar comentarios</p>';
         return;
     }
 
@@ -233,12 +346,11 @@ async function renderComments(postId, pinnedId) {
             commentEl.className = `comment-item${isPinned ? ' pinned-comment' : ''}`;
             commentEl.id = `comment-item-${comment.id}`;
 
-                    // Acciones: fijar y eliminar
-            // ✔ FIX: Solo el autor del POST puede fijar respuestas en sus publicaciones
+            // Acciones: fijar y eliminar
             const isCommentAuthor = _currentUserId && comment.author_id === _currentUserId;
             const isPostAuthor = _currentUserId && _cachedPosts.some(p => p.id === postId && p.authorId === _currentUserId);
-            const canPin = isPostAuthor; // Solo el dueño del post puede fijar
-            const canDeleteComment = isCommentAuthor; // Solo el autor del comentario puede borrarlo
+            const canPin = isPostAuthor;
+            const canDeleteComment = isCommentAuthor;
 
             let actionsHtml = '';
             const actionButtons = [];
@@ -272,6 +384,18 @@ async function renderComments(postId, pinnedId) {
             `;
             section.appendChild(commentEl);
         });
+        
+        // Mostrar botón de "Ver más comentarios" si hay más de 5 y no estamos en modo showAll
+        if (!showAll && count > 5) {
+            const loadMoreBtn = document.createElement('button');
+            loadMoreBtn.id = `load-more-comments-${postId}`;
+            loadMoreBtn.className = 'btn outline sm';
+            loadMoreBtn.style.margin = '8px auto';
+            loadMoreBtn.style.display = 'block';
+            loadMoreBtn.innerText = `Ver los ${count - 5} comentarios restantes`;
+            loadMoreBtn.onclick = () => renderComments(postId, pinnedId, true);
+            section.appendChild(loadMoreBtn);
+        }
     }
 
     // Campo para nuevo comentario

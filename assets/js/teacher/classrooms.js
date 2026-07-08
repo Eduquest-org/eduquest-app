@@ -364,7 +364,7 @@
         const due = act.dueDate ? `Entrega ${Common.formatDate(act.dueDate)}` : "Sin fecha límite";
         const topic = act.topic ? ` · ${Common.escapeHtml(act.topic)}` : "";
         return `
-      <div class="activity-row">
+      <div class="activity-row" style="cursor: pointer; transition: transform 0.2s; position: relative;" onclick="window.openGradingModal('${act.id}', '${Common.escapeHtml(act.title.replace(/'/g, "\\'"))}')" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
         <div class="activity-ico">${meta.icon}</div>
         <div class="activity-main">
           <div class="activity-title">${Common.escapeHtml(act.title)}</div>
@@ -372,7 +372,7 @@
         </div>
         <span class="badge ${act.type}">${meta.label}</span>
         <span class="activity-points">${act.points ? `+${act.points} XP` : ""}</span>
-        <button class="activity-del" data-del-activity="${act.id}" aria-label="Eliminar actividad" title="Eliminar">
+        <button class="activity-del" data-del-activity="${act.id}" aria-label="Eliminar actividad" title="Eliminar" onclick="event.stopPropagation();">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2m2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>
         </button>
       </div>`;
@@ -552,6 +552,19 @@
     if (submit) submit.textContent = type === "tarea" ? "Asignar" : "Crear";
     const icon = document.getElementById("activityIcon");
     if (icon) icon.className = "tmodal-icon " + (type === "quiz" ? "" : "amber");
+
+    const quizContainer = document.getElementById("quiz-builder-container");
+    if (quizContainer) {
+      if (type === "quiz") {
+        quizContainer.classList.remove("hidden");
+        // Asegurarnos que haya al menos una pregunta al abrir
+        if (document.getElementById("quiz-questions-list").children.length === 0) {
+          addQuizQuestion();
+        }
+      } else {
+        quizContainer.classList.add("hidden");
+      }
+    }
   }
 
   function openActivityModal(type) {
@@ -740,6 +753,27 @@
     if (activityForm) activityForm.addEventListener("submit", handleCreateActivity);
     document.querySelectorAll("#activityTypePicker .type-option").forEach((opt) => {
       opt.addEventListener("click", () => selectActivityType(opt.dataset.type));
+    });
+
+    // Quiz Builder y Material Selector
+    document.getElementById("btnAddQuestion")?.addEventListener("click", addQuizQuestion);
+    
+    document.getElementById("btnOpenMaterialSelector")?.addEventListener("click", () => {
+      UI.openModal("modal-material-selector");
+      if (materialsCache.length === 0) {
+        loadMaterials().then(() => renderMaterialList(""));
+      } else {
+        renderMaterialList(document.getElementById("materialSearch")?.value || "");
+      }
+    });
+
+    document.getElementById("materialSearch")?.addEventListener("input", (e) => {
+      renderMaterialList(e.target.value);
+    });
+
+    document.getElementById("btnRemoveMaterial")?.addEventListener("click", () => {
+      document.getElementById("linkedMaterialId").value = "";
+      document.getElementById("selected-material-display").style.display = "none";
     });
 
     // Eliminar actividad (delegación en la lista)
