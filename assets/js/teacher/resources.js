@@ -13,16 +13,10 @@ import { TopicsManager } from '../core/topics-manager.js';
 const TYPE_ICONS = {
   leccion: '🎥',
   recurso: '📄',
-  quiz: '🧠',
-  examen: '📝',
-  desafio_final: '🏆',
 };
 const TYPE_LABELS = {
   leccion: 'Video',
   recurso: 'Lectura / PDF',
-  quiz: 'Quiz',
-  examen: 'Examen',
-  desafio_final: 'Desafío final',
 };
 
 const MAX_PDF_MB = 20;
@@ -130,6 +124,7 @@ function applyFilters() {
     if (state.type !== 'todos' && r.type !== state.type) return false;
     if (state.courseId && r.course_id !== state.courseId) return false;
     if (state.search && !String(r.title || '').toLowerCase().includes(state.search)) return false;
+    if (['quiz', 'examen', 'desafio_final'].includes(r.type)) return false;
     return true;
   });
   renderGrid(list);
