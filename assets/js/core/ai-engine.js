@@ -239,15 +239,17 @@ const AIEngine = {
             });
 
             // Generar una estructura temporal de respaldo para preservar la visibilidad de los cursos en la interfaz de usuario
-            const initialRoutes = sortedRelevantCourses.map(entry => {
+            const initialRoutes = sortedRelevantCourses.map((entry, index) => {
                 const cTopics = allTopics.filter(t => t.courseId === entry.course.id);
                 const sortedTopics = this._topologicalSort(cTopics);
+                const isLockedCourse = index >= 3;
 
                 const nodes = sortedTopics.map(t => ({
                     id: `node_${t.id}`,
                     type: "nivel",
                     data: {
                         title: t.name,
+                        isLocked: isLockedCourse,
                         content: { lecciones: [], recursos: [], quiz: [], examen: [], desafio_final: [] }
                     }
                 }));
@@ -260,6 +262,7 @@ const AIEngine = {
                 return {
                     courseId: entry.course.id,
                     priority: entry.priority,
+                    isLocked: isLockedCourse,
                     nodes: nodes,
                     edges: edges
                 };
@@ -417,6 +420,7 @@ const AIEngine = {
                     completedLevels: 0,
                     totalLevels: route.nodes ? route.nodes.length : 0,
                     xpEarned: 0,
+                    isLocked: route.isLocked || false,
                     nodes: route.nodes || [],
                     edges: route.edges || []
                 };
