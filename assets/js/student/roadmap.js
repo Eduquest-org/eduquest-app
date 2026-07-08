@@ -213,7 +213,7 @@ async function buildCourseSelectionGrid() {
                         buildCourseSelectionGrid();
                     }
                 })();
-                return; // Interrumpir flujo sincrónico delegando renderizado a la subrutina asíncrona
+                return;
             }
         }
     }

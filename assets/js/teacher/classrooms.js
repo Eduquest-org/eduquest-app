@@ -13,7 +13,7 @@
   // Estado de la vista
   let currentFilter = "todas";
   let currentSectionId = null;
-  let currentRest = []; // alumnos fuera del podio (para la búsqueda)
+  let currentRest = [];
   let _assignMode = false;
   let teacherSections = [];
 
@@ -213,8 +213,8 @@
         stats.students === 0
           ? '<span class="more">Sin alumnos aún</span>'
           : moreCount > 0
-          ? `<span class="more">+${moreCount} alumnos</span>`
-          : `<span class="more">${stats.students} alumnos</span>`;
+            ? `<span class="more">+${moreCount} alumnos</span>`
+            : `<span class="more">${stats.students} alumnos</span>`;
 
       const subtitle = `${stats.students} alumnos · ${Common.escapeHtml(section.cycle || section.schedule || "Sin horario")}`;
 
@@ -426,7 +426,7 @@
         .select("join_code")
         .eq("join_code", code)
         .maybeSingle();
-      if (!data) break; // libre
+      if (!data) break;
     }
     return code;
   }
@@ -591,39 +591,154 @@
     UI.openModal("modal-activity");
   }
 
+function addQuizQuestion() {
+    const list = document.getElementById("quiz-questions-list");
+    if (!list) return;
+    const qIndex = list.children.length;
+    const qDiv = document.createElement("div");
+    qDiv.className = "quiz-question-card";
+    qDiv.style.border = "1px solid var(--border)";
+    qDiv.style.borderRadius = "12px";
+    qDiv.style.padding = "16px";
+    qDiv.style.position = "relative";
+    qDiv.style.background = "#fff";
+
+    qDiv.innerHTML = `
+      <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
+        <span style="font-weight:600; font-size:13px; color:var(--sub);">Pregunta ${qIndex + 1}</span>
+        <button type="button" class="btn-remove-question" style="background:none; border:none; color:var(--red-err); cursor:pointer; font-size:12px;">✕ Eliminar</button>
+      </div>
+      <div class="field">
+        <input type="text" class="q-text" placeholder="Ej: ¿Cuál es la capital de Perú?" required style="width:100%; padding:10px; border:1px solid var(--border); border-radius:8px; font-size:14px; margin-bottom:12px;">
+      </div>
+      <div class="options-container" style="display:flex; flex-direction:column; gap:8px;"></div>
+      <button type="button" class="btn-add-option" style="background:none; border:none; color:var(--brand); cursor:pointer; font-size:12px; font-weight:600; margin-top:8px;">+ Añadir opción</button>
+    `;
+
+    const optionsContainer = qDiv.querySelector(".options-container");
+
+    const renderOption = () => {
+      const optCount = optionsContainer.children.length;
+      const optDiv = document.createElement("div");
+      optDiv.className = "quiz-opt-row";
+      optDiv.style.display = "flex";
+      optDiv.style.alignItems = "center";
+      optDiv.style.gap = "8px";
+
+      optDiv.innerHTML = `
+        <input type="radio" class="q-radio" title="Marcar como correcta" style="cursor:pointer; width:16px; height:16px;">
+        <input type="text" class="opt-text" placeholder="Opción ${optCount + 1}" required style="flex:1; padding:8px; border:1px solid var(--border); border-radius:6px; font-size:13px;">
+        <button type="button" class="btn-remove-opt" style="background:none; border:none; color:var(--sub); cursor:pointer; font-size:16px;">×</button>
+      `;
+      optDiv.querySelector(".btn-remove-opt").addEventListener("click", () => {
+        if (optionsContainer.children.length > 2) {
+          optDiv.remove();
+          fixRadios();
+        } else {
+          if (window.UI) UI.toast("Debe haber al menos 2 opciones", "info");
+        }
+      });
+      optionsContainer.appendChild(optDiv);
+    };
+
+    const fixRadios = () => {
+      Array.from(optionsContainer.children).forEach((opt, idx) => {
+        opt.querySelector("input[type=radio]").name = "correct_q_" + Array.from(list.children).indexOf(qDiv);
+        opt.querySelector("input[type=radio]").value = idx;
+        opt.querySelector(".opt-text").placeholder = "Opción " + (idx + 1);
+      });
+    };
+
+    renderOption(); renderOption(); renderOption(); renderOption();
+    fixRadios();
+
+    qDiv.querySelector(".btn-add-option").addEventListener("click", () => {
+      renderOption();
+      fixRadios();
+    });
+
+    qDiv.querySelector(".btn-remove-question").addEventListener("click", () => {
+      qDiv.remove();
+      Array.from(list.children).forEach((q, idx) => {
+        q.querySelector("span").textContent = "Pregunta " + (idx + 1);
+        Array.from(q.querySelectorAll(".q-radio")).forEach(r => r.name = "correct_q_" + idx);
+      });
+    });
+
+    list.appendChild(qDiv);
+  }
+
   async function handleCreateActivity(e) {
     e.preventDefault();
     if (!currentSectionId) return;
     const data = Object.fromEntries(new FormData(activityForm).entries());
     const errors = validateActivity(data);
 
+    let quizData = [];
+    if (data.type === "quiz") {
+      const list = document.getElementById("quiz-questions-list");
+      if (!list || list.children.length === 0) {
+        errors.title = "Añade al menos una pregunta al quiz.";
+      } else {
+        let hasQuizErrors = false;
+        Array.from(list.children).forEach((qDiv, idx) => {
+          const text = qDiv.querySelector(".q-text").value.trim();
+          const opts = Array.from(qDiv.querySelectorAll(".opt-text")).map(o => o.value.trim());
+          const radio = qDiv.querySelector("input[type=radio]:checked");
+          if (!text || opts.some(o => !o)) {
+            hasQuizErrors = true;
+          } else if (!radio) {
+            hasQuizErrors = true;
+            if (UI) UI.toast(`Selecciona la respuesta correcta en la pregunta ${idx + 1}`, "error");
+          } else {
+            quizData.push({
+              question: text,
+              options: opts,
+              correctIndex: parseInt(radio.value, 10)
+            });
+          }
+        });
+        if (hasQuizErrors) {
+          errors.title = "Completa todos los campos de las preguntas y marca la respuesta correcta.";
+        }
+      }
+    }
+
     if (Object.keys(errors).length) {
-      UI.showFieldErrors(activityForm, errors);
+      if (UI) UI.showFieldErrors(activityForm, errors);
       return;
     }
 
     const supabase = getSupabase();
-    const { error } = await supabase.from("classroom_activities").insert({
+
+    const payload = {
       classroom_id: currentSectionId,
       type: data.type,
       title: data.title.trim(),
       topic: data.topic || null,
       due_date: data.dueDate || null,
       points: data.points ? Number(data.points) : 0,
-    });
+    };
+
+    if (data.type === "quiz") {
+      payload.quizz_data = quizData;
+    }
+
+    const { error } = await supabase.from("classroom_activities").insert(payload);
 
     if (error) {
-      UI.showFieldErrors(activityForm, { title: error.message });
+      if (UI) UI.showFieldErrors(activityForm, { title: error.message });
       return;
     }
 
-    UI.closeModal("modal-activity");
-    const meta = Common.ACTIVITY_TYPES[data.type] || { label: "Actividad" };
-    UI.toast(`${meta.label} asignada a la sección`);
+    if (UI) {
+      UI.closeModal("modal-activity");
+      const meta = Common.ACTIVITY_TYPES[data.type] || { label: "Actividad" };
+      UI.toast(`${meta.label} asignada a la sección`);
+    }
 
     await loadTeacherSections();
-    const section = getSection(currentSectionId);
-    renderActivities(section);
+    openSection(currentSectionId);
   }
 
   async function openAddStudentModal() {
@@ -652,8 +767,8 @@
 
     select.innerHTML = available.length
       ? `<option value="">Selecciona un estudiante…</option>${available
-          .map((p) => `<option value="${p.id}">${Common.escapeHtml(p.name || "Sin nombre")}</option>`)
-          .join("")}`
+        .map((p) => `<option value="${p.id}">${Common.escapeHtml(p.name || "Sin nombre")}</option>`)
+        .join("")}`
       : '<option value="">No hay estudiantes disponibles</option>';
 
     UI.openModal("modal-add-student");

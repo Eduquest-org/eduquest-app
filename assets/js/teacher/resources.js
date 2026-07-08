@@ -30,7 +30,7 @@ const state = {
   courseId: '',
   editingId: null,
   selectedFile: null,
-  source: 'link', // 'link' | 'pdf'
+  source: 'link',
   pendingDeleteId: null,
 };
 

@@ -399,7 +399,25 @@
 
       </div>
     </main>
+    </div>
   </div>
+  
+  <div id="quiz-runner-modal" class="submit-modal-overlay" role="dialog" aria-modal="true" style="display: none; align-items: center; justify-content: center; position: fixed; inset: 0; background: rgba(10, 10, 20, 0.6); backdrop-filter: blur(8px); z-index: 2000; opacity: 0; transition: opacity 0.3s ease;">
+    <div class="submit-modal-card" style="background: #fff; width: 100%; max-width: 600px; border-radius: 20px; overflow: hidden; transform: translateY(20px) scale(0.98); transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); display: flex; flex-direction: column; max-height: 85vh;">
+      <div class="submit-modal-header" style="padding: 20px 24px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: linear-gradient(135deg, rgba(111, 76, 255, 0.05), rgba(111, 76, 255, 0.1));">
+        <h2 id="quiz-runner-title" style="font-size: 18px; font-weight: 700; margin: 0; color: var(--dark);">Resolviendo Quiz</h2>
+        <button type="button" class="submit-modal-close" onclick="closeQuizRunner()" aria-label="Cerrar" style="background: #fff; border: 1px solid var(--border); border-radius: 50%; width: 32px; height: 32px; cursor: pointer; color: var(--sub);">✕</button>
+      </div>
+      <div class="submit-modal-body" id="quiz-runner-body" style="padding: 24px; overflow-y: auto; flex: 1;">
+        
+      </div>
+      <div class="submit-modal-footer" style="padding: 20px 24px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; background: #fafafa;">
+        <span id="quiz-runner-progress" style="font-size: 14px; font-weight: 600; color: var(--sub);">Pregunta 1 de X</span>
+        <button type="button" id="btn-quiz-next" class="btn btn-primary" style="background: #10B981; border-color: #10B981; color: white;">Siguiente</button>
+      </div>
+    </div>
+  </div>
+
 
   <!-- =============================================
        Modal Central Inmersivo — Detalle de Aula

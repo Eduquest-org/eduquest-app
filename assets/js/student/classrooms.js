@@ -196,6 +196,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (!cls) return;
         currentClassroomId = classId;
 
+            window.classroomActivitiesData = activities;
         // Info General
         document.getElementById('modal-header-content').innerHTML = `
             <span style="font-size: 11px; background: rgba(255,255,255,0.5); padding: 4px 8px; border-radius: 4px; color: var(--brand); font-weight: 700;">${cls.course || 'GENERAL'}</span>
@@ -270,8 +271,13 @@ document.addEventListener('DOMContentLoaded', async () => {
                 let actionHtml = '';
 
                 if (!sub) {
-                    statusHtml = '<span style="color: var(--danger); font-weight: 500; font-size: 13px;">🔴 Pendiente</span> <span style="background: #E8F5E9; color: #2E7D32; font-size: 11px; font-weight: 700; padding: 2px 6px; border-radius: 4px; margin-left: 8px; border: 1px solid #C8E6C9;">YES - Nueva Tarea Activa</span>';
-                    actionHtml = `<button class="btn btn-primary btn-sm" onclick="window.openSubmitActivityModal('${act.id}', '${act.title.replace(/'/g, "\\'")}')">Entregar</button>`;
+                    statusHtml = '<span style="color: var(--danger); font-weight: 500; font-size: 13px;">🔴 Pendiente</span> <span style="background: #E8F5E9; color: #2E7D32; font-size: 11px; font-weight: 700; padding: 2px 6px; border-radius: 4px; margin-left: 8px; border: 1px solid #C8E6C9;">NUEVA</span>';
+
+                    if (act.type === 'quiz' && act.quizz_data) {
+                        actionHtml = `<button class="btn btn-primary btn-sm" style="background: #10B981; border-color: #10B981; color: white;" onclick="window.openQuizRunner('${act.id}')">Empezar Quiz</button>`;
+                    } else {
+                        actionHtml = `<button class="btn btn-primary btn-sm" onclick="window.openSubmitActivityModal('${act.id}', '${act.title.replace(/'/g, "\\'")}')">Entregar</button>`;
+                    }
                 } else if (sub.status === 'pending') {
                     statusHtml = '<span style="color: var(--warning); font-weight: 500; font-size: 13px;">🟡 Enviado, en revisión</span>';
                     actionHtml = `<button class="btn outline btn-sm" onclick="window.openSubmitActivityModal('${act.id}', '${act.title.replace(/'/g, "\\'")}', true)">Actualizar envío</button>`;
@@ -351,7 +357,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
 
             rankEl.innerHTML = rankArray.map((r, i) => {
-                const medal = i === 0 ? '🥇' : (i === 1 ? '🥈' : (i === 2 ? '🥉' : `${i+1}º`));
+                const medal = i === 0 ? '🥇' : (i === 1 ? '🥈' : (i === 2 ? '🥉' : `${i + 1}º`));
                 return `
                 <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid var(--border);">
                     <div style="display: flex; align-items: center; gap: 12px;">
@@ -379,6 +385,144 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('submit-activity-title').textContent = title;
         document.getElementById('submit-activity-content').value = '';
         document.getElementById('btn-submit-task').textContent = isUpdate ? 'Actualizar Envío' : 'Enviar Tarea';
+
+    let activeQuiz = null;
+    let quizState = { currentIdx: 0, answers: [] };
+
+    window.openQuizRunner = (actId) => {
+        const activities = window.classroomActivitiesData || [];
+        activeQuiz = activities.find(a => a.id === actId);
+        if (!activeQuiz || !activeQuiz.quizz_data) return;
+
+        quizState = { currentIdx: 0, answers: [] };
+        document.getElementById('quiz-runner-title').textContent = activeQuiz.title;
+        document.getElementById('quiz-runner-modal').style.display = 'flex';
+
+        setTimeout(() => {
+            document.getElementById('quiz-runner-modal').style.opacity = '1';
+        }, 10);
+
+        renderQuizQuestion();
+    };
+
+    window.closeQuizRunner = () => {
+        const modal = document.getElementById('quiz-runner-modal');
+        modal.style.display = 'none';
+        modal.style.opacity = '0';
+        activeQuiz = null;
+    };
+
+    function renderQuizQuestion() {
+        const questions = activeQuiz.quizz_data;
+        const currentQ = questions[quizState.currentIdx];
+        const body = document.getElementById('quiz-runner-body');
+
+        document.getElementById('quiz-runner-progress').textContent = `Pregunta ${quizState.currentIdx + 1} de ${questions.length}`;
+
+        let html = `<h3 style="font-size: 16px; margin-bottom: 20px; font-weight: 600; line-height: 1.5; color: var(--dark);">${currentQ.question}</h3>`;
+        html += `<div style="display: flex; flex-direction: column; gap: 12px;">`;
+
+        currentQ.options.forEach((opt, idx) => {
+            const isSelected = quizState.answers[quizState.currentIdx] === idx;
+            html += `
+                <label style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border: 1px solid ${isSelected ? '#10B981' : 'var(--border)'}; border-radius: 8px; cursor: pointer; background: ${isSelected ? 'rgba(16, 185, 129, 0.08)' : '#fff'}; transition: all 0.2s;">
+                    <input type="radio" name="quiz_opt" value="${idx}" ${isSelected ? 'checked' : ''} onchange="window.selectQuizOption(${idx})" style="width: 18px; height: 18px; accent-color: #10B981;">
+                    <span style="font-size: 14px;">${opt}</span>
+                </label>
+            `;
+        });
+
+        html += `</div>`;
+        body.innerHTML = html;
+
+        const btnNext = document.getElementById('btn-quiz-next');
+        btnNext.onclick = handleNextQuizQuestion;
+
+        if (quizState.currentIdx === questions.length - 1) {
+            btnNext.textContent = 'Enviar Quiz';
+        } else {
+            btnNext.textContent = 'Siguiente';
+        }
+    }
+
+    window.selectQuizOption = (idx) => {
+        quizState.answers[quizState.currentIdx] = idx;
+        renderQuizQuestion();
+    };
+
+    async function handleNextQuizQuestion() {
+        if (quizState.answers[quizState.currentIdx] === undefined) {
+            alert("Por favor, selecciona una respuesta antes de continuar.");
+            return;
+        }
+
+        const questions = activeQuiz.quizz_data;
+
+        if (quizState.currentIdx === questions.length - 1) {
+            let correctCount = 0;
+            questions.forEach((q, idx) => {
+                if (quizState.answers[idx] === q.correctIndex) {
+                    correctCount++;
+                }
+            });
+
+            const maxPoints = Number(activeQuiz.points) || 100;
+            const finalScore = Math.round((correctCount / questions.length) * maxPoints) || 0;
+            
+            const btnNext = document.getElementById('btn-quiz-next');
+            btnNext.disabled = true;
+            btnNext.textContent = 'Enviando...';
+
+            try {
+                const { data: existing, error: checkErr } = await supabase
+                    .from('activity_submissions')
+                    .select('id')
+                    .eq('activity_id', activeQuiz.id)
+                    .eq('student_id', currentStudentId)
+                    .maybeSingle();
+
+                if (checkErr) throw checkErr;
+
+                const payload = {
+                    score: finalScore,
+                    status: 'graded',
+                    content: JSON.stringify({ answers: quizState.answers, correctCount, total: questions.length })
+                };
+
+                if (existing) {
+                    const { error } = await supabase.from('activity_submissions').update(payload).eq('id', existing.id);
+                    if (error) throw error;
+                } else {
+                    const { error } = await supabase.from('activity_submissions').insert({
+                        ...payload,
+                        activity_id: activeQuiz.id,
+                        student_id: currentStudentId
+                    });
+                    if (error) throw error;
+                }
+
+                const classroomId = activeQuiz.classroom_id;
+                window.closeQuizRunner();
+                
+                if (window.app && window.app.showToast) {
+                    window.app.showToast(`Quiz completado. Obtuviste ${finalScore} pts`, 'success');
+                } else {
+                    alert(`¡Quiz completado!\nObtuviste ${correctCount} de ${questions.length} correctas.\nPuntaje: ${finalScore} pts`);
+                }
+                
+                renderModalActivities(classroomId);
+            } catch (err) {
+                console.error(err);
+                alert("Error al guardar tu calificación: " + (err.message || JSON.stringify(err)));
+            } finally {
+                btnNext.disabled = false;
+            }
+
+        } else {
+            quizState.currentIdx++;
+            renderQuizQuestion();
+        }
+    }
         document.getElementById('submit-activity-modal').classList.add('open');
     };
 
