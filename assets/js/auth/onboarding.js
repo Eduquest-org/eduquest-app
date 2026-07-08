@@ -43,7 +43,7 @@ async function loadData() {
         const shuffle = array => array.sort(() => 0.5 - Math.random());
         const selectedRM = shuffle([...rmProblems]).slice(0, 4);
         const selectedRV = shuffle([...rvProblems]).slice(0, 4);
-        
+
         QS = [...selectedRM, ...selectedRV].map(p => {
             const isRM = p.id.includes('prob_rm_');
             return {
@@ -54,7 +54,7 @@ async function loadData() {
                 a: p.correct_option
             };
         });
-        
+
         ans = new Array(QS.length).fill(null);
     } catch (err) {
         console.error("Error al cargar datos:", err);
@@ -167,7 +167,6 @@ function renderQ() {
     });
 }
 
-/* ── Quiz navigation ── */
 function qNav(dir) {
     if (dir === 1) {
         if (ans[qIdx] === null) return;
@@ -186,17 +185,17 @@ async function finish() {
     });
 
     const { data: { session } } = await supabase.auth.getSession();
-    
+
     if (session) {
         const userId = session.user.id;
-        // Guardar target_university_id y career
+
         await supabase
             .from('profiles')
-            .update({ 
-                target_university_id: D.uni, 
+            .update({
+                target_university_id: D.uni,
                 career: D.career,
                 diagnostic_results: diagnosticResults,
-                ai_roadmap: [] // Resetear la ruta para forzar regeneración
+                ai_roadmap: []
             })
             .eq('id', userId);
     }
@@ -205,7 +204,7 @@ async function finish() {
     window.location.href = '../student/roadmap.html?generate=true';
 }
 
-// Exportar funciones globalmente para que funcionen los onclick del HTML
+
 window.pickUni = pickUni;
 window.go = go;
 window.startQuiz = startQuiz;

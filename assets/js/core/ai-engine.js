@@ -7,7 +7,6 @@
  * 2. Generación iterativa de estructuras de grafos (nodos y aristas) por curso mediante (/api/generate-route).
  * 3. Procesamiento asíncrono en segundo plano mediante un sistema de colas.
  */
-
 const BACKEND_URL = 'https://eduquest-backend-delta.vercel.app';
 
 const AIEngine = {

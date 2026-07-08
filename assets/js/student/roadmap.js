@@ -1,9 +1,13 @@
 /**
- * @fileoverview Controlador de la interfaz gráfica del Mapa de Aprendizaje (Roadmap).
- * Responsable de orquestar el renderizado dinámico de la ruta generada por la IA,
- * dibujar el grafo SVG interactivo de niveles y manejar la navegación a los recursos.
+ * @fileoverview Interfaz Gráfica e Interactiva del Grafo de Aprendizaje (Roadmap).
+ * Renderiza el progreso del estudiante usando SVG interactivo.
+ * 
+ * Flujo de ejecución:
+ * 1. Verifica si el perfil del usuario cuenta con una ruta generada (`ai_roadmap`).
+ * 2. Genera las coordenadas (x,y) de cada nodo (tema) basándose en su nivel lógico.
+ * 3. Dibuja aristas de conexión mediante Bezier Curves.
+ * 4. Gestiona la interactividad contextual (clicks, modales de lecciones).
  */
-
 import { supabase } from '../config/supabase.js';
 
 /** Secuencia de inicialización principal */

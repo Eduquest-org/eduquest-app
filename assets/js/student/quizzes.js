@@ -1,7 +1,12 @@
 /**
- * @fileoverview Controlador principal de evaluación y simulacros.
- * Gestiona el ciclo de vida de los cuestionarios, temporización, calificación,
- * asignación de puntos de experiencia (XP) y persistencia del progreso académico.
+ * @fileoverview Motor de Evaluaciones y Simulacros (Mock Exams) para Estudiantes.
+ * Maneja el flujo de cuestionarios cronometrados y el cálculo de métricas.
+ * 
+ * Flujo de ejecución:
+ * 1. Recupera preguntas parametrizadas por curso, tema o aleatorias.
+ * 2. Inicializa temporizador e inyecta iterativamente el DOM de cada pregunta.
+ * 3. Evalúa respuestas locales y calcula precisión y tiempo invertido.
+ * 4. Despacha transacciones hacia Supabase (actualización de XP y estadísticas).
  */
 import { CoursesManager } from '../core/courses-manager.js';
 import { TopicsManager } from '../core/topics-manager.js';

@@ -1,3 +1,12 @@
+/**
+ * @fileoverview Panel de Control Analítico e Informativo para Docentes.
+ * Agrupa y visualiza datos de rendimiento de las aulas a su cargo.
+ * 
+ * Flujo de ejecución:
+ * 1. Valida el rol docente mediante abstracciones core de autenticación.
+ * 2. Realiza múltiples consultas asíncronas para conteo de alumnos y recursos.
+ * 3. Renderiza indicadores numéricos y estados del `Feed` (anuncios).
+ */
 // ==========================================================================
 // assets/js/teacher/dashboard.js
 // Comportamiento del shell docente (menú móvil) + inicio (accesos rápidos)

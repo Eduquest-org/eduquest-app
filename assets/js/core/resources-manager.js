@@ -1,3 +1,12 @@
+/**
+ * @fileoverview Gestor Centralizado de Recursos y Materiales de Estudio (Singleton).
+ * Administra la subida, lectura y categorización de documentos y lecciones.
+ * 
+ * Flujo de ejecución:
+ * 1. Conexión con Supabase Storage (bucket: eduquest-docs) para la persistencia de archivos.
+ * 2. Inserción de metadatos en la tabla `resources` (course_id, topic_id).
+ * 3. Recuperación de estadísticas y conteos específicos para paneles de control.
+ */
 import { supabase } from '../config/supabase.js';
 
 const PAGE_SIZE = 15;
