@@ -1,20 +1,21 @@
 // ==========================================================================
 // assets/js/teacher/classrooms.js
 // SECCIONES DEL DOCENTE — listado, creación, detalle y actividades
-// Datos vía window.TeacherStore · helpers vía window.TeacherCommon
+// Datos vía Supabase · helpers vía window.TeacherCommon
 // ==========================================================================
 
 (function () {
   "use strict";
 
   const Common = window.TeacherCommon;
-  const Store = window.TeacherStore;
   const UI = window.TeacherUI;
 
   // Estado de la vista
   let currentFilter = "todas";
   let currentSectionId = null;
   let currentRest = []; // alumnos fuera del podio (para la búsqueda)
+  let _assignMode = false;
+  let teacherSections = [];
 
   // Nodos cacheados
   const sectionGrid = document.getElementById("sectionGrid");
@@ -22,11 +23,153 @@
   const filterChips = document.getElementById("filterChips");
   const screenSelect = document.getElementById("screen-select");
   const screenDetail = document.getElementById("screen-detail");
+  const sectionForm = document.getElementById("sectionForm");
+  const activityForm = document.getElementById("activityForm");
+  const activityTypeInput = document.getElementById("activityType");
+  const addStudentForm = document.getElementById("addStudentForm");
+
+  function getSupabase() {
+    return window.supabase || null;
+  }
+
+  function getTeacherId() {
+    return window.CurrentUserService?.getProfile()?.id || null;
+  }
+
+  function getSection(id) {
+    return teacherSections.find((s) => s.id === id) || null;
+  }
+
+  async function loadTeacherSections() {
+    const supabase = getSupabase();
+    const teacherId = getTeacherId();
+    if (!supabase || !teacherId) return [];
+
+    const { data: classrooms, error } = await supabase
+      .from("classrooms")
+      .select("*")
+      .eq("teacher_id", teacherId)
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error("[classrooms] Error cargando aulas:", error);
+      return [];
+    }
+
+    if (!classrooms || classrooms.length === 0) {
+      teacherSections = [];
+      return [];
+    }
+
+    const ids = classrooms.map((c) => c.id);
+    const [{ data: enrollments }, { data: activities }, { data: classStats }] = await Promise.all([
+      supabase.from("classroom_students").select("classroom_id, student_id, joined_at").in("classroom_id", ids),
+      supabase.from("classroom_activities").select("*").in("classroom_id", ids),
+      supabase.from("classroom_student_stats").select("classroom_id, student_id, total_xp, accuracy, completion, simulacros, last_active").in("classroom_id", ids),
+    ]);
+
+    const studentIds = [...new Set((enrollments || []).map((e) => e.student_id))];
+    const { data: profiles } = await supabase
+      .from("profiles")
+      .select("id, name, avatar_url, total_xp, last_problem_solved_at")
+      .in("id", studentIds);
+
+    const profileMap = new Map((profiles || []).map((p) => [p.id, p]));
+
+    const statsByClass = new Map();
+    (classStats || []).forEach((s) => {
+      let m = statsByClass.get(s.classroom_id);
+      if (!m) {
+        m = new Map();
+        statsByClass.set(s.classroom_id, m);
+      }
+      m.set(s.student_id, s);
+    });
+
+    const enrByClass = {};
+    (enrollments || []).forEach((e) => {
+      if (!enrByClass[e.classroom_id]) enrByClass[e.classroom_id] = [];
+      enrByClass[e.classroom_id].push(e);
+    });
+
+    const actByClass = {};
+    (activities || []).forEach((a) => {
+      if (!actByClass[a.classroom_id]) actByClass[a.classroom_id] = [];
+      actByClass[a.classroom_id].push(a);
+    });
+
+    teacherSections = classrooms.map((c) => {
+      const enrs = enrByClass[c.id] || [];
+      const statsMap = statsByClass.get(c.id) || new Map();
+      const students = enrs
+        .map((e) => {
+          const p = profileMap.get(e.student_id) || {};
+          const stats = statsMap.get(e.student_id) || {};
+          const lastActive = stats.last_active || p.last_problem_solved_at || e.joined_at;
+          return {
+            id: p.id || e.student_id,
+            name: p.name || "Estudiante",
+            avatar_url: p.avatar_url,
+            xp: stats.total_xp ?? p.total_xp ?? 0,
+            accuracy: stats.accuracy ?? 0,
+            completion: stats.completion ?? 0,
+            simulacros: stats.simulacros ?? 0,
+            lastActive,
+            activity: Common.statusFor({ lastActive }).label,
+          };
+        })
+        .sort((a, b) => (b.xp || 0) - (a.xp || 0));
+
+      const activitiesList = (actByClass[c.id] || []).map((a) => ({
+        id: a.id,
+        type: a.type,
+        title: a.title,
+        topic: a.topic,
+        dueDate: a.due_date,
+        points: a.points,
+        createdAt: a.created_at,
+      }));
+
+      return {
+        id: c.id,
+        name: c.name,
+        course: c.course,
+        cycle: c.cycle,
+        shift: c.shift,
+        schedule: c.schedule,
+        joinCode: c.join_code,
+        capacity: c.capacity,
+        description: c.description,
+        createdAt: c.created_at,
+        students,
+        activities: activitiesList,
+      };
+    });
+
+    return teacherSections;
+  }
+
+  function computeStats(section) {
+    const students = (section && section.students) || [];
+    const count = students.length;
+    if (!count) {
+      return { students: 0, avgXp: 0, activity: 0, topPerformer: null };
+    }
+    const sumXp = students.reduce((acc, st) => acc + (st.xp || 0), 0);
+    const active = students.filter((st) => Common.daysSince(st.lastActive) <= 7).length;
+    const top = [...students].sort((a, b) => (b.xp || 0) - (a.xp || 0))[0];
+    return {
+      students: count,
+      avgXp: Math.round(sumXp / count),
+      activity: Math.round((active / count) * 100),
+      topPerformer: top,
+    };
+  }
 
   // ─── Render: chips de filtro ────────────────────────────────────────
   function renderFilterChips() {
     if (!filterChips) return;
-    const courses = [...new Set(Store.getSections().map((s) => s.course))];
+    const courses = [...new Set(teacherSections.map((s) => s.course).filter(Boolean))];
     const chips = ['<button class="chip active" data-course="todas">Todas</button>'];
     courses.forEach((course) => {
       chips.push(
@@ -39,7 +182,7 @@
   // ─── Render: tarjetas de sección ────────────────────────────────────
   function renderSectionGrid() {
     if (!sectionGrid) return;
-    const all = Store.getSections();
+    const all = teacherSections;
 
     if (all.length === 0) {
       sectionGrid.innerHTML = "";
@@ -55,7 +198,7 @@
 
     visible.forEach((section) => {
       const theme = Common.themeFor(section.course);
-      const stats = Store.computeStats(section);
+      const stats = computeStats(section);
       const students = section.students || [];
 
       const stack = students
@@ -91,19 +234,22 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
         </div>
       `;
-      card.addEventListener("click", () => openSection(section.id));
+      card.addEventListener("click", () => {
+        if (_assignMode) openAssignActivityModal(section.id);
+        else openSection(section.id);
+      });
       sectionGrid.appendChild(card);
     });
   }
 
   // ─── Detalle de sección ─────────────────────────────────────────────
   function openSection(id) {
-    const section = Store.getSection(id);
+    const section = getSection(id);
     if (!section) return;
     currentSectionId = id;
 
     const theme = Common.themeFor(section.course);
-    const stats = Store.computeStats(section);
+    const stats = computeStats(section);
 
     const iconChip = document.getElementById("detailIconChip");
     if (iconChip) {
@@ -235,8 +381,6 @@
   }
 
   // ─── Modal: crear sección ───────────────────────────────────────────
-  const sectionForm = document.getElementById("sectionForm");
-
   function populateCourseSelect() {
     const select = document.getElementById("sec-course");
     if (!select) return;
@@ -246,6 +390,92 @@
       opt.textContent = course;
       select.appendChild(opt);
     });
+  }
+
+  function slugify(text) {
+    return String(text || "")
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[̀-ͯ]/g, "")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)/g, "")
+      .slice(0, 24);
+  }
+
+  function randomToken(len) {
+    const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+    let out = "";
+    for (let i = 0; i < len; i++) {
+      out += chars[Math.floor(Math.random() * chars.length)];
+    }
+    return out;
+  }
+
+  function generateClassroomId() {
+    return `cls_${Date.now().toString(36)}_${randomToken(4).toLowerCase()}`;
+  }
+
+  async function generateJoinCode(course) {
+    const supabase = getSupabase();
+    const prefix = slugify(course).replace(/-/g, "").slice(0, 3).toUpperCase() || "AUL";
+    let code;
+    for (let attempt = 0; attempt < 10; attempt++) {
+      code = `${prefix}-${randomToken(4)}`;
+      const { data } = await supabase
+        .from("classrooms")
+        .select("join_code")
+        .eq("join_code", code)
+        .maybeSingle();
+      if (!data) break; // libre
+    }
+    return code;
+  }
+
+  function validateSection(payload) {
+    const errors = {};
+    const name = (payload.name || "").trim();
+    const course = (payload.course || "").trim();
+
+    if (!course) errors.course = "Selecciona un curso.";
+    if (!name) {
+      errors.name = "Ponle un nombre a la sección.";
+    } else if (name.length < 3) {
+      errors.name = "El nombre es demasiado corto.";
+    } else {
+      const dup = teacherSections.some(
+        (s) => s.name.trim().toLowerCase() === name.toLowerCase()
+      );
+      if (dup) errors.name = "Ya tienes una sección con ese nombre.";
+    }
+
+    if (payload.capacity != null && payload.capacity !== "") {
+      const cap = Number(payload.capacity);
+      if (!Number.isInteger(cap) || cap < 1 || cap > 300) {
+        errors.capacity = "La capacidad debe estar entre 1 y 300.";
+      }
+    }
+    return errors;
+  }
+
+  function validateActivity(payload) {
+    const errors = {};
+    if (!payload.type || !["tarea", "reto", "quiz"].includes(payload.type)) {
+      errors.type = "Tipo de actividad inválido.";
+    }
+    if (!(payload.title || "").trim()) {
+      errors.title = "Escribe un título.";
+    }
+    if (payload.points != null && payload.points !== "") {
+      const pts = Number(payload.points);
+      if (!Number.isInteger(pts) || pts < 0 || pts > 1000) {
+        errors.points = "Los puntos deben estar entre 0 y 1000.";
+      }
+    }
+    if (payload.dueDate) {
+      const d = new Date(payload.dueDate);
+      if (Number.isNaN(d.getTime())) errors.dueDate = "Fecha inválida.";
+    }
+    return errors;
   }
 
   function openCreateSection() {
@@ -259,30 +489,58 @@
   async function handleCreateSection(e) {
     e.preventDefault();
     const data = Object.fromEntries(new FormData(sectionForm).entries());
-    
-    const result = await Store.createSection(data);
+    const errors = validateSection(data);
 
-    if (!result.ok) {
-      if (result.errors.server) {
-        UI.toast(result.errors.server, "error");
+    if (Object.keys(errors).length) {
+      UI.showFieldErrors(sectionForm, errors);
+      return;
+    }
+
+    const supabase = getSupabase();
+    const teacherId = getTeacherId();
+    const id = generateClassroomId();
+
+    let joinCode;
+    let insertError;
+    for (let attempt = 0; attempt < 5; attempt++) {
+      joinCode = await generateJoinCode(data.course);
+      const { error } = await supabase.from("classrooms").insert({
+        id,
+        teacher_id: teacherId,
+        name: data.name.trim(),
+        course: data.course,
+        cycle: data.cycle || null,
+        shift: data.shift || null,
+        schedule: data.schedule || null,
+        capacity: data.capacity ? Number(data.capacity) : null,
+        description: data.description || null,
+        join_code: joinCode,
+      });
+      if (!error) {
+        insertError = null;
+        break;
       }
-      UI.showFieldErrors(sectionForm, result.errors);
+      insertError = error;
+      // Si el código de unión ya existe, reintentar con otro
+      if (error.code !== "23505") break;
+    }
+
+    if (insertError) {
+      UI.showFieldErrors(sectionForm, { name: insertError.message });
       return;
     }
 
     UI.closeModal("modal-section");
-    UI.toast(`Sección “${result.section.name}” creada · código ${result.section.joinCode}`);
+    UI.toast(`Sección creada · código ${joinCode}`);
 
     currentFilter = "todas";
+    await loadTeacherSections();
     renderFilterChips();
     renderSectionGrid();
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   // ─── Modal: actividad ───────────────────────────────────────────────
-  const activityForm = document.getElementById("activityForm");
-  const activityTypeInput = document.getElementById("activityType");
-
   function selectActivityType(type) {
     if (activityTypeInput) activityTypeInput.value = type;
     document.querySelectorAll("#activityTypePicker .type-option").forEach((opt) => {
@@ -311,8 +569,19 @@
 
   function openActivityModal(type) {
     if (!currentSectionId) return;
-    const section = Store.getSection(currentSectionId);
+    const section = getSection(currentSectionId);
     if (!section) return;
+    openActivityModalForSection(section, type || "tarea");
+  }
+
+  function openAssignActivityModal(sectionId) {
+    const section = getSection(sectionId);
+    if (!section) return;
+    openActivityModalForSection(section, "tarea");
+  }
+
+  function openActivityModalForSection(section, type) {
+    currentSectionId = section.id;
     if (activityForm) {
       activityForm.reset();
       UI.clearFieldErrors(activityForm);
@@ -326,111 +595,122 @@
     e.preventDefault();
     if (!currentSectionId) return;
     const data = Object.fromEntries(new FormData(activityForm).entries());
-    
-    const result = await Store.addActivity(currentSectionId, data);
+    const errors = validateActivity(data);
 
-    if (!result.ok) {
-      UI.showFieldErrors(activityForm, result.errors);
+    if (Object.keys(errors).length) {
+      UI.showFieldErrors(activityForm, errors);
       return;
     }
-    UI.closeModal("modal-activity");
-    const meta = Common.ACTIVITY_TYPES[result.activity.type] || { label: "Actividad" };
-    UI.toast(`${meta.label} “${result.activity.title}” asignada a la sección`);
 
-    const section = Store.getSection(currentSectionId);
+    const supabase = getSupabase();
+    const { error } = await supabase.from("classroom_activities").insert({
+      classroom_id: currentSectionId,
+      type: data.type,
+      title: data.title.trim(),
+      topic: data.topic || null,
+      due_date: data.dueDate || null,
+      points: data.points ? Number(data.points) : 0,
+    });
+
+    if (error) {
+      UI.showFieldErrors(activityForm, { title: error.message });
+      return;
+    }
+
+    UI.closeModal("modal-activity");
+    const meta = Common.ACTIVITY_TYPES[data.type] || { label: "Actividad" };
+    UI.toast(`${meta.label} asignada a la sección`);
+
+    await loadTeacherSections();
+    const section = getSection(currentSectionId);
     renderActivities(section);
   }
 
-  // ─── Quiz Builder Lógica ─────────────────────────────────────────────
-  let questionCount = 0;
-  function addQuizQuestion() {
-    questionCount++;
-    const list = document.getElementById("quiz-questions-list");
-    if (!list) return;
+  async function openAddStudentModal() {
+    const section = getSection(currentSectionId);
+    if (!section) return;
+    setText("addStudentSectionName", section.name);
 
-    const qDiv = document.createElement("div");
-    qDiv.className = "quiz-question-item";
-    qDiv.style = "background: #fdfdfd; border: 1px solid var(--border); border-radius: 8px; padding: 12px;";
-    qDiv.innerHTML = `
-      <div style="display:flex; justify-content: space-between; margin-bottom: 8px;">
-        <label style="font-size: 13px; font-weight: 600;">Pregunta ${questionCount}</label>
-        <button type="button" class="btn-remove-q" style="background:none; border:none; color:var(--red-err); cursor:pointer; font-size:12px;">Eliminar</button>
-      </div>
-      <input type="text" name="q_${questionCount}_text" placeholder="Escribe la pregunta..." required style="width:100%; margin-bottom:8px; padding:8px; border:1px solid var(--border); border-radius:4px;">
-      <div class="quiz-options-grid">
-        <div style="display:flex; align-items:center; gap:4px;">
-          <input type="radio" name="q_${questionCount}_correct" value="0" required>
-          <input type="text" name="q_${questionCount}_opt0" placeholder="Opción 1" required style="width:100%; padding:6px; border:1px solid var(--border); border-radius:4px;">
-        </div>
-        <div style="display:flex; align-items:center; gap:4px;">
-          <input type="radio" name="q_${questionCount}_correct" value="1">
-          <input type="text" name="q_${questionCount}_opt1" placeholder="Opción 2" required style="width:100%; padding:6px; border:1px solid var(--border); border-radius:4px;">
-        </div>
-        <div style="display:flex; align-items:center; gap:4px;">
-          <input type="radio" name="q_${questionCount}_correct" value="2">
-          <input type="text" name="q_${questionCount}_opt2" placeholder="Opción 3" required style="width:100%; padding:6px; border:1px solid var(--border); border-radius:4px;">
-        </div>
-        <div style="display:flex; align-items:center; gap:4px;">
-          <input type="radio" name="q_${questionCount}_correct" value="3">
-          <input type="text" name="q_${questionCount}_opt3" placeholder="Opción 4" required style="width:100%; padding:6px; border:1px solid var(--border); border-radius:4px;">
-        </div>
-      </div>
-    `;
-    qDiv.querySelector(".btn-remove-q").addEventListener("click", () => {
-      qDiv.remove();
-    });
-    list.appendChild(qDiv);
-  }
+    const select = document.getElementById("add-student-select");
+    if (!select) return;
+    select.innerHTML = '<option value="">Cargando estudiantes…</option>';
 
-  // ─── Material Selector Lógica ────────────────────────────────────────
-  let materialsCache = [];
-  
-  async function loadMaterials() {
-    try {
-      const res = await fetch("../../mock/resources.json");
-      materialsCache = await res.json();
-    } catch (e) {
-      console.error("Error loading resources:", e);
-    }
-  }
+    const supabase = getSupabase();
+    const { data, error } = await supabase
+      .from("profiles")
+      .select("id, name")
+      .eq("role", "student")
+      .order("name");
 
-  function renderMaterialList(query = "") {
-    const container = document.getElementById("material-list-container");
-    if (!container) return;
-    
-    const lowerQ = query.toLowerCase();
-    const filtered = materialsCache.filter(m => 
-      m.title.toLowerCase().includes(lowerQ) || 
-      (m.topicId && m.topicId.toLowerCase().includes(lowerQ))
-    ).slice(0, 15); // limit to 15 for performance
-
-    if (filtered.length === 0) {
-      container.innerHTML = '<div style="padding:10px; text-align:center; color:var(--sub); font-size:13px;">No se encontraron materiales.</div>';
+    if (error || !data) {
+      select.innerHTML = '<option value="">No se pudieron cargar estudiantes</option>';
       return;
     }
 
-    container.innerHTML = filtered.map(m => `
-      <div style="padding: 10px; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: space-between;" class="material-item-row" data-id="${m.id}" data-title="${Common.escapeHtml(m.title)}">
-        <div>
-          <div style="font-weight: 600; font-size: 13px;">${Common.escapeHtml(m.title)}</div>
-          <div style="font-size: 11px; color: var(--sub);">${m.type.toUpperCase()} · ${m.courseId}</div>
-        </div>
-        <button type="button" class="btn btn-sm btn-line" style="pointer-events: none;">Seleccionar</button>
-      </div>
-    `).join("");
+    const existing = new Set((section.students || []).map((s) => s.id));
+    const available = data.filter((p) => !existing.has(p.id));
 
-    container.querySelectorAll(".material-item-row").forEach(row => {
-      row.addEventListener("click", () => {
-        selectMaterial(row.dataset.id, row.dataset.title);
-      });
-    });
+    select.innerHTML = available.length
+      ? `<option value="">Selecciona un estudiante…</option>${available
+          .map((p) => `<option value="${p.id}">${Common.escapeHtml(p.name || "Sin nombre")}</option>`)
+          .join("")}`
+      : '<option value="">No hay estudiantes disponibles</option>';
+
+    UI.openModal("modal-add-student");
   }
 
-  function selectMaterial(id, title) {
-    document.getElementById("linkedMaterialId").value = id;
-    document.getElementById("selected-material-title").textContent = title;
-    document.getElementById("selected-material-display").style.display = "block";
-    UI.closeModal("modal-material-selector");
+  async function handleAddStudent(e) {
+    e.preventDefault();
+    const data = Object.fromEntries(new FormData(addStudentForm).entries());
+    if (!data.student) {
+      UI.showFieldErrors(addStudentForm, { student: "Selecciona un estudiante." });
+      return;
+    }
+
+    const supabase = getSupabase();
+    const { error } = await supabase.rpc("add_student_to_classroom", {
+      p_classroom_id: currentSectionId,
+      p_student_id: data.student,
+    });
+
+    if (error) {
+      UI.showFieldErrors(addStudentForm, { student: error.message });
+      return;
+    }
+
+    UI.closeModal("modal-add-student");
+    UI.toast("Estudiante añadido al aula");
+    await loadTeacherSections();
+    openSection(currentSectionId);
+  }
+
+  async function handleDeleteClassroom() {
+    if (!currentSectionId) return;
+    const section = getSection(currentSectionId);
+    if (!section) return;
+
+    if (!confirm(`¿Eliminar permanentemente el aula “${section.name}”? Se borrarán sus alumnos, actividades y reportes.`)) {
+      return;
+    }
+
+    const supabase = getSupabase();
+    const { error } = await supabase.rpc("delete_classroom", {
+      p_classroom_id: currentSectionId,
+    });
+
+    if (error) {
+      UI.toast("No se pudo eliminar el aula", "error");
+      console.error("[classrooms] delete_classroom error:", error);
+      return;
+    }
+
+    UI.toast("Aula eliminada", "success");
+    currentSectionId = null;
+    if (screenDetail) screenDetail.classList.add("hidden");
+    if (screenSelect) screenSelect.classList.remove("hidden");
+    await loadTeacherSections();
+    renderFilterChips();
+    renderSectionGrid();
   }
 
   // ─── Helpers ────────────────────────────────────────────────────────
@@ -500,143 +780,21 @@
     document.getElementById("activitiesList")?.addEventListener("click", async (e) => {
       const btn = e.target.closest("[data-del-activity]");
       if (!btn || !currentSectionId) return;
-      if (await Store.removeActivity(currentSectionId, btn.dataset.delActivity)) {
-        renderActivities(Store.getSection(currentSectionId));
-        UI.toast("Actividad eliminada", "info");
-      }
-    });
-
-    // ==========================================
-    // LÓGICA DE CALIFICACIÓN (MODAL CENTRAL)
-    // ==========================================
-
-    window.openGradingModal = async (activityId, activityTitle) => {
-      document.getElementById('grading-header-content').innerHTML = `
-        <span style="font-size: 11px; background: rgba(255,255,255,0.5); padding: 4px 8px; border-radius: 4px; color: var(--brand); font-weight: 700;">CALIFICACIÓN</span>
-        <h2 style="font-size: 24px; font-weight: 800; margin-top: 8px; color: var(--dark);">${activityTitle}</h2>
-      `;
-      
-      const listEl = document.getElementById('grading-submissions-list');
-      const countEl = document.getElementById('grading-submissions-count');
-      
-      listEl.innerHTML = '<div style="padding: 20px; text-align: center;">Cargando entregas...</div>';
-      countEl.textContent = '...';
-      
-      document.getElementById('grading-center-modal').classList.add('open');
-      document.body.style.overflow = 'hidden';
-
-      try {
-        const { data: submissions, error } = await window.supabase
-          .from('activity_submissions')
-          .select('id, content, score, feedback, status, submitted_at, profiles:student_id(name)')
-          .eq('activity_id', activityId)
-          .order('submitted_at', { ascending: false });
-
-        if (error) throw error;
-
-        countEl.textContent = submissions.length;
-
-        if (submissions.length === 0) {
-          listEl.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--sub);">Aún no hay entregas para esta tarea.</div>';
-          return;
-        }
-
-        listEl.innerHTML = submissions.map(sub => {
-          const studentName = sub.profiles?.name || 'Alumno Anónimo';
-          const isGraded = sub.status === 'graded' || sub.status === 'returned';
-          const badgeHtml = isGraded 
-            ? `<span style="font-size:12px; background:var(--green-soft); color:var(--green); padding:4px 8px; border-radius:12px; font-weight:600;">Calificado</span>`
-            : `<span style="font-size:12px; background:var(--amber-soft); color:var(--amber); padding:4px 8px; border-radius:12px; font-weight:600;">Pendiente</span>`;
-
-          const contentIsLink = sub.content && (sub.content.startsWith('http://') || sub.content.startsWith('https://'));
-          const displayContent = contentIsLink 
-            ? `<a href="${sub.content}" target="_blank" style="color:var(--brand); text-decoration:underline;">Abrir enlace adjunto ↗</a>`
-            : Common.escapeHtml(sub.content || 'Sin contenido');
-
-          return `
-            <div class="grading-row">
-              <div class="grading-row-header">
-                <div class="grading-student-name">${Common.escapeHtml(studentName)}</div>
-                <div>${badgeHtml} <span style="font-size:12px; color:var(--sub); margin-left:8px;">Entregado: ${Common.formatDate(sub.submitted_at)}</span></div>
-              </div>
-              <div class="grading-content-box">
-                ${displayContent}
-              </div>
-              <div class="grading-inputs">
-                <div class="grading-input-group">
-                  <label>Nota (0-100)</label>
-                  <input type="number" id="score-${sub.id}" value="${sub.score || ''}" placeholder="Ej. 85" min="0" max="100">
-                </div>
-                <div class="grading-input-group">
-                  <label>Retroalimentación</label>
-                  <input type="text" id="feedback-${sub.id}" value="${sub.feedback || ''}" placeholder="Buen trabajo, pero faltó...">
-                </div>
-                <div>
-                  <button class="btn btn-primary" onclick="window.saveGrade('${sub.id}', '${activityId}')">Guardar</button>
-                </div>
-              </div>
-            </div>
-          `;
-        }).join('');
-
-      } catch (err) {
-        console.error("Error al cargar entregas:", err);
-        listEl.innerHTML = '<div style="color:red; padding:20px;">Error al cargar las entregas.</div>';
-      }
-    };
-
-    window.closeGradingModal = () => {
-      document.getElementById('grading-center-modal').classList.remove('open');
-      document.body.style.overflow = '';
-    };
-
-    window.saveGrade = async (submissionId, activityId) => {
-      const scoreInput = document.getElementById(`score-${submissionId}`);
-      const feedbackInput = document.getElementById(`feedback-${submissionId}`);
-      
-      let score = parseInt(scoreInput.value);
-      if (isNaN(score) || score < 0 || score > 100) {
-        UI.toast("La nota debe ser un número entre 0 y 100", "error");
+      const supabase = getSupabase();
+      const { error } = await supabase.from("classroom_activities").delete().eq("id", btn.dataset.delActivity);
+      if (error) {
+        UI.toast("No se pudo eliminar la actividad", "error");
         return;
       }
-      
-      const btn = event.currentTarget;
-      const originalText = btn.textContent;
-      btn.textContent = 'Guardando...';
-      btn.disabled = true;
+      await loadTeacherSections();
+      renderActivities(getSection(currentSectionId));
+      UI.toast("Actividad eliminada", "info");
+    });
 
-      try {
-        const { error } = await window.supabase
-          .from('activity_submissions')
-          .update({
-            score: score,
-            feedback: feedbackInput.value || null,
-            status: 'graded'
-          })
-          .eq('id', submissionId);
-
-        if (error) throw error;
-
-        UI.toast("Calificación guardada", "success");
-        // No cerramos el modal, solo repintamos (opcionalmente) o marcamos el badge localmente
-        btn.textContent = 'Guardado ✓';
-        btn.style.background = 'var(--green)';
-        btn.style.borderColor = 'var(--green)';
-        
-        setTimeout(() => {
-          btn.textContent = 'Guardar';
-          btn.style.background = '';
-          btn.style.borderColor = '';
-          btn.disabled = false;
-        }, 2000);
-
-      } catch (err) {
-        console.error("Error al guardar calificación:", err);
-        UI.toast("Error al guardar", "error");
-        btn.textContent = originalText;
-        btn.disabled = false;
-      }
-    };
+    // Añadir alumno y eliminar aula
+    document.getElementById("openAddStudent")?.addEventListener("click", openAddStudentModal);
+    if (addStudentForm) addStudentForm.addEventListener("submit", handleAddStudent);
+    document.getElementById("deleteClassroom")?.addEventListener("click", handleDeleteClassroom);
 
     // Copiar código de unión
     document.getElementById("copyJoinCode")?.addEventListener("click", async () => {
@@ -662,32 +820,55 @@
     // Modales: cerrar por backdrop / botones
     UI.wireModal("modal-section");
     UI.wireModal("modal-activity");
+    UI.wireModal("modal-add-student");
   }
 
   // ─── Init ───────────────────────────────────────────────────────────
   async function init() {
-    if (!Store || !Common || !UI) {
+    if (!Common || !UI) {
       console.error("[classrooms] Dependencias del panel docente no cargadas.");
       return;
     }
-    
+
     if (window.CurrentUserService && !CurrentUserService.getProfile()) {
       await CurrentUserService.init();
     }
 
-    await Store.init();
+    const params = new URLSearchParams(window.location.search);
+    _assignMode = params.get("assign") === "1";
+
+    await loadTeacherSections();
     populateCourseSelect();
     renderFilterChips();
     renderSectionGrid();
     bindEvents();
 
+    if (_assignMode) {
+      showAssignModeBanner();
+      return;
+    }
+
     // Deep-link: ?section=ID abre el detalle; ?create=1 abre el modal.
-    const params = new URLSearchParams(window.location.search);
     const target = params.get("section");
-    if (target && Store.getSection(target)) {
+    if (target && getSection(target)) {
       openSection(target);
     } else if (params.get("create") === "1") {
       openCreateSection();
+    }
+  }
+
+  function showAssignModeBanner() {
+    if (!screenSelect) return;
+    let banner = document.getElementById("assign-mode-banner");
+    if (!banner) {
+      banner = document.createElement("div");
+      banner.id = "assign-mode-banner";
+      banner.className = "assign-mode-banner";
+      banner.innerHTML = `
+        <span>Selecciona una sección para asignar una tarea.</span>
+        <a class="btn btn-ghost-sm" href="classrooms.html">Cancelar</a>
+      `;
+      screenSelect.insertBefore(banner, screenSelect.firstChild);
     }
   }
 

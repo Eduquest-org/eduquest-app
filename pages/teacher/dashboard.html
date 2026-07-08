@@ -54,12 +54,11 @@
           </div>
 
           <div class="action-tile">
-            <span class="tile-badge">12</span>
             <div class="tile-icon amber">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z"/></svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2Z"/><path d="M9 13h6M9 17h4"/></svg>
             </div>
-            <h4>Calificar tareas</h4>
-            <p>Entregas pendientes por revisar.</p>
+            <h4>Recursos</h4>
+            <p>Gestiona PDFs y materiales.</p>
           </div>
 
         </div>
@@ -69,10 +68,18 @@
             <div class="avatar" data-user-avatar>...</div>
             <input type="text" id="teacher-announcement-input" placeholder="Comparte un anuncio o recordatorio con tus alumnos...">
           </div>
+
+          <input type="file" id="announcement-image-input" accept="image/png,image/jpeg,image/jpg,image/gif,image/webp" hidden>
+
+          <div class="announcement-image-preview" id="announcement-image-preview" hidden>
+            <img src="" alt="Imagen del anuncio" id="announcement-image-preview-img">
+            <button type="button" class="announcement-image-remove" id="announcement-image-remove" title="Quitar imagen" aria-label="Quitar imagen">✕</button>
+          </div>
+
           <div class="composer-footer">
-            <button class="ghost-link" type="button">
+            <button class="ghost-link" type="button" id="btn-announcement-resource">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5 12 20.5a4.5 4.5 0 0 1-6.36-6.36l8.49-8.49a3 3 0 0 1 4.24 4.24l-8 8a1.5 1.5 0 0 1-2.12-2.12l7-7"/></svg>
-              Agregar recurso
+              Adjuntar imagen
             </button>
             <button class="btn btn-amber" type="button" id="btn-publish-announcement">Publicar anuncio</button>
           </div>
@@ -149,6 +156,30 @@
           </div>
 
           <p class="panel-foot-note" id="perfAccuracyNote">Cargando rendimiento...</p>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <div class="panel-icon purple">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            </div>
+            <h3>XP por aula</h3>
+          </div>
+
+          <div class="stat-row">
+            <span class="stat-big" id="xpTotalCount">0</span>
+            <span class="stat-of">XP total</span>
+          </div>
+          <p class="stat-label" id="xpAvgLabel">0 XP promedio por alumno</p>
+
+          <div class="legend">
+            <div class="legend-row">
+              <span class="legend-key"><span class="legend-swatch purple"></span>Alumnos con XP</span>
+              <span class="legend-value" id="xpStudentsCount">0</span>
+            </div>
+          </div>
+
+          <p class="panel-foot-note" id="xpClassNote">Cargando XP...</p>
         </div>
 
       </aside>

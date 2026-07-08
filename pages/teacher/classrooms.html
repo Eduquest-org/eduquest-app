@@ -233,10 +233,18 @@
             </button>
             <button class="btn btn-line" data-new-activity="reto">Crear reto</button>
             <button class="btn btn-line" data-new-activity="quiz">Crear quiz</button>
+            <button class="btn btn-line btn-icon" id="openAddStudent">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+              Añadir alumno
+            </button>
             <a class="btn btn-line btn-icon" id="detailDashboardLink" href="analytics.html">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
               Ver dashboard
             </a>
+            <button class="btn btn-danger btn-icon" id="deleteClassroom">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+              Eliminar aula
+            </button>
           </div>
         </div>
 
@@ -436,50 +444,36 @@
   </div>
 </div>
 
-<!-- =============================================
-     Modal Central Inmersivo — Calificación
-============================================= -->
-<div id="grading-center-modal" class="center-modal-overlay" role="dialog" aria-modal="true">
-  <div class="center-modal-panel">
-    
-    <div class="center-modal-header">
-      <button class="center-modal-close" onclick="closeGradingModal()" aria-label="Cerrar">✕</button>
-      <div id="grading-header-content">
-        <!-- Renderizado dinámicamente -->
-      </div>
-    </div>
-
-    <div class="center-modal-content">
-      <h3 style="font-size: 18px; margin-bottom: 20px;">Entregas de los Estudiantes <span id="grading-submissions-count" style="margin-left:8px; font-size:14px; color:var(--brand); background:var(--brand-soft); padding:4px 8px; border-radius:12px;">0</span></h3>
-      <div id="grading-submissions-list" style="display: flex; flex-direction: column;">
-        <!-- Lista de alumnos renderizada dinámicamente -->
-      </div>
-    </div>
-  </div>
-<!-- ============ MODAL: Selector de Material ============ -->
-<div class="tmodal-overlay" id="modal-material-selector" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="modal-material-title">
+<!-- ============ MODAL: añadir alumno ============ -->
+<div class="tmodal-overlay" id="modal-add-student" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="modal-add-student-title">
   <div class="tmodal tmodal-sm">
     <div class="tmodal-head">
       <div class="tmodal-icon purple">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
       </div>
       <div class="tmodal-titles">
-        <div class="tmodal-title" id="modal-material-title">Seleccionar Material</div>
-        <div class="tmodal-subtitle">Busca y vincula un recurso existente</div>
+        <div class="tmodal-title" id="modal-add-student-title">Añadir alumno al aula</div>
+        <div class="tmodal-subtitle" id="addStudentSectionName">—</div>
       </div>
       <button class="tmodal-close" data-close-modal aria-label="Cerrar">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
     </div>
-    <div class="tmodal-body" style="max-height: 400px; overflow-y: auto;">
-      <div class="mini-search" style="margin-bottom: 16px;">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input type="text" id="materialSearch" placeholder="Buscar por título o tema...">
+    <form id="addStudentForm" novalidate>
+      <div class="tmodal-body">
+        <div class="field" data-field="student">
+          <label for="add-student-select">Estudiante <span class="req">*</span></label>
+          <select id="add-student-select" name="student" required>
+            <option value="">Cargando estudiantes…</option>
+          </select>
+          <div class="field-error"></div>
+        </div>
       </div>
-      <div id="material-list-container" style="display: flex; flex-direction: column; gap: 8px;">
-        <!-- Lista de materiales inyectada por JS -->
+      <div class="tmodal-foot">
+        <button type="button" class="btn btn-ghost" data-close-modal>Cancelar</button>
+        <button type="submit" class="btn btn-purple">Añadir al aula</button>
       </div>
-    </div>
+    </form>
   </div>
 </div>
 
@@ -492,7 +486,6 @@
 <script src="../../assets/js/core/app.js"></script>
 <script src="../../assets/js/teacher/dashboard.js"></script>
 <script src="../../assets/js/teacher/teacher-common.js"></script>
-<script src="../../assets/js/teacher/teacher-store.js"></script>
 <script src="../../assets/js/teacher/teacher-ui.js"></script>
 <script src="../../assets/js/teacher/classrooms.js"></script>
 
