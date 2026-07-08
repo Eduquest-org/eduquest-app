@@ -41,7 +41,7 @@ document.addEventListener("click", (e) => {
     "Crear aula": "classrooms.html?create=1",
     "Ver secciones": "classrooms.html",
     "Asignar tarea": "classrooms.html?assign=1",
-    "Calificar tareas": "classrooms.html",
+    "Recursos": "resources.html",
   };
 
   function getSupabase() {
