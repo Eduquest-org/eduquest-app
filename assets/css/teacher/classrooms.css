@@ -135,3 +135,12 @@
 }
 
 .hidden { display: none !important; }
+
+/* Danger / delete action */
+.btn-danger{
+  background:var(--red-soft);border:1.5px solid #F2C9C6;color:var(--red);
+  border-radius:12px;padding:10px 18px;font-size:14px;font-weight:600;cursor:pointer;
+  display:inline-flex;align-items:center;gap:7px;transition:background .15s,border-color .15s;
+}
+.btn-danger:hover{background:#FCEBEB;border-color:var(--red);}
+.btn-danger svg{width:17px;height:17px;}

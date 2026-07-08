@@ -100,17 +100,26 @@ async function loadFeedPosts() {
 }
 
 function renderPostCard(post, container) {
+    const rawTags = post.tag || 'General';
+    const isAnnouncement = post.authorRole === 'teacher' ||
+        rawTags.toLowerCase().includes('anuncio') || rawTags.toLowerCase().includes('comunicado');
+
     const postCard = document.createElement('div');
-    postCard.className = 'feed-card';
+    postCard.className = isAnnouncement ? 'feed-card is-announcement' : 'feed-card';
     postCard.id = `post-card-${post.id}`;
 
-    const rawTags = post.tag || 'General';
     const tagHtml = rawTags.split(',').map(t => {
         const cleaned = t.trim();
-        const isDuda = cleaned.toLowerCase().includes('duda');
-        const tagClass = isDuda ? 'post-tag duda-tag' : 'post-tag';
+        const lower = cleaned.toLowerCase();
+        const isDuda = lower.includes('duda');
+        const isAnn = lower.includes('anuncio') || lower.includes('comunicado');
+        const tagClass = isAnn ? 'post-tag announcement-tag' : (isDuda ? 'post-tag duda-tag' : 'post-tag');
         return `<span class="${tagClass}">${cleaned}</span>`;
     }).join(' ');
+
+    const announcementBanner = isAnnouncement
+        ? '<div class="announcement-banner">📢 Anuncio del docente</div>'
+        : '';
 
     // Imagen adjunta
     const imageHtml = post.imageUrl ? `
@@ -136,6 +145,7 @@ function renderPostCard(post, container) {
     const { emoji: postEmoji, color: postColor } = window.parseAvatar ? window.parseAvatar(post.authorAvatar) : { emoji: post.authorAvatar || '👤', color: 'var(--indigo)' };
 
     postCard.innerHTML = `
+        ${announcementBanner}
         <div class="card-header">
             <div class="author-avatar" style="background-color: ${postColor};">${postEmoji}</div>
             <div class="author-info">

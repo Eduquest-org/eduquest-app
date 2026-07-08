@@ -93,10 +93,18 @@
             </button>
             <button class="btn btn-line" data-new-activity="reto">Crear reto</button>
             <button class="btn btn-line" data-new-activity="quiz">Crear quiz</button>
+            <button class="btn btn-line btn-icon" id="openAddStudent">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+              Añadir alumno
+            </button>
             <a class="btn btn-line btn-icon" id="detailDashboardLink" href="analytics.html">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
               Ver dashboard
             </a>
+            <button class="btn btn-danger btn-icon" id="deleteClassroom">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+              Eliminar aula
+            </button>
           </div>
         </div>
 
@@ -265,6 +273,39 @@
   </div>
 </div>
 
+<!-- ============ MODAL: añadir alumno ============ -->
+<div class="tmodal-overlay" id="modal-add-student" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="modal-add-student-title">
+  <div class="tmodal tmodal-sm">
+    <div class="tmodal-head">
+      <div class="tmodal-icon purple">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+      </div>
+      <div class="tmodal-titles">
+        <div class="tmodal-title" id="modal-add-student-title">Añadir alumno al aula</div>
+        <div class="tmodal-subtitle" id="addStudentSectionName">—</div>
+      </div>
+      <button class="tmodal-close" data-close-modal aria-label="Cerrar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <form id="addStudentForm" novalidate>
+      <div class="tmodal-body">
+        <div class="field" data-field="student">
+          <label for="add-student-select">Estudiante <span class="req">*</span></label>
+          <select id="add-student-select" name="student" required>
+            <option value="">Cargando estudiantes…</option>
+          </select>
+          <div class="field-error"></div>
+        </div>
+      </div>
+      <div class="tmodal-foot">
+        <button type="button" class="btn btn-ghost" data-close-modal>Cancelar</button>
+        <button type="submit" class="btn btn-purple">Añadir al aula</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <script src="../../assets/js/utils/component-loader.js"></script>
 <script src="../../assets/js/core/storage.js"></script>
 <script type="module" src="../../assets/js/core/user-manager.js"></script>
@@ -274,7 +315,6 @@
 <script src="../../assets/js/core/app.js"></script>
 <script src="../../assets/js/teacher/dashboard.js"></script>
 <script src="../../assets/js/teacher/teacher-common.js"></script>
-<script src="../../assets/js/teacher/teacher-store.js"></script>
 <script src="../../assets/js/teacher/teacher-ui.js"></script>
 <script src="../../assets/js/teacher/classrooms.js"></script>
 

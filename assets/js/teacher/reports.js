@@ -1,18 +1,103 @@
 // ==========================================================================
 // assets/js/teacher/reports.js
 // US-18 · Exportación de reportes de progreso (CSV / Excel / PDF)
-// Un único modelo de columnas alimenta la vista previa y las exportaciones.
+// Datos reales vía Supabase RPC get_teacher_analytics_rows.
 // ==========================================================================
 
 (function () {
   "use strict";
 
   const Common = window.TeacherCommon;
-  const Store = window.TeacherStore;
   const UI = window.TeacherUI;
 
   const ALL = "__all__";
   const state = { scope: ALL, type: "alumno", period: "Todo el periodo" };
+  let teacherSections = [];
+
+  function getSupabase() {
+    return window.supabase || null;
+  }
+
+  function getTeacherId() {
+    return window.CurrentUserService?.getProfile()?.id || null;
+  }
+
+  async function loadRealData() {
+    const supabase = getSupabase();
+    const teacherId = getTeacherId();
+    if (!supabase || !teacherId) return [];
+
+    const { data, error } = await supabase.rpc("get_teacher_analytics_rows", {
+      p_teacher_id: teacherId,
+    });
+
+    if (error) {
+      console.error("[reports] Error cargando datos:", error);
+      return [];
+    }
+
+    teacherSections = (data || []).map((row) => ({
+      id: row.id,
+      name: row.name,
+      course: row.course,
+      students: (row.students || []).map((st) => ({
+        id: st.id,
+        name: st.name,
+        xp: st.total_xp || 0,
+        accuracy: Number(st.accuracy) || 0,
+        completion: Number(st.completion) || 0,
+        simulacros: st.simulacros || 0,
+        lastActive: st.last_active,
+      })),
+    }));
+
+    return teacherSections;
+  }
+
+  function computeSectionStats(section) {
+    const students = (section && section.students) || [];
+    const count = students.length;
+    const empty = {
+      students: 0,
+      avgXp: 0,
+      activity: 0,
+      avgAccuracy: 0,
+      avgCompletion: 0,
+      totalSimulacros: 0,
+      distribution: { excelente: 0, bueno: 0, regular: 0, riesgo: 0 },
+      atRisk: 0,
+    };
+    if (!count) return empty;
+
+    const distribution = { excelente: 0, bueno: 0, regular: 0, riesgo: 0 };
+    let sumXp = 0;
+    let sumAcc = 0;
+    let sumComp = 0;
+    let sumSim = 0;
+
+    students.forEach((st) => {
+      const xp = st.xp || 0;
+      const accuracy = st.accuracy || 0;
+      const completion = st.completion || 0;
+      sumXp += xp;
+      sumAcc += accuracy;
+      sumComp += completion;
+      sumSim += st.simulacros || 0;
+      const band = Common.performanceBand(accuracy);
+      distribution[band.key]++;
+    });
+
+    return {
+      students: count,
+      avgXp: Math.round(sumXp / count),
+      activity: 0,
+      avgAccuracy: Math.round(sumAcc / count),
+      avgCompletion: Math.round(sumComp / count),
+      totalSimulacros: sumSim,
+      distribution,
+      atRisk: distribution.riesgo,
+    };
+  }
 
   // ─── Construcción de filas ──────────────────────────────────────────
 
@@ -33,7 +118,7 @@
   }
 
   function summaryRow(section) {
-    const stats = Store.computeStats(section);
+    const stats = computeSectionStats(section);
     return {
       Seccion: section.name,
       Curso: section.course,
@@ -49,7 +134,7 @@
   // ─── Definición del reporte (columnas + filas + KPIs) ───────────────
 
   function buildReport() {
-    const sections = Store.getSections();
+    const sections = teacherSections;
     const scoped = state.scope === ALL ? sections : sections.filter((s) => s.id === state.scope);
     const scopeLabel = state.scope === ALL ? "Todas las secciones" : scoped[0] ? scoped[0].name : "—";
 
@@ -286,7 +371,7 @@
   function populateSectionSelect(preferredId) {
     const select = document.getElementById("reportSection");
     if (!select) return;
-    const sections = Store.getSections();
+    const sections = teacherSections;
     const opts = [`<option value="${ALL}">Todas las secciones</option>`];
     sections.forEach((s) => opts.push(`<option value="${Common.escapeHtml(s.id)}">${Common.escapeHtml(s.name)}</option>`));
     select.innerHTML = opts.join("");
@@ -321,13 +406,18 @@
 
   // ─── Init ───────────────────────────────────────────────────────────
   async function init() {
-    if (!Store || !Common || !UI) {
+    if (!Common || !UI) {
       console.error("[reports] Dependencias del panel docente no cargadas.");
       return;
     }
-    await Store.init();
 
-    if (!Store.getSections().length) {
+    if (window.CurrentUserService && !CurrentUserService.getProfile()) {
+      await CurrentUserService.init();
+    }
+
+    await loadRealData();
+
+    if (!teacherSections.length) {
       document.getElementById("reportsBody")?.classList.add("hidden");
       document.getElementById("reportsEmpty")?.classList.remove("hidden");
       return;
