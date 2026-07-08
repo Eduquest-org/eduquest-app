@@ -63,19 +63,21 @@
               <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:28px;color:var(--text);">Bienvenido de vuelta</div>
               <p class="col-s mt8" style="font-size:15px;">Ingresa tus datos para continuar</p>
               <div class="mt32">
-                <div class="fg"><div class="flabel">Usuario o Correo</div><input type="text" id="login-user" class="finput" placeholder="Ej: matias o vivi"></div>
-                <div class="fg"><div class="flabel">Contraseña</div><input type="password" id="login-pass" class="finput focus" placeholder="••••••••••"></div>
-                <div class="row between mb16">
-                  <label class="row gap8 cursor-pointer" style="margin:0;">
-                    <input type="checkbox" id="login-remember" style="width:16px;height:16px;cursor:pointer;accent-color:var(--green);margin:0;">
-                    <span class="sm col-s">Recordarme</span>
-                  </label>
-                  <span class="sm fw7 col-g cursor-pointer">¿Olvidaste tu contraseña?</span>
-                </div>
-                
-                <div id="login-error" style="color: var(--red); font-size: 13px; font-weight: 600; display: none; margin-bottom: 12px; text-align: center;">Usuario o contraseña incorrectos.</div>
-                
-                <div class="btn full dark" onclick="login()">Iniciar sesión</div>
+                <form onsubmit="event.preventDefault(); login();">
+                  <div class="fg"><div class="flabel">Usuario o Correo</div><input type="text" id="login-user" class="finput" placeholder="Ej: matias o vivi" autocomplete="username"></div>
+                  <div class="fg"><div class="flabel">Contraseña</div><input type="password" id="login-pass" class="finput focus" placeholder="••••••••••" autocomplete="current-password"></div>
+                  <div class="row between mb16">
+                    <label class="row gap8 cursor-pointer" style="margin:0;">
+                      <input type="checkbox" id="login-remember" style="width:16px;height:16px;cursor:pointer;accent-color:var(--green);margin:0;">
+                      <span class="sm col-s">Recordarme</span>
+                    </label>
+                    <span class="sm fw7 col-g cursor-pointer">¿Olvidaste tu contraseña?</span>
+                  </div>
+                  
+                  <div id="login-error" style="color: var(--red); font-size: 13px; font-weight: 600; display: none; margin-bottom: 12px; text-align: center;">Usuario o contraseña incorrectos.</div>
+                  
+                  <button type="submit" class="btn full dark" style="border:none; cursor:pointer; font-family:inherit; font-size:inherit; display:block; width:100%;">Iniciar sesión</button>
+                </form>
                 <div class="divider"><div class="div-line"></div><span class="div-txt">o continúa con</span><div class="div-line"></div></div>
                 
                 <button class="btn full outline" style="display:flex; align-items:center; justify-content:center; gap:12px;">
