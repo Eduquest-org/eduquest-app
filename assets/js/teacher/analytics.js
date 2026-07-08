@@ -27,7 +27,7 @@
     text: "#8B8FA0",
   };
 
-  const charts = {}; // instancias de Chart por id de canvas
+  const charts = {};
   let studentChart = null;
 
   // ─── Utilidades de Chart.js ─────────────────────────────────────────

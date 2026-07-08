@@ -15,11 +15,12 @@
   <nav class="nav-group">
     <div class="nav-item sb-item" data-page="resources.html" onclick="window.location.href='resources.html'"><span class="nav-dot sb-dot"></span>Recursos</div>
   </nav>
-  <div class="sidebar-spacer"></div>
-  <div class="upgrade-card">
-    <h4>Upgrade Account</h4>
-    <p>Accede a tutores premium y recursos exclusivos.</p>
-    <button class="upgrade-btn">Upgrade Pro</button>
+  <div style="margin-top: auto; display: flex; flex-direction: column; gap: 14px;">
+    <div class="upgrade-card" style="margin-bottom: 0;">
+      <h4>Planes para Instituciones</h4>
+      <p>Eleva el nivel educativo de tu colegio con herramientas avanzadas.</p>
+      <button id="upgrade-account-btn" class="upgrade-btn upgrade-account-btn">Plan Empresarial</button>
+    </div>
+    <button class="logout-btn" onclick="if(typeof logout === 'function') logout();">Cerrar sesión</button>
   </div>
-  <button class="logout-btn" onclick="if(typeof logout === 'function') logout();">Cerrar sesión</button>
 </aside>

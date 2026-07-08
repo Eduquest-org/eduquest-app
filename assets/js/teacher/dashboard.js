@@ -1,3 +1,12 @@
+/**
+ * @fileoverview Panel de Control Analítico e Informativo para Docentes.
+ * Agrupa y visualiza datos de rendimiento de las aulas a su cargo.
+ * 
+ * Flujo de ejecución:
+ * 1. Valida el rol docente mediante abstracciones core de autenticación.
+ * 2. Realiza múltiples consultas asíncronas para conteo de alumnos y recursos.
+ * 3. Renderiza indicadores numéricos y estados del `Feed` (anuncios).
+ */
 // ==========================================================================
 // assets/js/teacher/dashboard.js
 // Comportamiento del shell docente (menú móvil) + inicio (accesos rápidos)
@@ -193,11 +202,11 @@ document.addEventListener("click", (e) => {
     noteEl.textContent = `${scope.classroomIds.length} ${scope.classroomIds.length === 1 ? "aula" : "aulas"} · ${scope.studentIds.length} ${scope.studentIds.length === 1 ? "alumno" : "alumnos"}`;
   }
 
-  function hideGradingPanel() {
+  async function hideGradingPanel(scope) {
     const gradedPanel = document.getElementById("gradedPanel");
     if (!gradedPanel) return;
 
-    const classIds = scope.classrooms.map(c => c.id);
+    const classIds = scope.classroomIds;
     if (!classIds.length) {
       gradedPanel.hidden = false;
       gradedPanel.innerHTML = '<p class="stat-label" style="margin-top:10px;">Crea un aula para asignar tareas.</p>';
@@ -258,7 +267,7 @@ document.addEventListener("click", (e) => {
     refreshSectionsSummary(scope);
     await refreshPerformancePanel(scope.studentIds);
     await refreshXpPanel(scope);
-    hideGradingPanel();
+    await hideGradingPanel(scope);
   }
 
   function wireQuickActions() {

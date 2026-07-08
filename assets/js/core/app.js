@@ -56,6 +56,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const searchScript = document.createElement('script');
         searchScript.src = '../../assets/js/core/global-search.js';
         document.body.appendChild(searchScript);
+
+        const upgradeModalScript = document.createElement('script');
+        upgradeModalScript.src = '../../assets/js/components/upgrade-modal.js';
+        document.body.appendChild(upgradeModalScript);
     }
 });
 

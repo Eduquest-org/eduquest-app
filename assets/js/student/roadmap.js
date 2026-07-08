@@ -1,9 +1,13 @@
 /**
- * @fileoverview Controlador de la interfaz gráfica del Mapa de Aprendizaje (Roadmap).
- * Responsable de orquestar el renderizado dinámico de la ruta generada por la IA,
- * dibujar el grafo SVG interactivo de niveles y manejar la navegación a los recursos.
+ * @fileoverview Interfaz Gráfica e Interactiva del Grafo de Aprendizaje (Roadmap).
+ * Renderiza el progreso del estudiante usando SVG interactivo.
+ * 
+ * Flujo de ejecución:
+ * 1. Verifica si el perfil del usuario cuenta con una ruta generada (`ai_roadmap`).
+ * 2. Genera las coordenadas (x,y) de cada nodo (tema) basándose en su nivel lógico.
+ * 3. Dibuja aristas de conexión mediante Bezier Curves.
+ * 4. Gestiona la interactividad contextual (clicks, modales de lecciones).
  */
-
 import { supabase } from '../config/supabase.js';
 
 /** Secuencia de inicialización principal */
@@ -213,7 +217,7 @@ async function buildCourseSelectionGrid() {
                         buildCourseSelectionGrid();
                     }
                 })();
-                return; // Interrumpir flujo sincrónico delegando renderizado a la subrutina asíncrona
+                return;
             }
         }
     }
@@ -261,7 +265,15 @@ async function buildCourseSelectionGrid() {
     globalRutasData.forEach(curso => {
         const card = document.createElement("div");
         card.className = "course-card";
+        if (curso.isLocked) {
+            card.style.opacity = "0.85";
+            card.style.filter = "grayscale(0.3)";
+        }
         
+        const btnText = curso.isLocked ? "Desbloquear Curso 🔒" : "Explorar Mapa";
+        const btnAction = curso.isLocked ? "showPremiumModal()" : `openSpecificCourseMap('${curso.id}')`;
+        const btnStyle = curso.isLocked ? "background: #f1f5f9; color: var(--sub);" : "";
+
         card.innerHTML = `
             <div class="card-top">
                 <div class="course-icon-box" style="background: ${curso.color}">${curso.icon}</div>
@@ -283,7 +295,7 @@ async function buildCourseSelectionGrid() {
                 <span class="progress-text-pct" style="color: ${curso.color}">${curso.progressPct}% Completado</span>
             </div>
 
-            <button class="btn-enter-route" onclick="openSpecificCourseMap('${curso.id}')">Explorar Mapa</button>
+            <button class="btn-enter-route" style="${btnStyle}" onclick="${btnAction}">${btnText}</button>
         `;
         grid.appendChild(card);
     });
@@ -294,12 +306,28 @@ async function buildCourseSelectionGrid() {
         const preloader = document.getElementById("app-preloader");
         if (preloader) preloader.classList.add("fade-out-loader");
     }
+
+    const courseToOpen = urlParams.get('course');
+    if (courseToOpen) {
+        setTimeout(() => openSpecificCourseMap(courseToOpen, true), 50);
+    }
 }
 
-function openSpecificCourseMap(courseId) {
+function openSpecificCourseMap(courseId, fromUrl = false) {
     const globalRutasData = window._cachedRutasData || [];
     const cursoSeleccionado = globalRutasData.find(c => c.id === courseId);
     if (!cursoSeleccionado) return;
+
+    if (cursoSeleccionado.isLocked) {
+        showPremiumModal();
+        return;
+    }
+
+    if (!fromUrl) {
+        const newUrl = new URL(window.location);
+        newUrl.searchParams.set('course', courseId);
+        window.history.pushState({ courseId }, '', newUrl);
+    }
 
     document.getElementById("current-map-title").innerText = `Mundo: ${cursoSeleccionado.name}`;
     
@@ -548,13 +576,19 @@ function showLevelDetail(curso, idx) {
     }
 }
 
-function switchBackToSelection() {
+function switchBackToSelection(fromUrl = false) {
     document.getElementById("course-map-view").classList.remove("active");
     document.getElementById("course-selection-view").classList.add("active");
     
     // Deshabilitar la visibilidad del panel de información contextual
     const detailPanel = document.getElementById("level-detail-panel");
     if (detailPanel) detailPanel.style.display = "none";
+
+    if (!fromUrl) {
+        const newUrl = new URL(window.location);
+        newUrl.searchParams.delete('course');
+        window.history.pushState({}, '', newUrl);
+    }
 }
 
 function handleRagItemClick(event, id, type, status) {
@@ -626,6 +660,57 @@ function openResourceModal(url) {
     modal.style.display = "flex";
 }
 
+function showPremiumModal() {
+    let modal = document.getElementById("premium-modal-overlay");
+    if (!modal) {
+        modal = document.createElement("div");
+        modal.id = "premium-modal-overlay";
+        modal.className = "resource-modal-overlay"; 
+        modal.style.zIndex = "9999";
+
+        modal.innerHTML = `
+            <div class="resource-modal-content" style="max-width:400px; text-align:center; padding: 40px 20px; animation: bounceIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
+                <div style="font-size: 60px; margin-bottom: 20px; animation: pulse 2s infinite;">👑</div>
+                <h3 style="font-family:'Sora',sans-serif; font-size:24px; color:var(--dark); margin-bottom: 12px;">Contenido Premium</h3>
+                <p style="color:var(--text-light); font-size:15px; line-height:1.6; margin-bottom: 24px;">Has alcanzado el límite de cursos gratuitos. Desbloquea EduQuest Premium para acceder a la ruta personalizada completa guiada por Inteligencia Artificial.</p>
+                <button onclick="document.getElementById('premium-modal-overlay').style.display='none'" style="background:var(--green); color:white; border:none; padding:12px 24px; border-radius:12px; font-weight:700; cursor:pointer; width:100%; margin-bottom: 12px; font-family:'Inter', sans-serif;">Mejorar a Premium</button>
+                <button onclick="document.getElementById('premium-modal-overlay').style.display='none'" style="background:transparent; color:var(--sub); border:none; padding:8px; border-radius:12px; font-weight:600; cursor:pointer; width:100%; font-family:'Inter', sans-serif;">Quizás más tarde</button>
+            </div>
+            <style>
+                @keyframes bounceIn {
+                    0% { transform: scale(0.8); opacity: 0; }
+                    100% { transform: scale(1); opacity: 1; }
+                }
+                @keyframes pulse {
+                    0% { transform: scale(1); }
+                    50% { transform: scale(1.1); }
+                    100% { transform: scale(1); }
+                }
+            </style>
+        `;
+        document.body.appendChild(modal);
+
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+    }
+
+    modal.style.display = "flex";
+}
+
+window.showPremiumModal = showPremiumModal;
 window.openSpecificCourseMap = openSpecificCourseMap;
 window.switchBackToSelection = switchBackToSelection;
 window.refreshRoadmapUI = buildCourseSelectionGrid;
+
+window.addEventListener('popstate', (event) => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const courseToOpen = urlParams.get('course');
+    if (courseToOpen) {
+        openSpecificCourseMap(courseToOpen, true);
+    } else {
+        switchBackToSelection(true);
+    }
+});

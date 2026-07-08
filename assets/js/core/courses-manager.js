@@ -1,3 +1,13 @@
+/**
+ * @fileoverview Administrador de Caché Estructural de Cursos y Temarios (Singleton).
+ * Minimiza las peticiones a base de datos para la estructura fundamental académica.
+ * 
+ * Flujo de ejecución:
+ * 1. Intercepta solicitudes de cursos y temas.
+ * 2. Verifica existencia en `localStorage` (Cache Hit/Miss).
+ * 3. Si no existe, realiza consulta a Supabase y persiste los resultados localmente.
+ * 4. Responde consultas con mapeo directo O(1).
+ */
 import { supabase } from '../config/supabase.js';
 
 export const CoursesManager = {

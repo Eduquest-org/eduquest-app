@@ -1,16 +1,12 @@
 /**
- * supabase.js - Cliente de Supabase para EduQuest
- * ------------------------------------------------
- * Importa este módulo desde cualquier archivo JS del frontend:
- *   import { supabase } from '../config/supabase.js';
- *
- * Configuración:
- *   Las variables SUPABASE_URL y SUPABASE_ANON_KEY se configuran
- *   directamente aquí. En producción, puedes inyectarlas desde
- *   un build system o un archivo de configuración.
- * ------------------------------------------------
+ * @fileoverview Cliente de Conexión a Base de Datos y Autenticación.
+ * Instancia y expone el SDK de Supabase de manera global.
+ * 
+ * Flujo de ejecución:
+ * 1. Inyección de variables de entorno (URL y ANON_KEY).
+ * 2. Configuración del cliente `supabase` con políticas de seguridad de nivel de fila (RLS).
+ * 3. Exposición global vía `window.supabase` para el acceso de los módulos funcionales.
  */
-
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
 const SUPABASE_URL = 'https://gjxtbrouqekdvogisequ.supabase.co';
