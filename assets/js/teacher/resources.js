@@ -4,7 +4,84 @@
 // ==========================================================================
 // CRUD completo sobre la tabla `resources` y el bucket de Storage
 // "eduquest-docs" (PDFs). Reutiliza TeacherUI para modales/toasts.
+//
+// Integración RAG: al crear/editar un recurso se indexa automáticamente en
+// Pinecone via el backend (/api/index-resource). Al eliminarlo se borra
+// el vector correspondiente. Ambas operaciones son fire-and-forget —
+// el docente no espera a que Pinecone confirme.
 // ==========================================================================
+
+/** URL del backend de EduQuest. Detecta automáticamente el entorno. */
+const BACKEND_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? 'http://localhost:3001'
+    : 'https://eduquest-backend-delta.vercel.app';
+
+/**
+ * Obtiene el JWT de la sesión activa de Supabase para autenticar llamadas al backend.
+ * @returns {Promise<string|null>} Token JWT o null si no hay sesión.
+ */
+async function getAuthToken() {
+  try {
+    const { data } = await window.supabase.auth.getSession();
+    return data?.session?.access_token || null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Envía los metadatos de un recurso al backend para indexarlo en Pinecone (RAG).
+ * Fire-and-forget — los errores se logean pero no bloquean la UI.
+ *
+ * @param {{ id, title, type, courseId, topicId, description, url }} resource
+ */
+async function indexResourceInRAG(resource) {
+  try {
+    const token = await getAuthToken();
+    if (!token) { console.warn('[RAG] Sin sesión activa — recurso no indexado.'); return; }
+
+    const resp = await fetch(`${BACKEND_URL}/api/index-resource`, {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body:    JSON.stringify(resource)
+    });
+    if (resp.ok) {
+      console.log(`[RAG] ✅ Recurso ${resource.id} indexado en Pinecone.`);
+    } else {
+      const err = await resp.json().catch(() => ({}));
+      console.warn(`[RAG] ⚠️ Error indexando recurso: ${err.error || resp.status}`);
+    }
+  } catch (err) {
+    console.warn('[RAG] Error de red al indexar recurso:', err.message);
+  }
+}
+
+/**
+ * Elimina el vector de un recurso en Pinecone cuando el docente lo borra.
+ * Fire-and-forget — los errores se logean pero no bloquean la UI.
+ *
+ * @param {string} resourceId - ID del recurso a eliminar de Pinecone.
+ */
+async function deleteResourceFromRAG(resourceId) {
+  try {
+    const token = await getAuthToken();
+    if (!token) { console.warn('[RAG] Sin sesión activa — vector no eliminado.'); return; }
+
+    const resp = await fetch(`${BACKEND_URL}/api/index-resource`, {
+      method:  'DELETE',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body:    JSON.stringify({ id: resourceId })
+    });
+    if (resp.ok) {
+      console.log(`[RAG] 🗑️ Vector ${resourceId} eliminado de Pinecone.`);
+    } else {
+      const err = await resp.json().catch(() => ({}));
+      console.warn(`[RAG] ⚠️ Error eliminando vector: ${err.error || resp.status}`);
+    }
+  } catch (err) {
+    console.warn('[RAG] Error de red al eliminar vector:', err.message);
+  }
+}
 
 import { ResourcesManager } from '../core/resources-manager.js';
 import { CoursesManager } from '../core/courses-manager.js';
@@ -412,13 +489,25 @@ async function handleSubmit(e) {
 
     const payload = { title, type, courseId, topicId, url, description };
 
+    let savedResource;
     if (state.editingId) {
-      await ResourcesManager.updateResource(state.editingId, payload);
+      savedResource = await ResourcesManager.updateResource(state.editingId, payload);
       window.TeacherUI?.toast('Recurso actualizado.');
     } else {
-      await ResourcesManager.createResource(payload);
+      savedResource = await ResourcesManager.createResource(payload);
       window.TeacherUI?.toast('Recurso creado.');
     }
+
+    // Indexar en Pinecone (fire-and-forget — no bloquea la UI)
+    indexResourceInRAG({
+      id:          savedResource.id,
+      title:       savedResource.title,
+      type:        savedResource.type,
+      courseId:    savedResource.course_id,
+      topicId:     savedResource.topic_id,
+      description: savedResource.description || '',
+      url:         savedResource.url || undefined
+    });
 
     window.TeacherUI?.closeModal('modal-resource');
     await loadResources();
@@ -454,6 +543,10 @@ async function handleConfirmDelete() {
     if (resource?.url && resource.url.includes('/eduquest-docs/')) {
       await ResourcesManager.deleteResourcePdfByUrl(resource.url);
     }
+
+    // Eliminar vector de Pinecone (fire-and-forget)
+    deleteResourceFromRAG(id);
+
     window.TeacherUI?.toast('Recurso eliminado.');
     window.TeacherUI?.closeModal('modal-delete-resource');
     await loadResources();
