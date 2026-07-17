@@ -7,7 +7,9 @@
  * 2. Generación iterativa de estructuras de grafos (nodos y aristas) por curso mediante (/api/generate-route).
  * 3. Procesamiento asíncrono en segundo plano mediante un sistema de colas.
  */
-const BACKEND_URL = 'https://eduquest-backend-delta.vercel.app';
+const BACKEND_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? 'http://localhost:3001'
+    : 'https://eduquest-backend-delta.vercel.app';
 
 const AIEngine = {
 
@@ -112,9 +114,15 @@ const AIEngine = {
                 queryText: queryText
             };
 
+            const sessionData = await window.supabase.auth.getSession();
+            const token = sessionData.data?.session?.access_token;
+
             const response = await fetch(`${BACKEND_URL}/api/generate-route`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+                },
                 body: JSON.stringify(payload)
             });
 
@@ -201,9 +209,15 @@ const AIEngine = {
                 courseCatalogText: courseCatalogText
             };
 
+            const sessionData = await window.supabase.auth.getSession();
+            const token = sessionData.data?.session?.access_token;
+
             const responseFase1 = await fetch(`${BACKEND_URL}/api/plan-priorities`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+                },
                 body: JSON.stringify(payloadFase1)
             });
 
